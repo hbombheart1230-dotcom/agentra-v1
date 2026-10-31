@@ -1,7 +1,16 @@
 from __future__ import annotations
 
 from collections import Counter
+import sys
 from typing import Any, Dict, Iterable, List, Mapping
+from libs.reporting import quant_tactic_eval_text_projection as _a1_owner
+from libs.reporting import quant_tactic_eval_int_projection as _a2_owner
+from libs.reporting import quant_tactic_eval_closed_projection as _a3_owner
+from libs.reporting import quant_tactic_eval_rows_projection as _a4_owner
+from libs.reporting import quant_tactic_eval_invalid_reason_projection as _a5_owner
+from libs.reporting import quant_tactic_eval_valid_rows_projection as _a6_owner
+from libs.reporting import quant_tactic_eval_invalid_examples_projection as _a7_owner
+from libs.reporting import quant_tactic_eval_field_gaps_projection as _a8_owner
 
 
 _REQUIRED_FIELDS = (
@@ -17,88 +26,35 @@ _FIELD_COVERAGE_FLOOR = 0.90
 
 
 def _text(value: Any) -> str:
-    text = str(value or "").strip()
-    return "" if text.lower() in {"", "-", "none", "null", "unknown", "not_captured"} else text
+    return _a1_owner._text(value)
 
 
 def _int(value: Any, default: int = 0) -> int:
-    try:
-        return int(float(value))
-    except Exception:
-        return int(default)
+    return _a2_owner._int(value, default)
 
 
 def _closed_or_realized(row: Mapping[str, Any]) -> bool:
-    status = str(row.get("status") or row.get("last_status") or "").strip().lower()
-    action = str(row.get("last_action") or row.get("action") or "").strip().upper()
-    origin = str(row.get("trade_origin") or "").strip().lower()
-    partial = status == "partial" or origin == "recovered_partial"
-    return bool(
-        row.get("is_closed_trade")
-        or row.get("is_realized_nonclosed_exit")
-        or (status == "closed" and not partial)
-        or (action == "SELL" and partial)
-    )
+    return _a3_owner._closed_or_realized(row)
 
 
 def _evaluation_rows(rows: Iterable[Mapping[str, Any]]) -> List[Dict[str, Any]]:
-    return [dict(row) for row in rows if isinstance(row, Mapping) and _closed_or_realized(row)]
+    return _a4_owner._evaluation_rows(rows, facade=sys.modules[__name__])
 
 
 def _invalid_sample_reason(row: Mapping[str, Any]) -> str:
-    status = _text(row.get("broker_alignment_status")).lower()
-    if status and status not in {"ok"}:
-        return f"broker_alignment_{status}"
-    if _int(row.get("broker_alignment_missing_in_local_total")) > 0:
-        return "broker_missing_in_local"
-    if _int(row.get("broker_alignment_missing_in_broker_total")) > 0:
-        return "broker_missing_in_broker"
-    snapshot_status = _text(row.get("broker_account_snapshot_status")).lower()
-    if snapshot_status and snapshot_status not in {"ok"}:
-        return f"account_snapshot_{snapshot_status}"
-    if _int(row.get("broker_alignment_account_snapshot_error_count")) > 0:
-        return "account_snapshot_partial_errors"
-    return ""
+    return _a5_owner._invalid_sample_reason(row, facade=sys.modules[__name__])
 
 
 def _valid_evaluation_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    return [row for row in rows if not _invalid_sample_reason(row)]
+    return _a6_owner._valid_evaluation_rows(rows, facade=sys.modules[__name__])
 
 
 def _invalid_sample_examples(rows: List[Dict[str, Any]], *, limit: int = 5) -> List[Dict[str, Any]]:
-    out: List[Dict[str, Any]] = []
-    for row in rows:
-        reason = _invalid_sample_reason(row)
-        if not reason:
-            continue
-        out.append(
-            {
-                "trade_id": _text(row.get("trade_id")),
-                "symbol": _text(row.get("symbol")),
-                "reason": reason,
-            }
-        )
-        if len(out) >= limit:
-            break
-    return out
+    return _a7_owner._invalid_sample_examples(rows, limit=limit, facade=sys.modules[__name__])
 
 
 def _field_gap_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    count = len(rows)
-    out: List[Dict[str, Any]] = []
-    for field in _REQUIRED_FIELDS:
-        captured = sum(1 for row in rows if _text(row.get(field)))
-        coverage = float(captured) / float(count) if count else 0.0
-        out.append(
-            {
-                "field": field,
-                "captured_count": captured,
-                "missing_count": max(0, count - captured),
-                "coverage": coverage,
-                "coverage_ok": coverage >= _FIELD_COVERAGE_FLOOR,
-            }
-        )
-    return out
+    return _a8_owner._field_gap_rows(rows, facade=sys.modules[__name__])
 
 
 def _mismatch_examples(rows: List[Dict[str, Any]], *, limit: int = 4) -> List[Dict[str, Any]]:
