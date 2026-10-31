@@ -125,7 +125,67 @@ def _kst_time_tuple(row: Mapping[str, Any]) -> tuple[int, int]:
 **WRAPPER/CALL-TIME PATCH:** SOURCE local import alias `_a08_8_owner`; original signature unchanged; return `_a08_8_owner._kst_time_tuple(row, facade=sys.modules[__name__])`. Owner's call-time globals: _parse_raw_ts_epoch,_to_int,datetime,KST via facade. No SOURCE import in Owner. Test original-vs-wrapper-vs-Owner and preserve TypeError/exception behavior.
 **NORMAL TARGETED `test_a8_kst_time_tuple`:** {'ts':1}→(9,0); {'ts':0}→(0,0); patched _parse_raw_ts_epoch seam. In-memory fake fixture, no operational IO; verify AST old SOURCE computation removed. **BLOCKED→NEXT:** record exact SHA/error, continue A1–A8 remaining and push.
 
-## FUTURE RESERVE — RESERVE_NOT_VERIFIED 0/6 (NOT EXECUTABLE)
-The previous six future reserves were consumed in A-07. This order uses eight newly independently inspected RF-035 SOURCE bodies from quant_shadow_forward_outcomes.py. `_normalize_rows` is a possible next candidate but is **NOT VERIFIED** until separate target absence, body/fixture and Owner checks; C03 must replenish six proven candidates. A must not self-select or execute reserve items.
+## FUTURE RESERVE — VERIFIED 6/6 (DESIGN ONLY; **NOT EXECUTABLE**; C03 MUST ISSUE A NEW ORDER FIRST)
+RF-035 CLAUDE_A exclusively; SOURCE `libs/reporting/q8_lane_decision_table.py` actor/integration exact blob `d997eef97b2a2077c1be638948e4355503d7c018`; all six TARGET paths independently returned 404 on BOTH actor branch and integration on 2026-11-01. These six are NOT part of the current executable order. No Actor self-selection or same-SHA retest. Each has no real-order, Broker/Guard/Step5C/UEF/RunLab effects; fake/in-memory fixtures only. Preserve original facade monkeypatch and exception behavior when C03 later issues them.
 
-**COUNTS:** A-07 REMOTE_DONE=8/8; A-08 NEW_READY=8 distinct real SOURCE BODY MOVEs; RESERVE_VERIFIED=0/6; C03 DOC_ONLY (code G1/G2/G3=0, RF_DONE_DELTA=0).
+### RESERVE 1 | `libs/reporting/q8_lane_decision_table.py::_text` @ L14 | SOURCE_BLOB `d997eef97b2a2077c1be638948e4355503d7c018` → `libs/reporting/q8_lane_text_projection.py::_text` (404 both)
+```python
+def _text(value: Any) -> str:
+    return str(value or "").strip()
+```
+**DESIGN:** Entire BODY to unique Owner, SOURCE thin facade wrapper; monkeypatch seams: none. NORMAL targeted golden/Owner/wrapper test: ' A '→'A', None→''. No real IO, no state changes; clock via fake if applicable. **STATUS=RESERVE_VERIFIED, NOT ISSUED.**
+
+### RESERVE 2 | `libs/reporting/q8_lane_decision_table.py::_float` @ L18 | SOURCE_BLOB `d997eef97b2a2077c1be638948e4355503d7c018` → `libs/reporting/q8_lane_float_projection.py::_float` (404 both)
+```python
+def _float(value: Any, default: float = 0.0) -> float:
+    try:
+        if value in (None, ""):
+            return float(default)
+        return float(value)
+    except Exception:
+        return float(default)
+```
+**DESIGN:** Entire BODY to unique Owner, SOURCE thin facade wrapper; monkeypatch seams: none. NORMAL targeted golden/Owner/wrapper test: '1.5'→1.5, bad default=3→3. No real IO, no state changes; clock via fake if applicable. **STATUS=RESERVE_VERIFIED, NOT ISSUED.**
+
+### RESERVE 3 | `libs/reporting/q8_lane_decision_table.py::_int` @ L27 | SOURCE_BLOB `d997eef97b2a2077c1be638948e4355503d7c018` → `libs/reporting/q8_lane_int_projection.py::_int` (404 both)
+```python
+def _int(value: Any, default: int = 0) -> int:
+    try:
+        if value in (None, ""):
+            return int(default)
+        return int(float(value))
+    except Exception:
+        return int(default)
+```
+**DESIGN:** Entire BODY to unique Owner, SOURCE thin facade wrapper; monkeypatch seams: none. NORMAL targeted golden/Owner/wrapper test: '2.9'→2, bad default=4→4. No real IO, no state changes; clock via fake if applicable. **STATUS=RESERVE_VERIFIED, NOT ISSUED.**
+
+### RESERVE 4 | `libs/reporting/q8_lane_decision_table.py::_rows` @ L36 | SOURCE_BLOB `d997eef97b2a2077c1be638948e4355503d7c018` → `libs/reporting/q8_lane_rows_projection.py::_rows` (404 both)
+```python
+def _rows(value: Any) -> List[Dict[str, Any]]:
+    return [dict(row) for row in list(value or []) if isinstance(row, Mapping)]
+```
+**DESIGN:** Entire BODY to unique Owner, SOURCE thin facade wrapper; monkeypatch seams: Mapping via facade.Mapping. NORMAL targeted golden/Owner/wrapper test: [{'x':1},None]→[{'x':1}] copy-not-alias. No real IO, no state changes; clock via fake if applicable. **STATUS=RESERVE_VERIFIED, NOT ISSUED.**
+
+### RESERVE 5 | `libs/reporting/q8_lane_decision_table.py::_forward_rows` @ L40 | SOURCE_BLOB `d997eef97b2a2077c1be638948e4355503d7c018` → `libs/reporting/q8_lane_forward_rows_projection.py::_forward_rows` (404 both)
+```python
+def _forward_rows(evaluation: Mapping[str, Any]) -> List[Dict[str, Any]]:
+    forward = evaluation.get("entry_lane_forward_outcomes")
+    if not isinstance(forward, Mapping):
+        return []
+    return _rows(forward.get("by_primary_lane"))
+```
+**DESIGN:** Entire BODY to unique Owner, SOURCE thin facade wrapper; monkeypatch seams: Mapping and _rows via facade. NORMAL targeted golden/Owner/wrapper test: {'entry_lane_forward_outcomes':{'by_primary_lane':[{'name':'x'}]}}→one row; missing→[]. No real IO, no state changes; clock via fake if applicable. **STATUS=RESERVE_VERIFIED, NOT ISSUED.**
+
+### RESERVE 6 | `libs/reporting/q8_lane_decision_table.py::_counts_by_name` @ L47 | SOURCE_BLOB `d997eef97b2a2077c1be638948e4355503d7c018` → `libs/reporting/q8_lane_counts_projection.py::_counts_by_name` (404 both)
+```python
+def _counts_by_name(rows: Iterable[Mapping[str, Any]]) -> Dict[str, int]:
+    out: Dict[str, int] = {}
+    for row in rows:
+        name = _text(row.get("name"))
+        if name:
+            out[name] = _int(row.get("count"))
+    return out
+```
+**DESIGN:** Entire BODY to unique Owner, SOURCE thin facade wrapper; monkeypatch seams: _text and _int via facade. NORMAL targeted golden/Owner/wrapper test: [{'name':'A','count':2},{'name':'B','count':'3'}]→{'A':2,'B':3}. No real IO, no state changes; clock via fake if applicable. **STATUS=RESERVE_VERIFIED, NOT ISSUED.**
+
+**COUNTS:** A-07 REMOTE_DONE=8/8; A-08 NEW_READY=8; RESERVE_VERIFIED=6/6. C03 DOC_ONLY; code G1/G2/G3=0, RF_DONE_DELTA=0.
