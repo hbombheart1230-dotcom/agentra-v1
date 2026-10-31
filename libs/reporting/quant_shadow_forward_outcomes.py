@@ -6,9 +6,18 @@ import json
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from pathlib import Path
+import sys
 from typing import Any, Dict, Iterable, Mapping
 
 from libs.reporting.q8_evaluation_contract import FORWARD_MAX_OBSERVATION_DELAY_SEC
+from libs.reporting import quant_forward_float_projection as _o8a1_owner
+from libs.reporting import quant_forward_int_projection as _o8a2_owner
+from libs.reporting import quant_forward_text_projection as _o8a3_owner
+from libs.reporting import quant_forward_epoch_projection as _o8a4_owner
+from libs.reporting import quant_forward_raw_epoch_projection as _o8a5_owner
+from libs.reporting import quant_forward_kst_day_projection as _o8a6_owner
+from libs.reporting import quant_forward_row_day_projection as _o8a7_owner
+from libs.reporting import quant_forward_kst_time_projection as _o8a8_owner
 
 
 CHECKPOINT_MINUTES = (3, 5, 15, 30, 60)
@@ -17,78 +26,35 @@ EOD_READY_TIME = (15, 20)
 
 
 def _to_float(value: Any, default: float | None = None) -> float | None:
-    try:
-        if value in (None, ""):
-            return default
-        return float(value)
-    except Exception:
-        return default
+    return _o8a1_owner._to_float(value, default)
 
 
 def _to_int(value: Any, default: int = 0) -> int:
-    try:
-        if value in (None, ""):
-            return int(default)
-        return int(float(value))
-    except Exception:
-        return int(default)
+    return _o8a2_owner._to_int(value, default)
 
 
 def _text(value: Any) -> str:
-    return str(value or "").strip()
+    return _o8a3_owner._text(value)
 
 
 def _parse_epoch(value: Any) -> int:
-    if value in (None, ""):
-        return 0
-    if isinstance(value, (int, float)):
-        return int(value)
-    text = str(value or "").strip()
-    if not text:
-        return 0
-    try:
-        return int(float(text))
-    except Exception:
-        pass
-    try:
-        return int(datetime.fromisoformat(text.replace("Z", "+00:00")).timestamp())
-    except Exception:
-        return 0
+    return _o8a4_owner._parse_epoch(value, facade=sys.modules[__name__])
 
 
 def _parse_raw_ts_epoch(value: Any) -> int:
-    text = _text(value)
-    if len(text) >= 14 and text[:14].isdigit():
-        try:
-            return int(datetime.strptime(text[:14], "%Y%m%d%H%M%S").replace(tzinfo=KST).timestamp())
-        except Exception:
-            return 0
-    return _parse_epoch(text)
+    return _o8a5_owner._parse_raw_ts_epoch(value, facade=sys.modules[__name__])
 
 
 def _kst_day_from_epoch(value: Any) -> str:
-    epoch = _to_int(value, 0)
-    if epoch <= 0:
-        return ""
-    try:
-        return datetime.fromtimestamp(epoch, tz=KST).strftime("%Y%m%d")
-    except Exception:
-        return ""
+    return _o8a6_owner._kst_day_from_epoch(value, facade=sys.modules[__name__])
 
 
 def _row_day(row: Mapping[str, Any]) -> str:
-    raw_ts = _text(row.get("raw_ts"))
-    if len(raw_ts) >= 8 and raw_ts[:8].isdigit():
-        return raw_ts[:8]
-    return _kst_day_from_epoch(row.get("ts"))
+    return _o8a7_owner._row_day(row, facade=sys.modules[__name__])
 
 
 def _kst_time_tuple(row: Mapping[str, Any]) -> tuple[int, int]:
-    epoch = _parse_raw_ts_epoch(row.get("raw_ts")) or _to_int(row.get("ts"), 0)
-    if epoch <= 0:
-        return (0, 0)
-    dt = datetime.fromtimestamp(epoch, tz=KST)
-    return (dt.hour, dt.minute)
+    return _o8a8_owner._kst_time_tuple(row, facade=sys.modules[__name__])
 
 
 def _normalize_rows(value: Any) -> list[Dict[str, Any]]:
