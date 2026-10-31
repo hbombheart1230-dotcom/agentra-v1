@@ -1,145 +1,17 @@
-# C02 — Claude A | A-20261101-05 | FAST-3 NEW 8 VERIFIED SOURCE BODY MOVEs
+# C02 — Claude A | A-20261101-06 | FAST-3 EIGHT NEW VERIFIED SOURCE BODY MOVEs
 
-**SINGLE ENTRY, NO SELF-SELECTION.** At start pin CANONICAL_HEAD (integration/p1.5), C02 blob, A remote HEAD and ORDER_ID. Read ONLY this C02 and named code/test paths; never D00/RF/queue/C03/CURRENT/HANDOFF. Execute ALL A1–A8; a blocked item must not stop other safe items. An Actor already running a previously pinned order may finish it without retroactive cancellation.
+**SINGLE ENTRY ONLY.** At start pin integration HEAD, C02 blob, A owner HEAD, ORDER_ID. Execute A1–A8 independently in order; continue after an item BLOCKED. Read this C02 plus named source/target/test code ONLY; no D00, RF, queue, C03, CURRENT or HANDOFF. Prior pinned order may finish without retroactive cancellation.
 
-**C03 REMOTE DONE DELTA:** #11 comment 6548002115 reports previous A-20261101-04 A1–A8 actual BODY MOVEs and targeted normal 8/8 exit0, with remote A HEAD `b36a995bda540d439e0b9d0aa713604023e3b34f`, source `quant_tactic_report.py` changed to blob `3cf76659bc4970c9f262405bbf829327203b7474`. Previous C02 blob `c31908af688a76cddbb8177665f024ea5892fc0f` exhausted 8/8 REMOTE_DONE; do NOT repeat those 8 or same-SHA tests. This is a new eight-item order using `quant_tactic_evaluation.py` original blob `f11bd1e71dedb5494242fa88f3996885d1a3cef2`, identical on A and integration. All 8 new Owner TARGET paths and new test are 404 on both.
+**REMOTE_DONE:** old C02 blob `68deb4acbc2efbda94a70e68738498fc89afd92f` A-20261101-05 8/8 already remotely implemented at A HEAD `9bb820c710c12ada9fdb06deb680252fbcc54b98` (#11 6548637687), normal unittest 8/8 exit0; integration accepted exact source at `faded947e62e7fc4dd153fbe94d3a72d92b27c02` (#36 6548799065). Do not reimplement/retest same SHA. New eight source bodies below were inspected on current A/integration and are still executable (not delegated).
 
-**OWNERSHIP & ISOLATION:** RF-035 CLAUDE_A, reporting-only evaluation transformations. Edit ONLY `libs/reporting/quant_tactic_evaluation.py`, eight NEW Owner files below, and NEW `tests/test_p15_rf035_20261101_05h_quant_eval_owners.py` on A `work/p15-a-reporter-pure-20261021`. Do not touch B branch, D00/RF/queue/STATUS/C04/C05, other code/tests, frozen oracle, CI, operational state, real account, Broker/Guard/Step5C/UEF/RunLab or live trade/promotion. This is evaluation *data*, not an authority to change live readiness or execute promotion. No force push.
+**OWNER/SAFETY:** RF-035 CLAUDE_A, exclusive reporting/Q8 read-model scope. Only edit three named SOURCE files below, eight new `libs/reporting/*_projection.py` Owners and NEW `tests/test_p15_rf035_20261101_06h_owners.py` on A branch. No D00/RF/STATUS/queue/other C-docs, B branch, frozen CI, live/operational state, Broker/Guard/Step5C/UEF/RunLab, real network/order or live promotion. All output is evaluation/report data, NOT permission to execute trade or promotion. Never force push.
 
-**MOVE MECHANISM:** Capture original golden function before edit, move its complete executable calculation into unique new Owner (not duplicate), leave same SOURCE signature/annotations with only the listed `return` delegation. SOURCE currently lacks `import sys`; add `import sys` for `sys.modules[__name__]` facade calls. Use unique module aliases or local imports, avoid circular imports. Owner must NOT import SOURCE; when helper/global dependencies exist, Owner adds keyword-only `facade` and reads `facade.<name>` at invocation, preserving SOURCE monkeypatch and mutable constants. Preserve exact values, key order, copy/identity, exceptions and output.
+**IMPLEMENTATION:** For each item preserve exact SOURCE signature/annotations and replace executable body with ONLY thin delegation. New Owner has original parameters plus keyword-only `facade` for every helper/global listed; resolve each through `facade.<name>` at call time to retain monkeypatch seams, not import SOURCE from Owner. Preserve original output order, exceptions, alias/copy, defaults, and direct caller semantics. Use unique Owner aliases; `q8_evaluation_contract.py` needs `import sys` for facade. No duplicate computation in SOURCE. When moving nested `score` or comprehension, move whole body, not a stub.
 
-**G2 & PUSH:** Write NEW eight-case `tests/test_p15_rf035_20261101_05h_quant_eval_owners.py` with `test_a1_text` through `test_a8_field_gap_rows`; golden-original vs wrapper vs direct Owner, positive/negative/exception, monkeypatch seams and AST SOURCE thin-wrapper/no duplicated BODY. Run `python -m py_compile libs/reporting/quant_tactic_evaluation.py` and each new Owner, then `python -m unittest tests/test_p15_rf035_20261101_05h_quant_eval_owners.py -v` normal exit0, plus directly affected existing `tests/test_quant_tactic_evaluation.py` if present. Only in-memory fake rows, no network, subprocess, runtime/main, real filesystem or broker. Commit ONLY SOURCE/new Owner/new test on A branch, normal push, re-fetch A remote HEAD and all SOURCE/Owner/test blobs. If push fails, mark PUSH_BLOCKED, continue safe items; local-only != REMOTE_DONE. Report #11 `ORDER_ID | CANONICAL_HEAD | ORDER_BLOB | A_REMOTE_BEFORE→AFTER | per-item MOVE/TEST/PUSH | NORMAL_EXIT | SOURCE/TARGET/TEST_BLOBS | FIRST_BLOCKER | NEXT | measured START/END`. -O/full peer/hosted CI not mandatory. C04 G3 and C05 RF DONE remain separate.
+**TARGETED G2:** Before editing capture golden from pinned original blobs. Create eight distinct unittest methods `test_a1_*`–`test_a8_*` in NEW file. Compare golden-original, SOURCE wrapper, direct Owner on positive/negative/exception, call-time facade monkeypatch; assert AST SOURCE no old calculation BODY. Patch runtime builders in A7 to in-memory fakes; never call real trade/effect. Command `python -m unittest tests/test_p15_rf035_20261101_06h_owners.py -v` normal exit0; optionally related scoped tests, not full/-O/full peer compulsory. Commit ONLY allowed code/test on A branch, normal push, re-fetch owner branch HEAD and SOURCE/TARGET/test blobs; report exact per-item status/normal exit/START_KST/END_KST measured to #11. Git auth failure=PUSH_BLOCKED, not code failure; continue remaining safe items. On SOURCE divergence or safety concern mark item BLOCKED with exact SHA and continue other verified items. No self-selection.
 
-## A1 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::_text` @ L19 | CURRENT_BLOB `f11bd1e71dedb5494242fa88f3996885d1a3cef2`
-**NEW TARGET (404 actor/integration):** `libs/reporting/quant_tactic_eval_text_projection.py::_text`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY:**
-```python
-def _text(value: Any) -> str:
-    text = str(value or "").strip()
-    return "" if text.lower() in {"", "-", "none", "null", "unknown", "not_captured"} else text
-```
-**SOURCE thin wrapper:** keep exact signature, import `libs.reporting.quant_tactic_eval_text_projection` as `_a1_owner`, replace old body with sole `return _a1_owner._text(value)`. **CALLER/MONKEYPATCH:** pure string normalization; no facade; retain negative/error and copy semantics.
-**NORMAL TARGETED `test_a1_text`:** ' X '→'X'; ' unknown '→''; None→''. Assert original-golden == wrapper == direct Owner and AST SOURCE body removed. **BLOCKED→NEXT:** log exact error, continue A2.
-
-## A2 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::_int` @ L24 | CURRENT_BLOB `f11bd1e71dedb5494242fa88f3996885d1a3cef2`
-**NEW TARGET (404 actor/integration):** `libs/reporting/quant_tactic_eval_int_projection.py::_int`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY:**
-```python
-def _int(value: Any, default: int = 0) -> int:
-    try:
-        return int(float(value))
-    except Exception:
-        return int(default)
-```
-**SOURCE thin wrapper:** keep exact signature, import `libs.reporting.quant_tactic_eval_int_projection` as `_a2_owner`, replace old body with sole `return _a2_owner._int(value, default)`. **CALLER/MONKEYPATCH:** pure integer fallback; retain negative/error and copy semantics.
-**NORMAL TARGETED `test_a2_int`:** '3.9'→3; ('bad',4)→4; invalid default exception parity. Assert original-golden == wrapper == direct Owner and AST SOURCE body removed. **BLOCKED→NEXT:** log exact error, continue A3.
-
-## A3 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::_closed_or_realized` @ L31 | CURRENT_BLOB `f11bd1e71dedb5494242fa88f3996885d1a3cef2`
-**NEW TARGET (404 actor/integration):** `libs/reporting/quant_tactic_eval_closed_projection.py::_closed_or_realized`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY:**
-```python
-def _closed_or_realized(row: Mapping[str, Any]) -> bool:
-    status = str(row.get("status") or row.get("last_status") or "").strip().lower()
-    action = str(row.get("last_action") or row.get("action") or "").strip().upper()
-    origin = str(row.get("trade_origin") or "").strip().lower()
-    partial = status == "partial" or origin == "recovered_partial"
-    return bool(
-        row.get("is_closed_trade")
-        or row.get("is_realized_nonclosed_exit")
-        or (status == "closed" and not partial)
-        or (action == "SELL" and partial)
-    )
-```
-**SOURCE thin wrapper:** keep exact signature, import `libs.reporting.quant_tactic_eval_closed_projection` as `_a3_owner`, replace old body with sole `return _a3_owner._closed_or_realized(row)`. **CALLER/MONKEYPATCH:** report-only status classifier; no broker access; retain negative/error and copy semantics.
-**NORMAL TARGETED `test_a3_closed_or_realized`:** {'status':'closed'}→True; {'status':'partial','action':'SELL'}→True; {}→False. Assert original-golden == wrapper == direct Owner and AST SOURCE body removed. **BLOCKED→NEXT:** log exact error, continue A4.
-
-## A4 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::_evaluation_rows` @ L44 | CURRENT_BLOB `f11bd1e71dedb5494242fa88f3996885d1a3cef2`
-**NEW TARGET (404 actor/integration):** `libs/reporting/quant_tactic_eval_rows_projection.py::_evaluation_rows`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY:**
-```python
-def _evaluation_rows(rows: Iterable[Mapping[str, Any]]) -> List[Dict[str, Any]]:
-    return [dict(row) for row in rows if isinstance(row, Mapping) and _closed_or_realized(row)]
-```
-**SOURCE thin wrapper:** keep exact signature, import `libs.reporting.quant_tactic_eval_rows_projection` as `_a4_owner`, replace old body with sole `return _a4_owner._evaluation_rows(rows,facade=sys.modules[__name__])`. **CALLER/MONKEYPATCH:** facade.Mapping and facade._closed_or_realized at call time; retain negative/error and copy semantics.
-**NORMAL TARGETED `test_a4_evaluation_rows`:** [{'status':'closed','trade_id':'T'},{'status':'open'}]→[{'status':'closed','trade_id':'T'}]. Assert original-golden == wrapper == direct Owner and AST SOURCE body removed. **BLOCKED→NEXT:** log exact error, continue A5.
-
-## A5 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::_invalid_sample_reason` @ L48 | CURRENT_BLOB `f11bd1e71dedb5494242fa88f3996885d1a3cef2`
-**NEW TARGET (404 actor/integration):** `libs/reporting/quant_tactic_eval_invalid_reason_projection.py::_invalid_sample_reason`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY:**
-```python
-def _invalid_sample_reason(row: Mapping[str, Any]) -> str:
-    status = _text(row.get("broker_alignment_status")).lower()
-    if status and status not in {"ok"}:
-        return f"broker_alignment_{status}"
-    if _int(row.get("broker_alignment_missing_in_local_total")) > 0:
-        return "broker_missing_in_local"
-    if _int(row.get("broker_alignment_missing_in_broker_total")) > 0:
-        return "broker_missing_in_broker"
-    snapshot_status = _text(row.get("broker_account_snapshot_status")).lower()
-    if snapshot_status and snapshot_status not in {"ok"}:
-        return f"account_snapshot_{snapshot_status}"
-    if _int(row.get("broker_alignment_account_snapshot_error_count")) > 0:
-        return "account_snapshot_partial_errors"
-    return ""
-```
-**SOURCE thin wrapper:** keep exact signature, import `libs.reporting.quant_tactic_eval_invalid_reason_projection` as `_a5_owner`, replace old body with sole `return _a5_owner._invalid_sample_reason(row,facade=sys.modules[__name__])`. **CALLER/MONKEYPATCH:** facade._text/_int at call time; observation only, never broker; retain negative/error and copy semantics.
-**NORMAL TARGETED `test_a5_invalid_sample_reason`:** {'broker_alignment_status':'bad'}→'broker_alignment_bad'; {'broker_alignment_missing_in_local_total':1}→'broker_missing_in_local'; {}→''. Assert original-golden == wrapper == direct Owner and AST SOURCE body removed. **BLOCKED→NEXT:** log exact error, continue A6.
-
-## A6 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::_valid_evaluation_rows` @ L64 | CURRENT_BLOB `f11bd1e71dedb5494242fa88f3996885d1a3cef2`
-**NEW TARGET (404 actor/integration):** `libs/reporting/quant_tactic_eval_valid_rows_projection.py::_valid_evaluation_rows`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY:**
-```python
-def _valid_evaluation_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    return [row for row in rows if not _invalid_sample_reason(row)]
-```
-**SOURCE thin wrapper:** keep exact signature, import `libs.reporting.quant_tactic_eval_valid_rows_projection` as `_a6_owner`, replace old body with sole `return _a6_owner._valid_evaluation_rows(rows,facade=sys.modules[__name__])`. **CALLER/MONKEYPATCH:** facade._invalid_sample_reason at call time; retain negative/error and copy semantics.
-**NORMAL TARGETED `test_a6_valid_evaluation_rows`:** [{'broker_alignment_status':'bad'},{}]→[{}]. Assert original-golden == wrapper == direct Owner and AST SOURCE body removed. **BLOCKED→NEXT:** log exact error, continue A7.
-
-## A7 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::_invalid_sample_examples` @ L68 | CURRENT_BLOB `f11bd1e71dedb5494242fa88f3996885d1a3cef2`
-**NEW TARGET (404 actor/integration):** `libs/reporting/quant_tactic_eval_invalid_examples_projection.py::_invalid_sample_examples`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY:**
-```python
-def _invalid_sample_examples(rows: List[Dict[str, Any]], *, limit: int = 5) -> List[Dict[str, Any]]:
-    out: List[Dict[str, Any]] = []
-    for row in rows:
-        reason = _invalid_sample_reason(row)
-        if not reason:
-            continue
-        out.append(
-            {
-                "trade_id": _text(row.get("trade_id")),
-                "symbol": _text(row.get("symbol")),
-                "reason": reason,
-            }
-        )
-        if len(out) >= limit:
-            break
-    return out
-```
-**SOURCE thin wrapper:** keep exact signature, import `libs.reporting.quant_tactic_eval_invalid_examples_projection` as `_a7_owner`, replace old body with sole `return _a7_owner._invalid_sample_examples(rows,limit=limit,facade=sys.modules[__name__])`. **CALLER/MONKEYPATCH:** facade._invalid_sample_reason/_text at call time; preserve limit ordering; retain negative/error and copy semantics.
-**NORMAL TARGETED `test_a7_invalid_sample_examples`:** [{'trade_id':'T','symbol':'S','broker_alignment_status':'bad'}]→[{'trade_id':'T','symbol':'S','reason':'broker_alignment_bad'}]; limit=0 parity. Assert original-golden == wrapper == direct Owner and AST SOURCE body removed. **BLOCKED→NEXT:** log exact error, continue A8.
-
-## A8 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::_field_gap_rows` @ L86 | CURRENT_BLOB `f11bd1e71dedb5494242fa88f3996885d1a3cef2`
-**NEW TARGET (404 actor/integration):** `libs/reporting/quant_tactic_eval_field_gaps_projection.py::_field_gap_rows`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY:**
-```python
-def _field_gap_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    count = len(rows)
-    out: List[Dict[str, Any]] = []
-    for field in _REQUIRED_FIELDS:
-        captured = sum(1 for row in rows if _text(row.get(field)))
-        coverage = float(captured) / float(count) if count else 0.0
-        out.append(
-            {
-                "field": field,
-                "captured_count": captured,
-                "missing_count": max(0, count - captured),
-                "coverage": coverage,
-                "coverage_ok": coverage >= _FIELD_COVERAGE_FLOOR,
-            }
-        )
-    return out
-```
-**SOURCE thin wrapper:** keep exact signature, import `libs.reporting.quant_tactic_eval_field_gaps_projection` as `_a8_owner`, replace old body with sole `return _a8_owner._field_gap_rows(rows,facade=sys.modules[__name__])`. **CALLER/MONKEYPATCH:** facade._REQUIRED_FIELDS/_text/_FIELD_COVERAGE_FLOOR at call time; retain negative/error and copy semantics.
-**NORMAL TARGETED `test_a8_field_gap_rows`:** [{'quant_tactic_id':'X'}]→five rows; quant_tactic_id coverage=1.0, others=0.0; []→coverage=0.0. Assert original-golden == wrapper == direct Owner and AST SOURCE body removed. **BLOCKED→NEXT:** log exact error, continue A1–A8 remaining / push.
-
-## FUTURE RESERVE — 6/6 VERIFIED DESIGN ONLY, NOT EXECUTABLE
-Six distinct original SOURCE bodies checked on actor and integration at matching blobs; six unique TARGETs absent in BOTH. RF-035 owns these reporting paths. These are evaluation/Markdown projections, never live trading, Broker, Guard, Step5C, UEF or RunLab effects. Before future issue C03 must recheck remote source/target/caller and safety; A must NOT implement these now.
-
-### R1 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::_mismatch_examples` @ L104 | BLOB `f11bd1e71dedb5494242fa88f3996885d1a3cef2`
-**TARGET ABSENT actor/integration:** `libs/reporting/quant_tactic_eval_mismatch_examples_projection.py::_mismatch_examples`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+## A1 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::_mismatch_examples` @ L60 | CURRENT_BLOB `e60c4c541b23e8073eef2f23224c42aa4c6867c3`
+**NEW TARGET (404 A/integration):** `libs/reporting/quant_tactic_eval_mismatch_examples_projection.py::_mismatch_examples`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
 ```python
 def _mismatch_examples(rows: List[Dict[str, Any]], *, limit: int = 4) -> List[Dict[str, Any]]:
     out: List[Dict[str, Any]] = []
@@ -159,10 +31,11 @@ def _mismatch_examples(rows: List[Dict[str, Any]], *, limit: int = 4) -> List[Di
             break
     return out
 ```
-**Future normal fake fixture:** row with quant_tactic_mismatch_count=2,trade_id='T'→one example mismatch_count=2; zero→[]. **Safety/seam:** facade._int/_text; report-only; keep original SOURCE thin wrapper, use-time facade, no duplicated calculation and no effects.
+**SOURCE thin wrapper:** retain original signature; import `libs.reporting.quant_tactic_eval_mismatch_examples_projection` as `_a1_owner`, sole delegation `return _a1_owner._mismatch_examples(rows, limit=limit, facade=sys.modules[__name__])`. **CALL-TIME GLOBALS/PATCH:** _int,_text; in Owner replace these references with `facade.<name>` (including runtime builders; no live effect).
+**NORMAL TARGETED `test_a1_mismatch_examples`:** [{'trade_id':'T','symbol':'S','quant_tactic_id':'Q','quant_tactic_mismatch_count':2}] -> one example with mismatch_count=2; count 0 -> []; limit=0 original parity. Golden==wrapper==direct Owner, AST original calculation removed. **BLOCKED→NEXT:** log exact error, continue A2.
 
-### R2 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::build_quant_tactic_evaluation` @ L123 | BLOB `f11bd1e71dedb5494242fa88f3996885d1a3cef2`
-**TARGET ABSENT actor/integration:** `libs/reporting/quant_tactic_eval_builder_projection.py::build_quant_tactic_evaluation`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+## A2 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::build_quant_tactic_evaluation` @ L79 | CURRENT_BLOB `e60c4c541b23e8073eef2f23224c42aa4c6867c3`
+**NEW TARGET (404 A/integration):** `libs/reporting/quant_tactic_eval_builder_projection.py::build_quant_tactic_evaluation`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
 ```python
 def build_quant_tactic_evaluation(rows: Iterable[Mapping[str, Any]]) -> Dict[str, Any]:
     all_evaluation_rows = _evaluation_rows(rows)
@@ -214,10 +87,11 @@ def build_quant_tactic_evaluation(rows: Iterable[Mapping[str, Any]]) -> Dict[str
         "tactic_id_source_counts": dict(source_counts),
     }
 ```
-**Future normal fake fixture:** []→status='hold_sample_insufficient',sample_count=0; 1 invalid closed row→status='hold_invalid_truth_samples'. **Safety/seam:** facade.Counter, all helper functions/constants at call time; evaluation data only, no live promotion; keep original SOURCE thin wrapper, use-time facade, no duplicated calculation and no effects.
+**SOURCE thin wrapper:** retain original signature; import `libs.reporting.quant_tactic_eval_builder_projection` as `_a2_owner`, sole delegation `return _a2_owner.build_quant_tactic_evaluation(rows, facade=sys.modules[__name__])`. **CALL-TIME GLOBALS/PATCH:** _evaluation_rows,_invalid_sample_examples,_valid_evaluation_rows,_field_gap_rows,_int,_text,_mismatch_examples,Counter,_MIN_REVIEW_SAMPLE,_TARGET_PROMOTION_SAMPLE,_REQUIRED_FIELDS,_FIELD_COVERAGE_FLOOR; in Owner replace these references with `facade.<name>` (including runtime builders; no live effect).
+**NORMAL TARGETED `test_a2_build_quant_tactic_evaluation`:** [] -> status='hold_sample_insufficient', closed_or_realized_sample_count=0; invalid closed row -> hold_invalid_truth_samples; no promotion effect. Golden==wrapper==direct Owner, AST original calculation removed. **BLOCKED→NEXT:** log exact error, continue A3.
 
-### R3 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::render_quant_tactic_evaluation_lines` @ L174 | BLOB `f11bd1e71dedb5494242fa88f3996885d1a3cef2`
-**TARGET ABSENT actor/integration:** `libs/reporting/quant_tactic_eval_render_projection.py::render_quant_tactic_evaluation_lines`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+## A3 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_evaluation.py::render_quant_tactic_evaluation_lines` @ L130 | CURRENT_BLOB `e60c4c541b23e8073eef2f23224c42aa4c6867c3`
+**NEW TARGET (404 A/integration):** `libs/reporting/quant_tactic_eval_render_projection.py::render_quant_tactic_evaluation_lines`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
 ```python
 def render_quant_tactic_evaluation_lines(payload: Mapping[str, Any] | None) -> List[str]:
     evaluation = dict(payload or {})
@@ -264,10 +138,11 @@ def render_quant_tactic_evaluation_lines(payload: Mapping[str, Any] | None) -> L
         lines.append(f"- Quant Q8 tactic mismatch examples: {', '.join(rendered)}")
     return lines
 ```
-**Future normal fake fixture:** {}→[]; {'status':'hold_sample_insufficient'}→nonempty Quant Q8 readiness lines. **Safety/seam:** facade._text/_int/_TARGET_PROMOTION_SAMPLE/Mapping; pure Markdown rendering; keep original SOURCE thin wrapper, use-time facade, no duplicated calculation and no effects.
+**SOURCE thin wrapper:** retain original signature; import `libs.reporting.quant_tactic_eval_render_projection` as `_a3_owner`, sole delegation `return _a3_owner.render_quant_tactic_evaluation_lines(payload, facade=sys.modules[__name__])`. **CALL-TIME GLOBALS/PATCH:** Mapping,_text,_int,_TARGET_PROMOTION_SAMPLE; in Owner replace these references with `facade.<name>` (including runtime builders; no live effect).
+**NORMAL TARGETED `test_a3_render_quant_tactic_evaluation_lines`:** {} -> []; {'status':'hold_sample_insufficient'} -> nonempty Quant Q8 readiness line. Golden==wrapper==direct Owner, AST original calculation removed. **BLOCKED→NEXT:** log exact error, continue A4.
 
-### R4 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_report.py::_selected_candidate_row` @ L84 | BLOB `3cf76659bc4970c9f262405bbf829327203b7474`
-**TARGET ABSENT actor/integration:** `libs/reporting/quant_tactic_selected_candidate_projection.py::_selected_candidate_row`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+## A4 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_report.py::_selected_candidate_row` @ L84 | CURRENT_BLOB `3cf76659bc4970c9f262405bbf829327203b7474`
+**NEW TARGET (404 A/integration):** `libs/reporting/quant_tactic_selected_candidate_projection.py::_selected_candidate_row`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
 ```python
 def _selected_candidate_row(report: Mapping[str, Any], symbol: str) -> Dict[str, Any]:
     target = str(symbol or "").strip()
@@ -303,10 +178,11 @@ def _selected_candidate_row(report: Mapping[str, Any], symbol: str) -> Dict[str,
     candidates.sort(key=score, reverse=True)
     return candidates[0]
 ```
-**Future normal fake fixture:** report with nested matching symbol + quant_factor_snapshot→selected row; no symbol→{}. **Safety/seam:** facade._nested_dicts/_candidate_symbol/_mapping, preserve nested score sort, no trading; keep original SOURCE thin wrapper, use-time facade, no duplicated calculation and no effects.
+**SOURCE thin wrapper:** retain original signature; import `libs.reporting.quant_tactic_selected_candidate_projection` as `_a4_owner`, sole delegation `return _a4_owner._selected_candidate_row(report, symbol, facade=sys.modules[__name__])`. **CALL-TIME GLOBALS/PATCH:** _nested_dicts,_candidate_symbol,_mapping; in Owner replace these references with `facade.<name>` (including runtime builders; no live effect).
+**NORMAL TARGETED `test_a4_selected_candidate_row`:** nested matching symbol with quant_factor_snapshot -> selected candidate dict; unknown symbol -> {}. Golden==wrapper==direct Owner, AST original calculation removed. **BLOCKED→NEXT:** log exact error, continue A5.
 
-### R5 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_report.py::_tactic_sources` @ L127 | BLOB `3cf76659bc4970c9f262405bbf829327203b7474`
-**TARGET ABSENT actor/integration:** `libs/reporting/quant_tactic_sources_projection.py::_tactic_sources`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+## A5 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_report.py::_tactic_sources` @ L127 | CURRENT_BLOB `3cf76659bc4970c9f262405bbf829327203b7474`
+**NEW TARGET (404 A/integration):** `libs/reporting/quant_tactic_sources_projection.py::_tactic_sources`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
 ```python
 def _tactic_sources(
     *,
@@ -327,10 +203,11 @@ def _tactic_sources(
     )
     return [(source, tactic_id) for source, value in rows if (tactic_id := _tactic_value(value))]
 ```
-**Future normal fake fixture:** entry_decision={'tactic_id':'A'}, others={}→[('entry_quant_decision','A')]. **Safety/seam:** facade._mapping/_tactic_value; pure observation; keep original SOURCE thin wrapper, use-time facade, no duplicated calculation and no effects.
+**SOURCE thin wrapper:** retain original signature; import `libs.reporting.quant_tactic_sources_projection` as `_a5_owner`, sole delegation `return _a5_owner._tactic_sources(entry_decision=entry_decision, factor_snapshot=factor_snapshot, selected_row=selected_row, tactic_suitability=tactic_suitability, exit_decision=exit_decision, facade=sys.modules[__name__])`. **CALL-TIME GLOBALS/PATCH:** _mapping,_tactic_value; in Owner replace these references with `facade.<name>` (including runtime builders; no live effect).
+**NORMAL TARGETED `test_a5_tactic_sources`:** entry_decision={'tactic_id':'A'}, others={} -> [('entry_quant_decision','A')]. Golden==wrapper==direct Owner, AST original calculation removed. **BLOCKED→NEXT:** log exact error, continue A6.
 
-### R6 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_report.py::render_quant_tactic_report_lines` @ L222 | BLOB `3cf76659bc4970c9f262405bbf829327203b7474`
-**TARGET ABSENT actor/integration:** `libs/reporting/quant_tactic_report_lines_projection.py::render_quant_tactic_report_lines`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+## A6 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_report.py::render_quant_tactic_report_lines` @ L222 | CURRENT_BLOB `3cf76659bc4970c9f262405bbf829327203b7474`
+**NEW TARGET (404 A/integration):** `libs/reporting/quant_tactic_report_lines_projection.py::render_quant_tactic_report_lines`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
 ```python
 def render_quant_tactic_report_lines(report: Mapping[str, Any] | None, *, compact: bool = False) -> List[str]:
     surface = quant_tactic_surface(report)
@@ -395,6 +272,176 @@ def render_quant_tactic_report_lines(report: Mapping[str, Any] | None, *, compac
             lines.append("- 핵심 factor snapshot: " + ", ".join(factor_bits[:6]))
     return lines
 ```
-**Future normal fake fixture:** {}→[]; fake report with patched facade.quant_tactic_surface returning {'tactic_id':'T'}→nonempty '- 전술 ID:' line. **Safety/seam:** facade.quant_tactic_surface/_mapping/_fmt/_pct/_reason_text/_decision_label; pure render, no runtime decision; keep original SOURCE thin wrapper, use-time facade, no duplicated calculation and no effects.
+**SOURCE thin wrapper:** retain original signature; import `libs.reporting.quant_tactic_report_lines_projection` as `_a6_owner`, sole delegation `return _a6_owner.render_quant_tactic_report_lines(report, compact=compact, facade=sys.modules[__name__])`. **CALL-TIME GLOBALS/PATCH:** quant_tactic_surface,_mapping,_fmt,_pct,_reason_text,_decision_label; in Owner replace these references with `facade.<name>` (including runtime builders; no live effect).
+**NORMAL TARGETED `test_a6_render_quant_tactic_report_lines`:** {} -> []; patched quant_tactic_surface -> {'tactic_id':'T'} yields '- 전술 ID:' line; compact=True yields '* 전술 진단:'. Golden==wrapper==direct Owner, AST original calculation removed. **BLOCKED→NEXT:** log exact error, continue A7.
 
-**COUNTS:** previous A-04 REMOTE_DONE=8/8; NEW_READY=8; RESERVE_VERIFIED=6. C03 order publication is not code G1/G2/G3 or RF DONE. If source/target changes before execution, precisely BLOCKED and continue safe items; no self-selection.
+## A7 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_tactic_report.py::quant_tactic_surface` @ L155 | CURRENT_BLOB `3cf76659bc4970c9f262405bbf829327203b7474`
+**NEW TARGET (404 A/integration):** `libs/reporting/quant_tactic_surface_projection.py::quant_tactic_surface`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
+```python
+def quant_tactic_surface(report: Mapping[str, Any] | None) -> Dict[str, Any]:
+    root = _mapping(report)
+    monitor = _monitor(root)
+    visibility = _entry_visibility(root)
+    symbol = _symbol(root)
+    selection = _mapping(root.get("why_this_symbol_was_chosen"))
+    scanner_trace = _mapping(selection.get("scanner_selection_trace"))
+    selected_row = _selected_candidate_row(root, symbol)
+    entry_decision = _mapping(
+        monitor.get("entry_quant_decision")
+        or root.get("entry_quant_decision")
+        or _first_nested_mapping(root, "entry_quant_decision")
+    )
+    exit_decision = _mapping(monitor.get("exit_quant_decision") or root.get("exit_quant_decision"))
+    factor_snapshot = _mapping(
+        monitor.get("quant_factor_snapshot")
+        or root.get("quant_factor_snapshot")
+        or selected_row.get("quant_factor_snapshot")
+    )
+    factors = _mapping(factor_snapshot.get("factors"))
+    tactic_suitability = _mapping(
+        selection.get("tactic_suitability")
+        or scanner_trace.get("tactic_suitability")
+        or selected_row.get("tactic_suitability")
+        or entry_decision.get("tactic_suitability")
+    )
+    tactic_sources = _tactic_sources(
+        entry_decision=entry_decision,
+        factor_snapshot=factor_snapshot,
+        selected_row=selected_row,
+        tactic_suitability=tactic_suitability,
+        exit_decision=exit_decision,
+    )
+    tactic_id_source, tactic_id = tactic_sources[0] if tactic_sources else ("", "")
+    playbook = str(entry_decision.get("playbook") or exit_decision.get("playbook") or factor_snapshot.get("playbook") or _playbook(root)).strip()
+    if not tactic_suitability and selected_row:
+        tactic_suitability = score_candidate_tactic_suitability(selected_row, tactic_id=tactic_id, playbook=playbook)
+    if not entry_decision:
+        entry_info = _entry_info_from_visibility(visibility, monitor)
+        if entry_info or selected_row or factor_snapshot:
+            entry_decision = build_entry_quant_decision(
+                entry_info,
+                selected=selected_row,
+                factor_snapshot=factor_snapshot,
+                state=root,
+                tactic_id=tactic_id,
+                playbook=playbook,
+            )
+    scanner_chart_fit = _mapping(selection.get("scanner_chart_fit")) or _mapping(scanner_trace.get("scanner_chart_fit")) or _scanner_chart_fit_from_row(selected_row)
+    if not any((entry_decision, exit_decision, factor_snapshot, tactic_suitability, tactic_id, scanner_chart_fit)):
+        return {}
+    return {
+        "schema_version": "quant_tactic_report_surface.v1",
+        "tactic_id": tactic_id,
+        "tactic_id_source": tactic_id_source,
+        "tactic_id_mismatches": _tactic_mismatches(tactic_sources, tactic_id),
+        "exit_tactic_drifts": _exit_tactic_drifts(tactic_sources, tactic_id),
+        "playbook": playbook,
+        "entry_quant_decision": entry_decision,
+        "exit_quant_decision": exit_decision,
+        "factor_snapshot": factor_snapshot,
+        "factors": factors,
+        "tactic_suitability": tactic_suitability,
+        "scanner_chart_fit": scanner_chart_fit,
+    }
+```
+**SOURCE thin wrapper:** retain original signature; import `libs.reporting.quant_tactic_surface_projection` as `_a7_owner`, sole delegation `return _a7_owner.quant_tactic_surface(report, facade=sys.modules[__name__])`. **CALL-TIME GLOBALS/PATCH:** _mapping,_monitor,_entry_visibility,_symbol,_selected_candidate_row,_first_nested_mapping,_tactic_sources,_playbook,_entry_info_from_visibility,_scanner_chart_fit_from_row,_tactic_mismatches,_exit_tactic_drifts,score_candidate_tactic_suitability,build_entry_quant_decision; in Owner replace these references with `facade.<name>` (including runtime builders; no live effect).
+**NORMAL TARGETED `test_a7_quant_tactic_surface`:** {} -> {}; fake report with entry_quant_decision={'tactic_id':'T','playbook':'P'} and fake no-effect runtime helpers -> surface.tactic_id='T', schema_version='quant_tactic_report_surface.v1'. Golden==wrapper==direct Owner, AST original calculation removed. **BLOCKED→NEXT:** log exact error, continue A8.
+
+## A8 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_evaluation_contract.py::candidate_day` @ L32 | CURRENT_BLOB `f6b08711f965df8e8f27d42f90b4213db82e27a8`
+**NEW TARGET (404 A/integration):** `libs/reporting/q8_candidate_day_projection.py::candidate_day`. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
+```python
+def candidate_day(row: Mapping[str, Any]) -> str:
+    base = forward_base(row)
+    raw_ts = text_value(base.get("baseline_raw_ts"))
+    if len(raw_ts) >= 8 and raw_ts[:8].isdigit():
+        return raw_ts[:8]
+    generated = text_value(row.get("_payload_generated_at") or row.get("generated_at"))
+    return generated[:10].replace("-", "") if len(generated) >= 10 else ""
+```
+**SOURCE thin wrapper:** retain original signature; import `libs.reporting.q8_candidate_day_projection` as `_a8_owner`, sole delegation `return _a8_owner.candidate_day(row, facade=sys.modules[__name__])`. **CALL-TIME GLOBALS/PATCH:** forward_base,text_value; in Owner replace these references with `facade.<name>` (including runtime builders; no live effect).
+**NORMAL TARGETED `test_a8_candidate_day`:** {'shadow_forward_base':{'baseline_raw_ts':'20260217T010000'}} -> '20260217'; {'generated_at':'2026-11-01T00:00:00Z'} -> '20261101'. Golden==wrapper==direct Owner, AST original calculation removed. **BLOCKED→NEXT:** log exact error, continue A1–A8 remaining / push.
+
+## FUTURE RESERVE — 6/6 VERIFIED DESIGN ONLY; NOT EXECUTABLE THIS ORDER
+Each distinct SOURCE BODY and blob below verified on A/integration; six unique TARGET paths absent both. RF-035 Owner exclusive. Future C03 must recheck HEAD, caller/patch seam, safety and issue new order. A must NOT execute reserves now.
+
+### R1 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_evaluation_contract.py::text_value` @ L22 | BLOB `f6b08711f965df8e8f27d42f90b4213db82e27a8`
+**TARGET ABSENT A/integration:** `libs/reporting/q8_text_value_projection.py::text_value`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+```python
+def text_value(value: Any) -> str:
+    text = str(value or "").strip()
+    return "" if text.lower() in {"", "-", "none", "null", "unknown", "not_captured"} else text
+```
+**Future normal fake fixture:** ' none ' -> ''; 'A' -> 'A'. **Seam:** none; preserve SOURCE wrapper and use-time facade, report/Q8 data-only, no trading or live promotion.
+
+### R2 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_evaluation_contract.py::forward_base` @ L27 | BLOB `f6b08711f965df8e8f27d42f90b4213db82e27a8`
+**TARGET ABSENT A/integration:** `libs/reporting/q8_forward_base_projection.py::forward_base`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+```python
+def forward_base(row: Mapping[str, Any]) -> Dict[str, Any]:
+    base = row.get("shadow_forward_base")
+    return dict(base) if isinstance(base, Mapping) else {}
+```
+**Future normal fake fixture:** {'shadow_forward_base':{'x':1}} -> {'x':1} copied, not aliased. **Seam:** Mapping; preserve SOURCE wrapper and use-time facade, report/Q8 data-only, no trading or live promotion.
+
+### R3 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_evaluation_contract.py::canonical_dedupe_key` @ L48 | BLOB `f6b08711f965df8e8f27d42f90b4213db82e27a8`
+**TARGET ABSENT A/integration:** `libs/reporting/q8_dedupe_key_projection.py::canonical_dedupe_key`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+```python
+def canonical_dedupe_key(row: Mapping[str, Any]) -> tuple[str, str, int, str]:
+    base = forward_base(row)
+    try:
+        baseline_epoch = int(float(base.get("baseline_epoch") or 0))
+    except Exception:
+        baseline_epoch = 0
+    return (
+        candidate_day(row),
+        text_value(row.get("symbol")).upper(),
+        baseline_epoch,
+        entry_lane_subtype(row),
+    )
+```
+**Future normal fake fixture:** fixed baseline_epoch and fake entry_lane_subtype -> (day,symbol,epoch,lane). **Seam:** forward_base,candidate_day,text_value,entry_lane_subtype; preserve SOURCE wrapper and use-time facade, report/Q8 data-only, no trading or live promotion.
+
+### R4 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_evaluation_contract.py::dedupe_q8_candidates` @ L62 | BLOB `f6b08711f965df8e8f27d42f90b4213db82e27a8`
+**TARGET ABSENT A/integration:** `libs/reporting/q8_dedupe_candidates_projection.py::dedupe_q8_candidates`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+```python
+def dedupe_q8_candidates(rows: Sequence[Mapping[str, Any]]) -> List[Dict[str, Any]]:
+    out: List[Dict[str, Any]] = []
+    seen: set[tuple[str, str, int, str]] = set()
+    for row in rows:
+        key = canonical_dedupe_key(row)
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(dict(row))
+    return out
+```
+**Future normal fake fixture:** duplicate key rows -> one copied row, preserve order. **Seam:** canonical_dedupe_key; preserve SOURCE wrapper and use-time facade, report/Q8 data-only, no trading or live promotion.
+
+### R5 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_evaluation_contract.py::promotion_candidate_is_repeatable` @ L74 | BLOB `f6b08711f965df8e8f27d42f90b4213db82e27a8`
+**TARGET ABSENT A/integration:** `libs/reporting/q8_repeatable_projection.py::promotion_candidate_is_repeatable`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+```python
+def promotion_candidate_is_repeatable(row: Mapping[str, Any]) -> bool:
+    observed_count = int(row.get("observed_count") or 0)
+    observed_day_count = int(row.get("observed_day_count") or 0)
+    avg_return_5m = float(row.get("avg_return_5m_pct") or 0.0)
+    avg_return_15m = float(row.get("avg_return_15m_pct") or 0.0)
+    return (
+        observed_count >= PROMOTION_CANDIDATE_MIN_OBSERVED
+        and observed_day_count >= PROMOTION_CANDIDATE_MIN_DAYS
+        and avg_return_5m > 0.0
+        and avg_return_15m > 0.0
+    )
+```
+**Future normal fake fixture:** 50 observations,2 days,positive 5m/15m -> True; zero return -> False. **Seam:** PROMOTION_CANDIDATE_MIN_OBSERVED,PROMOTION_CANDIDATE_MIN_DAYS; preserve SOURCE wrapper and use-time facade, report/Q8 data-only, no trading or live promotion.
+
+### R6 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_evaluation_contract.py::entry_lane_subtype` @ L41 | BLOB `f6b08711f965df8e8f27d42f90b4213db82e27a8`
+**TARGET ABSENT A/integration:** `libs/reporting/q8_entry_lane_projection.py::entry_lane_subtype`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+```python
+def entry_lane_subtype(row: Mapping[str, Any]) -> str:
+    observation = build_entry_lane_observation(row)
+    lane = text_value(observation.get("primary_lane")) or "unknown"
+    subtype = text_value(observation.get("subtype")) or "unknown"
+    return f"{lane}:{subtype}"
+```
+**Future normal fake fixture:** fake build_entry_lane_observation returning primary_lane='x',subtype='y' -> 'x:y'. **Seam:** build_entry_lane_observation,text_value; preserve SOURCE wrapper and use-time facade, report/Q8 data-only, no trading or live promotion.
+
+**COUNTS:** A-05 REMOTE_DONE=8/8; A-06 NEW_READY=8; RESERVE_VERIFIED=6. C03 document-only supply, not code G1/G2/G3 or RF DONE.
