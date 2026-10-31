@@ -16,46 +16,23 @@ from scripts.run_m26_scorecard import main as scorecard_main
 
 
 def _as_float(v: Any, default: float = 0.0) -> float:
-    try:
-        return float(v)
-    except Exception:
-        return float(default)
+    from scripts.diagnostics import m26_ab_float_projection as _b4_owner
+    return _b4_owner._as_float(v, default)
 
 
 def _json_path_get(obj: Dict[str, Any], path: str, default: float = 0.0) -> float:
-    cur: Any = obj
-    for part in path.split("."):
-        if not isinstance(cur, dict):
-            return float(default)
-        cur = cur.get(part)
-    return _as_float(cur, default)
+    from scripts.diagnostics import m26_ab_path_projection as _b5_owner
+    return _b5_owner._json_path_get(obj, path, default, facade=sys.modules[__name__])
 
 
 def _run_scorecard_json(*, dataset_root: Path, day: str) -> Tuple[int, Dict[str, Any]]:
-    argv = ["--dataset-root", str(dataset_root), "--json"]
-    if day:
-        argv.extend(["--day", day])
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        rc = scorecard_main(argv)
-    out = buf.getvalue().strip()
-    if not out:
-        return int(rc), {}
-    try:
-        return int(rc), json.loads(out)
-    except Exception:
-        return int(rc), {}
+    from scripts.diagnostics import m26_ab_scorecard_projection as _b8_owner
+    return _b8_owner._run_scorecard_json(dataset_root=dataset_root, day=day, facade=sys.modules[__name__])
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M26 A/B evaluation scaffold over scorecard outputs.")
-    p.add_argument("--a-dataset-root", default="data/eval/m26_fixed_dataset_v1")
-    p.add_argument("--b-dataset-root", default="data/eval/m26_fixed_dataset_v1")
-    p.add_argument("--a-label", default="A")
-    p.add_argument("--b-label", default="B")
-    p.add_argument("--day", default="")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics import m26_ab_parser_projection as _b6_owner
+    return _b6_owner._build_parser(facade=sys.modules[__name__])
 
 
 def _compare_metrics(
@@ -65,91 +42,8 @@ def _compare_metrics(
     a_score: Dict[str, Any],
     b_score: Dict[str, Any],
 ) -> Dict[str, Any]:
-    metric_rules: List[Tuple[str, str]] = [
-        ("total_pnl_proxy", "higher"),
-        ("risk_adjusted.sortino_proxy", "higher"),
-        ("risk_adjusted.sharpe_proxy", "higher"),
-        ("drawdown.max_drawdown_ratio", "lower"),
-        ("win_rate", "higher"),
-    ]
-    eps = 1e-12
-    points: Dict[str, int] = {a_label: 0, b_label: 0}
-    results: List[Dict[str, Any]] = []
-
-    for metric, direction in metric_rules:
-        a_val = _json_path_get(a_score, metric, 0.0)
-        b_val = _json_path_get(b_score, metric, 0.0)
-        winner = "tie"
-        if direction == "higher":
-            if b_val > a_val + eps:
-                winner = b_label
-                points[b_label] += 1
-            elif a_val > b_val + eps:
-                winner = a_label
-                points[a_label] += 1
-        else:
-            if b_val + eps < a_val:
-                winner = b_label
-                points[b_label] += 1
-            elif a_val + eps < b_val:
-                winner = a_label
-                points[a_label] += 1
-
-        results.append(
-            {
-                "metric": metric,
-                "direction": direction,
-                "a_value": float(a_val),
-                "b_value": float(b_val),
-                "delta_b_minus_a": float(b_val - a_val),
-                "winner": winner,
-            }
-        )
-
-    if points[b_label] > points[a_label]:
-        winner = b_label
-    elif points[a_label] > points[b_label]:
-        winner = a_label
-    else:
-        winner = "tie"
-
-    # Conservative promotion gate:
-    # winner must keep drawdown no worse and improve or match PnL + Sortino.
-    a_pnl = _json_path_get(a_score, "total_pnl_proxy", 0.0)
-    b_pnl = _json_path_get(b_score, "total_pnl_proxy", 0.0)
-    a_sortino = _json_path_get(a_score, "risk_adjusted.sortino_proxy", 0.0)
-    b_sortino = _json_path_get(b_score, "risk_adjusted.sortino_proxy", 0.0)
-    a_dd = _json_path_get(a_score, "drawdown.max_drawdown_ratio", 0.0)
-    b_dd = _json_path_get(b_score, "drawdown.max_drawdown_ratio", 0.0)
-
-    recommended = "hold"
-    reasons: List[str] = []
-    if winner == b_label:
-        if (b_pnl >= a_pnl) and (b_sortino >= a_sortino) and (b_dd <= a_dd):
-            recommended = f"promote_{b_label}"
-            reasons.append("b beats or matches A on pnl/sortino and keeps drawdown no worse")
-        else:
-            recommended = f"no_promote_{b_label}"
-            reasons.append("b wins points but fails conservative promotion gate")
-    elif winner == a_label:
-        if (a_pnl >= b_pnl) and (a_sortino >= b_sortino) and (a_dd <= b_dd):
-            recommended = f"promote_{a_label}"
-            reasons.append("a beats or matches B on pnl/sortino and keeps drawdown no worse")
-        else:
-            recommended = f"no_promote_{a_label}"
-            reasons.append("a wins points but fails conservative promotion gate")
-    else:
-        reasons.append("tie result")
-
-    return {
-        "metric_results": results,
-        "points": points,
-        "winner": winner,
-        "promotion_gate": {
-            "recommended_action": recommended,
-            "reasons": reasons,
-        },
-    }
+    from scripts.diagnostics import m26_ab_compare_projection as _b7_owner
+    return _b7_owner._compare_metrics(a_label=a_label, b_label=b_label, a_score=a_score, b_score=b_score, facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:
