@@ -1,231 +1,36 @@
-# C01 — Codex B | B-20261101-05 | FAST-3 NEW 8 VERIFIED SOURCE BODY MOVEs
+# C01 — Codex B | B-20261101-06 | FAST-3 NEW EIGHT VERIFIED BODY MOVEs
 
-**SINGLE ENTRY, NO SELF-SELECTION.** Start pin CANONICAL_HEAD (integration/p1.5), this C01 blob, B remote HEAD and ORDER_ID. Read ONLY this C01 and named code/test paths; do not read D00/RF/queue/C03/CURRENT/HANDOFF. Execute ALL B1–B8 safely in order, continue after a blocked item. An actor already running a previous pinned order may finish that order; do not retroactively cancel it.
+**SINGLE ENTRY.** At start pin integration HEAD, C01 blob, B owner HEAD, ORDER_ID. Read only this C01 and named code/test paths, never D00/RF/queue/C03/CURRENT/HANDOFF. Execute all B1–B8; if one item BLOCKED continue remaining safe items. Previously started pinned order can finish without retroactive cancellation.
 
-**C03 REMOTE DONE DELTA:** #12 comment 6547974300 confirms B-20261101-04-DELIVERY B2–B8 were transferred from local 4ca5ee9674faf524c763f171c4391da84a80abba to B remote `f5e497ef0b635732000fe86a87b844372d263900`; seven Owner files and thin SOURCE wrappers re-fetched, previous normal unittest 7/7 exit0 retained. Old C01 blob `ca0c2503fd8957f08b02d29334ca8e1e2f33c695` is exhausted 7/7 REMOTE_DONE. B1 earlier _to_epoch was also moved. DO NOT repeat B1–B8 old work or prior same-SHA tests. This is a wholly NEW eight-item order.
+**REMOTE_DONE:** previous C01 blob 219751a5ccbc9b1829e64bff80369a584dd4b99f B-20261101-05 eight BODY MOVEs are remotely complete at B SHA a7866cbcaca6571a6e7298b055dd99adcf05283c (#12 6548598563), normal targeted 8/8 exit0, integrated exact at faded947e62e7fc4dd153fbe94d3a72d92b27c02 (#36 6548799065). Do not redo previous same-SHA tests, MOVE or KEEP. These eight new functions below retain original executable bodies on B and integration.
 
-**OWNERSHIP & ISOLATION:** RF-063, CODEX_B only; SOURCE paths in `scripts/diagnostics`, unique TARGETs below verified absent on B branch and integration. RF-063 source coverage explicitly includes both scripts. No edits outside the listed SOURCE files, eight new TARGETs, and NEW `tests/test_p15_rf063_20261101_05h_metrics_ab_owners.py`. Preserve all older tests, CLI signatures, public imports, call-time SOURCE monkeypatches, output order, exceptions and defaults. Never modify other Actor, D00/RF/STATUS/queue/C04/C05, CI/frozen oracle, Broker/Guard/Step5C/UEF/RunLab, live network, real data or real orders. No force push.
+**OWNERSHIP/SAFETY:** RF-063 CODEX_B only. Change only the two named SOURCE scripts, eight NEW Owner projection files and NEW tests/test_p15_rf063_20261101_06h_owners.py on B branch work/p15-b-operator-structure-20261022. No other Actor, D00/RF/queue/STATUS/C04/C05, frozen CI, real Broker/Guard/Step5C/UEF/RunLab, real data/network/orders or live promotion. Test all writes/reads ONLY in TemporaryDirectory, and all run_* helpers with patched fake _run_json and fake main; never execute real scorecard, replay, closeout, promotion or CLI main. No force push.
 
-**MOVE MECHANISM:** Move complete ORIGINAL executable body below into a unique new Owner function (not a copy), replace SOURCE body with only the shown Owner delegation. Keep original SOURCE function signature and annotations; use local import inside wrapper or module-level unique alias, avoid cycles. For facade-dependent Owner, add keyword-only `facade`, resolve every SOURCE global/helper at call time through facade (not a snapshot), do not import SOURCE from Owner. `sys` is already imported in both SOURCE files. Preserve `_compare_metrics` promotion recommendation as *data-only*; NEVER apply/promote. B8 test must monkeypatch SOURCE `scorecard_main` to a pure fake before any call; never run real scorecard or main.
+**MOVE MECHANISM:** Before edits capture original golden from pinned SOURCE blob. Move COMPLETE executable BODY to unique new Owner with original parameters plus keyword-only facade; leave exact original SOURCE signature/annotations with ONLY thin Owner delegation. Source scripts already import sys. Owner must not import SOURCE; every listed helper/global resolves through facade.<name> at call time to preserve monkeypatch. Preserve exception/output/order/alias/copy/defaults. For seed move ALL CSV/JSONL/manifest content, not a stub. For validation preserve failure ordering and counts; parsers preserve options/defaults.
 
-**G2/DELIVERY:** Before editing, capture exact original source bodies from pinned blobs below for golden parity. Write eight distinct `test_b1_* ... test_b8_*` unittest cases in NEW test file: compare original-golden vs SOURCE wrapper vs direct Owner on positive/negative/exception and patched SOURCE seam; AST verify no duplicate calculation remains in SOURCE. Run `python -m py_compile scripts/diagnostics/check_metrics_schema_v1.py scripts/diagnostics/run_m26_ab_evaluation.py scripts/diagnostics/*_projection.py` (scope only newly changed Owner files if wildcard matches others) and `python -m unittest tests/test_p15_rf063_20261101_05h_metrics_ab_owners.py -v` normal exit0; relevant existing tests only when affected. Commit ONLY code and NEW test on B branch, normal push (or authorized exact-tree GitHub route with expected remote HEAD lease, never force), re-fetch B HEAD and SOURCE/TARGET/test blob parity. If HTTPS credential push fails, mark PUSH_BLOCKED and continue all independent safe items; local-only is NOT REMOTE_DONE. Report #12 `ORDER_ID | CANONICAL_HEAD | ORDER_BLOB | B_REMOTE_BEFORE→AFTER | per-item MOVE/TEST/PUSH | NORMAL_EXIT | SOURCE/TARGET/TEST_BLOBS | FIRST_BLOCKER | NEXT | measured START/END`. -O/full peer/per-RF hosted CI are NOT mandatory. C04 G3 and C05 RF DONE are separate.
+**TARGETED NORMAL G2:** Write eight distinct unittest cases test_b1_* through test_b8_* in NEW test file, compare golden original vs SOURCE wrapper vs direct Owner on positive/negative/error, call-time facade monkeypatch and AST old calculation BODY removed. Run python -m unittest tests/test_p15_rf063_20261101_06h_owners.py -v (normal exit0), fake/temp only; no compulsory full-suite/-O/peer/hosted CI. Commit only code/test on B branch, normal push and re-fetch remote B HEAD and SOURCE/TARGET/test blobs. If terminal HTTPS blocked, approved exact-tree expected-head lease may be used without force; report PUSH_BLOCKED if not delivered. Record per-item status, normal exit, actual measured START/END in #12. On divergence or safety issue BLOCKED exact SHA and continue other items; no self-selection.
 
-## B1 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_metrics_schema_v1.py::_is_dict` @ L21 | CURRENT_BLOB `586466c6162d818d1ae60644ec7dd0d988beef63`
-**NEW TARGET (404 actor/integration):** `scripts/diagnostics/metrics_schema_dict_projection.py::_is_dict`. **MOVE COMPLETE EXECUTABLE BODY EXACTLY:**
-```python
-def _is_dict(v: Any) -> bool:
-    return isinstance(v, dict)
-```
-**SOURCE thin wrapper:** keep signature, import `scripts.diagnostics.metrics_schema_dict_projection` as `_b1_owner`; replace old body with sole `return _b1_owner._is_dict(v)`. **CALLER/MONKEYPATCH:** pure isinstance; original negative/exception/identity behavior unchanged.
-**NORMAL TARGETED `test_b1_is_dict`:** {}→True; []→False. Assert original-golden == wrapper == direct Owner and AST thin delegation. **BLOCKED→NEXT:** record exact error and continue B2.
-
-## B2 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_metrics_schema_v1.py::_is_list` @ L25 | CURRENT_BLOB `586466c6162d818d1ae60644ec7dd0d988beef63`
-**NEW TARGET (404 actor/integration):** `scripts/diagnostics/metrics_schema_list_projection.py::_is_list`. **MOVE COMPLETE EXECUTABLE BODY EXACTLY:**
-```python
-def _is_list(v: Any) -> bool:
-    return isinstance(v, list)
-```
-**SOURCE thin wrapper:** keep signature, import `scripts.diagnostics.metrics_schema_list_projection` as `_b2_owner`; replace old body with sole `return _b2_owner._is_list(v)`. **CALLER/MONKEYPATCH:** pure isinstance; original negative/exception/identity behavior unchanged.
-**NORMAL TARGETED `test_b2_is_list`:** []→True; {}→False. Assert original-golden == wrapper == direct Owner and AST thin delegation. **BLOCKED→NEXT:** record exact error and continue B3.
-
-## B3 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_metrics_schema_v1.py::_build_parser` @ L34 | CURRENT_BLOB `586466c6162d818d1ae60644ec7dd0d988beef63`
-**NEW TARGET (404 actor/integration):** `scripts/diagnostics/metrics_schema_parser_projection.py::_build_parser`. **MOVE COMPLETE EXECUTABLE BODY EXACTLY:**
-```python
-def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Validate frozen metrics schema v1.")
-    p.add_argument("--event-log-path", default="data/logs/events.jsonl")
-    p.add_argument("--report-dir", default="reports/metrics")
-    p.add_argument("--day", default=None)
-    p.add_argument("--json", action="store_true")
-    return p
-```
-**SOURCE thin wrapper:** keep signature, import `scripts.diagnostics.metrics_schema_parser_projection` as `_b3_owner`; replace old body with sole `return _b3_owner._build_parser(facade=sys.modules[__name__])`. **CALLER/MONKEYPATCH:** facade.argparse; parser construction only, never main; original negative/exception/identity behavior unchanged.
-**NORMAL TARGETED `test_b3_build_parser`:** parse_args(['--day','2026-11-01','--json'])→day='2026-11-01',json=True. Assert original-golden == wrapper == direct Owner and AST thin delegation. **BLOCKED→NEXT:** record exact error and continue B4.
-
-## B4 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_ab_evaluation.py::_as_float` @ L18 | CURRENT_BLOB `864f845cd2e6644c134372745590ecafeabc70ee`
-**NEW TARGET (404 actor/integration):** `scripts/diagnostics/m26_ab_float_projection.py::_as_float`. **MOVE COMPLETE EXECUTABLE BODY EXACTLY:**
-```python
-def _as_float(v: Any, default: float = 0.0) -> float:
-    try:
-        return float(v)
-    except Exception:
-        return float(default)
-```
-**SOURCE thin wrapper:** keep signature, import `scripts.diagnostics.m26_ab_float_projection` as `_b4_owner`; replace old body with sole `return _b4_owner._as_float(v, default)`. **CALLER/MONKEYPATCH:** pure float fallback; original negative/exception/identity behavior unchanged.
-**NORMAL TARGETED `test_b4_as_float`:** '2.5'→2.5; ('bad',3.0)→3.0. Assert original-golden == wrapper == direct Owner and AST thin delegation. **BLOCKED→NEXT:** record exact error and continue B5.
-
-## B5 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_ab_evaluation.py::_json_path_get` @ L25 | CURRENT_BLOB `864f845cd2e6644c134372745590ecafeabc70ee`
-**NEW TARGET (404 actor/integration):** `scripts/diagnostics/m26_ab_path_projection.py::_json_path_get`. **MOVE COMPLETE EXECUTABLE BODY EXACTLY:**
-```python
-def _json_path_get(obj: Dict[str, Any], path: str, default: float = 0.0) -> float:
-    cur: Any = obj
-    for part in path.split("."):
-        if not isinstance(cur, dict):
-            return float(default)
-        cur = cur.get(part)
-    return _as_float(cur, default)
-```
-**SOURCE thin wrapper:** keep signature, import `scripts.diagnostics.m26_ab_path_projection` as `_b5_owner`; replace old body with sole `return _b5_owner._json_path_get(obj, path, default, facade=sys.modules[__name__])`. **CALLER/MONKEYPATCH:** facade._as_float at call-time; original negative/exception/identity behavior unchanged.
-**NORMAL TARGETED `test_b5_json_path_get`:** ({'a':{'b':2}},'a.b')→2.0; missing default=3→3.0. Assert original-golden == wrapper == direct Owner and AST thin delegation. **BLOCKED→NEXT:** record exact error and continue B6.
-
-## B6 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_ab_evaluation.py::_build_parser` @ L50 | CURRENT_BLOB `864f845cd2e6644c134372745590ecafeabc70ee`
-**NEW TARGET (404 actor/integration):** `scripts/diagnostics/m26_ab_parser_projection.py::_build_parser`. **MOVE COMPLETE EXECUTABLE BODY EXACTLY:**
-```python
-def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M26 A/B evaluation scaffold over scorecard outputs.")
-    p.add_argument("--a-dataset-root", default="data/eval/m26_fixed_dataset_v1")
-    p.add_argument("--b-dataset-root", default="data/eval/m26_fixed_dataset_v1")
-    p.add_argument("--a-label", default="A")
-    p.add_argument("--b-label", default="B")
-    p.add_argument("--day", default="")
-    p.add_argument("--json", action="store_true")
-    return p
-```
-**SOURCE thin wrapper:** keep signature, import `scripts.diagnostics.m26_ab_parser_projection` as `_b6_owner`; replace old body with sole `return _b6_owner._build_parser(facade=sys.modules[__name__])`. **CALLER/MONKEYPATCH:** facade.argparse, no main; original negative/exception/identity behavior unchanged.
-**NORMAL TARGETED `test_b6_build_parser`:** parse_args(['--a-label','X','--json'])→a_label='X',json=True. Assert original-golden == wrapper == direct Owner and AST thin delegation. **BLOCKED→NEXT:** record exact error and continue B7.
-
-## B7 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_ab_evaluation.py::_compare_metrics` @ L61 | CURRENT_BLOB `864f845cd2e6644c134372745590ecafeabc70ee`
-**NEW TARGET (404 actor/integration):** `scripts/diagnostics/m26_ab_compare_projection.py::_compare_metrics`. **MOVE COMPLETE EXECUTABLE BODY EXACTLY:**
-```python
-def _compare_metrics(
-    *,
-    a_label: str,
-    b_label: str,
-    a_score: Dict[str, Any],
-    b_score: Dict[str, Any],
-) -> Dict[str, Any]:
-    metric_rules: List[Tuple[str, str]] = [
-        ("total_pnl_proxy", "higher"),
-        ("risk_adjusted.sortino_proxy", "higher"),
-        ("risk_adjusted.sharpe_proxy", "higher"),
-        ("drawdown.max_drawdown_ratio", "lower"),
-        ("win_rate", "higher"),
-    ]
-    eps = 1e-12
-    points: Dict[str, int] = {a_label: 0, b_label: 0}
-    results: List[Dict[str, Any]] = []
-
-    for metric, direction in metric_rules:
-        a_val = _json_path_get(a_score, metric, 0.0)
-        b_val = _json_path_get(b_score, metric, 0.0)
-        winner = "tie"
-        if direction == "higher":
-            if b_val > a_val + eps:
-                winner = b_label
-                points[b_label] += 1
-            elif a_val > b_val + eps:
-                winner = a_label
-                points[a_label] += 1
-        else:
-            if b_val + eps < a_val:
-                winner = b_label
-                points[b_label] += 1
-            elif a_val + eps < b_val:
-                winner = a_label
-                points[a_label] += 1
-
-        results.append(
-            {
-                "metric": metric,
-                "direction": direction,
-                "a_value": float(a_val),
-                "b_value": float(b_val),
-                "delta_b_minus_a": float(b_val - a_val),
-                "winner": winner,
-            }
-        )
-
-    if points[b_label] > points[a_label]:
-        winner = b_label
-    elif points[a_label] > points[b_label]:
-        winner = a_label
-    else:
-        winner = "tie"
-
-    # Conservative promotion gate:
-    # winner must keep drawdown no worse and improve or match PnL + Sortino.
-    a_pnl = _json_path_get(a_score, "total_pnl_proxy", 0.0)
-    b_pnl = _json_path_get(b_score, "total_pnl_proxy", 0.0)
-    a_sortino = _json_path_get(a_score, "risk_adjusted.sortino_proxy", 0.0)
-    b_sortino = _json_path_get(b_score, "risk_adjusted.sortino_proxy", 0.0)
-    a_dd = _json_path_get(a_score, "drawdown.max_drawdown_ratio", 0.0)
-    b_dd = _json_path_get(b_score, "drawdown.max_drawdown_ratio", 0.0)
-
-    recommended = "hold"
-    reasons: List[str] = []
-    if winner == b_label:
-        if (b_pnl >= a_pnl) and (b_sortino >= a_sortino) and (b_dd <= a_dd):
-            recommended = f"promote_{b_label}"
-            reasons.append("b beats or matches A on pnl/sortino and keeps drawdown no worse")
-        else:
-            recommended = f"no_promote_{b_label}"
-            reasons.append("b wins points but fails conservative promotion gate")
-    elif winner == a_label:
-        if (a_pnl >= b_pnl) and (a_sortino >= b_sortino) and (a_dd <= b_dd):
-            recommended = f"promote_{a_label}"
-            reasons.append("a beats or matches B on pnl/sortino and keeps drawdown no worse")
-        else:
-            recommended = f"no_promote_{a_label}"
-            reasons.append("a wins points but fails conservative promotion gate")
-    else:
-        reasons.append("tie result")
-
-    return {
-        "metric_results": results,
-        "points": points,
-        "winner": winner,
-        "promotion_gate": {
-            "recommended_action": recommended,
-            "reasons": reasons,
-        },
-    }
-```
-**SOURCE thin wrapper:** keep signature, import `scripts.diagnostics.m26_ab_compare_projection` as `_b7_owner`; replace old body with sole `return _b7_owner._compare_metrics(a_label=a_label,b_label=b_label,a_score=a_score,b_score=b_score,facade=sys.modules[__name__])`. **CALLER/MONKEYPATCH:** facade._json_path_get at invocation; output advisory only, no promotion execution; original negative/exception/identity behavior unchanged.
-**NORMAL TARGETED `test_b7_compare_metrics`:** a metrics pnl10/sortino1/sharpe1/dd0.2/win0.4 vs b 12/2/2/0.1/0.6→winner='B',points B=5,recommended_action='promote_B'; identical→tie/hold. Assert original-golden == wrapper == direct Owner and AST thin delegation. **BLOCKED→NEXT:** record exact error and continue B8.
-
-## B8 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_ab_evaluation.py::_run_scorecard_json` @ L34 | CURRENT_BLOB `864f845cd2e6644c134372745590ecafeabc70ee`
-**NEW TARGET (404 actor/integration):** `scripts/diagnostics/m26_ab_scorecard_projection.py::_run_scorecard_json`. **MOVE COMPLETE EXECUTABLE BODY EXACTLY:**
-```python
-def _run_scorecard_json(*, dataset_root: Path, day: str) -> Tuple[int, Dict[str, Any]]:
-    argv = ["--dataset-root", str(dataset_root), "--json"]
-    if day:
-        argv.extend(["--day", day])
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        rc = scorecard_main(argv)
-    out = buf.getvalue().strip()
-    if not out:
-        return int(rc), {}
-    try:
-        return int(rc), json.loads(out)
-    except Exception:
-        return int(rc), {}
-```
-**SOURCE thin wrapper:** keep signature, import `scripts.diagnostics.m26_ab_scorecard_projection` as `_b8_owner`; replace old body with sole `return _b8_owner._run_scorecard_json(dataset_root=dataset_root,day=day,facade=sys.modules[__name__])`. **CALLER/MONKEYPATCH:** facade.io.StringIO/redirect_stdout/scorecard_main/json; fake scorecard only, NEVER real scorecard/main or real dataset; original negative/exception/identity behavior unchanged.
-**NORMAL TARGETED `test_b8_run_scorecard_json`:** patch SOURCE scorecard_main to fake printing '{"ok":true}' and returning 0→(0,{'ok':True}); fake invalid JSON→(0,{}). Assert original-golden == wrapper == direct Owner and AST thin delegation. **BLOCKED→NEXT:** record exact error and continue B1–B8 remaining / push.
-
-## FUTURE RESERVE — 6/6 VERIFIED DESIGN ONLY, NOT EXECUTABLE IN THIS ORDER
-Each distinct SOURCE was read on current B and integration with matching blob; unique TARGET files checked absent in BOTH directories. RF-063 owns these scripts/diagnostics paths. Reserve work requires fresh C03 reissue and source/target/caller check; NEVER implement it now. All file effects strictly TemporaryDirectory/fake only; never run main or actual data.
-
-### R1 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_dataset_manifest_check.py::_utc_now_iso` @ L42 | BLOB `a0afae27c395837c8e2059bb6cf22c34baed03fe`
-**TARGET ABSENT actor/integration:** `scripts/diagnostics/m26_manifest_now_projection.py::_utc_now_iso`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+## B1 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_dataset_manifest_check.py::_utc_now_iso @ L42 | CURRENT_BLOB a0afae27c395837c8e2059bb6cf22c34baed03fe
+**NEW TARGET (404 B/integration):** scripts/diagnostics/m26_manifest_now_projection.py::_utc_now_iso. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
 ```python
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 ```
-**Future targeted normal fixture:** patch SOURCE datetime/timezone clock to fixed UTC; deterministic ISO output. **Isolation/compat:** clock only, no filesystem; thin SOURCE wrapper, use-time facade globals/patch parity, no duplicated BODY, no live effect.
+**SOURCE thin wrapper:** preserve exact signature; import scripts.diagnostics.m26_manifest_now_projection as _b1_owner; sole delegation: return _b1_owner._utc_now_iso(facade=sys.modules[__name__]). **CALL-TIME SEAM:** datetime,timezone; Owner uses facade.<name> for each applicable global/helper.
+**NORMAL TARGETED test_b1_utc_now_iso:** fixed fake UTC clock 2026-02-17T00:00:00+00:00 -> exact ISO string. Original-golden == wrapper == direct Owner; AST original BODY removed. **BLOCKED→NEXT:** log exact failure and continue B2.
 
-### R2 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_dataset_manifest_check.py::_write_text` @ L46 | BLOB `a0afae27c395837c8e2059bb6cf22c34baed03fe`
-**TARGET ABSENT actor/integration:** `scripts/diagnostics/m26_manifest_write_projection.py::_write_text`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+## B2 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_dataset_manifest_check.py::_write_text @ L46 | CURRENT_BLOB a0afae27c395837c8e2059bb6cf22c34baed03fe
+**NEW TARGET (404 B/integration):** scripts/diagnostics/m26_manifest_write_projection.py::_write_text. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
 ```python
 def _write_text(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
 ```
-**Future targeted normal fixture:** TemporaryDirectory child path, content='x'→UTF-8 x and parent created. **Isolation/compat:** TEMP-ONLY IO; no real dataset path; thin SOURCE wrapper, use-time facade globals/patch parity, no duplicated BODY, no live effect.
+**SOURCE thin wrapper:** preserve exact signature; import scripts.diagnostics.m26_manifest_write_projection as _b2_owner; sole delegation: return _b2_owner._write_text(path, content, facade=sys.modules[__name__]). **CALL-TIME SEAM:** Path methods; Owner uses facade.<name> for each applicable global/helper.
+**NORMAL TARGETED test_b2_write_text:** TemporaryDirectory child path with content 'x' -> UTF-8 'x' and parent created. Original-golden == wrapper == direct Owner; AST original BODY removed. **BLOCKED→NEXT:** log exact failure and continue B3.
 
-### R3 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_dataset_manifest_check.py::_seed_demo_dataset` @ L51 | BLOB `a0afae27c395837c8e2059bb6cf22c34baed03fe`
-**TARGET ABSENT actor/integration:** `scripts/diagnostics/m26_manifest_seed_projection.py::_seed_demo_dataset`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+## B3 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_dataset_manifest_check.py::_seed_demo_dataset @ L51 | CURRENT_BLOB a0afae27c395837c8e2059bb6cf22c34baed03fe
+**NEW TARGET (404 B/integration):** scripts/diagnostics/m26_manifest_seed_projection.py::_seed_demo_dataset. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
 ```python
 def _seed_demo_dataset(root: Path) -> Path:
     root.mkdir(parents=True, exist_ok=True)
@@ -352,10 +157,11 @@ def _seed_demo_dataset(root: Path) -> Path:
     _write_text(manifest_path, json.dumps(manifest, ensure_ascii=False, indent=2))
     return manifest_path
 ```
-**Future targeted normal fixture:** TemporaryDirectory root→manifest.json schema_version m26.dataset_manifest.v1, all generated files confined to temp. **Isolation/compat:** TEMP-ONLY seed; no real data, no main; thin SOURCE wrapper, use-time facade globals/patch parity, no duplicated BODY, no live effect.
+**SOURCE thin wrapper:** preserve exact signature; import scripts.diagnostics.m26_manifest_seed_projection as _b3_owner; sole delegation: return _b3_owner._seed_demo_dataset(root, facade=sys.modules[__name__]). **CALL-TIME SEAM:** _write_text,_utc_now_iso,json,SCHEMA_VERSION,REQUIRED_COMPONENT_FILES; Owner uses facade.<name> for each applicable global/helper.
+**NORMAL TARGETED test_b3_seed_demo_dataset:** TemporaryDirectory root -> manifest.json with schema_version m26.dataset_manifest.v1 and only temp paths; fixed fake timestamp. Original-golden == wrapper == direct Owner; AST original BODY removed. **BLOCKED→NEXT:** log exact failure and continue B4.
 
-### R4 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_dataset_manifest_check.py::_validate_dataset` @ L177 | BLOB `a0afae27c395837c8e2059bb6cf22c34baed03fe`
-**TARGET ABSENT actor/integration:** `scripts/diagnostics/m26_manifest_validate_projection.py::_validate_dataset`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+## B4 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_dataset_manifest_check.py::_validate_dataset @ L177 | CURRENT_BLOB a0afae27c395837c8e2059bb6cf22c34baed03fe
+**NEW TARGET (404 B/integration):** scripts/diagnostics/m26_manifest_validate_projection.py::_validate_dataset. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
 ```python
 def _validate_dataset(root: Path) -> Dict[str, Any]:
     manifest_path = root / "manifest.json"
@@ -422,10 +228,11 @@ def _validate_dataset(root: Path) -> Dict[str, Any]:
     out["present_file_total"] = int(out["required_file_total"]) - int(out["missing_file_total"])
     return out
 ```
-**Future targeted normal fixture:** empty TemporaryDirectory→missing:manifest.json; seeded fake dataset→ok=True. **Isolation/compat:** read-only TEMP fixture, preserve file-order/errors; thin SOURCE wrapper, use-time facade globals/patch parity, no duplicated BODY, no live effect.
+**SOURCE thin wrapper:** preserve exact signature; import scripts.diagnostics.m26_manifest_validate_projection as _b4_owner; sole delegation: return _b4_owner._validate_dataset(root, facade=sys.modules[__name__]). **CALL-TIME SEAM:** json,SCHEMA_VERSION,REQUIRED_COMPONENT_FILES; Owner uses facade.<name> for each applicable global/helper.
+**NORMAL TARGETED test_b4_validate_dataset:** empty TemporaryDirectory -> missing:manifest.json; temp seeded dataset -> ok True and missing_file_total 0. Original-golden == wrapper == direct Owner; AST original BODY removed. **BLOCKED→NEXT:** log exact failure and continue B5.
 
-### R5 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_dataset_manifest_check.py::_build_parser` @ L243 | BLOB `a0afae27c395837c8e2059bb6cf22c34baed03fe`
-**TARGET ABSENT actor/integration:** `scripts/diagnostics/m26_manifest_parser_projection.py::_build_parser`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+## B5 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_dataset_manifest_check.py::_build_parser @ L243 | CURRENT_BLOB a0afae27c395837c8e2059bb6cf22c34baed03fe
+**NEW TARGET (404 B/integration):** scripts/diagnostics/m26_manifest_parser_projection.py::_build_parser. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
 ```python
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="M26 fixed dataset manifest scaffold and validation gate.")
@@ -434,10 +241,11 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--json", action="store_true")
     return p
 ```
-**Future targeted normal fixture:** parse_args(['--seed-demo','--json'])→seed_demo=True,json=True. **Isolation/compat:** parser only; never seed via main; thin SOURCE wrapper, use-time facade globals/patch parity, no duplicated BODY, no live effect.
+**SOURCE thin wrapper:** preserve exact signature; import scripts.diagnostics.m26_manifest_parser_projection as _b5_owner; sole delegation: return _b5_owner._build_parser(facade=sys.modules[__name__]). **CALL-TIME SEAM:** argparse; Owner uses facade.<name> for each applicable global/helper.
+**NORMAL TARGETED test_b5_build_parser:** parse_args(['--seed-demo','--json']) -> seed_demo True,json True, default dataset_root. Original-golden == wrapper == direct Owner; AST original BODY removed. **BLOCKED→NEXT:** log exact failure and continue B6.
 
-### R6 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_closeout_check.py::_build_parser` @ L129 | BLOB `4a87f8bdf0c1af655192521ead900431ebf66bba`
-**TARGET ABSENT actor/integration:** `scripts/diagnostics/m26_closeout_parser_projection.py::_build_parser`. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+## B6 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_closeout_check.py::_build_parser @ L129 | CURRENT_BLOB 4a87f8bdf0c1af655192521ead900431ebf66bba
+**NEW TARGET (404 B/integration):** scripts/diagnostics/m26_closeout_parser_projection.py::_build_parser. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
 ```python
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="M26 closeout check (dataset/replay/scorecard/A-B/promotion gate).")
@@ -450,6 +258,151 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--json", action="store_true")
     return p
 ```
-**Future targeted normal fixture:** parse_args(['--day','2026-11-01','--json'])→day='2026-11-01',json=True. **Isolation/compat:** parser only; never execute destructive closeout/main; thin SOURCE wrapper, use-time facade globals/patch parity, no duplicated BODY, no live effect.
+**SOURCE thin wrapper:** preserve exact signature; import scripts.diagnostics.m26_closeout_parser_projection as _b6_owner; sole delegation: return _b6_owner._build_parser(facade=sys.modules[__name__]). **CALL-TIME SEAM:** argparse; Owner uses facade.<name> for each applicable global/helper.
+**NORMAL TARGETED test_b6_build_parser:** parse_args(['--day','2026-11-01','--json']) -> day 2026-11-01,json True,no_clear False. Original-golden == wrapper == direct Owner; AST original BODY removed. **BLOCKED→NEXT:** log exact failure and continue B7.
 
-**COUNTS:** old C01 7/7 REMOTE_DONE, NEW_READY=8, RESERVE_VERIFIED=6. C03 publication is a document-only assignment, not G1/G2/G3 code development or RF DONE. If source/target changed since this snapshot, BLOCKED precisely and continue other safe items; do not silently reassign.
+## B7 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_closeout_check.py::_run_manifest_json @ L33 | CURRENT_BLOB 4a87f8bdf0c1af655192521ead900431ebf66bba
+**NEW TARGET (404 B/integration):** scripts/diagnostics/m26_closeout_manifest_projection.py::_run_manifest_json. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
+```python
+def _run_manifest_json(*, dataset_root: Path, seed_demo: bool) -> Tuple[int, Dict[str, Any]]:
+    argv = ["--dataset-root", str(dataset_root), "--json"]
+    if seed_demo:
+        argv.insert(2, "--seed-demo")
+    return _run_json(manifest_main, argv)
+```
+**SOURCE thin wrapper:** preserve exact signature; import scripts.diagnostics.m26_closeout_manifest_projection as _b7_owner; sole delegation: return _b7_owner._run_manifest_json(dataset_root=dataset_root, seed_demo=seed_demo, facade=sys.modules[__name__]). **CALL-TIME SEAM:** _run_json,manifest_main; Owner uses facade.<name> for each applicable global/helper.
+**NORMAL TARGETED test_b7_run_manifest_json:** fake _run_json captures ['--dataset-root','/tmp/fake','--seed-demo','--json'] and returns (0,{'ok':True}); no actual main. Original-golden == wrapper == direct Owner; AST original BODY removed. **BLOCKED→NEXT:** log exact failure and continue B8.
+
+## B8 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_closeout_check.py::_run_replay_json @ L40 | CURRENT_BLOB 4a87f8bdf0c1af655192521ead900431ebf66bba
+**NEW TARGET (404 B/integration):** scripts/diagnostics/m26_closeout_replay_projection.py::_run_replay_json. **MOVE COMPLETE ORIGINAL EXECUTABLE BODY** (Owner same signature plus keyword-only facade):
+```python
+def _run_replay_json(*, dataset_root: Path, day: str) -> Tuple[int, Dict[str, Any]]:
+    argv = ["--dataset-root", str(dataset_root), "--json"]
+    if day:
+        argv.extend(["--day", day])
+    return _run_json(replay_main, argv)
+```
+**SOURCE thin wrapper:** preserve exact signature; import scripts.diagnostics.m26_closeout_replay_projection as _b8_owner; sole delegation: return _b8_owner._run_replay_json(dataset_root=dataset_root, day=day, facade=sys.modules[__name__]). **CALL-TIME SEAM:** _run_json,replay_main; Owner uses facade.<name> for each applicable global/helper.
+**NORMAL TARGETED test_b8_run_replay_json:** fake _run_json captures ['--dataset-root','/tmp/fake','--json','--day','2026-11-01']; empty day omits --day. Original-golden == wrapper == direct Owner; AST original BODY removed. **BLOCKED→NEXT:** log exact failure and continue B1–B8 remaining/push.
+
+## FUTURE RESERVE — 6/6 VERIFIED DESIGN ONLY, NOT EXECUTABLE
+Each distinct SOURCE BODY/blob checked on B and integration; six TARGET paths 404 on both. RF-063 only. Future C03 must recheck source/target, caller/patch seam and temp isolation before issuing new order. B must NOT implement reserves now.
+
+### R1 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_closeout_check.py::_write_jsonl @ L22 | BLOB 4a87f8bdf0c1af655192521ead900431ebf66bba
+**TARGET ABSENT B/integration:** scripts/diagnostics/m26_closeout_jsonl_projection.py::_write_jsonl. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+```python
+def _write_jsonl(path: Path, rows: List[Dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="\n") as f:
+        for row in rows:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+```
+**Future normal fake/temp fixture:** TemporaryDirectory JSONL one {'x':1} row -> UTF-8 line. **Seam:** json,Path, preserve thin SOURCE wrapper and use-time facade; no real data, CLI main, promotion, orders or operational effects.
+
+### R2 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_closeout_check.py::_run_json @ L29 | BLOB 4a87f8bdf0c1af655192521ead900431ebf66bba
+**TARGET ABSENT B/integration:** scripts/diagnostics/m26_closeout_run_json_projection.py::_run_json. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+```python
+def _run_json(main_fn, argv: List[str]) -> Tuple[int, Dict[str, Any]]:  # type: ignore[no-untyped-def]
+    return capture_cli_json(main_fn, argv)
+```
+**Future normal fake/temp fixture:** fake capture_cli_json returns (0,{'ok':True}), args unchanged. **Seam:** capture_cli_json, preserve thin SOURCE wrapper and use-time facade; no real data, CLI main, promotion, orders or operational effects.
+
+### R3 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_closeout_check.py::_run_scorecard_json @ L47 | BLOB 4a87f8bdf0c1af655192521ead900431ebf66bba
+**TARGET ABSENT B/integration:** scripts/diagnostics/m26_closeout_scorecard_projection.py::_run_scorecard_json. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+```python
+def _run_scorecard_json(*, dataset_root: Path, day: str) -> Tuple[int, Dict[str, Any]]:
+    argv = ["--dataset-root", str(dataset_root), "--json"]
+    if day:
+        argv.extend(["--day", day])
+    return _run_json(scorecard_main, argv)
+```
+**Future normal fake/temp fixture:** fake _run_json captures scorecard_main and day; no real scorecard. **Seam:** _run_json,scorecard_main, preserve thin SOURCE wrapper and use-time facade; no real data, CLI main, promotion, orders or operational effects.
+
+### R4 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_closeout_check.py::_run_ab_eval_json @ L54 | BLOB 4a87f8bdf0c1af655192521ead900431ebf66bba
+**TARGET ABSENT B/integration:** scripts/diagnostics/m26_closeout_ab_projection.py::_run_ab_eval_json. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+```python
+def _run_ab_eval_json(*, base_root: Path, candidate_root: Path, day: str) -> Tuple[int, Dict[str, Any]]:
+    argv = [
+        "--a-dataset-root",
+        str(base_root),
+        "--b-dataset-root",
+        str(candidate_root),
+        "--a-label",
+        "baseline",
+        "--b-label",
+        "candidate",
+        "--json",
+    ]
+    if day:
+        argv.extend(["--day", day])
+    return _run_json(ab_eval_main, argv)
+```
+**Future normal fake/temp fixture:** fake _run_json captures baseline/candidate args; no real AB. **Seam:** _run_json,ab_eval_main, preserve thin SOURCE wrapper and use-time facade; no real data, CLI main, promotion, orders or operational effects.
+
+### R5 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_closeout_check.py::_run_gate_json @ L71 | BLOB 4a87f8bdf0c1af655192521ead900431ebf66bba
+**TARGET ABSENT B/integration:** scripts/diagnostics/m26_closeout_gate_projection.py::_run_gate_json. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+```python
+def _run_gate_json(
+    *,
+    base_root: Path,
+    candidate_root: Path,
+    day: str,
+    min_delta_total_pnl_proxy: float,
+) -> Tuple[int, Dict[str, Any]]:
+    argv = [
+        "--a-dataset-root",
+        str(base_root),
+        "--b-dataset-root",
+        str(candidate_root),
+        "--a-label",
+        "baseline",
+        "--b-label",
+        "candidate",
+        "--min-delta-total-pnl-proxy",
+        str(float(min_delta_total_pnl_proxy)),
+        "--min-sortino-proxy",
+        "0",
+        "--max-drawdown-ratio",
+        "1",
+        "--json",
+    ]
+    if day:
+        argv.extend(["--day", day])
+    return _run_json(gate_main, argv)
+```
+**Future normal fake/temp fixture:** fake _run_json captures min delta and day; no real gate. **Seam:** _run_json,gate_main, preserve thin SOURCE wrapper and use-time facade; no real data, CLI main, promotion, orders or operational effects.
+
+### R6 | RF-063 CODEX_B | SOURCE scripts/diagnostics/run_m26_closeout_check.py::_prepare_candidate_dataset @ L100 | BLOB 4a87f8bdf0c1af655192521ead900431ebf66bba
+**TARGET ABSENT B/integration:** scripts/diagnostics/m26_closeout_candidate_projection.py::_prepare_candidate_dataset. **ACTUAL VERIFIED BODY (DESIGN ONLY):**
+```python
+def _prepare_candidate_dataset(candidate_root: Path, *, day: str) -> None:
+    # Overwrite candidate timeline so candidate clearly outperforms baseline on realized PnL.
+    _write_jsonl(
+        candidate_root / "execution" / "intents.jsonl",
+        [
+            {"ts": f"{day}T00:01:00+00:00", "intent_id": "c-intent-1", "symbol": "005930", "action": "BUY", "qty": 1},
+            {"ts": f"{day}T00:02:00+00:00", "intent_id": "c-intent-2", "symbol": "005930", "action": "SELL", "qty": 1},
+        ],
+    )
+    _write_jsonl(
+        candidate_root / "execution" / "order_status.jsonl",
+        [
+            {"ts": f"{day}T00:01:05+00:00", "intent_id": "c-intent-1", "status": "filled"},
+            {"ts": f"{day}T00:02:05+00:00", "intent_id": "c-intent-2", "status": "filled"},
+        ],
+    )
+    _write_jsonl(
+        candidate_root / "execution" / "fills.jsonl",
+        [
+            {"ts": f"{day}T00:01:05+00:00", "intent_id": "c-intent-1", "fill_price": 100, "fill_qty": 1},
+            {"ts": f"{day}T00:02:05+00:00", "intent_id": "c-intent-2", "fill_price": 115, "fill_qty": 1},
+        ],
+    )
+    (candidate_root / "market" / "ohlcv_1d.csv").write_text(
+        f"ts,symbol,open,high,low,close,volume\n{day}T00:00:00+00:00,005930,100,116,99,115,1000\n",
+        encoding="utf-8",
+    )
+```
+**Future normal fake/temp fixture:** precreate market/execution in TemporaryDirectory, fake _write_jsonl, verify candidate 100→115 data, no real paths. **Seam:** _write_jsonl,Path, preserve thin SOURCE wrapper and use-time facade; no real data, CLI main, promotion, orders or operational effects.
+
+**COUNTS:** B-05 REMOTE_DONE=8/8; B-06 NEW_READY=8; RESERVE_VERIFIED=6. C03 document-only publication, not code G1/G2/G3 or RF DONE.
