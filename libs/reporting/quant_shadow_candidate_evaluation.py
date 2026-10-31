@@ -71,6 +71,7 @@ from libs.reporting import quant_shadow_guard_observation_projection as _guard_o
 from libs.reporting import quant_shadow_payload_iterator_projection as _payload_iter_owner
 from libs.reporting import quant_shadow_promotion_projection as _promotion_owner
 from libs.reporting import quant_shadow_evaluation_builder_projection as _eval_builder_owner
+from libs.reporting import quant_shadow_range_load_projection as _o7a8_owner
 
 
 def _text(value: Any) -> str:
@@ -193,12 +194,7 @@ def load_quant_shadow_candidate_payloads_for_range(
     drop_q9_row_keys: Optional[Sequence[str]] = None,
     keys: Optional[Sequence[str]] = None,
 ) -> List[Dict[str, Any]]:
-    return load_quant_shadow_candidate_payloads(
-        reports_root=reports_root,
-        days=list(_iter_days(start, end)),
-        keys=keys,
-        drop_q9_row_keys=drop_q9_row_keys,
-    )
+    return _o7a8_owner.load_quant_shadow_candidate_payloads_for_range(reports_root=reports_root, start=start, end=end, drop_q9_row_keys=drop_q9_row_keys, keys=keys, facade=sys.modules[__name__])
 
 
 def _top_counter(counter: Counter[str], *, limit: int = 8) -> List[Dict[str, Any]]:

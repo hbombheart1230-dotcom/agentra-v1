@@ -8,6 +8,9 @@ class T(unittest.TestCase):
  def test_b2_write_text(self):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d)/'a/b';m._write_text(p,'x');self.assertEqual(p.read_text(),'x')
+ def test_b4__validate_dataset(self):
+  with tempfile.TemporaryDirectory() as d:
+   self.assertIn('missing:manifest.json',m._validate_dataset(Path(d))['failures'])
  def test_b5_build_parser(self):
   x=m._build_parser().parse_args(['--seed-demo','--json']);self.assertTrue(x.seed_demo and x.json)
  def test_b6_build_parser(self):
