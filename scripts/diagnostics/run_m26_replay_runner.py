@@ -21,26 +21,8 @@ REQUIRED_FILES: List[str] = [
 
 
 def _to_epoch(ts: Any) -> Optional[int]:
-    if ts is None:
-        return None
-    if isinstance(ts, (int, float)):
-        return int(ts)
-    s = str(ts).strip()
-    if not s:
-        return None
-    try:
-        return int(float(s))
-    except Exception:
-        pass
-    if s.endswith("Z"):
-        s = s[:-1] + "+00:00"
-    try:
-        dt = datetime.fromisoformat(s)
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return int(dt.timestamp())
-    except Exception:
-        return None
+    from scripts.diagnostics import m26_replay_epoch_projection as _b07_7_owner
+    return _b07_7_owner._to_epoch(ts, facade=sys.modules[__name__])
 
 
 def _utc_day(ts: Any) -> str:
@@ -69,25 +51,8 @@ def _iter_jsonl(path: Path) -> List[Dict[str, Any]]:
 
 
 def _num_summary(values: List[float]) -> Dict[str, float]:
-    vals = sorted(float(v) for v in values if float(v) >= 0.0)
-    if not vals:
-        return {"count": 0.0, "avg": 0.0, "p50": 0.0, "p95": 0.0, "max": 0.0}
-    n = len(vals)
-
-    def pct(p: float) -> float:
-        if n == 1:
-            return float(vals[0])
-        idx = int(round((n - 1) * p))
-        idx = max(0, min(n - 1, idx))
-        return float(vals[idx])
-
-    return {
-        "count": float(n),
-        "avg": float(sum(vals) / n),
-        "p50": pct(0.50),
-        "p95": pct(0.95),
-        "max": float(vals[-1]),
-    }
+    from scripts.diagnostics import m26_replay_summary_projection as _b07_8_owner
+    return _b07_8_owner._num_summary(values)
 
 
 def _build_parser() -> argparse.ArgumentParser:
