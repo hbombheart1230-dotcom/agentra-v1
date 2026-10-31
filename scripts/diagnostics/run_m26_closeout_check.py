@@ -31,17 +31,13 @@ def _run_json(main_fn, argv: List[str]) -> Tuple[int, Dict[str, Any]]:  # type: 
 
 
 def _run_manifest_json(*, dataset_root: Path, seed_demo: bool) -> Tuple[int, Dict[str, Any]]:
-    argv = ["--dataset-root", str(dataset_root), "--json"]
-    if seed_demo:
-        argv.insert(2, "--seed-demo")
-    return _run_json(manifest_main, argv)
+    from scripts.diagnostics import m26_closeout_manifest_projection as _b7_owner
+    return _b7_owner._run_manifest_json(dataset_root=dataset_root, seed_demo=seed_demo, facade=sys.modules[__name__])
 
 
 def _run_replay_json(*, dataset_root: Path, day: str) -> Tuple[int, Dict[str, Any]]:
-    argv = ["--dataset-root", str(dataset_root), "--json"]
-    if day:
-        argv.extend(["--day", day])
-    return _run_json(replay_main, argv)
+    from scripts.diagnostics import m26_closeout_replay_projection as _b8_owner
+    return _b8_owner._run_replay_json(dataset_root=dataset_root, day=day, facade=sys.modules[__name__])
 
 
 def _run_scorecard_json(*, dataset_root: Path, day: str) -> Tuple[int, Dict[str, Any]]:
@@ -127,15 +123,8 @@ def _prepare_candidate_dataset(candidate_root: Path, *, day: str) -> None:
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M26 closeout check (dataset/replay/scorecard/A-B/promotion gate).")
-    p.add_argument("--base-dataset-root", default="data/eval/m26_closeout/base")
-    p.add_argument("--candidate-dataset-root", default="data/eval/m26_closeout/candidate")
-    p.add_argument("--day", default="2026-02-17")
-    p.add_argument("--min-delta-total-pnl-proxy", type=float, default=5.0)
-    p.add_argument("--inject-gate-fail", action="store_true")
-    p.add_argument("--no-clear", action="store_true")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics import m26_closeout_parser_projection as _b6_owner
+    return _b6_owner._build_parser(facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:

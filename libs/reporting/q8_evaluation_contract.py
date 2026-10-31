@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import sys
 from typing import Any, Dict, List, Mapping, Sequence
 
 from libs.runtime.quant.entry_lane_observation import build_entry_lane_observation
+from libs.reporting import q8_candidate_day_projection as _o6a8_owner
 
 
 TRUSTED_FORWARD_MIN_COUNT = 100
@@ -30,12 +32,7 @@ def forward_base(row: Mapping[str, Any]) -> Dict[str, Any]:
 
 
 def candidate_day(row: Mapping[str, Any]) -> str:
-    base = forward_base(row)
-    raw_ts = text_value(base.get("baseline_raw_ts"))
-    if len(raw_ts) >= 8 and raw_ts[:8].isdigit():
-        return raw_ts[:8]
-    generated = text_value(row.get("_payload_generated_at") or row.get("generated_at"))
-    return generated[:10].replace("-", "") if len(generated) >= 10 else ""
+    return _o6a8_owner.candidate_day(row, facade=sys.modules[__name__])
 
 
 def entry_lane_subtype(row: Mapping[str, Any]) -> str:

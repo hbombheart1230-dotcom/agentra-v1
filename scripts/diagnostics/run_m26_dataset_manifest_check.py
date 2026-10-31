@@ -40,12 +40,13 @@ REQUIRED_COMPONENT_FILES: Dict[str, List[str]] = {
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    from scripts.diagnostics import m26_manifest_now_projection as _b1_owner
+    return _b1_owner._utc_now_iso(facade=sys.modules[__name__])
 
 
 def _write_text(path: Path, content: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8")
+    from scripts.diagnostics import m26_manifest_write_projection as _b2_owner
+    return _b2_owner._write_text(path, content, facade=sys.modules[__name__])
 
 
 def _seed_demo_dataset(root: Path) -> Path:
@@ -241,11 +242,8 @@ def _validate_dataset(root: Path) -> Dict[str, Any]:
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M26 fixed dataset manifest scaffold and validation gate.")
-    p.add_argument("--dataset-root", default="data/eval/m26_fixed_dataset_v1")
-    p.add_argument("--seed-demo", action="store_true")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics import m26_manifest_parser_projection as _b5_owner
+    return _b5_owner._build_parser(facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:
