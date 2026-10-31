@@ -19,11 +19,13 @@ def _is_number(v: Any) -> bool:
 
 
 def _is_dict(v: Any) -> bool:
-    return isinstance(v, dict)
+    from scripts.diagnostics import metrics_schema_dict_projection as _b1_owner
+    return _b1_owner._is_dict(v)
 
 
 def _is_list(v: Any) -> bool:
-    return isinstance(v, list)
+    from scripts.diagnostics import metrics_schema_list_projection as _b2_owner
+    return _b2_owner._is_list(v)
 
 
 def _json_path_get(obj: Dict[str, Any], path: str) -> Tuple[bool, Any]:
@@ -32,12 +34,8 @@ def _json_path_get(obj: Dict[str, Any], path: str) -> Tuple[bool, Any]:
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Validate frozen metrics schema v1.")
-    p.add_argument("--event-log-path", default="data/logs/events.jsonl")
-    p.add_argument("--report-dir", default="reports/metrics")
-    p.add_argument("--day", default=None)
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics import metrics_schema_parser_projection as _b3_owner
+    return _b3_owner._build_parser(facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:
