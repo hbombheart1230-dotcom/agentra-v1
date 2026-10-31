@@ -1,15 +1,15 @@
-# C01 — Codex B | B-20261101-07 | FAST-3 EIGHT NEW VERIFIED BODY MOVEs + TWO B-06 CARRYOVER
+# C01 — Codex B | B-20261101-07 | FAST-3 EIGHT NEW VERIFIED BODY MOVEs + ONE B-06 CARRYOVER (C2 REMOTE_DONE)
 
-**SINGLE ENTRY.** At start pin integration HEAD, C01 blob, B owner HEAD and ORDER_ID. Read this C01 and named code/test only; never D00/RF/queue/C03/CURRENT/HANDOFF. Execute carryover C1–C2 and ALL NEW B1–B8; if one blocked continue every other safe item. Previously pinned start order is not retroactively cancelled.
+**SINGLE ENTRY.** At start pin integration HEAD, C01 blob, B owner HEAD and ORDER_ID. Read this C01 and named code/test only; never D00/RF/queue/C03/CURRENT/HANDOFF. Execute remaining carryover C1 and ALL NEW B1–B8; if one blocked continue every other safe item. Previously pinned start order is not retroactively cancelled.
 
-**REMOTE_DONE:** B-20261101-06 B1/B2/B5/B6/B7/B8 **6/8** genuinely moved and pushed to B `f9a3bf6dddd4341710d679f4ccf0c3bdc5525480` (#12 6549173764), targeted 6/6 normal exit0; exact 6 Owner scope integrated `45082e6e675fdf7e42bf54c3c6572e0635ec6e7b` (#36 6549457962). **B-06 B3/B4 not implemented**, retain them as C1/C2, NOT REMOTE_DONE, NOT NEW. Do not rerun B-06 six already passing tests or reimplement them. B-05 eight already REMOTE_DONE and integrated. B-04 older exact integrated-source G3 test and B1 separate G2 are C04/C05 gaps, not this new G2.
+**REMOTE_DONE:** B-20261101-06 B1/B2/B5/B6/B7/B8 **6/8** genuinely moved and pushed to B `f9a3bf6dddd4341710d679f4ccf0c3bdc5525480` (#12 6549173764), targeted 6/6 normal exit0; exact 6 Owner scope integrated `45082e6e675fdf7e42bf54c3c6572e0635ec6e7b` (#36 6549457962). **B-06 B3 still pending as C1**; B-06 B4 `_validate_dataset` is REMOTE_DONE at B `f8fbe7648174da08cc71d25fb71c28ab5c30a970` (#12 `6549775430`), normal 06h targeted 7/7 exit0, C04 scoped integration `341f6c4306b5d9383a5c7c3938553ba196f92703`. Do not redo B4 or same-SHA tests; retain C1 only as NOT NEW. Do not rerun B-06 six already passing tests or reimplement them. B-05 eight already REMOTE_DONE and integrated. B-04 older exact integrated-source G3 test and B1 separate G2 are C04/C05 gaps, not this new G2.
 
-**OWNER/SAFETY:** RF-063 CODEX_B exclusively. Modify ONLY three named SOURCE scripts, 10 distinct NEW Owner projection files (8 new B1–B8 + 2 carryover C1/C2), existing `tests/test_p15_rf063_20261101_06h_owners.py` for missing C1/C2 cases, and NEW `tests/test_p15_rf063_20261101_07h_owners.py` for B1–B8 on B branch `work/p15-b-operator-structure-20261022`. No A branch, D00/RF/STATUS/queue/C04/C05, frozen CI, real data/operations/Broker/Guard/Step5C/UEF/RunLab/network/orders/promotion. C1/C2 seed/validate and B1/B6 writes ONLY in TemporaryDirectory; B2–B5 use patched fake capture/runner (NEVER real CLI main or gate). No force push.
+**OWNER/SAFETY:** RF-063 CODEX_B exclusively. Modify ONLY three named SOURCE scripts, 9 distinct NEW Owner projection files (8 new B1–B8 + 1 carryover C1), existing `tests/test_p15_rf063_20261101_06h_owners.py` for missing C1 case, and NEW `tests/test_p15_rf063_20261101_07h_owners.py` for B1–B8 on B branch `work/p15-b-operator-structure-20261022`. No A branch, D00/RF/STATUS/queue/C04/C05, frozen CI, real data/operations/Broker/Guard/Step5C/UEF/RunLab/network/orders/promotion. C1/C2 seed/validate and B1/B6 writes ONLY in TemporaryDirectory; B2–B5 use patched fake capture/runner (NEVER real CLI main or gate). No force push.
 
-**MOVE/TEST:** Capture original golden before editing at exact SOURCE blobs. Owner preserves complete executable BODY, original signature + keyword-only facade; SOURCE retains same signature but sole Owner delegation with call-time facade monkeypatch, no duplicate calculation. Preserve output/error/arg order, alias/copy and nested functions. Source scripts already import sys. For carryover C1/C2 add only the two missing tests to existing 06h file and run `python -m unittest tests/test_p15_rf063_20261101_06h_owners.py -v` normal exit0 (expect 8/8 after additions). For new B1–B8 create 8 distinct unittest tests in NEW 07h file and run `python -m unittest tests/test_p15_rf063_20261101_07h_owners.py -v` normal exit0 (8/8). All fake/temp, no real CLI. Optional related scoped test; full/-O/full peer/hosted CI NOT compulsory. Commit only code/test to B branch, normal push or approved exact-tree expected-head lease without force, re-fetch B HEAD and SOURCE/Owner/test blob. Report each item and measured START/END to #12. Push failure=PUSH_BLOCKED only, continue safe work. SHA divergence→item BLOCKED with exact ref; do not overwrite.
+**MOVE/TEST:** Capture original golden before editing at exact SOURCE blobs. Owner preserves complete executable BODY, original signature + keyword-only facade; SOURCE retains same signature but sole Owner delegation with call-time facade monkeypatch, no duplicate calculation. Preserve output/error/arg order, alias/copy and nested functions. Source scripts already import sys. For carryover C1 add only the one missing test to existing 06h file and run `python -m unittest tests/test_p15_rf063_20261101_06h_owners.py -v` normal exit0 (expect 8/8 after C1 addition; C2's 7/7 normal prior run is not repeated for same SHA). For new B1–B8 create 8 distinct unittest tests in NEW 07h file and run `python -m unittest tests/test_p15_rf063_20261101_07h_owners.py -v` normal exit0 (8/8). All fake/temp, no real CLI. Optional related scoped test; full/-O/full peer/hosted CI NOT compulsory. Commit only code/test to B branch, normal push or approved exact-tree expected-head lease without force, re-fetch B HEAD and SOURCE/Owner/test blob. Report each item and measured START/END to #12. Push failure=PUSH_BLOCKED only, continue safe work. SHA divergence→item BLOCKED with exact ref; do not overwrite.
 
-## CARRYOVER — TWO UNFINISHED B-06 BODY MOVEs (NOT NEW)
-### C1 (B-06 B3 REMAINING, NOT NEW) | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_dataset_manifest_check.py::_seed_demo_dataset` @ L52 | CURRENT_BLOB `9cdf6cfff463205fa6f79755247610010219b2cc`
+## CARRYOVER — ONE UNFINISHED B-06 BODY MOVE (NOT NEW; C2 REMOTE_DONE)
+### C1 (B-06 B3 REMAINING, NOT NEW) | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_dataset_manifest_check.py::_seed_demo_dataset` @ L52 | CURRENT_BLOB `c039f3df0b2427e901f07219990c63da70d7b95e`
 **TARGET STILL 404 B/integration:** `scripts/diagnostics/m26_manifest_seed_projection.py::_seed_demo_dataset`. Move entire actual body, not stub:
 ```python
 def _seed_demo_dataset(root: Path) -> Path:
@@ -137,78 +137,7 @@ def _seed_demo_dataset(root: Path) -> Path:
     _write_text(manifest_path, json.dumps(manifest, ensure_ascii=False, indent=2))
     return manifest_path
 ```
-**WRAPPER:** original SOURCE signature, unique alias `_b06_c1_owner`, import `scripts.diagnostics.m26_manifest_seed_projection`, sole Owner delegation with `facade=sys.modules[__name__]`. Owner call-time seams: _write_text,_utc_now_iso,json,SCHEMA_VERSION,REQUIRED_COMPONENT_FILES; no real datasets. **NORMAL `test_b3__seed_demo_dataset` in EXISTING `tests/test_p15_rf063_20261101_06h_owners.py`:** Temp root→manifest.json schema_version m26.dataset_manifest.v1 and 12 expected components; fake timestamp; preserve all original CSV/JSONL bytes and file paths; golden vs wrapper vs Owner, AST old BODY removed. BLOCKED→continue C2.
-
-### C2 (B-06 B4 REMAINING, NOT NEW) | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_dataset_manifest_check.py::_validate_dataset` @ L178 | CURRENT_BLOB `9cdf6cfff463205fa6f79755247610010219b2cc`
-**TARGET STILL 404 B/integration:** `scripts/diagnostics/m26_manifest_validate_projection.py::_validate_dataset`. Move entire actual body, not stub:
-```python
-def _validate_dataset(root: Path) -> Dict[str, Any]:
-    manifest_path = root / "manifest.json"
-    failures: List[str] = []
-    missing_files: List[str] = []
-    schema_version = ""
-    dataset_id = ""
-
-    manifest: Dict[str, Any] = {}
-    if not manifest_path.exists():
-        failures.append("missing:manifest.json")
-    else:
-        try:
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        except Exception as e:
-            failures.append(f"invalid:manifest.json ({e})")
-
-    if manifest:
-        schema_version = str(manifest.get("schema_version") or "")
-        dataset_id = str(manifest.get("dataset_id") or "")
-        if schema_version != SCHEMA_VERSION:
-            failures.append(f"invalid:schema_version (expected={SCHEMA_VERSION}, got={schema_version or 'empty'})")
-        if not dataset_id:
-            failures.append("invalid:dataset_id (empty)")
-
-        components = manifest.get("components")
-        if not isinstance(components, dict):
-            failures.append("invalid:components (must be object)")
-            components = {}
-        for comp, expected in REQUIRED_COMPONENT_FILES.items():
-            listed = components.get(comp)
-            if not isinstance(listed, list):
-                failures.append(f"missing_component:{comp}")
-                listed = []
-            listed_set = {str(x).replace("\\", "/") for x in listed}
-            for rel in expected:
-                if rel not in listed_set:
-                    failures.append(f"missing_manifest_ref:{rel}")
-                if not (root / rel).exists():
-                    missing_files.append(rel)
-    else:
-        # Even when manifest is missing/invalid, report expected missing files
-        for expected in REQUIRED_COMPONENT_FILES.values():
-            for rel in expected:
-                if not (root / rel).exists():
-                    missing_files.append(rel)
-
-    missing_files = sorted(set(missing_files))
-    out = {
-        "ok": len(failures) == 0 and len(missing_files) == 0,
-        "dataset_root": str(root),
-        "manifest_path": str(manifest_path),
-        "schema_version": schema_version,
-        "dataset_id": dataset_id,
-        "component_total": len(REQUIRED_COMPONENT_FILES),
-        "required_file_total": int(sum(len(v) for v in REQUIRED_COMPONENT_FILES.values())),
-        "present_file_total": 0,
-        "missing_file_total": len(missing_files),
-        "missing_files": missing_files,
-        "failure_total": len(failures),
-        "failures": failures,
-    }
-    # compute present count from required total minus unique missing
-    out["present_file_total"] = int(out["required_file_total"]) - int(out["missing_file_total"])
-    return out
-```
-**WRAPPER:** original SOURCE signature, unique alias `_b06_c2_owner`, import `scripts.diagnostics.m26_manifest_validate_projection`, sole Owner delegation with `facade=sys.modules[__name__]`. Owner call-time seams: json,SCHEMA_VERSION,REQUIRED_COMPONENT_FILES; no real datasets. **NORMAL `test_b4__validate_dataset` in EXISTING `tests/test_p15_rf063_20261101_06h_owners.py`:** empty Temp root→missing:manifest.json, seeded Temp root→ok=True/missing_file_total=0; preserve exact failure ordering/counts; golden vs wrapper vs Owner, AST old BODY removed. BLOCKED→continue C1–C2 remaining then B1–B8.
-
+**WRAPPER:** original SOURCE signature, unique alias `_b06_c1_owner`, import `scripts.diagnostics.m26_manifest_seed_projection`, sole Owner delegation with `facade=sys.modules[__name__]`. Owner call-time seams: _write_text,_utc_now_iso,json,SCHEMA_VERSION,REQUIRED_COMPONENT_FILES; no real datasets. **NORMAL `test_b3__seed_demo_dataset` in EXISTING `tests/test_p15_rf063_20261101_06h_owners.py`:** Temp root→manifest.json schema_version m26.dataset_manifest.v1 and 12 expected components; fake timestamp; preserve all original CSV/JSONL bytes and file paths; golden vs wrapper vs Owner, AST old BODY removed. BLOCKED→continue B1–B8.
 
 ## NEW B-07 — EIGHT INDEPENDENT VERIFIED SOURCE BODY MOVEs
 ## B1 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_closeout_check.py::_write_jsonl` @ L22 | CURRENT_BLOB `d0d9a1f86b4f69cb4b81fb9b707a76a73bc858f9`
@@ -393,4 +322,4 @@ def _num_summary(values: List[float]) -> Dict[str, float]:
 ## FUTURE RESERVE — RESERVE_NOT_VERIFIED 0/6 (DESIGN ONLY, NOT EXECUTABLE)
 The prior six verified B-06 reserves have been consumed by new B1–B6. Two additional B7/B8 replay bodies are independently verified and now issued. No new six distinct reserve source/target candidates have yet been proven. C03 must replenish from exact RF-063 Owner sources, avoid protected effects, verify target absence and fake/temp tests before future issue. B does NOT self-select.
 
-**COUNTS:** B-06 REMOTE_DONE 6/8, CARRYOVER=2, B-07 NEW_READY=8, RESERVE_VERIFIED=0/6; C03 doc-only, code G1/G2/G3=0 and RF_DONE_DELTA=0.
+**COUNTS:** B-06 REMOTE_DONE 7/8, CARRYOVER=1, B-07 NEW_READY=8, RESERVE_VERIFIED=0/6; C03 doc-only, code G1/G2/G3=0 and RF_DONE_DELTA=0.
