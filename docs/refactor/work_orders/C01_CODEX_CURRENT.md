@@ -4,7 +4,7 @@
 
 **REMOTE_DONE:** B-20261101-06 B1/B2/B5/B6/B7/B8 **6/8** genuinely moved and pushed to B `f9a3bf6dddd4341710d679f4ccf0c3bdc5525480` (#12 6549173764), targeted 6/6 normal exit0; exact 6 Owner scope integrated `45082e6e675fdf7e42bf54c3c6572e0635ec6e7b` (#36 6549457962). **B-06 B3 still pending as C1**; B-06 B4 `_validate_dataset` is REMOTE_DONE at B `f8fbe7648174da08cc71d25fb71c28ab5c30a970` (#12 `6549775430`), normal 06h targeted 7/7 exit0, C04 scoped integration `341f6c4306b5d9383a5c7c3938553ba196f92703`. Do not redo B4 or same-SHA tests; retain C1 only as NOT NEW. Do not rerun B-06 six already passing tests or reimplement them. B-05 eight already REMOTE_DONE and integrated. B-04 older exact integrated-source G3 test and B1 separate G2 are C04/C05 gaps, not this new G2.
 
-**OWNER/SAFETY:** RF-063 CODEX_B exclusively. Modify ONLY three named SOURCE scripts, 9 distinct NEW Owner projection files (8 new B1–B8 + 1 carryover C1), existing `tests/test_p15_rf063_20261101_06h_owners.py` for missing C1 case, and NEW `tests/test_p15_rf063_20261101_07h_owners.py` for B1–B8 on B branch `work/p15-b-operator-structure-20261022`. No A branch, D00/RF/STATUS/queue/C04/C05, frozen CI, real data/operations/Broker/Guard/Step5C/UEF/RunLab/network/orders/promotion. C1/C2 seed/validate and B1/B6 writes ONLY in TemporaryDirectory; B2–B5 use patched fake capture/runner (NEVER real CLI main or gate). No force push.
+**OWNER/SAFETY:** RF-063 CODEX_B exclusively. Modify ONLY three named SOURCE scripts, 9 distinct NEW Owner projection files (8 new B1–B8 + 1 carryover C1), existing `tests/test_p15_rf063_20261101_06h_owners.py` for missing C1 case, and NEW `tests/test_p15_rf063_20261101_07h_owners.py` for B1–B8 on B branch `work/p15-b-operator-structure-20261022`. No A branch, D00/RF/STATUS/queue/C04/C05, frozen CI, real data/operations/Broker/Guard/Step5C/UEF/RunLab/network/orders/promotion. C1 seed and B1/B6 writes ONLY in TemporaryDirectory; B2–B5 use patched fake capture/runner (NEVER real CLI main or gate). No force push.
 
 **MOVE/TEST:** Capture original golden before editing at exact SOURCE blobs. Owner preserves complete executable BODY, original signature + keyword-only facade; SOURCE retains same signature but sole Owner delegation with call-time facade monkeypatch, no duplicate calculation. Preserve output/error/arg order, alias/copy and nested functions. Source scripts already import sys. For carryover C1 add only the one missing test to existing 06h file and run `python -m unittest tests/test_p15_rf063_20261101_06h_owners.py -v` normal exit0 (expect 8/8 after C1 addition; C2's 7/7 normal prior run is not repeated for same SHA). For new B1–B8 create 8 distinct unittest tests in NEW 07h file and run `python -m unittest tests/test_p15_rf063_20261101_07h_owners.py -v` normal exit0 (8/8). All fake/temp, no real CLI. Optional related scoped test; full/-O/full peer/hosted CI NOT compulsory. Commit only code/test to B branch, normal push or approved exact-tree expected-head lease without force, re-fetch B HEAD and SOURCE/Owner/test blob. Report each item and measured START/END to #12. Push failure=PUSH_BLOCKED only, continue safe work. SHA divergence→item BLOCKED with exact ref; do not overwrite.
 
@@ -319,7 +319,83 @@ def _num_summary(values: List[float]) -> Dict[str, float]:
 **NORMAL TARGETED `test_b8__num_summary`:** [1.0,2.0,3.0]→count=3.0 avg=2.0 p50=2.0 p95=3.0 max=3.0; [] all zeros; nested pct included. Compare original-golden vs wrapper vs direct Owner, positive/negative/exception, patched facade, AST SOURCE old BODY removed. **BLOCKED→NEXT:** record exact error/SHA, continue B1–B8 remaining/push.
 
 
-## FUTURE RESERVE — RESERVE_NOT_VERIFIED 0/6 (DESIGN ONLY, NOT EXECUTABLE)
-The prior six verified B-06 reserves have been consumed by new B1–B6. Two additional B7/B8 replay bodies are independently verified and now issued. No new six distinct reserve source/target candidates have yet been proven. C03 must replenish from exact RF-063 Owner sources, avoid protected effects, verify target absence and fake/temp tests before future issue. B does NOT self-select.
+## FUTURE RESERVE — VERIFIED 6/6 (DESIGN ONLY; **NOT EXECUTABLE**; C03 MUST ISSUE A NEW ORDER FIRST)
+RF-063 CODEX_B exclusively; SOURCE `scripts/diagnostics/check_audit_trail_completeness.py` actor/integration exact blob `1df9947a268f31d73639542db4a09eaac6e172b6`; all six TARGET paths independently returned 404 on BOTH actor branch and integration on 2026-11-01. These six are NOT part of the current executable order. No Actor self-selection or same-SHA retest. Each has no real-order, Broker/Guard/Step5C/UEF/RunLab effects; fake/in-memory fixtures only. Preserve original facade monkeypatch and exception behavior when C03 later issues them.
 
-**COUNTS:** B-06 REMOTE_DONE 7/8, CARRYOVER=1, B-07 NEW_READY=8, RESERVE_VERIFIED=0/6; C03 doc-only, code G1/G2/G3=0 and RF_DONE_DELTA=0.
+### RESERVE 1 | `scripts/diagnostics/check_audit_trail_completeness.py::_to_epoch` @ L15 | SOURCE_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6` → `scripts/diagnostics/audit_trail_epoch_projection.py::_to_epoch` (404 both)
+```python
+def _to_epoch(ts: Any) -> Optional[int]:
+    if ts is None:
+        return None
+    if isinstance(ts, (int, float)):
+        return int(ts)
+    s = str(ts).strip()
+    if not s:
+        return None
+    try:
+        return int(float(s))
+    except Exception:
+        pass
+    if s.endswith("Z"):
+        s = s[:-1] + "+00:00"
+    try:
+        dt = datetime.fromisoformat(s)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return int(dt.timestamp())
+    except Exception:
+        return None
+```
+**DESIGN:** Entire BODY to unique Owner, SOURCE thin facade wrapper; monkeypatch seams: datetime/timezone via facade. NORMAL targeted golden/Owner/wrapper test: '1970-01-01T00:00:01Z'→1; None→None; naive UTC. No real IO, no state changes; clock via fake if applicable. **STATUS=RESERVE_VERIFIED, NOT ISSUED.**
+
+### RESERVE 2 | `scripts/diagnostics/check_audit_trail_completeness.py::_utc_day` @ L38 | SOURCE_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6` → `scripts/diagnostics/audit_trail_utc_day_projection.py::_utc_day` (404 both)
+```python
+def _utc_day(ts: Any) -> str:
+    epoch = _to_epoch(ts)
+    if epoch is None:
+        return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    return datetime.fromtimestamp(epoch, tz=timezone.utc).strftime("%Y-%m-%d")
+```
+**DESIGN:** Entire BODY to unique Owner, SOURCE thin facade wrapper; monkeypatch seams: _to_epoch/datetime/timezone via facade. NORMAL targeted golden/Owner/wrapper test: ts=1→'1970-01-01'; None with fake clock→fixed day. No real IO, no state changes; clock via fake if applicable. **STATUS=RESERVE_VERIFIED, NOT ISSUED.**
+
+### RESERVE 3 | `scripts/diagnostics/check_audit_trail_completeness.py::_extract_ts` @ L45 | SOURCE_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6` → `scripts/diagnostics/audit_trail_extract_ts_projection.py::_extract_ts` (404 both)
+```python
+def _extract_ts(row: Dict[str, Any]) -> Any:
+    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+    return row.get("ts") or payload.get("ts")
+```
+**DESIGN:** Entire BODY to unique Owner, SOURCE thin facade wrapper; monkeypatch seams: none. NORMAL targeted golden/Owner/wrapper test: {'ts':0,'payload':{'ts':42}}→42. No real IO, no state changes; clock via fake if applicable. **STATUS=RESERVE_VERIFIED, NOT ISSUED.**
+
+### RESERVE 4 | `scripts/diagnostics/check_audit_trail_completeness.py::_extract_decision_action` @ L68 | SOURCE_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6` → `scripts/diagnostics/audit_trail_decision_action_projection.py::_extract_decision_action` (404 both)
+```python
+def _extract_decision_action(row: Dict[str, Any]) -> str:
+    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+    packet = payload.get("decision_packet") if isinstance(payload.get("decision_packet"), dict) else {}
+    intent = packet.get("intent") if isinstance(packet.get("intent"), dict) else {}
+    action = intent.get("action") or payload.get("action") or payload.get("intent")
+    return str(action or "").strip().upper()
+```
+**DESIGN:** Entire BODY to unique Owner, SOURCE thin facade wrapper; monkeypatch seams: none. NORMAL targeted golden/Owner/wrapper test: nested decision_packet.intent.action='buy'→'BUY'; absent→''. No real IO, no state changes; clock via fake if applicable. **STATUS=RESERVE_VERIFIED, NOT ISSUED.**
+
+### RESERVE 5 | `scripts/diagnostics/check_audit_trail_completeness.py::_extract_allowed` @ L76 | SOURCE_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6` → `scripts/diagnostics/audit_trail_allowed_projection.py::_extract_allowed` (404 both)
+```python
+def _extract_allowed(row: Dict[str, Any]) -> Optional[bool]:
+    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+    v = payload.get("allowed")
+    if isinstance(v, bool):
+        return v
+    return None
+```
+**DESIGN:** Entire BODY to unique Owner, SOURCE thin facade wrapper; monkeypatch seams: none. NORMAL targeted golden/Owner/wrapper test: payload.allowed=True→True; allowed=1→None. No real IO, no state changes; clock via fake if applicable. **STATUS=RESERVE_VERIFIED, NOT ISSUED.**
+
+### RESERVE 6 | `scripts/diagnostics/check_audit_trail_completeness.py::_latest_day` @ L84 | SOURCE_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6` → `scripts/diagnostics/audit_trail_latest_day_projection.py::_latest_day` (404 both)
+```python
+def _latest_day(rows: List[Dict[str, Any]]) -> str:
+    days = sorted({str(r.get("_day") or "") for r in rows if str(r.get("_day") or "").strip()})
+    if days:
+        return str(days[-1])
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+```
+**DESIGN:** Entire BODY to unique Owner, SOURCE thin facade wrapper; monkeypatch seams: datetime/timezone via facade. NORMAL targeted golden/Owner/wrapper test: [{'_day':'2026-10-30'},{'_day':'2026-11-01'}]→'2026-11-01'; [] with fake clock→fixed day. No real IO, no state changes; clock via fake if applicable. **STATUS=RESERVE_VERIFIED, NOT ISSUED.**
+
+**COUNTS:** B-06 REMOTE_DONE=7/8; B-07 NEW_READY=8 plus C1 carryover; RESERVE_VERIFIED=6/6. C03 DOC_ONLY; code G1/G2/G3=0, RF_DONE_DELTA=0.
