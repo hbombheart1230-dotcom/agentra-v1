@@ -14,10 +14,8 @@ from libs.runtime.intent_conflict_resolver import resolve_intent_conflicts
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M27-2 intent conflict resolution policy check.")
-    p.add_argument("--json", action="store_true")
-    p.add_argument("--inject-fail", action="store_true")
-    return p
+    from scripts.diagnostics import m27_conflict_parser_projection as o
+    return o._build_parser(facade=sys.modules[__name__])
 
 
 def _default_intents(*, inject_fail: bool) -> List[Dict[str, Any]]:
@@ -91,9 +89,8 @@ def _default_intents(*, inject_fail: bool) -> List[Dict[str, Any]]:
 
 
 def _default_caps(*, inject_fail: bool) -> Dict[str, float]:
-    if inject_fail:
-        return {"005930": 1_000_000.0, "000660": 1_000_000.0}
-    return {"005930": 1_000_000.0, "000660": 200.0}
+    from scripts.diagnostics import m27_conflict_caps_projection as o
+    return o._default_caps(inject_fail=inject_fail,facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:

@@ -14,19 +14,13 @@ from libs.runtime.portfolio_allocation import allocate_portfolio_budget
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M27-1 multi-strategy allocation policy check.")
-    p.add_argument("--total-notional", type=float, default=1_000_000)
-    p.add_argument("--reserve-ratio", type=float, default=0.1)
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics import m27_allocation_parser_projection as o
+    return o._build_parser(facade=sys.modules[__name__])
 
 
 def _default_profiles() -> List[Dict[str, Any]]:
-    return [
-        {"strategy_id": "trend", "enabled": True, "weight": 0.6, "max_notional_ratio": 0.7},
-        {"strategy_id": "mean_reversion", "enabled": True, "weight": 0.3, "max_notional_ratio": 0.4},
-        {"strategy_id": "event_driven", "enabled": True, "weight": 0.1, "max_notional_ratio": 0.2},
-    ]
+    from scripts.diagnostics import m27_allocation_profiles_projection as o
+    return o._default_profiles(facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:
