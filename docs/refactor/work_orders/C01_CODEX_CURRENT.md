@@ -1,105 +1,217 @@
-# C01 — Codex B | B-20261101-10 | FAST-3 EIGHT NEW VERIFIED SOURCE BODY MOVEs + TWO PRIOR CARRYOVERS
+# C01 — Codex B | B-20261101-11 | FAST-3 8 NEW VERIFIED BODY MOVEs + 4 UNFINISHED CARRYOVERS
 
-**SINGLE ENTRY / PIN:** At start record CANONICAL_HEAD, ORDER_FILE_BLOB_SHA, OWNER_REMOTE_SHA and ORDER_ID=B-20261101-10. Read THIS document and named code/test only; do not read D00/RF/queue/C03/CURRENT/HANDOFF, do not self-select. Execute ALL A1–A8/B1–B8; any blocked item → next safe item. Previously pinned start order remains valid. C03 document commit is NOT G1/G2/G3 code work.
+**SINGLE ENTRY / PIN:** At start pin CANONICAL_HEAD, ORDER_FILE_BLOB_SHA, OWNER_REMOTE_SHA, ORDER_ID=B-20261101-11. Read THIS document and named code/test only. Do not read D00/RF/queue/C03/CURRENT/HANDOFF or self-select. Complete ALL NEW B1–B8 plus CARRYOVER K1–K4 (or per-item evidence BLOCKED); one PASS/first commit/short time is not stop. Pinned old start order remains valid. C03 DOC_ONLY does not count as code G1/G2/G3.
 
-**REMOTE_DONE:** B1–B5 plus earlier B7/B8 REMOTE_DONE, #12 6551023443; B6 and B-06 C1 remain CARRYOVER (not new). Do not reimplement completed prior order or rerun same-SHA tests. Source and Owner branch pinned for issuance: `b09c9670b3886019ff4ef91b4b133bd5e2afffd9`; canonical input HEAD must be rechecked at actor start. Each item has real function body and new Owner path; each TARGET verified absent on actor and integration before publication. **NEW_READY=8**. Two carryovers are additional obligations, not counted as NEW_READY.
+**REMOTE_DONE:** Previous B-10 B1–B6 = 6/8 REMOTE_DONE at B HEAD `cf39d797b581ebd4712eee194805a7c640146779`, normal 6/6 exit0, #12 6551645639. Old B7 `_build_markdown`, B8 `_build_parser`, older C1 `_seed_demo_dataset` and B-07 B6 `_prepare_candidate_dataset` remain source BODY, CARRYOVER 4, not new. No old PASS reruns on same SHA; only missing targeted cases. NEW_READY=8 separately. Current B HEAD `cf39d797b581ebd4712eee194805a7c640146779`; canonical HEAD must be refreshed by actor at start.
 
-**OWNER/SAFETY:** RF-063 CODEX_B only; actor branch `work/p15-b-operator-structure-20261022`. Allowed SOURCE paths: `scripts/diagnostics/check_audit_trail_completeness.py`; allowed NEW TARGET paths only those enumerated below; NEW targeted test `tests/test_p15_rf063_20261101_10h_audit_owners.py`, plus carryover-specific existing 06h/07h tests and two original SOURCE scripts only. Do not modify other actor code, D00/RF/STATUS/queue/C04/C05/RunLab, real operations, Broker/Guard/Step5C/UEF, frozen oracle/CI workflow, production state, trading/network/real data or force-push. No actual order, promotion, guard, file write or subprocess; evaluate/render in memory. B audit parser may only parse fake argv; A trust policy thresholds/permissions remain byte-identical. Any safety ambiguity blocks that item, not others.
+**RF/OWNER/SAFETY:** RF-063 CODEX_B exclusive. Only `scripts/diagnostics/check_log_archive_integrity.py`, `run_m27_allocation_policy_check.py`, `run_m27_conflict_resolution_check.py`, `check_audit_trail_completeness.py`, `run_m26_dataset_manifest_check.py`, `run_m26_closeout_check.py` (all under scripts/diagnostics), their named new target projection files, and `tests/test_p15_rf063_20261101_11h_diagnostic_owners.py` plus carryover 06h/07h/10h test files writable. These functions are diagnostic formatting, fake M27 fixture construction, CLI argument parsers, and isolated temporary fixture writers. NEVER execute actual trading/portfolio guard/broker/Step5C/UEF, RunLab, live filesystem or network; no real orders or real state. Do not alter D00/RF/STATUS/queue/C04/C05/other actor, frozen tests, CI workflows, live configuration, real policy semantics or force-push. All tests fake argv/dicts/TemporaryDirectory; no `main()` that invokes guard/allocation or writes operational reports.
 
-**TEST / PUSH:** Snapshot original golden and exact source blob before edit; Owner holds complete actual BODY and original SOURCE becomes a thin wrapper with call-time facade seams, unique import aliases `_c03_10_bN_owner` (avoid collision with previous orders). One new unittest per item in `tests/test_p15_rf063_20261101_10h_audit_owners.py`. Normal command `python -m unittest tests/test_p15_rf063_20261101_10h_audit_owners.py -v` expected exit0 **8/8** (NOT_RUN until actor executes); optional narrow existing tests, no mandatory blanket -O/full peer/hosted CI. Commit ONLY actor code/test, normal non-force push or approved expected-head lease, re-fetch actor HEAD and all changed SOURCE/Owner/test blobs; report per item, normal command/exit, exact SHA and measured START/END/ELAPSED to #12. Git auth failure=PUSH_BLOCKED not G1, continue safe work. C04 integrates, C05 G1/G2/G3/DONE/STATUS. No test/PASS is claimed by this order publication.
+**BODY/WRAPPER:** For each B1–B8 move complete exact original executable BODY below to one new target Owner (add required stdlib/typing imports); original SOURCE keeps same signature and only a local-import thin delegation to unique alias `_c03_11_bN_owner`, with `facade=sys.modules[__name__]` for call-time global/monkeypatch parity. Add `import sys` in SOURCE only if missing. Owner accepts keyword-only `facade`, resolves listed SOURCE globals at call time (e.g. `facade.argparse`, `facade.datetime`); no Owner→SOURCE import or duplicate calculation. Preserve argv flags, defaults, exceptions, return/copy/order and facade monkeypatch. Capture original golden before edit, AST confirm BODY removed, original vs wrapper vs Owner on fake inputs.
 
-**CARRYOVER NORMAL TESTS:** C1 must add its missing test to `tests/test_p15_rf063_20261101_06h_owners.py` and run normal exit0 8/8 (7 existing already previously passed). B6 must add missing test to `tests/test_p15_rf063_20261101_07h_owners.py` and run normal exit0 8/8 (7 existing already passed). Do not count prior 7 PASS as new. Use TemporaryDirectory only for C1/B6. Source B6 changed to current B blob `f9f4ff9c200cf895c8105eb8207723bc13bba1e8`; C1 current blob `c039f3df0b2427e901f07219990c63da70d7b95e`. Both targets confirmed 404 B/integration. Their exact original bodies and wrappers remain below, **CARRYOVER not new**.
+**TEST/PUSH:** Add 8 independent `unittest` cases to `tests/test_p15_rf063_20261101_11h_diagnostic_owners.py`; normal `python -m unittest tests/test_p15_rf063_20261101_11h_diagnostic_owners.py -v` expected exit0/8 tests (NOT_RUN at publication). Missing carryover tests in `tests/test_p15_rf063_20261101_10h_audit_owners.py` (B7/B8), `tests/test_p15_rf063_20261101_06h_owners.py` (K3), `tests/test_p15_rf063_20261101_07h_owners.py` (K4); do not count old PASS as new. Commit only allowed actor code/test, normal non-force push or approved expected-HEAD lease, re-fetch B HEAD and SOURCE/TARGET/test blobs, report each item, normal exit and measured START/END/ELAPSED to #12. Git auth failure=PUSH_BLOCKED only; continue safe local work. C04 integrates and C05 G1/G2/G3/STATUS; no C03 code achievement.
 
-## B1 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_audit_trail_completeness.py::_to_epoch` @ L15 | CURRENT_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6`
-**TARGET (404 on both refs VERIFIED):** `scripts/diagnostics/audit_trail_epoch_projection.py::_to_epoch`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+## B1 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_log_archive_integrity.py::_parse_day` @ L38 | CURRENT_BLOB `d1f0b80eb488188d70e30a78f227a1f289f1d2f5`
+**TARGET (404 both refs VERIFIED):** `scripts/diagnostics/archive_integrity_day_projection.py::_parse_day`; actual original BODY to move, not KEEP or copy:
 ```python
-def _to_epoch(ts: Any) -> Optional[int]:
-    if ts is None:
-        return None
-    if isinstance(ts, (int, float)):
-        return int(ts)
-    s = str(ts).strip()
+def _parse_day(value: str) -> Optional[date]:
+    s = str(value or "").strip()
     if not s:
         return None
     try:
-        return int(float(s))
-    except Exception:
-        pass
-    if s.endswith("Z"):
-        s = s[:-1] + "+00:00"
-    try:
-        dt = datetime.fromisoformat(s)
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return int(dt.timestamp())
+        return datetime.strptime(s, "%Y-%m-%d").date()
     except Exception:
         return None
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE _to_epoch, import scripts.diagnostics.audit_trail_epoch_projection as _c03_10_b1_owner; return _c03_10_b1_owner._to_epoch(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **datetime,timezone** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_b1_to_epoch`:** 1970-01-01T00:00:01Z→1; None→None; naive UTC and invalid. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #12; continue B2.
+**THIN WRAPPER/PATCH:** `_parse_day(...)` delegates via `_c03_11_b1_owner._parse_day(..., facade=sys.modules[__name__])`; Owner call-time globals: datetime. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
+**TARGETED `test_b1__parse_day`:** '2026-11-01' -> date(2026,11,1); bad/empty -> None; patched SOURCE.datetime.strptime reaches Owner. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B2.
 
-## B2 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_audit_trail_completeness.py::_utc_day` @ L38 | CURRENT_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6`
-**TARGET (404 on both refs VERIFIED):** `scripts/diagnostics/audit_trail_utc_day_projection.py::_utc_day`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+## B2 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_log_archive_integrity.py::_markdown` @ L48 | CURRENT_BLOB `d1f0b80eb488188d70e30a78f227a1f289f1d2f5`
+**TARGET (404 both refs VERIFIED):** `scripts/diagnostics/archive_integrity_markdown_projection.py::_markdown`; actual original BODY to move, not KEEP or copy:
 ```python
-def _utc_day(ts: Any) -> str:
-    epoch = _to_epoch(ts)
-    if epoch is None:
-        return datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    return datetime.fromtimestamp(epoch, tz=timezone.utc).strftime("%Y-%m-%d")
+def _markdown(out: Dict[str, Any]) -> str:
+    lines = [
+        f"# Log Archive Integrity ({out.get('day')})",
+        "",
+        f"- ok: **{bool(out.get('ok'))}**",
+        f"- archive_dir: `{out.get('archive_dir')}`",
+        f"- manifest_path: `{out.get('manifest_path')}`",
+        f"- file_total: **{int(out.get('file_total') or 0)}**",
+        f"- verified_total: **{int(out.get('verified_total') or 0)}**",
+        "",
+        "## Integrity Totals",
+        "",
+        f"- missing_file_total: {int(out.get('missing_file_total') or 0)}",
+        f"- hash_mismatch_total: {int(out.get('hash_mismatch_total') or 0)}",
+        f"- bytes_mismatch_total: {int(out.get('bytes_mismatch_total') or 0)}",
+        f"- line_count_mismatch_total: {int(out.get('line_count_mismatch_total') or 0)}",
+        "",
+        "## Retention",
+        "",
+        f"- retention_days: {int(out.get('retention_days') or 0)}",
+        f"- stale_archive_total: {int(out.get('stale_archive_total') or 0)}",
+    ]
+    stale = out.get("stale_archive_days") if isinstance(out.get("stale_archive_days"), list) else []
+    if stale:
+        lines.append(f"- stale_archive_days: {', '.join(str(x) for x in stale)}")
+    else:
+        lines.append("- stale_archive_days: (none)")
+    lines += ["", "## Failures", ""]
+    failures = out.get("failures") if isinstance(out.get("failures"), list) else []
+    if failures:
+        for msg in failures:
+            lines.append(f"- {msg}")
+    else:
+        lines.append("- (none)")
+    lines.append("")
+    return "\n".join(lines)
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE _utc_day, import scripts.diagnostics.audit_trail_utc_day_projection as _c03_10_b2_owner; return _c03_10_b2_owner._utc_day(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **_to_epoch,datetime,timezone** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_b2_utc_day`:** ts=1→'1970-01-01'; None with fake datetime.now→fixed day. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #12; continue B3.
+**THIN WRAPPER/PATCH:** `_markdown(...)` delegates via `_c03_11_b2_owner._markdown(..., facade=sys.modules[__name__])`; Owner call-time globals: none. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
+**TARGETED `test_b2__markdown`:** {'day':'2026-11-01','ok':True,'file_total':0,'failures':[]} -> heading '# Log Archive Integrity (2026-11-01)', '(none)' failures and terminal newline; stale days deterministic. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B3.
 
-## B3 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_audit_trail_completeness.py::_extract_ts` @ L45 | CURRENT_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6`
-**TARGET (404 on both refs VERIFIED):** `scripts/diagnostics/audit_trail_extract_ts_projection.py::_extract_ts`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+## B3 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_log_archive_integrity.py::_build_parser` @ L86 | CURRENT_BLOB `d1f0b80eb488188d70e30a78f227a1f289f1d2f5`
+**TARGET (404 both refs VERIFIED):** `scripts/diagnostics/archive_integrity_parser_projection.py::_build_parser`; actual original BODY to move, not KEEP or copy:
 ```python
-def _extract_ts(row: Dict[str, Any]) -> Any:
-    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
-    return row.get("ts") or payload.get("ts")
+def _build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(description="Check archive manifest/hash integrity and retention policy.")
+    p.add_argument("--archive-dir", default="data/logs/archive")
+    p.add_argument("--report-dir", default="reports/archive_integrity")
+    p.add_argument("--day", default=None)
+    p.add_argument("--retention-days", type=int, default=30)
+    p.add_argument("--allow-stale", action="store_true", help="Do not fail on stale archive days.")
+    p.add_argument("--json", action="store_true")
+    return p
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE _extract_ts, import scripts.diagnostics.audit_trail_extract_ts_projection as _c03_10_b3_owner; return _c03_10_b3_owner._extract_ts(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **none** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_b3_extract_ts`:** {ts:0,payload:{ts:42}}→42; absent→None. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #12; continue B4.
+**THIN WRAPPER/PATCH:** `_build_parser(...)` delegates via `_c03_11_b3_owner._build_parser(..., facade=sys.modules[__name__])`; Owner call-time globals: argparse. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
+**TARGETED `test_b3__build_parser`:** parse_args([]) -> retention_days=30, archive_dir='data/logs/archive'; --retention-days 7 --json -> 7,True. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B4.
 
-## B4 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_audit_trail_completeness.py::_extract_decision_action` @ L68 | CURRENT_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6`
-**TARGET (404 on both refs VERIFIED):** `scripts/diagnostics/audit_trail_decision_action_projection.py::_extract_decision_action`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+## B4 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m27_allocation_policy_check.py::_build_parser` @ L16 | CURRENT_BLOB `bb39094be47fb5da438b65a1107ffa260b761407`
+**TARGET (404 both refs VERIFIED):** `scripts/diagnostics/m27_allocation_parser_projection.py::_build_parser`; actual original BODY to move, not KEEP or copy:
 ```python
-def _extract_decision_action(row: Dict[str, Any]) -> str:
-    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
-    packet = payload.get("decision_packet") if isinstance(payload.get("decision_packet"), dict) else {}
-    intent = packet.get("intent") if isinstance(packet.get("intent"), dict) else {}
-    action = intent.get("action") or payload.get("action") or payload.get("intent")
-    return str(action or "").strip().upper()
+def _build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(description="M27-1 multi-strategy allocation policy check.")
+    p.add_argument("--total-notional", type=float, default=1_000_000)
+    p.add_argument("--reserve-ratio", type=float, default=0.1)
+    p.add_argument("--json", action="store_true")
+    return p
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE _extract_decision_action, import scripts.diagnostics.audit_trail_decision_action_projection as _c03_10_b4_owner; return _c03_10_b4_owner._extract_decision_action(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **none** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_b4_extract_decision_action`:** nested intent.action='buy'→'BUY'; absent→''. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #12; continue B5.
+**THIN WRAPPER/PATCH:** `_build_parser(...)` delegates via `_c03_11_b4_owner._build_parser(..., facade=sys.modules[__name__])`; Owner call-time globals: argparse. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
+**TARGETED `test_b4__build_parser`:** parse_args([]) -> total_notional=1000000, reserve_ratio=.1; --total-notional 200 --json -> 200,True. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B5.
 
-## B5 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_audit_trail_completeness.py::_extract_allowed` @ L76 | CURRENT_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6`
-**TARGET (404 on both refs VERIFIED):** `scripts/diagnostics/audit_trail_allowed_projection.py::_extract_allowed`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+## B5 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m27_allocation_policy_check.py::_default_profiles` @ L24 | CURRENT_BLOB `bb39094be47fb5da438b65a1107ffa260b761407`
+**TARGET (404 both refs VERIFIED):** `scripts/diagnostics/m27_allocation_profiles_projection.py::_default_profiles`; actual original BODY to move, not KEEP or copy:
 ```python
-def _extract_allowed(row: Dict[str, Any]) -> Optional[bool]:
-    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
-    v = payload.get("allowed")
-    if isinstance(v, bool):
-        return v
-    return None
+def _default_profiles() -> List[Dict[str, Any]]:
+    return [
+        {"strategy_id": "trend", "enabled": True, "weight": 0.6, "max_notional_ratio": 0.7},
+        {"strategy_id": "mean_reversion", "enabled": True, "weight": 0.3, "max_notional_ratio": 0.4},
+        {"strategy_id": "event_driven", "enabled": True, "weight": 0.1, "max_notional_ratio": 0.2},
+    ]
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE _extract_allowed, import scripts.diagnostics.audit_trail_allowed_projection as _c03_10_b5_owner; return _c03_10_b5_owner._extract_allowed(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **none** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_b5_extract_allowed`:** payload.allowed=True→True; allowed=1→None. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #12; continue B6.
+**THIN WRAPPER/PATCH:** `_default_profiles(...)` delegates via `_c03_11_b5_owner._default_profiles(..., facade=sys.modules[__name__])`; Owner call-time globals: none. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
+**TARGETED `test_b5__default_profiles`:** 3 rows, strategy_id trend/mean_reversion/event_driven, weights .6/.3/.1, max ratios .7/.4/.2; returned list is fresh. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B6.
 
-## B6 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_audit_trail_completeness.py::_latest_day` @ L84 | CURRENT_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6`
-**TARGET (404 on both refs VERIFIED):** `scripts/diagnostics/audit_trail_latest_day_projection.py::_latest_day`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+## B6 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m27_conflict_resolution_check.py::_build_parser` @ L16 | CURRENT_BLOB `3d550fe979019be37f15dbe968ca2ccd35348f13`
+**TARGET (404 both refs VERIFIED):** `scripts/diagnostics/m27_conflict_parser_projection.py::_build_parser`; actual original BODY to move, not KEEP or copy:
 ```python
-def _latest_day(rows: List[Dict[str, Any]]) -> str:
-    days = sorted({str(r.get("_day") or "") for r in rows if str(r.get("_day") or "").strip()})
-    if days:
-        return str(days[-1])
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+def _build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(description="M27-2 intent conflict resolution policy check.")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--inject-fail", action="store_true")
+    return p
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE _latest_day, import scripts.diagnostics.audit_trail_latest_day_projection as _c03_10_b6_owner; return _c03_10_b6_owner._latest_day(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **datetime,timezone** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_b6_latest_day`:** days 2026-10-30 and 2026-11-01→2026-11-01; [] with fake datetime.now→fixed day. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #12; continue B7.
+**THIN WRAPPER/PATCH:** `_build_parser(...)` delegates via `_c03_11_b6_owner._build_parser(..., facade=sys.modules[__name__])`; Owner call-time globals: argparse. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
+**TARGETED `test_b6__build_parser`:** parse_args([]) -> inject_fail False; --inject-fail --json -> both True. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B7.
 
-## B7 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_audit_trail_completeness.py::_build_markdown` @ L212 | CURRENT_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6`
-**TARGET (404 on both refs VERIFIED):** `scripts/diagnostics/audit_trail_markdown_projection.py::_build_markdown`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+## B7 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m27_conflict_resolution_check.py::_default_intents` @ L23 | CURRENT_BLOB `3d550fe979019be37f15dbe968ca2ccd35348f13`
+**TARGET (404 both refs VERIFIED):** `scripts/diagnostics/m27_conflict_intents_projection.py::_default_intents`; actual original BODY to move, not KEEP or copy:
+```python
+def _default_intents(*, inject_fail: bool) -> List[Dict[str, Any]]:
+    if inject_fail:
+        # no opposite-side conflict and no cap overflow on purpose.
+        return [
+            {
+                "intent_id": "i1",
+                "strategy_id": "trend",
+                "symbol": "005930",
+                "side": "BUY",
+                "qty": 1,
+                "price": 100,
+                "priority": 9,
+                "confidence": 0.9,
+            },
+            {
+                "intent_id": "i2",
+                "strategy_id": "mean_reversion",
+                "symbol": "000660",
+                "side": "BUY",
+                "qty": 1,
+                "price": 100,
+                "priority": 8,
+                "confidence": 0.8,
+            },
+        ]
+
+    return [
+        {
+            "intent_id": "i1",
+            "strategy_id": "trend",
+            "symbol": "005930",
+            "side": "BUY",
+            "qty": 1,
+            "price": 100,
+            "priority": 9,
+            "confidence": 0.9,
+        },
+        {
+            "intent_id": "i2",
+            "strategy_id": "mean_reversion",
+            "symbol": "005930",
+            "side": "SELL",
+            "qty": 1,
+            "price": 100,
+            "priority": 3,
+            "confidence": 0.4,
+        },
+        {
+            "intent_id": "i3",
+            "strategy_id": "event_driven",
+            "symbol": "000660",
+            "side": "BUY",
+            "qty": 4,
+            "price": 40,
+            "priority": 8,
+            "confidence": 0.8,
+        },
+        {
+            "intent_id": "i4",
+            "strategy_id": "trend",
+            "symbol": "000660",
+            "side": "BUY",
+            "qty": 3,
+            "price": 40,
+            "priority": 2,
+            "confidence": 0.4,
+        },
+    ]
+```
+**THIN WRAPPER/PATCH:** `_default_intents(...)` delegates via `_c03_11_b7_owner._default_intents(..., facade=sys.modules[__name__])`; Owner call-time globals: none. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
+**TARGETED `test_b7__default_intents`:** inject_fail=False -> 4 intents including opposing BUY/SELL on 005930; True -> 2 BUY intents on distinct symbols; fresh list. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B8.
+
+## B8 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m27_conflict_resolution_check.py::_default_caps` @ L93 | CURRENT_BLOB `3d550fe979019be37f15dbe968ca2ccd35348f13`
+**TARGET (404 both refs VERIFIED):** `scripts/diagnostics/m27_conflict_caps_projection.py::_default_caps`; actual original BODY to move, not KEEP or copy:
+```python
+def _default_caps(*, inject_fail: bool) -> Dict[str, float]:
+    if inject_fail:
+        return {"005930": 1_000_000.0, "000660": 1_000_000.0}
+    return {"005930": 1_000_000.0, "000660": 200.0}
+```
+**THIN WRAPPER/PATCH:** `_default_caps(...)` delegates via `_c03_11_b8_owner._default_caps(..., facade=sys.modules[__name__])`; Owner call-time globals: none. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
+**TARGETED `test_b8__default_caps`:** inject_fail=False -> {'005930':1000000.,'000660':200.}; True -> 000660:1000000.. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue all remaining carryovers.
+
+## CARRYOVER — 4 ACTUAL UNFINISHED BODY MOVEs (NOT NEW_READY; MUST COMPLETE)
+
+### K1 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_audit_trail_completeness.py::_build_markdown` @ L184 | CURRENT_BLOB `fa531aebeeb1ff6d72905bc1b50be96721b94d4e`
+**TARGET (404 both refs):** `scripts/diagnostics/audit_trail_markdown_projection.py::_build_markdown`; previous order pending, not new. Move COMPLETE actual body below, original thin wrapper with call-time facade and no duplicate body:
 ```python
 def _build_markdown(*, day: str, out: Dict[str, Any]) -> str:
     anomalies = out.get("anomaly_examples") if isinstance(out.get("anomaly_examples"), dict) else {}
@@ -153,11 +265,11 @@ def _build_markdown(*, day: str, out: Dict[str, Any]) -> str:
     lines.append("")
     return "\n".join(lines)
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE _build_markdown, import scripts.diagnostics.audit_trail_markdown_projection as _c03_10_b7_owner; return _c03_10_b7_owner._build_markdown(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **none** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_b7_build_markdown`:** day=2026-11-01,out={ok:true,events:0} => heading, no anomalies/failures, terminal newline; anomalies/stage_event_total deterministic ordering. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #12; continue B8.
+**WRAPPER/PATCH:** SOURCE original signature; unique alias `_c03_11_k1_owner` local import, sole Owner delegation with `facade=sys.modules[__name__]`; Owner call-time globals none; preserve errors, outputs, mutation, order, effects in isolated temp ONLY.
+**NORMAL TARGETED:** add missing `test_k1__build_markdown` in `tests/test_p15_rf063_20261101_10h_audit_owners.py`: day=2026-11-01,out={ok:True,events:0} -> header, no failures, terminal newline; fake in-memory. Golden original vs wrapper/Owner, AST check; run that exact file via `python -m unittest tests/test_p15_rf063_20261101_10h_audit_owners.py -v` expecting full original+new suite exit0, no stale PASS reuse. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
 
-## B8 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_audit_trail_completeness.py::_build_parser` @ L265 | CURRENT_BLOB `1df9947a268f31d73639542db4a09eaac6e172b6`
-**TARGET (404 on both refs VERIFIED):** `scripts/diagnostics/audit_trail_parser_projection.py::_build_parser`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+### K2 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_audit_trail_completeness.py::_build_parser` @ L237 | CURRENT_BLOB `fa531aebeeb1ff6d72905bc1b50be96721b94d4e`
+**TARGET (404 both refs):** `scripts/diagnostics/audit_trail_parser_projection.py::_build_parser`; previous order pending, not new. Move COMPLETE actual body below, original thin wrapper with call-time facade and no duplicate body:
 ```python
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Check intent->decision->execution audit trail completeness.")
@@ -168,13 +280,11 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--json", action="store_true")
     return p
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE _build_parser, import scripts.diagnostics.audit_trail_parser_projection as _c03_10_b8_owner; return _c03_10_b8_owner._build_parser(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **argparse** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_b8_build_parser`:** parse_args([]) yields event_log_path=data/logs/events.jsonl and report_dir=reports/audit; --day 2026-11-01 --json yields expected fields; patched argparse.ArgumentParser reaches Owner. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #12; continue all other safe items and push.
+**WRAPPER/PATCH:** SOURCE original signature; unique alias `_c03_11_k2_owner` local import, sole Owner delegation with `facade=sys.modules[__name__]`; Owner call-time globals argparse; preserve errors, outputs, mutation, order, effects in isolated temp ONLY.
+**NORMAL TARGETED:** add missing `test_k2__build_parser` in `tests/test_p15_rf063_20261101_10h_audit_owners.py`: parse_args([]) -> event_log_path='data/logs/events.jsonl'; --day 2026-11-01 --json -> expected fields. Golden original vs wrapper/Owner, AST check; run that exact file via `python -m unittest tests/test_p15_rf063_20261101_10h_audit_owners.py -v` expecting full original+new suite exit0, no stale PASS reuse. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
 
-## CARRYOVER — TWO UNFINISHED PRIOR MOVEs, NOT NEW
-## CARRYOVER — ONE UNFINISHED B-06 BODY MOVE (NOT NEW; C2 REMOTE_DONE)
-### C1 (B-06 B3 REMAINING, NOT NEW) | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_dataset_manifest_check.py::_seed_demo_dataset` @ L52 | CURRENT_BLOB `c039f3df0b2427e901f07219990c63da70d7b95e`
-**TARGET STILL 404 B/integration:** `scripts/diagnostics/m26_manifest_seed_projection.py::_seed_demo_dataset`. Move entire actual body, not stub:
+### K3 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_dataset_manifest_check.py::_seed_demo_dataset` @ L52 | CURRENT_BLOB `c039f3df0b2427e901f07219990c63da70d7b95e`
+**TARGET (404 both refs):** `scripts/diagnostics/m26_manifest_seed_projection.py::_seed_demo_dataset`; previous order pending, not new. Move COMPLETE actual body below, original thin wrapper with call-time facade and no duplicate body:
 ```python
 def _seed_demo_dataset(root: Path) -> Path:
     root.mkdir(parents=True, exist_ok=True)
@@ -301,12 +411,11 @@ def _seed_demo_dataset(root: Path) -> Path:
     _write_text(manifest_path, json.dumps(manifest, ensure_ascii=False, indent=2))
     return manifest_path
 ```
-**WRAPPER:** original SOURCE signature, unique alias `_b06_c1_owner`, import `scripts.diagnostics.m26_manifest_seed_projection`, sole Owner delegation with `facade=sys.modules[__name__]`. Owner call-time seams: _write_text,_utc_now_iso,json,SCHEMA_VERSION,REQUIRED_COMPONENT_FILES; no real datasets. **NORMAL `test_b3__seed_demo_dataset` in EXISTING `tests/test_p15_rf063_20261101_06h_owners.py`:** Temp root→manifest.json schema_version m26.dataset_manifest.v1 and 12 expected components; fake timestamp; preserve all original CSV/JSONL bytes and file paths; golden vs wrapper vs Owner, AST old BODY removed. BLOCKED→continue B1–B8.
+**WRAPPER/PATCH:** SOURCE original signature; unique alias `_c03_11_k3_owner` local import, sole Owner delegation with `facade=sys.modules[__name__]`; Owner call-time globals _write_text,_utc_now_iso,json,SCHEMA_VERSION,REQUIRED_COMPONENT_FILES; preserve errors, outputs, mutation, order, effects in isolated temp ONLY.
+**NORMAL TARGETED:** add missing `test_k3__seed_demo_dataset` in `tests/test_p15_rf063_20261101_06h_owners.py`: TemporaryDirectory -> manifest.json, all original CSV/JSONL bytes and 12 component paths; fake _utc_now_iso, no real files. Golden original vs wrapper/Owner, AST check; run that exact file via `python -m unittest tests/test_p15_rf063_20261101_06h_owners.py -v` expecting full original+new suite exit0, no stale PASS reuse. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
 
-## B-07 REMAINING — SIX INDEPENDENT VERIFIED SOURCE BODY MOVEs (B7/B8 REMOTE_DONE)
-
-## B6 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_closeout_check.py::_prepare_candidate_dataset` @ L63 | CURRENT_BLOB `f9f4ff9c200cf895c8105eb8207723bc13bba1e8`
-**NEW TARGET (404 B/integration VERIFIED):** `scripts/diagnostics/m26_closeout_candidate_projection.py::_prepare_candidate_dataset`. MOVE **COMPLETE executable body below** into Owner with original signature + keyword-only facade; keep original SOURCE signature and replace with thin wrapper only.
+### K4 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_closeout_check.py::_prepare_candidate_dataset` @ L63 | CURRENT_BLOB `f9f4ff9c200cf895c8105eb8207723bc13bba1e8`
+**TARGET (404 both refs):** `scripts/diagnostics/m26_closeout_candidate_projection.py::_prepare_candidate_dataset`; previous order pending, not new. Move COMPLETE actual body below, original thin wrapper with call-time facade and no duplicate body:
 ```python
 def _prepare_candidate_dataset(candidate_root: Path, *, day: str) -> None:
     # Overwrite candidate timeline so candidate clearly outperforms baseline on realized PnL.
@@ -336,12 +445,16 @@ def _prepare_candidate_dataset(candidate_root: Path, *, day: str) -> None:
         encoding="utf-8",
     )
 ```
-**THIN WRAPPER / MONKEYPATCH:** SOURCE local import `scripts.diagnostics.m26_closeout_candidate_projection as _b07_6_owner`, sole `return _b07_6_owner._prepare_candidate_dataset(<original args forwarded>, facade=sys.modules[__name__])`; unique alias avoids collisions. Owner must not import SOURCE. Resolve listed call-time globals through facade: _write_jsonl,Path methods. Preserve output/exception, nested function, JSON order, CLI args and side-effect boundaries. 
-**NORMAL TARGETED `test_b6__prepare_candidate_dataset`:** TemporaryDirectory precreate execution/ and market/; fake _write_jsonl captures 3 file groups; market/ohlcv_1d.csv close=115 vs open=100, no operational path. Compare original-golden vs wrapper vs direct Owner, positive/negative/exception, patched facade, AST SOURCE old BODY removed. **BLOCKED→NEXT:** record exact error/SHA; continue remaining safe B1–B6 and C1.
+**WRAPPER/PATCH:** SOURCE original signature; unique alias `_c03_11_k4_owner` local import, sole Owner delegation with `facade=sys.modules[__name__]`; Owner call-time globals _write_jsonl; preserve errors, outputs, mutation, order, effects in isolated temp ONLY.
+**NORMAL TARGETED:** add missing `test_k4__prepare_candidate_dataset` in `tests/test_p15_rf063_20261101_07h_owners.py`: TemporaryDirectory with market/ and execution/ precreated; fake _write_jsonl; candidate market close=115 vs open=100. Golden original vs wrapper/Owner, AST check; run that exact file via `python -m unittest tests/test_p15_rf063_20261101_07h_owners.py -v` expecting full original+new suite exit0, no stale PASS reuse. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
 
+## FUTURE RESERVE — VERIFIED 6/6 (DESIGN ONLY; NOT EXECUTABLE)
 
+- **R1 RF-063 CODEX_B VERIFIED:** SOURCE `scripts/diagnostics/run_m27_portfolio_budget_boundary_check.py::_build_parser` @ L17, current blob `e8c050b18e8a523becf28db5c6c0f22198f46f37`; TARGET `scripts/diagnostics/m27_budget_parser_projection.py::_build_parser` absent on B/integration. Original actual BODY confirmed: `p = argparse.ArgumentParser(description="M27-3 portfolio budget boundary check.") p.add_argument("--json", action="store_true") p.add_argument("--inject-fail", action="store_true")` (not a wrapper). Call-time facade argparse; fake in-memory test [] -> inject_fail False, --inject-fail True. No actual guard/allocation/main invocation. NOT EXECUTABLE until C03 revalidates and promotes.
+- **R2 RF-063 CODEX_B VERIFIED:** SOURCE `scripts/diagnostics/run_m27_portfolio_budget_boundary_check.py::_profiles` @ L24, current blob `e8c050b18e8a523becf28db5c6c0f22198f46f37`; TARGET `scripts/diagnostics/m27_budget_profiles_projection.py::_profiles` absent on B/integration. Original actual BODY confirmed: `return [ {"strategy_id": "trend", "enabled": True, "weight": 0.5}, {"strategy_id": "mean_reversion", "enabled": True, "weight": 0.3},` (not a wrapper). Call-time facade none; fake in-memory test 3 profiles, weights .5/.3/.2. No actual guard/allocation/main invocation. NOT EXECUTABLE until C03 revalidates and promotes.
+- **R3 RF-063 CODEX_B VERIFIED:** SOURCE `scripts/diagnostics/run_m27_portfolio_budget_boundary_check.py::_intents` @ L32, current blob `e8c050b18e8a523becf28db5c6c0f22198f46f37`; TARGET `scripts/diagnostics/m27_budget_intents_projection.py::_intents` absent on B/integration. Original actual BODY confirmed: `if inject_fail: return [ {` (not a wrapper). Call-time facade none; fake in-memory test normal 5 intents, inject_fail 2 intents; in-memory only, no guard call. No actual guard/allocation/main invocation. NOT EXECUTABLE until C03 revalidates and promotes.
+- **R4 RF-063 CODEX_B VERIFIED:** SOURCE `scripts/diagnostics/run_m27_portfolio_budget_boundary_check.py::_symbol_caps` @ L104, current blob `e8c050b18e8a523becf28db5c6c0f22198f46f37`; TARGET `scripts/diagnostics/m27_budget_caps_projection.py::_symbol_caps` absent on B/integration. Original actual BODY confirmed: `if inject_fail: return {"005930": 10_000.0, "000660": 10_000.0} return {"005930": 10_000.0, "000660": 500.0}` (not a wrapper). Call-time facade none; fake in-memory test normal 000660=500; inject_fail 000660=10000. No actual guard/allocation/main invocation. NOT EXECUTABLE until C03 revalidates and promotes.
+- **R5 RF-063 CODEX_B VERIFIED:** SOURCE `scripts/diagnostics/run_m27_closeout_check.py::_build_parser` @ L30, current blob `1f48a79ecff887921682f180a1a3aa9214795416`; TARGET `scripts/diagnostics/m27_closeout_parser_projection.py::_build_parser` absent on B/integration. Original actual BODY confirmed: `p = argparse.ArgumentParser(description="M27 closeout check (allocation/conflict/guard/metrics/notify).") p.add_argument("--event-log-dir", default="data/logs/m27_closeout") p.add_argument("--report-dir", default="reports/m27_closeout")` (not a wrapper). Call-time facade argparse; fake in-memory test parse_args([]) default event-log-dir, parse_args(['--json']) sets json=True. No actual guard/allocation/main invocation. NOT EXECUTABLE until C03 revalidates and promotes.
+- **R6 RF-063 CODEX_B VERIFIED:** SOURCE `scripts/diagnostics/run_m29_closeout_check.py::_build_parser` @ L25, current blob `ac491cb4ec89ff72ed64d9466055f06f936019f3`; TARGET `scripts/diagnostics/m29_closeout_parser_projection.py::_build_parser` absent on B/integration. Original actual BODY confirmed: `p = argparse.ArgumentParser(description="M29 governance closeout check (audit/archive/timeline/dr).") p.add_argument("--event-log-dir", default="data/logs/m29_closeout") p.add_argument("--report-dir", default="reports/m29_closeout")` (not a wrapper). Call-time facade argparse; fake in-memory test parse_args([]) default day=None or declared default; --json=True, fake argv only. No actual guard/allocation/main invocation. NOT EXECUTABLE until C03 revalidates and promotes.
 
-## FUTURE RESERVE — RESERVE_NOT_VERIFIED 0/6 (DESIGN ONLY, NOT EXECUTABLE)
-All six previously VERIFIED candidates have been promoted into this executable order and cannot be reused as future reserve. RESERVE_NOT_VERIFIED 0/6: next analyze RF-063 audit analyzer/read-model pure subfunctions and separate diagnostic sources; validate source and target on both refs before VERIFIED. Do not infer safe new functions from names alone. Next C03 must independently inspect new SOURCE BODY/blob, Owner exclusivity, target 404 on both refs, effect/monkeypatch, normal fixture before issuing or marking VERIFIED.
-
-**COUNTS:** previous REMOTE_DONE as above; NEW_READY=8 actual source BODY MOVEs, FUTURE_RESERVE_VERIFIED=0/6; C03 DOC_ONLY code G1/G2/G3=0 and RF_DONE_DELTA=0. RunLab Exited(255), RUN_SOURCE_SHA=UNKNOWN; do not touch runtime.
+**COUNTS:** previous B-10 REMOTE_DONE=6/8, CARRYOVER_PENDING=4 (old B7/B8 and older C1/B6); NEW_READY=8 actual independent SOURCE BODY MOVEs; FUTURE_RESERVE_VERIFIED=6/6; actor tests NOT_RUN at issuance, C03 DOC_ONLY code G1/G2/G3=0 and RF_DONE_DELTA=0. RunLab Exited(255), RUN_SOURCE_SHA=UNKNOWN, no runtime action.
