@@ -28,6 +28,12 @@ from libs.reporting.report_source_helpers import (
 )
 import sys as _r3_sys
 from libs.reporting import operator_visibility_build_run_contexts as _a26_build_run_contexts
+from libs.reporting import operator_visibility_pick_day as _a27_pick_day
+from libs.reporting import operator_visibility_safe_int as _a27_safe_int
+from libs.reporting import operator_visibility_safe_float as _a27_safe_float
+from libs.reporting import operator_visibility_health_badge as _a27_health_badge
+from libs.reporting import operator_visibility_compact_blocking_features as _a27_compact_blocking_features
+from libs.reporting import operator_visibility_decision_trace_inner as _a27_decision_trace_inner
 from libs.reporting.operator_visibility_parts.summary_snapshot_and_bundle import (
     build_operator_summary_snapshot_from_payload_r3_impl,
     build_separated_operator_brief_r3_impl,
@@ -123,26 +129,15 @@ def _read_json(path: Path) -> Dict[str, Any]:
 
 
 def _safe_int(v: Any, default: int = 0) -> int:
-    try:
-        return int(float(v))
-    except Exception:
-        return int(default)
+    return _a27_safe_int._safe_int(v=v, default=default, facade=_r3_sys.modules[__name__])
 
 
 def _safe_float(v: Any, default: float = 0.0) -> float:
-    try:
-        return float(v)
-    except Exception:
-        return float(default)
+    return _a27_safe_float._safe_float(v=v, default=default, facade=_r3_sys.modules[__name__])
 
 
 def _pick_day(rows: List[Dict[str, Any]], requested_day: Optional[str]) -> str:
-    if requested_day:
-        return str(requested_day).strip()
-    days = sorted({str(r.get("_day")) for r in rows if r.get("_day")})
-    if days:
-        return days[-1]
-    return date.today().isoformat()
+    return _a27_pick_day._pick_day(rows=rows, requested_day=requested_day, facade=_r3_sys.modules[__name__])
 
 
 def _find_day_artifact(base_dir: Path, prefix: str, day: str) -> Dict[str, Any]:
@@ -247,10 +242,7 @@ def _normalize_reason_code(
 
 
 def _health_badge(level: str) -> str:
-    lv = str(level or "").strip().upper()
-    if lv not in ("GREEN", "YELLOW", "RED"):
-        return f"[{lv or 'UNKNOWN'}]"
-    return f"[{lv}]"
+    return _a27_health_badge._health_badge(level=level, facade=_r3_sys.modules[__name__])
 
 
 def _render_reason_top(counter: Counter[str], *, topn: int = 5) -> List[Dict[str, Any]]:
@@ -266,9 +258,7 @@ def _compact_distance_to_ready_text(raw: Any) -> str:
 
 
 def _compact_blocking_features(raw: Any, *, limit: int = 3) -> str:
-    values = raw if isinstance(raw, list) else []
-    clipped = [str(v or "").strip() for v in values if str(v or "").strip()]
-    return ", ".join(clipped[:limit]) if clipped else "-"
+    return _a27_compact_blocking_features._compact_blocking_features(raw=raw, limit=limit, facade=_r3_sys.modules[__name__])
 
 
 def _merge_scanner_handoff_with_selection(
@@ -317,8 +307,7 @@ def _is_trade_story(story: Dict[str, Any]) -> bool:
 
 
 def _decision_trace_inner(payload: Dict[str, Any]) -> Dict[str, Any]:
-    inner = payload.get("payload") if isinstance(payload.get("payload"), dict) else {}
-    return inner if isinstance(inner, dict) else {}
+    return _a27_decision_trace_inner._decision_trace_inner(payload=payload, facade=_r3_sys.modules[__name__])
 
 
 def _iter_day_rows_with_epoch(events_path: Path, day: str) -> Iterable[Dict[str, Any]]:
