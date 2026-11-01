@@ -36,62 +36,18 @@ def _load_manifest(path: Path) -> Dict[str, Any]:
 
 
 def _parse_day(value: str) -> Optional[date]:
-    s = str(value or "").strip()
-    if not s:
-        return None
-    try:
-        return datetime.strptime(s, "%Y-%m-%d").date()
-    except Exception:
-        return None
+    from scripts.diagnostics import archive_integrity_day_projection as _c03_11_b1_owner
+    return _c03_11_b1_owner._parse_day(value, facade=_migration_sys.modules[__name__])
 
 
 def _markdown(out: Dict[str, Any]) -> str:
-    lines = [
-        f"# Log Archive Integrity ({out.get('day')})",
-        "",
-        f"- ok: **{bool(out.get('ok'))}**",
-        f"- archive_dir: `{out.get('archive_dir')}`",
-        f"- manifest_path: `{out.get('manifest_path')}`",
-        f"- file_total: **{int(out.get('file_total') or 0)}**",
-        f"- verified_total: **{int(out.get('verified_total') or 0)}**",
-        "",
-        "## Integrity Totals",
-        "",
-        f"- missing_file_total: {int(out.get('missing_file_total') or 0)}",
-        f"- hash_mismatch_total: {int(out.get('hash_mismatch_total') or 0)}",
-        f"- bytes_mismatch_total: {int(out.get('bytes_mismatch_total') or 0)}",
-        f"- line_count_mismatch_total: {int(out.get('line_count_mismatch_total') or 0)}",
-        "",
-        "## Retention",
-        "",
-        f"- retention_days: {int(out.get('retention_days') or 0)}",
-        f"- stale_archive_total: {int(out.get('stale_archive_total') or 0)}",
-    ]
-    stale = out.get("stale_archive_days") if isinstance(out.get("stale_archive_days"), list) else []
-    if stale:
-        lines.append(f"- stale_archive_days: {', '.join(str(x) for x in stale)}")
-    else:
-        lines.append("- stale_archive_days: (none)")
-    lines += ["", "## Failures", ""]
-    failures = out.get("failures") if isinstance(out.get("failures"), list) else []
-    if failures:
-        for msg in failures:
-            lines.append(f"- {msg}")
-    else:
-        lines.append("- (none)")
-    lines.append("")
-    return "\n".join(lines)
+    from scripts.diagnostics import archive_integrity_markdown_projection as _c03_11_b2_owner
+    return _c03_11_b2_owner._markdown(out, facade=_migration_sys.modules[__name__])
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Check archive manifest/hash integrity and retention policy.")
-    p.add_argument("--archive-dir", default="data/logs/archive")
-    p.add_argument("--report-dir", default="reports/archive_integrity")
-    p.add_argument("--day", default=None)
-    p.add_argument("--retention-days", type=int, default=30)
-    p.add_argument("--allow-stale", action="store_true", help="Do not fail on stale archive days.")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics import archive_integrity_parser_projection as _c03_11_b3_owner
+    return _c03_11_b3_owner._build_parser(facade=_migration_sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:
