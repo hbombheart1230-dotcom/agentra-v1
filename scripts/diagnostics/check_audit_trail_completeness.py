@@ -235,13 +235,8 @@ def _build_markdown(*, day: str, out: Dict[str, Any]) -> str:
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Check intent->decision->execution audit trail completeness.")
-    p.add_argument("--event-log-path", default="data/logs/events.jsonl")
-    p.add_argument("--report-dir", default="reports/audit")
-    p.add_argument("--day", default=None)
-    p.add_argument("--require-actionable", action="store_true")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics import audit_trail_parser_projection as _c03_11_k2_owner
+    return _c03_11_k2_owner._build_parser(facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:
