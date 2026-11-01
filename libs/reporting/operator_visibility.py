@@ -27,6 +27,8 @@ from libs.reporting.report_source_helpers import (
     build_policy_surface_quality_snapshot,
 )
 import sys as _r3_sys
+from libs.reporting import operator_visibility_build_trading_health_status as _a29_build_trading_health_status
+from libs.reporting import operator_visibility_operator_brief_trade_model_is_valid as _a29_operator_brief_trade_model_is_valid
 from libs.reporting import operator_visibility_pick_day as _a27_pick_day
 from libs.reporting import operator_visibility_safe_int as _a27_safe_int
 from libs.reporting import operator_visibility_safe_float as _a27_safe_float
@@ -176,46 +178,7 @@ def _load_or_build_metrics(events_path: Path, metrics_report_dir: Path, day: str
 
 
 def _build_trading_health_status(reports_root: Path, day: str) -> Dict[str, Any]:
-    summary_path = Path(reports_root) / "performance" / str(day or "").strip() / "summary.json"
-    summary = _read_json(summary_path)
-    sample_count = _safe_int(summary.get("return_sample_count"), 0)
-    total_trades = _safe_int(summary.get("total_trades"), 0)
-    win_rate = _safe_float(summary.get("win_rate"), 0.0)
-    avg_return = _safe_float(summary.get("avg_return"), 0.0)
-    profit_factor = _safe_float(summary.get("profit_factor"), 0.0)
-    level = "GREEN"
-    reasons: List[str] = []
-    if not summary:
-        level = "UNKNOWN"
-        reasons.append("performance summary artifact is missing")
-    elif sample_count <= 0:
-        level = "UNKNOWN"
-        reasons.append("no realized return samples; trading performance is not evaluable")
-    elif sample_count >= 3 and (win_rate < 0.25 or avg_return <= -0.008):
-        level = "RED"
-        reasons.append(
-            f"trade performance weak: sample={sample_count}, win_rate={win_rate:.2%}, avg_return={avg_return:.2%}"
-        )
-    elif avg_return < 0.0 or (sample_count >= 2 and win_rate < 0.40):
-        level = "YELLOW"
-        reasons.append(
-            f"trade performance watch: sample={sample_count}, win_rate={win_rate:.2%}, avg_return={avg_return:.2%}"
-        )
-    else:
-        reasons.append(
-            f"trade performance acceptable: sample={sample_count}, win_rate={win_rate:.2%}, avg_return={avg_return:.2%}"
-        )
-    return {
-        "schema_version": "trading_health_status.v1",
-        "trading_health_level": level,
-        "sample_count": int(sample_count),
-        "total_trades": int(total_trades),
-        "win_rate": float(win_rate),
-        "avg_return": float(avg_return),
-        "profit_factor": float(profit_factor),
-        "reasoning": reasons,
-        "source_path": str(summary_path),
-    }
+    return _a29_build_trading_health_status._build_trading_health_status(reports_root=reports_root, day=day, facade=_r3_sys.modules[__name__])
 
 
 def _compact_kv_text(raw: Any, *, topn: int = 4) -> str:
@@ -1034,11 +997,7 @@ def generate_operator_visibility_bundle(
 
 
 def _operator_brief_trade_model_is_valid(trade_model: Dict[str, Any]) -> bool:
-    if not isinstance(trade_model, dict) or not trade_model:
-        return False
-    facts = trade_model.get("facts") if isinstance(trade_model.get("facts"), dict) else {}
-    provenance = trade_model.get("provenance") if isinstance(trade_model.get("provenance"), dict) else {}
-    return bool(facts) and bool(provenance)
+    return _a29_operator_brief_trade_model_is_valid._operator_brief_trade_model_is_valid(trade_model=trade_model, facade=_r3_sys.modules[__name__])
 
 
 def build_separated_operator_brief(trade_dir: str, symbol: str, trades_root: str, *, model: Optional[str] = None) -> Dict[str, Any]:
