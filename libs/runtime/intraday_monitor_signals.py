@@ -115,10 +115,8 @@ def _empty_entry_transition_trace() -> Dict[str, Any]:
 
 
 def _env_trueish(value: Any, default: bool = False) -> bool:
-    text = str(value or "").strip().lower()
-    if not text:
-        return bool(default)
-    return text in ("1", "true", "yes", "y", "on")
+    from . import intraday_monitor_signals_env_trueish as _owner
+    return _owner._env_trueish(value, default, facade=sys.modules[__name__])
 
 
 def _resolve_monitor_scoring_settings(scoring: Mapping[str, Any] | None = None) -> Dict[str, Any]:
@@ -209,24 +207,8 @@ def _empty_chart_structure_decision_hint() -> Dict[str, Any]:
 
 
 def _empty_human_chart_buy_guard() -> Dict[str, Any]:
-    return {
-        "schema_version": "human_chart_buy_guard.v1",
-        "available": False,
-        "applied": False,
-        "mode": "none",
-        "authority": "hard_buy_block",
-        "thresholds": {
-            "min_entry_chart_score": 0.25,
-            "max_exit_risk_score": 0.40,
-            "min_late_entry_chart_score": 0.50,
-            "near_upper_prev_close_distance_pct": 0.29,
-            "no_reward_room_score": 0.05,
-            "no_reward_room_pct": 0.012,
-        },
-        "observed": {},
-        "blocking_features": [],
-        "notes": [],
-    }
+    from . import intraday_monitor_signals_empty_human_chart_buy_guard as _owner
+    return _owner._empty_human_chart_buy_guard(facade=sys.modules[__name__])
 
 
 def _empty_human_chart_entry_setup() -> Dict[str, Any]:
@@ -1165,36 +1147,13 @@ _CHART_FEATURE_STATUS_RULES: Dict[str, Dict[str, set[str]]] = {
 def _flatten_chart_structure_feature_states(
     chart_structure_features: Mapping[str, Any] | None,
 ) -> Dict[str, Dict[str, Any]]:
-    payload = dict(chart_structure_features or {}) if isinstance(chart_structure_features, Mapping) else {}
-    if not bool(payload.get("available")):
-        return {}
-    out: Dict[str, Dict[str, Any]] = {}
-    for name, group in _CHART_FEATURE_GROUP_PATHS.items():
-        group_payload = dict(payload.get(group) or {}) if isinstance(payload.get(group), Mapping) else {}
-        state = group_payload.get(name)
-        if state is None:
-            continue
-        state_text = str(state or "").strip()
-        if not state_text:
-            continue
-        out[name] = {
-            "state": state_text,
-            "group": group,
-            "source": f"chart_structure_features.{group}.{name}",
-        }
-    return out
+    from . import intraday_monitor_signals_flatten_chart_structure_feature_states as _owner
+    return _owner._flatten_chart_structure_feature_states(chart_structure_features, facade=sys.modules[__name__])
 
 
 def _parse_policy_signal_spec(spec: Any) -> Dict[str, Any]:
-    normalized = normalize_policy_check_spec(spec)
-    return {
-        "name": str(normalized.get("feature_name") or normalized.get("raw") or "").strip(),
-        "expected_state": normalized.get("expected_state"),
-        "raw": str(normalized.get("raw") or "").strip(),
-        "feature_level": normalized.get("feature_level"),
-        "is_valid": bool(normalized.get("is_valid")),
-        "validation_notes": list(normalized.get("validation_notes") or []),
-    }
+    from . import intraday_monitor_signals_parse_policy_signal_spec as _owner
+    return _owner._parse_policy_signal_spec(spec, facade=sys.modules[__name__])
 
 
 def _chart_feature_status_item(
@@ -1203,47 +1162,8 @@ def _chart_feature_status_item(
     chart_states: Mapping[str, Any],
     blocker: bool = False,
 ) -> Dict[str, Any] | None:
-    name = str(spec.get("name") or "").strip()
-    expected_state = str(spec.get("expected_state") or "").strip() or None
-    feature = dict(chart_states.get(name) or {}) if isinstance(chart_states.get(name), Mapping) else {}
-    if not feature:
-        return None
-    actual_state = str(feature.get("state") or "").strip() or None
-    source = feature.get("source")
-    status = "unknown"
-    if expected_state is not None:
-        if actual_state is None:
-            status = "unknown"
-        elif blocker:
-            status = "active" if actual_state == expected_state else "inactive"
-        else:
-            status = "pass" if actual_state == expected_state else "fail"
-    else:
-        rules = _CHART_FEATURE_STATUS_RULES.get(name) or {}
-        active_states = {str(value).strip() for value in list(rules.get("blocker_active") or set()) if str(value).strip()}
-        inactive_states = {str(value).strip() for value in list(rules.get("blocker_inactive") or set()) if str(value).strip()}
-        pass_states = {str(value).strip() for value in list(rules.get("pass") or set()) if str(value).strip()}
-        fail_states = {str(value).strip() for value in list(rules.get("fail") or set()) if str(value).strip()}
-        if blocker:
-            if actual_state in active_states:
-                status = "active"
-            elif actual_state in inactive_states:
-                status = "inactive"
-        else:
-            if actual_state in pass_states:
-                status = "pass"
-            elif actual_state in fail_states:
-                status = "fail"
-    return {
-        "name": name,
-        "expected_state": expected_state,
-        "actual_state": actual_state,
-        "status": status,
-        "source": source,
-        "feature_level": "high_level_feature",
-        "spec_valid": bool(spec.get("is_valid", True)),
-        "validation_notes": list(spec.get("validation_notes") or []),
-    }
+    from . import intraday_monitor_signals_chart_feature_status_item as _owner
+    return _owner._chart_feature_status_item(spec=spec, chart_states=chart_states, blocker=blocker, facade=sys.modules[__name__])
 
 
 def _build_monitor_policy_interpreter_trace(
@@ -1760,16 +1680,8 @@ def _kst_session_key_and_minute(ts_value: Any) -> tuple[Any | None, float | None
 
 
 def _current_kst_session_anchor(candles: Sequence[Mapping[str, Any]]) -> tuple[Any | None, int | None, float | None]:
-    if not candles:
-        return None, None, None
-    latest_key, latest_minute = _kst_session_key_and_minute(candles[-1].get("ts"))
-    if latest_key is None:
-        return None, None, None
-    for idx, row in enumerate(candles):
-        row_key, row_minute = _kst_session_key_and_minute(row.get("ts"))
-        if row_key == latest_key and row_minute is not None and row_minute >= float(_MARKET_OPEN_MINUTE):
-            return latest_key, idx, latest_minute
-    return latest_key, None, latest_minute
+    from . import intraday_monitor_signals_current_kst_session_anchor as _owner
+    return _owner._current_kst_session_anchor(candles, facade=sys.modules[__name__])
 
 
 def _current_kst_session_rows(candles: Sequence[Mapping[str, Any]]) -> List[Mapping[str, Any]]:
@@ -1797,63 +1709,16 @@ def _classify_series_quality(
     *,
     timeframe_minutes: int,
 ) -> Dict[str, Any]:
-    spacing_seconds = _infer_spacing_seconds(candles)
-    if spacing_seconds is None:
-        return {
-            "intraday_compatible": True,
-            "inferred_spacing_seconds": None,
-            "inferred_spacing_minutes": None,
-            "series_class": "unknown",
-            "compatibility_reason": "timestamp_missing",
-        }
-
-    spacing_minutes = spacing_seconds / 60.0
-    max_intraday_spacing_seconds = max(1800.0, float(max(1, timeframe_minutes)) * 60.0 * 6.0)
-    intraday_compatible = spacing_seconds <= max_intraday_spacing_seconds
-    if intraday_compatible:
-        series_class = "intraday"
-        compatibility_reason = "intraday_spacing_detected"
-    elif spacing_seconds >= 12 * 3600:
-        series_class = "daily_or_higher"
-        compatibility_reason = "non_intraday_spacing_detected"
-    else:
-        series_class = "higher_timeframe"
-        compatibility_reason = "non_intraday_spacing_detected"
-    return {
-        "intraday_compatible": intraday_compatible,
-        "inferred_spacing_seconds": round(spacing_seconds, 3),
-        "inferred_spacing_minutes": round(spacing_minutes, 3),
-        "series_class": series_class,
-        "compatibility_reason": compatibility_reason,
-    }
+    from . import intraday_monitor_signals_classify_series_quality as _owner
+    return _owner._classify_series_quality(candles, timeframe_minutes=timeframe_minutes, facade=sys.modules[__name__])
 
 
 def _extract_commander_entry_control(
     policy: Mapping[str, Any] | MonitorEntryPolicy | None,
     frame: Mapping[str, Any] | None,
 ) -> Dict[str, Any]:
-    candidates: list[Any] = []
-    if isinstance(policy, Mapping):
-        raw_policy = extract_monitor_entry_policy_mapping(policy)
-        candidates.extend(
-            [
-                raw_policy.get("commander_entry_control"),
-                raw_policy.get("entry_control"),
-            ]
-        )
-    if isinstance(frame, Mapping):
-        commander_context = frame.get("commander_context")
-        if isinstance(commander_context, Mapping):
-            candidates.extend(
-                [
-                    commander_context.get("commander_entry_control"),
-                    commander_context.get("entry_control"),
-                ]
-            )
-    for candidate in candidates:
-        if isinstance(candidate, Mapping):
-            return dict(candidate or {})
-    return {}
+    from . import intraday_monitor_signals_extract_commander_entry_control as _owner
+    return _owner._extract_commander_entry_control(policy, frame, facade=sys.modules[__name__])
 
 
 def resolve_intraday_entry_policy(
