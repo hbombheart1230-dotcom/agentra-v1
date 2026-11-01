@@ -18,6 +18,7 @@ from libs.reporting import quant_forward_raw_epoch_projection as _o8a5_owner
 from libs.reporting import quant_forward_kst_day_projection as _o8a6_owner
 from libs.reporting import quant_forward_row_day_projection as _o8a7_owner
 from libs.reporting import quant_forward_kst_time_projection as _o8a8_owner
+from libs.reporting import quant_forward_normalize_projection as _c03_10_a8_owner
 
 
 CHECKPOINT_MINUTES = (3, 5, 15, 30, 60)
@@ -58,33 +59,7 @@ def _kst_time_tuple(row: Mapping[str, Any]) -> tuple[int, int]:
 
 
 def _normalize_rows(value: Any) -> list[Dict[str, Any]]:
-    if isinstance(value, Mapping) and isinstance(value.get("rows"), list):
-        raw_rows = value.get("rows") or []
-    elif isinstance(value, list):
-        raw_rows = value
-    else:
-        raw_rows = []
-    rows: list[Dict[str, Any]] = []
-    for raw in raw_rows:
-        if not isinstance(raw, Mapping):
-            continue
-        ts = _to_int(raw.get("ts"), 0)
-        close = _to_float(raw.get("close") or raw.get("price"), None)
-        if ts <= 0 or close is None or close <= 0:
-            continue
-        high = _to_float(raw.get("high"), close) or close
-        low = _to_float(raw.get("low"), close) or close
-        rows.append(
-            {
-                "ts": ts,
-                "close": float(close),
-                "high": float(high),
-                "low": float(low),
-                "raw_ts": _text(raw.get("raw_ts") or raw.get("datetime") or raw.get("time")),
-            }
-        )
-    rows.sort(key=lambda item: int(item["ts"]))
-    return rows
+    return _c03_10_a8_owner._normalize_rows(value, facade=sys.modules[__name__])
 
 
 @lru_cache(maxsize=4)
