@@ -97,7 +97,7 @@ def build_separated_operator_brief_r3_impl(trade_dir, symbol, trades_root, *, mo
     chosen_model = facade.normalize_openrouter_model_name(
         str(model or "").strip()
         or str(facade.resolve_policy_llm_slot(llm_scope if isinstance(llm_scope, dict) else {}, "reporter", "intraday", default_profile="fast_free").get("primary") or "").strip()
-        or "minimax/minimax-m2.5"
+        or "nvidia/nemotron-3.5-lightning:free"
     )
     execution_profile = facade.resolve_policy_llm_execution_slot(
         llm_scope if isinstance(llm_scope, dict) else {},

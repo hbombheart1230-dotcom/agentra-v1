@@ -21,15 +21,16 @@ from typing import Any, Dict, List, Optional
 
 from libs.llm.model_names import normalize_openrouter_model_name
 from libs.llm.openrouter_client import OpenRouterClient
+from libs.llm.model_policy import ROLE_MODELS, fallback_model, is_allowed_model, is_reporter_role
 
 
 ROLE_DEFAULT_MODELS: Dict[str, str] = {
-    "strategist": "deepseek/deepseek-v3.2",
-    "trade_report": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "operator_ui": "minimax/minimax-m2.5",
-    "reporter_intraday": "minimax/minimax-m2.5",
-    "reporter_final": "moonshotai/kimi-k2.5",
-    "daily_report": "moonshotai/kimi-k2.5",
+    "strategist": ROLE_MODELS["strategist"][0],
+    "trade_report": ROLE_MODELS["trade_report"][0],
+    "operator_ui": ROLE_MODELS["operator_ui"][0],
+    "reporter_intraday": ROLE_MODELS["reporter_intraday"][0],
+    "reporter_final": ROLE_MODELS["reporter_final"][0],
+    "daily_report": ROLE_MODELS["daily_report"][0],
 }
 
 
@@ -117,6 +118,8 @@ class LLMRouter:
             model = _sanitize_resolved_model(os.getenv("OPENROUTER_DEFAULT_MODEL", "") or "")
         if not model:
             model = _role_default_model(role)
+        if is_reporter_role(role) and not is_allowed_model(role, model):
+            raise ValueError(f"reporter_model_not_allowed:{role}:{model}")
 
         temperature = float(policy.get("temperature") or os.getenv("OPENROUTER_DEFAULT_TEMPERATURE", "0.2"))
         max_tokens = int(policy.get("max_tokens") or os.getenv("OPENROUTER_DEFAULT_MAX_TOKENS", "512"))
@@ -139,5 +142,12 @@ class LLMRouter:
                     payload[k] = policy[k]
             if "timeout_sec" in policy:
                 payload["__timeout_sec"] = policy["timeout_sec"]
-        resp = self.client.chat_completions(payload)
+        try:
+            resp = self.client.chat_completions(payload)
+        except Exception:
+            replacement = fallback_model(role, route.model) if is_reporter_role(role) else ""
+            if not replacement:
+                raise
+            payload["model"] = replacement
+            resp = self.client.chat_completions(payload)
         return self.client.extract_text(resp)

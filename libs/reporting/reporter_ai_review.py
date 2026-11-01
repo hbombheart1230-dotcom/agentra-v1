@@ -164,7 +164,7 @@ def build_ai_reporter_review(
             "retry_backoff_sec": 0.0,
         },
     )
-    env_model = str(llm_slot.get("primary") or "moonshotai/kimi-k2.5").strip()
+    env_model = str(llm_slot.get("primary") or "nvidia/nemotron-3-ultra-550b-a55b:free").strip()
     execution_slot_source = str(execution_slot.get("policy_source") or "").strip().lower()
     env_temp = _clip_str(os.getenv("REPORTER_AI_REVIEW_TEMPERATURE") or "", max_len=32)
     env_max_tokens = _clip_str(os.getenv("REPORTER_AI_REVIEW_MAX_TOKENS") or "", max_len=32)

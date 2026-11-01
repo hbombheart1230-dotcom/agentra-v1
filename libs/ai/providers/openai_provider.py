@@ -130,6 +130,7 @@ class OpenAIStrategist:
         api_key: str,
         endpoint: str,
         model: str = "gpt-4.1-mini",
+        fallback_model: str = "",
         timeout_sec: float = 15.0,
         max_tokens: Optional[int] = None,
         retry_max: int = 1,
@@ -148,6 +149,7 @@ class OpenAIStrategist:
         self.api_key = api_key
         self.endpoint = endpoint
         self.model = model
+        self.fallback_model = normalize_openrouter_model_name(fallback_model)
         self.timeout_sec = timeout_sec
         self.max_tokens = max_tokens
         self.retry_max = max(0, int(retry_max))
@@ -167,7 +169,10 @@ class OpenAIStrategist:
         model = normalize_openrouter_model_name(self.model)
         if _looks_like_chat_completions_endpoint(self.endpoint) and model and "/" not in model:
             model = normalize_openrouter_model_name(model)
-        return model or normalize_openrouter_model_name("deepseek/deepseek-v3.2")
+        return model or normalize_openrouter_model_name("openai/gpt-6-luna")
+
+    def _effective_fallback_model(self) -> str:
+        return normalize_openrouter_model_name(self.fallback_model)
 
     @classmethod
     def from_env(cls, policy: Dict[str, Any] | None = None) -> "OpenAIStrategist":
@@ -175,8 +180,9 @@ class OpenAIStrategist:
         api_key = strategist_api_key(policy)
         endpoint = strategist_endpoint(policy)
         model = strategist_model(policy)
+        fallback_model = strategist_fallback_model(policy)
         if not model:
-            model = strategist_fallback_model(policy) or normalize_openrouter_model_name("deepseek/deepseek-v3.2")
+            model = fallback_model or normalize_openrouter_model_name("openai/gpt-6-luna")
         timeout_sec = strategist_timeout_sec(policy)
         resolved_max_tokens = strategist_max_tokens(policy)
         max_tokens: Optional[int] = int(resolved_max_tokens) if int(resolved_max_tokens) > 0 else None
@@ -204,6 +210,7 @@ class OpenAIStrategist:
             api_key=api_key,
             endpoint=endpoint,
             model=model,
+            fallback_model=fallback_model,
             timeout_sec=timeout_sec,
             max_tokens=max_tokens,
             retry_max=retry_max,
@@ -363,6 +370,7 @@ class OpenAIStrategist:
         """Never raise. On any error, returns NOOP with error reason."""
         attempts = 0
         model = self._effective_model()
+        fallback_used = False
         cb_key = self._cb_key(model)
         try:
             if not self.api_key or not self.endpoint:
@@ -471,7 +479,19 @@ class OpenAIStrategist:
                         timeout=self.timeout_sec,
                     )
                 else:
-                    raise
+                    fallback = self._effective_fallback_model()
+                    if not fallback or fallback == model:
+                        raise
+                    payload = dict(payload)
+                    payload["model"] = fallback
+                    resp, attempts = self._post_with_retry(
+                        self.endpoint,
+                        headers,
+                        payload,
+                        timeout=self.timeout_sec,
+                    )
+                    model = fallback
+                    fallback_used = True
 
             if _looks_like_chat_completions_endpoint(self.endpoint) and _chat_output_truncated_without_final_answer(resp):
                 retry_payload = dict(payload)
@@ -573,6 +593,7 @@ class OpenAIStrategist:
                 if not str(intent.get("reason") or "").strip():
                     intent["reason"] = "model_no_signal"
             meta.setdefault("model", model)
+            meta.setdefault("fallback_used", fallback_used)
             meta.setdefault(
                 "endpoint_type",
                 "chat_completions" if _looks_like_chat_completions_endpoint(self.endpoint) else "custom",
