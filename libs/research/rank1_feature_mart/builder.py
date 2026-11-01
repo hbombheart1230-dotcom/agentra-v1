@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+import sys
 from typing import Any, Mapping, Sequence
 
 from .chart_features import build_rank1_chart_snapshot
@@ -55,40 +56,8 @@ def _prospective_fallback(row: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _market_snapshot(row: Mapping[str, Any], *, prospective: bool) -> dict[str, Any]:
-    observation = row.get("opening_observability") if prospective and isinstance(row.get("opening_observability"), Mapping) else {}
-    point_in_time = row.get("market_snapshot") if prospective and isinstance(row.get("market_snapshot"), Mapping) else {}
-    if not point_in_time and isinstance(observation.get("market_snapshot"), Mapping):
-        point_in_time = observation.get("market_snapshot")
-    asset = observation.get("asset_observation") if isinstance(observation.get("asset_observation"), Mapping) else {}
-    market_return = _number(point_in_time.get("kospi_pct")) if prospective else _number(row.get("kospi_pct"))
-    if market_return is None and prospective:
-        market_return = _number(observation.get("market_return_pct"))
-    exposure = str(asset.get("exposure_direction") or "LONG_RISK_OR_OTHER")
-    aligned = None
-    if market_return not in (None, 0.0):
-        inverse = "INVERSE" in exposure.upper()
-        aligned = bool((market_return > 0.0 and not inverse) or (market_return < 0.0 and inverse))
-    return {
-        "market_return_pct": market_return,
-        "kospi_pct": _number(point_in_time.get("kospi_pct")) if prospective else _number(row.get("kospi_pct")),
-        "kosdaq_pct": _number(point_in_time.get("kosdaq_pct")) if prospective else _number(row.get("kosdaq_pct")),
-        "kospi200_pct": _number(point_in_time.get("kospi200_pct")) if prospective else _number(row.get("kospi200_pct")),
-        "krx_night_futures_pct": _number(point_in_time.get("krx_night_futures_pct")) if prospective else _number(row.get("krx_night_futures_pct")),
-        "snapshot_epoch": int(point_in_time.get("snapshot_epoch") or 0) or None,
-        "snapshot_time_kst": str(point_in_time.get("snapshot_time_kst") or ""),
-        "snapshot_age_sec": int(point_in_time.get("snapshot_age_sec") or 0) if point_in_time.get("snapshot_age_sec") is not None else None,
-        "snapshot_source_path": str(point_in_time.get("source_path") or ""),
-        "snapshot_selection_policy": str(point_in_time.get("selection_policy") or ""),
-        "snapshot_evidence_status": str(point_in_time.get("evidence_status") or ""),
-        "nasdaq_pct": _number(row.get("nasdaq_pct")),
-        "vix_level": _number(row.get("vix_level")),
-        "market_rising": _number(row.get("market_rising")),
-        "market_falling": _number(row.get("market_falling")),
-        "engine_regime": str(row.get("engine_regime") or "MISSING"),
-        "asset_class": str(asset.get("asset_class") or "MISSING"),
-        "exposure_direction": exposure,
-        "exposure_alignment": aligned,
-    }
+    from . import builder_market_snapshot as _owner
+    return _owner._market_snapshot(row, prospective=prospective, facade=sys.modules[__name__])
 
 
 def _scanner_snapshot(
@@ -206,30 +175,8 @@ def _pipeline_snapshot(row: Mapping[str, Any], window: Mapping[str, Any]) -> dic
 
 
 def _strategy_snapshot(row: Mapping[str, Any], window: Mapping[str, Any]) -> dict[str, Any]:
-    strategist = window.get("strategist_selection") if isinstance(window.get("strategist_selection"), Mapping) else {}
-    canonical = window.get("_canonical_strategist")
-    canonical = canonical if isinstance(canonical, Mapping) else {}
-    policy = canonical.get("policy_selected")
-    policy = policy if isinstance(policy, Mapping) else {}
-    strategy_policy = policy.get("strategy_policy")
-    strategy_policy = strategy_policy if isinstance(strategy_policy, Mapping) else {}
-    market_policy = strategy_policy.get("market_policy")
-    market_policy = market_policy if isinstance(market_policy, Mapping) else {}
-    theme_policy = market_policy.get("theme_policy")
-    theme_policy = theme_policy if isinstance(theme_policy, Mapping) else {}
-    return {
-        "scenario": str(row.get("strategist_scenario") or strategist.get("scenario") or canonical.get("market_regime") or "MISSING"),
-        "playbook": str(row.get("playbook") or row.get("strategist_playbook") or strategist.get("playbook") or canonical.get("playbook") or "MISSING"),
-        "market_playbook": str(canonical.get("final_playbook") or canonical.get("playbook") or strategist.get("playbook") or "MISSING"),
-        "tactical_strategy": str(canonical.get("tactical_strategy") or row.get("tactic_id") or "MISSING"),
-        "tactical_subtype": str(canonical.get("tactical_subtype") or "MISSING"),
-        "tactic_id": str(row.get("tactic_id") or canonical.get("tactical_strategy") or "MISSING"),
-        "entry_horizon": str(row.get("strategy_horizon") or canonical.get("strategy_horizon") or strategist.get("strategy_horizon") or strategist.get("horizon") or "MISSING"),
-        "strategy_scores": dict(canonical.get("strategy_scores") or {}),
-        "preferred_themes": [str(value) for value in theme_policy.get("preferred_themes") or []],
-        "theme_strength": dict(theme_policy.get("theme_strength") or canonical.get("theme_strength") or {}),
-        "canonical_evidence_status": "OBSERVED" if canonical else "MISSING",
-    }
+    from . import builder_strategy_snapshot as _owner
+    return _owner._strategy_snapshot(row, window)
 
 
 def _merge_opening_chart_observation(
