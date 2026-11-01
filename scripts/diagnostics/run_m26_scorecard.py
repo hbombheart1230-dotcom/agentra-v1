@@ -1,0 +1,225 @@
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import math
+import statistics
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+
+REQUIRED_FILES: List[str] = [
+    "manifest.json",
+    "execution/intents.jsonl",
+    "execution/fills.jsonl",
+    "market/ohlcv_1d.csv",
+]
+
+
+def _to_epoch(ts: Any) -> Optional[int]:
+    from scripts.diagnostics.m26_scorecard_epoch_projection import _to_epoch as owner
+    return owner(ts, facade=sys.modules[__name__])
+
+
+def _utc_day(ts: Any) -> str:
+    from scripts.diagnostics import m26_scorecard_day_projection as _day_owner
+    return _day_owner._utc_day(ts, facade=sys.modules[__name__])
+
+
+def _iter_jsonl(path: Path) -> List[Dict[str, Any]]:
+    from scripts.diagnostics import m26_scorecard_jsonl_projection as _jsonl_owner
+    return _jsonl_owner._iter_jsonl(path, facade=sys.modules[__name__])
+
+
+def _safe_int(v: Any, default: int = 0) -> int:
+    from scripts.diagnostics import m26_scorecard_int_projection as _int_owner
+    return _int_owner._safe_int(v, default)
+
+
+def _safe_float(v: Any, default: float = 0.0) -> float:
+    from scripts.diagnostics import m26_scorecard_float_projection as _float_owner
+    return _float_owner._safe_float(v, default)
+
+
+def _max_drawdown_ratio(equity: List[float]) -> Tuple[float, float]:
+    from scripts.diagnostics.m26_scorecard_drawdown_projection import _max_drawdown_ratio as owner
+    return owner(equity)
+
+
+def _risk_adjusted(samples: List[float]) -> Dict[str, float]:
+    from scripts.diagnostics.m26_scorecard_risk_projection import _risk_adjusted as owner
+    return owner(samples, facade=sys.modules[__name__])
+
+
+def _load_close_price_by_symbol(path: Path, *, day: str) -> Dict[str, float]:
+    from scripts.diagnostics import m26_scorecard_close_projection as _close_owner
+    return _close_owner._load_close_price_by_symbol(path, day=day, facade=sys.modules[__name__])
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    from scripts.diagnostics import m26_scorecard_parser_projection as _parser_owner
+    return _parser_owner._build_parser(facade=sys.modules[__name__])
+
+
+def _validate_required(dataset_root: Path) -> Tuple[List[str], List[str]]:
+    from scripts.diagnostics import m26_scorecard_validate_projection as _validate_owner
+    return _validate_owner._validate_required(dataset_root, facade=sys.modules[__name__])
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    args = _build_parser().parse_args(argv)
+    dataset_root = Path(str(args.dataset_root).strip())
+    day = str(args.day or "").strip()
+
+    failures, missing_files = _validate_required(dataset_root)
+
+    intents_rows = _iter_jsonl(dataset_root / "execution" / "intents.jsonl")
+    fills_rows = _iter_jsonl(dataset_root / "execution" / "fills.jsonl")
+
+    if day:
+        intents_rows = [x for x in intents_rows if _utc_day(x.get("ts")) == day]
+        fills_rows = [x for x in fills_rows if _utc_day(x.get("ts")) == day]
+
+    intent_meta: Dict[str, Dict[str, str]] = {}
+    for r in intents_rows:
+        iid = str(r.get("intent_id") or "").strip()
+        if not iid:
+            continue
+        intent_meta[iid] = {
+            "symbol": str(r.get("symbol") or "").strip(),
+            "action": str(r.get("action") or "").strip().upper(),
+        }
+
+    close_price_by_symbol = _load_close_price_by_symbol(
+        dataset_root / "market" / "ohlcv_1d.csv",
+        day=day,
+    )
+
+    fills_sorted = sorted(fills_rows, key=lambda x: int(_to_epoch(x.get("ts")) or 0))
+    position_qty: Dict[str, int] = {}
+    avg_cost: Dict[str, float] = {}
+    realized_pnl = 0.0
+    gross_notional = 0.0
+    trade_pnl_samples: List[float] = []
+    equity_curve: List[float] = [0.0]
+    executed_trade_total = 0
+
+    for row in fills_sorted:
+        iid = str(row.get("intent_id") or "").strip()
+        meta = intent_meta.get(iid, {})
+        symbol = str(row.get("symbol") or meta.get("symbol") or "").strip()
+        if not symbol:
+            continue
+        action = str(row.get("action") or meta.get("action") or "BUY").strip().upper()
+        qty = _safe_int(row.get("fill_qty"), default=_safe_int(row.get("qty"), 0))
+        px = _safe_float(row.get("fill_price"), default=_safe_float(row.get("price"), 0.0))
+        if qty <= 0 or px <= 0.0:
+            continue
+
+        executed_trade_total += 1
+        gross_notional += float(qty) * float(px)
+        cur_qty = int(position_qty.get(symbol, 0))
+        cur_avg = float(avg_cost.get(symbol, 0.0))
+
+        if action in ("BUY", "B"):
+            if cur_qty <= 0:
+                new_qty = cur_qty + qty
+                if new_qty > 0:
+                    # start/reset long average cost
+                    avg_cost[symbol] = (float(px) * float(qty)) / float(new_qty)
+                    position_qty[symbol] = new_qty
+            else:
+                new_qty = cur_qty + qty
+                avg_cost[symbol] = ((cur_avg * float(cur_qty)) + (float(px) * float(qty))) / float(new_qty)
+                position_qty[symbol] = new_qty
+        elif action in ("SELL", "S"):
+            if cur_qty > 0:
+                matched = min(cur_qty, qty)
+                pnl = (float(px) - cur_avg) * float(matched)
+                realized_pnl += pnl
+                trade_pnl_samples.append(float(pnl))
+                remain = cur_qty - matched
+                position_qty[symbol] = remain
+                if remain <= 0:
+                    avg_cost.pop(symbol, None)
+            # short-selling path intentionally ignored in v1 scorecard
+
+        equity_curve.append(float(realized_pnl))
+
+    missing_close_symbols: List[str] = []
+    unrealized_pnl = 0.0
+    for symbol, qty in position_qty.items():
+        if qty <= 0:
+            continue
+        close_px = close_price_by_symbol.get(symbol)
+        if close_px is None:
+            missing_close_symbols.append(symbol)
+            continue
+        avg = float(avg_cost.get(symbol, 0.0))
+        unrealized_pnl += (float(close_px) - avg) * float(qty)
+
+    total_pnl = float(realized_pnl + unrealized_pnl)
+    equity_curve.append(total_pnl)
+    max_dd_abs, max_dd_ratio = _max_drawdown_ratio(equity_curve)
+
+    positive = len([x for x in trade_pnl_samples if x > 0.0])
+    nonzero = len(trade_pnl_samples)
+    win_rate = (float(positive) / float(nonzero)) if nonzero > 0 else 0.0
+
+    risk_samples = list(trade_pnl_samples)
+    if not risk_samples:
+        # Keep deterministic shape even when there are no closed trades.
+        risk_samples = [float(total_pnl)]
+    risk_adjusted = _risk_adjusted(risk_samples)
+
+    if executed_trade_total < 1:
+        failures.append("executed_trade_total < 1")
+
+    out = {
+        "ok": len(failures) == 0,
+        "dataset_root": str(dataset_root),
+        "day": day,
+        "required_file_total": len(REQUIRED_FILES),
+        "missing_file_total": len(missing_files),
+        "missing_files": sorted(missing_files),
+        "executed_trade_total": int(executed_trade_total),
+        "gross_fill_notional": float(gross_notional),
+        "realized_pnl_proxy": float(realized_pnl),
+        "unrealized_pnl_proxy": float(unrealized_pnl),
+        "total_pnl_proxy": float(total_pnl),
+        "win_rate": float(win_rate),
+        "drawdown": {
+            "max_drawdown_abs": float(max_dd_abs),
+            "max_drawdown_ratio": float(max_dd_ratio),
+            "equity_end": float(total_pnl),
+            "equity_peak": float(max(equity_curve) if equity_curve else 0.0),
+        },
+        "risk_adjusted": risk_adjusted,
+        "missing_close_symbol_total": int(len(sorted(set(missing_close_symbols)))),
+        "missing_close_symbols": sorted(set(missing_close_symbols)),
+        "failure_total": len(failures),
+        "failures": failures,
+    }
+
+    if bool(args.json):
+        print(json.dumps(out, ensure_ascii=False))
+    else:
+        print(
+            f"ok={out['ok']} executed_trade_total={out['executed_trade_total']} "
+            f"total_pnl_proxy={out['total_pnl_proxy']:.6f} win_rate={out['win_rate']:.2%} "
+            f"max_drawdown_ratio={out['drawdown']['max_drawdown_ratio']:.2%} failure_total={out['failure_total']}"
+        )
+        for msg in list(out.get("failures") or []):
+            print(msg)
+    return 0 if bool(out.get("ok")) else 3
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

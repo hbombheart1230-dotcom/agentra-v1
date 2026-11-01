@@ -1,0 +1,600 @@
+﻿# Trading Agent System - Agentra
+
+## Standing development/verification/integration rule
+
+All GPT, Codex and Claude developer/auditor work follows **[DELIVERY FIRST / NO RECURSIVE AUDIT](docs/ENGINEERING_DELIVERY_POLICY.md)**. Finish verified source changes on integration before generating new analyzer/tooling/checklist loops. Targeted independent audit and exact-SHA CI are complementary; do not repeat full developer-branch pytest needlessly. This rule is permanent across P1.5–P8 and does not weaken safety gates.
+
+## 2026-10-18 · Historical P1.5 source snapshot (ROOT-TO-LEAF)
+
+> **CURRENT 2026-10-19 / DOC_FIRST / DOC_FREEZE_PENDING:** This 2026-10-18 analysis is historical at source SHA `5cb90b39`, NOT today's source-of-truth, runnable task or release approval. Current authority: [D00 delivery rules](docs/ENGINEERING_DELIVERY_POLICY.md) → [refactor navigation](docs/refactor/README.md) → [GitHub #20](https://github.com/hbombheart1230-dotcom/agentra/issues/20). No code work/developer branches/P1.6 until DOC_FREEZE and user approval. Current integration branch is `integration/p1.5`; the latest SHA must always be checked on GitHub.
+
+> **Current analysis, not a deployable release:** integration code snapshot `5cb90b39` (before architecture-only documentation commits), final P1.5 **NOT_ACCEPTED**. The M20 overview below is **historical project description**, not evidence that all current 7 roles have independent public callable owners. Broker/approval/order authority remains at its existing SAFETY_LOCK locations.
+>
+> **Direct Tech Lead root-wide review:** [Root-to-leaf architecture, exact main/integration size comparison, cleanup policy](docs/refactor/architecture/P15_ROOT_TO_LEAF_REALITY_AND_CLEANUP_20261018.md) · [Current target/actual ownership](docs/refactor/architecture/P15_TECHLEAD_MASTER_20261018.md) · [all 3,908 tracked paths](docs/refactor/architecture/P15_TREE_ALL_PATHS_PINNED_20261018.txt) · [file-by-file disposition candidates](docs/refactor/architecture/P15_ALL_FILES_OWNERSHIP_CANDIDATES_20261018.csv) · [migration & safety gates](docs/refactor/architecture/P15_MIGRATION_LEDGER_20261018.md) · [branch-retirement evidence](docs/refactor/architecture/P15_BRANCH_RETIREMENT_20261018.md).
+>
+> **Read this instead of stale 2026-10-17 NOT_STARTED snapshots:** [P1.5 control issue #20](https://github.com/hbombheart1230-dotcom/agentra/issues/20). Old `docs/refactor/work_projects/STATUS.json` is a historic activation snapshot and is not current module-completion truth. Original operational source/timing and protected authority must not be relocated to satisfy a diagram.
+
+---
+
+
+## Enterprise Architecture Overview (M20)
+
+Generated: 2026-02-14 13:29:06
+
+------------------------------------------------------------------------
+
+# 1. Vision
+
+Trading Agent System is a LangGraph-oriented, multi-agent automated trading system designed with enterprise-grade safety, governance, and extensibility.
+
+Core philosophy:
+
+- Agents decide. They never execute directly.
+- Execution is always gated.
+- Guards override approvals.
+- DTO contracts are stable.
+- Every run is traceable.
+- LLM is advisory only (never execution authority).
+
+------------------------------------------------------------------------
+
+# 2. System at a Glance (7-Agent Model)
+
+    Commander
+        -> Strategist
+        -> Scanner
+        -> Monitor
+        -> Supervisor
+        -> Executor
+        -> Broker (Mock/Real)
+        -> Reporter
+
+Key separation:
+- Decision Layer (Commander, Strategist, Scanner, Monitor)
+- Approval Layer (Supervisor)
+- Execution Layer (Executor + Guards)
+- Observability Layer (Reporter + EventLog)
+
+### Runtime Candidate Flow (M31+ additive)
+
+The decision chain now uses Kiwoom market data as the primary candidate source:
+
+1. Global news/sentiment context
+2. Strategist builds a per-cycle strategic brief (`market_regime`, sentiment, playbook, scanner/monitor/reporter guidance)
+   and may provide optional candidate hints.
+   When no stock symbols are available yet, Strategist first derives `news_query_targets` from
+   global sentiment/macro context and collects market-level news before Scanner selects stocks.
+   Strategist also emits `scanner_source_policy` so Scanner can change which Kiwoom sources are
+   actually enabled or suppressed for that run.
+   Strategist also emits `macro_stress_overlay` from VIX / DXY / TNX context so downstream
+   Scanner and Monitor can reason explicitly about macro stress.
+3. Scanner builds candidate pool from Kiwoom sources:
+   - condition search
+   - top volume ranking
+   - top trading value ranking
+   - top change-rate ranking (optional)
+   - sector/theme mapped symbols
+   - operator watchlist shortlist (optional)
+4. Scanner hydrates candidate chart/feature packs and quote metrics, then applies theme/sector
+   filtering (`theme_map`/`sector_map`) and ranks candidates
+5. Scanner returns Top-1 (`top_stock`)
+6. Monitor handles entry/exit intent generation only
+7. Supervisor/Executor keep approval + guard + execution separation
+
+Notes:
+- Samsung-only trading is **not** the target architecture.
+- `005930` in examples is illustrative sample data.
+- `SYMBOL_ALLOWLIST` is an optional operational guard.
+- Scanner source/fallback strictness is Commander-owned via `applied_policy.scanner.*`.
+- The Commander baseline uses `scanner.source.type=kiwoom`.
+- Strategist candidates remain a compatibility fallback when Kiwoom pool is empty.
+- `scanner.fallback.block_static_when_empty=true` blocks pure static fallback pools when Kiwoom is empty.
+- `scanner.kiwoom.strict_only=true` blocks all strategist fallback on Kiwoom-empty.
+- Fallback candidate symbols can be overridden with `FALLBACK_CANDIDATE_SYMBOLS`.
+- `condition_search` is excluded from the default mock/operational baseline.
+- It remains optional only when `KIWOOM_CANDIDATE_ENABLE_CONDITION_SEARCH=true`.
+- Without Kiwoom websocket condition-search integration its report status will remain `unavailable` instead of silently pretending to contribute candidates.
+- Candidate reduction knobs:
+  - Commander-applied candidate pool baseline (`applied_policy.scanner.candidate.top_pool`)
+  - `MIN_TRADING_VALUE`
+  - `MIN_VOLUME`
+  - `ENABLE_THEME_FILTER`
+- Practical score weights can be tuned with `SCORE_WEIGHTS_*`.
+- Live loop tick path is selectable with `M13_TICK_PIPELINE`:
+  - `legacy_m10` (default compatibility path)
+  - `integrated_chain` (Strategist -> Scanner -> Monitor)
+
+### Canonical Implementation Map (Role Boundaries)
+
+- Commander (canonical orchestrator):
+  - `graphs/commander_runtime.py`
+  - `graphs/nodes/commander_node.py` is a thin wrapper around canonical runtime
+  - `libs/agent/commander.py` is legacy compatibility scaffolding
+  - runtime phase is explicit: `preopen`, `session`, `closeout`
+  - `preopen` warms strategist context only
+  - `session` runs the active trading path
+  - `closeout` stays passive inside commander and defers reporting to closeout scripts
+- Strategist (canonical):
+  - `graphs/nodes/strategist_node.py`
+  - `libs/agent/strategist.py` is a thin compatibility adapter for legacy `Plan` contract
+- Scanner (canonical):
+  - `graphs/nodes/scanner_node.py` (Kiwoom-first candidate retrieval/ranking, strategist-guided)
+  - `graphs/nodes/scan_candidates.py` remains compatibility stage wiring
+  - integrated chain scanner now hydrates candidate features / quote metrics before final ranking
+- Monitor (canonical):
+  - `graphs/nodes/monitor_node.py` (entry/exit intent logic only)
+  - `libs/agent/monitor.py` is legacy placeholder interface
+- Supervisor / Executor:
+  - approval/risk via `libs/risk/supervisor.py` and execution guards in `graphs/nodes/execute_from_packet.py`
+  - broker execution adapters in `libs/execution/executors/*`
+- Reporter:
+  - report generation in `libs/reporting/*` and scripts under `scripts/run_*report*.py`
+
+Example strategist output:
+
+```json
+{
+  "market_regime": "risk_on",
+  "market_sentiment": "bullish",
+  "key_events": [
+    "global_sentiment score=0.320 status=ok source=yfinance",
+    "news_signal_health unavailable=0 fallback=2"
+  ],
+  "themes": ["semiconductor", "AI"],
+  "avoid_themes": ["thin_liquidity_names"],
+  "playbook": "breakout",
+  "scanner_bias": "momentum",
+  "scanner_priority": ["momentum", "trend_strength", "volume_surge", "liquidity"],
+  "scanner_source_policy": {
+    "preferred_sources": ["top_change_rate", "top_volume", "sector_theme", "operator_watchlist"],
+    "include_top_value": true,
+    "include_top_volume": true,
+    "include_change_rate": true,
+    "include_condition_search": false,
+    "include_sector_candidates": true,
+    "include_watchlist": true,
+    "top_candidate_pool": 32,
+    "condition_limit": 0,
+    "source_weights": {
+      "top_change_rate": 2.2,
+      "condition_search": 0.0,
+      "top_volume": 1.9,
+      "top_value": 1.4
+    },
+    "reason": "breakout baseline prioritizes fast movers and volume expansion; condition search remains optional"
+  },
+  "trade_aggressiveness": "high",
+  "risk_tone": "aggressive",
+  "monitor_guidance": "hold_through_noise",
+  "monitor_policy": {"min_hold_seconds": 900, "sell_cooldown_seconds": 360, "exit_confirm_ticks": 3},
+  "regime_score": 0.41,
+  "sentiment_score": 0.36,
+  "news_context": {"ok": 5, "fallback": 0, "unavailable": 0, "avg_score": 0.22},
+  "market_context_inputs": {"index_trend": 0.32, "realized_volatility": 0.019, "market_breadth": 0.58, "macro_risk": 0.22},
+  "theme_strength": {"semiconductor": 0.71, "AI": 0.63},
+  "report_focus": ["theme_accuracy", "scanner_fit", "exit_quality", "overtrading"],
+  "candidates": ["005930", "000660", "042700", "058470", "091990"]
+}
+```
+
+Example scanner output:
+
+```json
+{
+  "candidate_pool_size": 24,
+  "ranked_candidates": [
+    {
+      "symbol": "005930",
+      "score_total": 0.87,
+      "score_breakdown": {
+        "trading_value": 0.18,
+        "momentum": 0.24,
+        "trend": 0.20,
+        "volume_surge": 0.15,
+        "risk_penalty": -0.10
+      }
+    }
+  ],
+  "top_stock": "005930",
+  "top_score": 0.87
+}
+```
+
+------------------------------------------------------------------------
+
+# 3. Agent Responsibilities
+
+## Commander
+- Orchestrates full run cycle
+- Decides which agent to call next
+- Routes outputs between agents
+- Handles abnormal events (guard block, LLM failure, emergency stop)
+- Never selects stocks directly
+- Never executes trades
+
+## Strategist
+- AI-centered strategic framing (no order execution)
+- Produces a structured run-cycle brief:
+  - market regime/sentiment and key events
+  - leading themes and avoid-themes
+  - playbook, aggressiveness, and risk tone
+  - scanner ranking priorities, monitor guidance, reporter focus
+  - additive `macro_stress_overlay`
+- Strengthened context inputs (additive):
+  - global sentiment signal (status/source aware)
+  - global sentiment preserves `S&P500 / Nasdaq / Dow` daily change rates plus DXY / US10Y move details
+  - news sentiment + signal health
+  - market context (`index_trend`, `realized_volatility`, `market_breadth`, `macro_risk`)
+  - optional `kiwoom_market_summary` / `macro_context`
+  - theme scores and candidate/theme-map fit
+- May provide candidate hints (optional compatibility path)
+- Writes additive guidance via canonical `state["strategist_output"]`
+- Optional LLM strategic-frame stage (additive):
+  - when enabled, Strategist calls LLM with news/global sentiment + market context
+  - the strategist prompt includes detailed US index moves, not just a compressed global sentiment score
+  - LLM returns frame overrides (`themes`, `playbook`, `scanner_priority`, `monitor_guidance`, etc.)
+  - in `AI_STRATEGIST_PROVIDER=openai` mode, no trade should proceed from missing strategist LLM config/response
+  - canonical strategist envs:
+    - `AI_STRATEGIST_PROVIDER=openai`
+    - `AI_STRATEGIST_ENDPOINT=https://openrouter.ai/api/v1/chat/completions`
+    - Commander-applied `llm.strategist.profile` selects strategist primary/fallback model
+    - Commander-applied `llm.execution_profile.*` is the canonical timeout / token / retry posture
+    - role-scoped `llm.<role>.execution_profile.*` remains compatibility-only when explicitly present
+    - `OPENROUTER_API_KEY=<key>`
+  - `STRATEGIST_FRAME_*` variables remain compatibility aliases only
+  - observability: EventLog `stage=strategist_llm`, `event=result`
+  - additive confidence flags expose repaired / salvaged responses:
+    - `llm_frame_low_confidence`
+    - `strategist_llm.low_confidence`
+    - `strategist_llm.repair_used`
+- Market-first news flow:
+  - Strategist can collect market/topic news even when `candidate_symbols` is empty
+  - derived search targets are stored as `news_query_targets`
+  - candidate-specific news remains separate from market-news context
+- Canonical strategist contract is defined at `libs/strategies/contracts.py::StrategistOutput`
+- Strategist also reads passive advisory memory from recent Reporter runs via `state["recent_strategy_feedback"]`
+  - append-only store: `data/strategy_memory/feedback.jsonl`
+  - deduped daily latest summaries: `data/strategy_memory/daily/YYYY-MM-DD.json`
+  - advisory only; no automatic live parameter mutation
+
+## Scanner
+- Builds candidate universe from Kiwoom market data
+- Applies strategist theme/sector filters when mapping exists
+- Applies strategist frame additively to ranking:
+  - `playbook`, `scanner_bias`, `scanner_priority`, `risk_tone`, `trade_aggressiveness`
+- Scanner guidance is sourced from canonical `state["strategist_output"]` (with backward-compatible `scanner_guidance` override hook)
+- Strategist can also steer the actual Kiwoom source mix via `scanner_source_policy`
+  - default baseline keeps `condition_search` disabled
+  - example: `defensive` suppresses `top_change_rate`
+  - example: `breakout` emphasizes `top_change_rate` / `top_volume`
+  - explicit opt-in (`KIWOOM_CANDIDATE_ENABLE_CONDITION_SEARCH=true`) can re-enable `condition_search`
+  - reports expose `condition_search_status`, `condition_search_source`, and `condition_search_reason` so operators can see when the source is unavailable or intentionally disabled
+- Reduces pool with practical guards (halt/abnormal/illiquid thresholds)
+- Computes explainable scoring factors (value, momentum, trend, volume surge, intraday strength, risk penalties)
+- Hydrates candidate-level chart/feature inputs before ranking
+  - prefers `feature_engine.by_symbol`
+  - falls back to scanner-side candidate hydration
+- Emits quote/feature observability for operators:
+  - `feature_source`
+  - `feature_symbol_count`
+  - `skill_quote_price`
+  - `quote_volume`
+  - `quote_trading_value`
+  - `intraday_change_pct`
+- Ranks candidates with score breakdown and selects Top-1
+
+## Monitor
+- Watches selected primary symbol / active position state
+- Emits ActionProposal / OrderIntent only
+- Consumes strategist guidance deterministically:
+  - `monitor_guidance`, `risk_tone`, `trade_aggressiveness`, `monitor_policy`
+- Monitor guidance is sourced from canonical `state["strategist_output"]`
+- Normal SELL exits are stabilized with Commander-owned numeric policy:
+  - `applied_policy.monitor.hold.min_hold_seconds`
+  - `applied_policy.execution.cooldowns.sell_sec`
+  - `applied_policy.monitor.exit.confirm_ticks`
+- Emergency exits (`emergency_halt`, `news_shock`) are handled as explicit separate path
+- Never selects stocks and never places orders
+
+## Supervisor
+- Owns risk limits and policy
+- Validates OrderIntent
+- Approves / rejects / modifies
+- Can pause/stop system
+
+## Executor
+- Executes approved intents only
+- Applies guard precedence
+- Ensures idempotency
+- Routes to Broker API
+
+## Reporter
+- Reads EventLog
+- Produces script-driven daily / trade / operator reports from artifacts
+- Summarizes LLM quality and execution metrics
+- Two-layer post-run model:
+  - deterministic structured analysis baseline
+  - optional AI review layer (`reporter_ai_review`) over deterministic artifacts
+- Produces passive post-run analysis sections:
+  - `trade_summary`, `decision_chains`
+  - `decision_trace_chain_summary` (run_id chain completeness + per-agent summary)
+  - `strategist_evaluation`, `scanner_evaluation`, `monitor_evaluation`
+  - `supervisor_activity`, `incidents`, `improvement_suggestions`
+  - `operator_facing_summary`, `developer_facing_summary`
+- Optional AI review output fields:
+  - `ai_summary`, `ai_findings`, `ai_root_causes`
+  - `ai_improvement_suggestions`, `ai_run_grade`, `ai_agent_evaluations`
+  - `ai_findings_detailed`, `ai_root_causes_detailed`, `ai_improvement_suggestions_detailed`
+  - detailed rows carry `evidence_keys` and `evidence_refs` back into deterministic report sections
+  - if the AI model returns empty finding/root-cause/improvement arrays, reporter backfills a minimal evidence-linked set from deterministic diagnostics
+- Does not participate in runtime decision routing
+- AI review remains passive/post-run only and never influences live trading decisions
+
+------------------------------------------------------------------------
+
+# 4. Execution & Guard Model
+
+Execution occurs only when:
+
+- APPROVAL_MODE permits
+- EXECUTION_ENABLED = true
+- Real mode explicitly allowed
+- If `SYMBOL_ALLOWLIST` is configured, symbol must be allowlisted
+- Max qty/notional limits respected
+- Intent not already executed
+
+Guard priority always overrides approval.
+
+------------------------------------------------------------------------
+
+# 5. Intent Lifecycle
+
+    created -> pending_approval -> approved -> executing -> executed/failed -> settled
+
+Idempotency enforced via intent_id.
+
+------------------------------------------------------------------------
+
+# 6. LLM Architecture (M20)
+
+Current State:
+- OpenRouter integration via OpenAI-compatible adapter
+- Provider-agnostic LLM interface
+- JSON intent normalization: { "intent": ... }
+- Schema validation enforced
+- Retry with exponential backoff
+- Error-type classification
+- LLM telemetry logging (`stage=strategist_llm`)
+- Operator smoke and query scripts for LLM telemetry
+- Role-separated OpenRouter routing:
+  - Strategist / final daily summaries: `openrouter/auto`
+  - operator UI / intraday lightweight summaries: `openrouter/free`
+  - generic fallback remains low-cost
+
+Implemented Milestones:
+- M20-1: strategist smoke + safe fallback
+- M20-2: adapter parsing + normalization + retry/telemetry
+- M20-3: legacy LLM router compatibility fix
+- M20-4: smoke visibility options + event query CLI
+- M20-5: daily metrics aggregation for strategist LLM reliability
+- M20-6: prompt/schema version telemetry and distribution metrics
+- M20-7: token usage + estimated cost telemetry in events/ops/metrics
+
+Recommended env shape:
+
+```env
+AI_STRATEGIST_PROVIDER=openai
+AI_STRATEGIST_ENDPOINT=https://openrouter.ai/api/v1/chat/completions
+```
+
+Commander-owned LLM profile baseline:
+
+- `applied_policy.llm.strategist.profile = balanced`
+- `applied_policy.llm.reporter.intraday.profile = fast_free`
+- `applied_policy.llm.reporter.daily.profile = strong_reasoning`
+
+Commander-owned LLM execution profile baseline:
+
+- `applied_policy.llm.execution_profile.profile_name = default_intraday`
+- `applied_policy.llm.execution_profile.temperature = 0.2`
+- `applied_policy.llm.execution_profile.max_tokens = 8192`
+- `applied_policy.llm.execution_profile.timeout_sec = 15`
+- `applied_policy.llm.execution_profile.retry.max_attempts = 2`
+- `applied_policy.llm.execution_profile.retry.backoff_sec = 0.0`
+
+Compatibility role-scoped execution slots may still exist:
+
+- `applied_policy.llm.strategist.execution_profile.name = balanced_reasoning`
+- `applied_policy.llm.reporter.intraday.execution_profile.name = concise_review`
+- `applied_policy.llm.reporter.daily.execution_profile.name = deep_review`
+
+Behavior toggles such as strict mode, legacy runtime allowance, route toggles,
+report generation switches, and monitor scoring mode are Commander-owned and are
+injected through `applied_policy` / runtime state rather than env.
+
+Next Steps:
+- Circuit breaker + safe fallback mode
+- LangGraph formal state machine orchestration
+
+------------------------------------------------------------------------
+
+# 7. Observability
+
+Every run includes a run_id.
+
+Event log (JSONL):
+
+- ts
+- run_id
+- stage
+- event
+- payload
+- error_type (if applicable)
+- latency_ms (LLM/execution)
+
+LLM telemetry tracked separately from trading logic.
+
+Minimal Decision Trace / Reason Ledger (additive):
+- `state["decision_trace_ledger"]` (alias: `state["reason_ledger"]`)
+- linked by `run_id`
+- compact snapshots from:
+  - Strategist (`market_regime`, `themes`, `playbook`, `scanner_bias`, `risk_tone`, `monitor_guidance`)
+  - Scanner (`candidate_pool_size`, `top_candidates`, `selected_symbol`, `score_breakdown_summary`)
+  - Monitor (`entry_reason`, `exit_reason`, `position_age_seconds`, sell-guard flags, `monitor_reason`)
+  - Supervisor/Executor (`verdict`, `guard_reason`, execution attempt/result summary)
+- mirrored to EventLog as `stage=decision_trace` for post-run analysis and future reporter upgrades
+
+Evidence Ledger (raw reasoning trace, additive):
+- append-only JSONL: `data/evidence_ledger/events.jsonl`
+- override path: `EVIDENCE_LEDGER_PATH`
+- schema keys:
+  - `run_id`, `timestamp`, `agent`, `stage`
+  - `raw_input`, `llm_prompt`, `llm_response`, `parsed_output`, `decision_link`
+- integrated agents:
+  - Strategist: collected context + strategist LLM prompt/response + parsed output bridge
+  - Scanner: candidate retrieval/ranking input + selected symbol bridge
+  - Monitor: entry/exit snapshot + trigger/guard bridge
+  - Reporter: post-run analysis input + optional AI review prompt/response
+- safety boundary: logging only, never affects runtime decisions/execution
+
+Operator-facing report scripts:
+- `python -m scripts.run_operator_daily_summary --event-log-path data/logs/events.jsonl --report-dir reports/operator_summary --day <YYYY-MM-DD>`
+- `python -m scripts.run_decision_story_report --event-log-path data/logs/events.jsonl --report-dir reports/decision_story --day <YYYY-MM-DD>`
+- `python -m scripts.run_run_card_report --event-log-path data/logs/events.jsonl --report-dir reports/run_cards --day <YYYY-MM-DD>`
+- `python -m scripts.run_trade_explain_report --event-log-path data/logs/events.jsonl --report-dir reports/dev/analysis/trade_explain --day <YYYY-MM-DD>`
+  - official `trade_explain` path: `reports/dev/analysis/trade_explain/*`
+  - custom `--report-dir` is still supported for ad-hoc output, but it is treated as non-canonical
+- `python -m scripts.run_reporter_analysis_report --event-log-path data/logs/events.jsonl --intents-path data/logs/intents.jsonl --report-dir reports/dev/analysis/reporter_analysis --day <YYYY-MM-DD>`
+- `python -m scripts.run_agent_pipeline_trace_report --event-log-path data/logs/events.jsonl --evidence-log-path data/evidence_ledger/events.jsonl --report-dir reports/dev/analysis/agent_pipeline_trace --run-id <RUN_ID>`
+- `python -m scripts.run_live_execution_bundle_report --event-log-path data/logs/events.jsonl --evidence-log-path data/evidence_ledger/events.jsonl --report-dir reports/dev/analysis/live_execution_bundles --day <YYYY-MM-DD>`
+  - canonical per-trade outputs are also written under `reports/trades/YYYY/MM/<story_id>/`
+  - each story directory contains:
+    - `aggregated_execution_bundle.json`
+    - `trade_story_input.json`
+    - `trade_report.json`
+    - `trade_report.md`
+- Official trading runtime entrypoint:
+  - `python scripts/run_session.py --mode live --phase intraday`
+  - mock session example: `python scripts/run_session.py --mode mock --phase intraday`
+  - watch example: `python scripts/run_session.py --mode live --phase watch`
+  - legacy `.bat` / `.ps1` session launchers are compatibility wrappers around `scripts/run_session.py`
+- Reporter AI review optional flags:
+  - `--ai-review` (enable passive AI review stage)
+  - `--no-ai-review` (force deterministic-only mode)
+  - `--ai-review-model <model>` (override reporter model route)
+- Operator UI:
+  - `python -m scripts.run_operator_ui --env-path .env --host 127.0.0.1 --port 8010` (soft-deprecated, manual check only)
+  - `powershell -ExecutionPolicy Bypass -File scripts/start_operator_ui.ps1` (soft-deprecated, manual check only)
+  - `powershell -ExecutionPolicy Bypass -File scripts/stop_operator_ui.ps1` (soft-deprecated, manual check only)
+  - pages:
+    - `/` same-day overview
+      - `Today Trades`
+      - `Today Traded Symbols`
+      - `Overtrading Warning`
+      - `Latest Strategist Prompt`
+      - `Strategy Memory Timeline`
+    - `/runs` recent run table (`macro stress`, `feature coverage`)
+    - `/runs/{run_id}` single run trace with operator brief, feature coverage, quote metrics,
+      same-day symbol trade history, and recent same-symbol run chain
+    - `/healthz` machine-readable health summary
+  - same-day behavior:
+    - exact same-day report files are preferred
+    - if same-day reports are not generated yet, UI falls back to live event-log summaries
+    - run detail surfaces `same_day_report_missing` instead of silently using stale prior-day reporter analysis
+
+Off-hours validation mode (continuous non-broker evaluation):
+- Goal: keep validating Strategist -> Scanner -> Monitor -> Supervisor/Executor flow after market close without sending broker-side mock/live orders.
+- Reporter can also persist compact strategy feedback for future Strategist context:
+  - strategist/scanner/monitor/supervisor evaluations
+  - incidents + AI findings/root causes/improvement suggestions
+  - compact trade summary only
+- Entry points:
+  - `python -m scripts.run_offhours_validation_loop --env-path .env --event-log-path data/logs/events.jsonl --state-path data/state/offhours_validation.json --sleep-sec 60`
+  - `python -m scripts.run_mock_exam_day --phase session --env-path .env --event-log-path data/logs/events.jsonl --state-path data/state/offhours_validation.json --allow-offhours-simulated-session`
+- Behavior:
+  - forces `EXECUTION_MODE=mock`
+  - forces `ALLOW_REAL_EXECUTION=false`
+  - uses local persisted mock state (`STATE_STORE_PATH`) plus local mock fills
+  - keeps event logging/report generation intact for after-hours evaluation
+- Boundary:
+  - this is for pipeline validation only
+  - broker-side mock investor execution remains market-session gated
+
+Single-run full trace bundle (recommended for off-hours tuning):
+- Goal: produce one complete explainable artifact from
+  - collected news/global sentiment
+  - strategist LLM prompt/response
+  - scanner Kiwoom-source candidate reduction + selected top stock
+  - monitor entry/exit basis
+  - reporter improvement suggestions
+- Entry point:
+  - `python -m scripts.run_offhours_full_trace_bundle --env-path .env --state-path data/state/offhours_full_trace.json --event-log-path data/logs/offhours_full_trace.jsonl --evidence-log-path data/evidence_ledger/offhours_full_trace.jsonl --report-dir reports/offhours_full_trace --json`
+- Main artifacts:
+  - `reports/offhours_full_trace/offhours_full_trace_<run>.md|json`
+  - `reports/offhours_full_trace/agent_pipeline_trace/*`
+  - `reports/offhours_full_trace/trade_explain/*`
+  - `reports/offhours_full_trace/reporter_analysis/*`
+
+------------------------------------------------------------------------
+
+# 8. Security & Governance
+
+- .env never committed
+- Real execution disabled by default
+- Two-person review recommended for real mode
+- LLM has zero execution authority
+- Execution always guarded
+
+------------------------------------------------------------------------
+
+# 9. Deployment Model
+
+Phase 1: Script-based execution  
+Phase 2: Container + scheduler  
+Phase 3: Full LangGraph orchestration  
+Phase 4: Metrics + alerting + circuit breaker  
+
+------------------------------------------------------------------------
+
+# 10. Testing Coverage
+
+- mock/manual/auto modes
+- real mode guard enforcement
+- max qty / max notional guard
+- legacy AUTO_APPROVE compatibility
+- manual approval reproducibility
+- LLM schema validation tests
+
+------------------------------------------------------------------------
+
+# 11. Roadmap — Historical M20–M22 series (not the current program)
+
+> **HISTORICAL / NON-EXECUTABLE:** The following M20–M22 project-era intentions are not current P1.5/P1.6/P2–P8 backlog assignments or verified present status. Current roadmap: [P1.5/P1.6 master plan](docs/refactor/p1_5_p1_6_master_plan.md); approved work/actual status: [Issue #20](https://github.com/hbombheart1230-dotcom/agentra/issues/20).
+
+M20:
+- LangGraph orchestration
+- Provider-agnostic LLM integration
+- Schema validation enforcement
+- LLM retry/telemetry and operator tooling
+
+M21:
+- Circuit breaker
+- Safe fallback mode
+- Telemetry dashboard
+
+M22+:
+- Cost optimization layer
+- Multi-provider LLM routing
+- Strategy evaluation framework
+
+------------------------------------------------------------------------
+
+# Enterprise Guarantee
+
+This architecture ensures:
+
+- Safety before profit
+- Deterministic risk boundaries
+- Auditable execution chain
+- Scalable agent intelligence
+- Provider-agnostic LLM extensibility

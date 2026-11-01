@@ -1,0 +1,224 @@
+# Agents
+
+## Commander
+- Orchestrates one full run cycle.
+- Routes state between Strategist, Scanner, Monitor, Supervisor, and Executor.
+- Handles retry/pause/cancel transitions, runtime mode selection, and runtime phase selection.
+- Never sends orders directly.
+- Writes a canonical per-run artifact at source under `reports/canonical/<day>/<run_id>/commander.json`.
+- Canonical implementation: `graphs/commander_runtime.py`
+- Compatibility layers:
+  - `graphs/nodes/commander_node.py` (thin runtime wrapper)
+  - `libs/agent/commander.py` (legacy adapter/scaffolding)
+- Runtime phases:
+  - `preopen`: strategist warmup only
+  - `session`: normal trading/runtime path
+  - `closeout`: passive closeout-ready short-circuit; reporting remains script-driven
+
+## Strategist
+- Consumes market/news/global context.
+- AI-centered strategic brain for daily framing (not final stock picker).
+- Produces a structured strategic brief each run:
+  - `market_regime`, `market_sentiment`, `key_events`
+  - `themes`, `avoid_themes`, `playbook`
+  - `scanner_bias` (`large_cap|leader|momentum|value`), `scanner_priority`, `scanner_source_policy`
+  - `trade_aggressiveness`, `risk_tone`
+  - `monitor_guidance` (`hold_through_noise|defensive_exit|quick_take_profit`), `report_focus`
+- Also emits canonical `strategy_policy` for deterministic downstream execution:
+  - `market_policy` for theme/news/global-sentiment/VIX interpretation
+  - `scanner_policy` for candidate-source/score-weight/filter control
+  - `entry_policy` for deterministic entry thresholds/sizing bounds
+  - `monitor_policy` for deterministic exit guards and adaptive exit baseline
+  - `decision_policy` for score-override and legacy strategy variant hints
+- May provide candidate hints (Top-N) as an additive signal.
+- Strategist defines HOW to fight; final stock selection remains Scanner responsibility.
+- Emits additive strategist contract fields in canonical `state["strategist_output"]`.
+- Reads recent passive Reporter feedback from `state["recent_strategy_feedback"]`.
+  - backed by append-only strategy memory store `data/strategy_memory/feedback.jsonl`
+  - Strategist prefers deduped daily latest summaries under `data/strategy_memory/daily/`
+  - advisory only; does not hard-force themes/playbooks or mutate runtime configs
+- Optional LLM strategic-frame pass can override strategist fields additively.
+  - bounded by strategist contract normalization
+  - canonical env path is `AI_STRATEGIST_*`
+  - in `AI_STRATEGIST_PROVIDER=openai` mode, missing config/response should block trading rather than fall back to rule/v1 runtime
+  - observability via EventLog `stage=strategist_llm`, `event=result`
+- Writes a canonical per-run source artifact under `reports/canonical/<day>/<run_id>/strategist.json`.
+  - this artifact is the primary source of strategist rationale for reporting/UI
+  - event logs remain supporting evidence
+- Applies additive macro stress interpretation from VIX / DXY / TNX context.
+  - moderate macro stress softens aggression/monitor posture
+  - high macro stress can still force clearly defensive guidance
+- Emits low-confidence flags when the LLM response required repair/salvage:
+  - `llm_frame_low_confidence`
+  - `strategist_llm.low_confidence`
+- Canonical DTO contract: `libs/strategies/contracts.py::StrategistOutput`.
+- Strengthened context inputs include:
+  - global sentiment signal health
+  - market-news query targets derived before stock selection (`news_query_targets`)
+  - market-news sample + candidate-news sentiment signal health / average score
+  - market context (`index_trend`, `realized_volatility`, `market_breadth`, `macro_risk`)
+  - optional `kiwoom_market_summary` and `macro_context`
+- Canonical implementation: `graphs/nodes/strategist_node.py`
+- Compatibility layer: `libs/agent/strategist.py` (normalizes strategist output for legacy `Plan` usage)
+
+## Scanner
+- Uses Kiwoom market data as primary candidate source in integrated chain.
+- Candidate sources include condition search, top-volume, top-value, optional top-change-rate, sector/theme map, and operator watchlist.
+- Applies theme/sector filtering from strategist output (`themes`) with `theme_map` / `sector_map`.
+- Applies strategist ranking guidance (`scanner_priority`, aggressiveness/risk tone) additively to score weights.
+- Applies strategist `playbook` additively to scoring weights (scanner still performs final quantitative selection).
+- Applies strategist `scanner_source_policy` to the Kiwoom source mix itself.
+  - baseline keeps `condition_search` disabled for mock/operational runs
+  - `defensive` can suppress `top_change_rate`
+  - `breakout` can emphasize `top_change_rate` / `top_volume`
+  - explicit opt-in (`KIWOOM_CANDIDATE_ENABLE_CONDITION_SEARCH=true`) can re-enable `condition_search`
+- Scanner diagnostics explicitly expose `condition_search_status`, `condition_search_source`, and `condition_search_reason` when condition-search is unavailable, mock-only, or intentionally disabled.
+- In integrated chain, Scanner now hydrates candidate-level chart/feature inputs before ranking.
+  - prefers `state["feature_engine"]["by_symbol"]`
+  - falls back to scanner-side candidate hydration when needed
+- Scanner observability now exposes practical feature/quote readiness:
+  - `feature_source`
+  - `feature_symbol_count`
+  - feature coverage / feature snapshot
+  - `skill_quote_price`, `quote_volume`, `quote_trading_value`, `intraday_change_pct`
+- Scanner reads strategist frame from canonical `state["strategist_output"]`.
+- Scanner should treat strategist `strategy_policy.scanner_policy` as the preferred numeric contract.
+- Legacy strategist fields such as `scanner_priority` / `scanner_source_policy` remain compatibility aliases.
+- Falls back to strategist candidates when Kiwoom candidate pool is empty.
+- Scanner is the final Top-1 selector within strategist framing (not a blind picker).
+- Reduces candidate pool with practical filters (halted/abnormal/illiquid thresholds).
+- Computes practical score factors (trading-value, momentum, trend, volume-surge, intraday strength, chart-feature factors such as MA alignment/ADX/VWAP/cross-sectional rank, penalties).
+- Returns ranked list and Top-1 selection:
+  - `scan_results`
+  - `ranked_candidates`
+  - `selected`
+  - `top_stock`
+  - `scanner_output`
+- Writes a canonical per-run source artifact under `reports/canonical/<day>/<run_id>/scanner.json`.
+  - reporting/UI should read this before reconstructing scanner meaning from logs
+- Canonical implementation: `graphs/nodes/scanner_node.py`
+- Compatibility stage helper: `graphs/nodes/scan_candidates.py`
+
+## Monitor
+- Focuses on entry/exit only for the selected stock.
+- Must not rescan/re-rank market universe.
+- Emits buy/sell/noop intents from policy + position state.
+- Applies sell guards (min hold, sell cooldown, exit confirmation).
+- Consumes strategist `monitor_policy` when present (deterministic guard tuning).
+- Consumes strategist `exit_policy` when present as a playbook-aware exit baseline, then applies final feature/position-aware threshold adjustments.
+- Preferred contract is strategist `strategy_policy.monitor_policy`.
+  - `position_guards` for min-hold / cooldown / confirm ticks
+  - `adaptive_exit` for stop / take-profit / trailing / volatility gates
+  - may also include `peak_drawdown_exit_pct` and `vwap_breakdown_pct` for profit-protection exits
+  - may also include `intraday_low_break_pct` and `trend_strength_floor` for minute-structure exits
+  - `hard_risk_rails` for hard-stop / cap semantics that must remain operator-visible
+  - `hard_stop_pct` should act as an independent absolute loss rail, not just a descriptive alias
+  - adaptive `stop_loss_pct` may widen for structure/volatility, but the effective stop used by exit evaluation must still report which rail actually owns the stop
+- Monitor reads strategist frame from canonical `state["strategist_output"]`.
+- For held-symbol exit review, Monitor should prefer position-symbol-specific inputs over stale scanner snapshots.
+  - preferred order: held-symbol quote/market snapshot -> held-symbol feature row -> position mark fallback
+  - may hydrate held-symbol features from `feature_engine.by_symbol` or `ohlcv_by_symbol`
+  - should expose `price_source`, `feature_source`, and effective stop ownership in exit observability
+  - should persist position peak tracking (`persisted_state.position_peak_price`) so peak-drawdown exits remain coherent across polling loops
+- Suppresses duplicate SELL intents with pending-exit lock/cooldown state across polling loops.
+- Keeps emergency exits (`emergency_halt`, `news_shock`) explicit and separate from normal exit confirmation flow.
+- Never executes orders.
+- Writes a canonical per-run source artifact under `reports/canonical/<day>/<run_id>/monitor.json`.
+  - this is the primary source for thresholds, active exit axis, guards, and hold/sell reasoning
+- Canonical implementation: `graphs/nodes/monitor_node.py`
+- Compatibility interface: `libs/agent/monitor.py` (legacy placeholder)
+
+## Supervisor
+- Owns approval and risk policy checks.
+- Can approve/reject/modify intents.
+- Guard precedence always overrides approval.
+- Must consume strategist-owned `strategy_policy` as read-only context.
+  - recommended scope: hard risk rails and position-sizing rails only
+- Writes a canonical per-run source artifact under `reports/canonical/<day>/<run_id>/supervisor.json`.
+
+## Decision Policy
+- `strategy_policy.decision_policy` should be the preferred owner for deterministic decision toggles.
+- Current preferred fields:
+  - `allow_score_override`
+  - `score_override_scope`
+  - `buy_threshold`
+  - `sell_threshold`
+  - `high_vol_abs_threshold`
+  - `news_buy_threshold`
+  - `news_sell_threshold`
+- Legacy-only fields:
+  - `use_strategy_v1_engine`
+  - `strategy_v1_name`
+  - `strategy_variant_hint`
+- recommended default: `score_override_scope=llm_only`
+- intent: score-override remains a salvage path for strategist LLM NOOPs, not a competing runtime path against canonical strategist mode
+- Environment variables may remain as fallback defaults, but operator-visible behavior should prefer strategist-owned policy when present.
+  - must not recompute playbook/theme/news interpretation
+  - should explain blocks in operator-facing terms using policy-aware guard details
+
+## Executor
+- Executes approved intents only.
+- Applies execution guards (optional `SYMBOL_ALLOWLIST`, max qty/notional, mode checks).
+- Keeps mock/real separation.
+- Consumes `strategy_policy` only as execution context metadata.
+  - should persist compact `strategy_policy_summary` into execution/verdict traces
+  - must not mutate strategy math or silently rewrite strategist thresholds
+- Writes a canonical per-run source artifact under `reports/canonical/<day>/<run_id>/executor.json`.
+
+## Reporter
+- Builds operator-facing summaries from event logs and reports.
+- Works as a post-run/report script layer (not a runtime control node).
+- Does not change runtime decisions.
+- Must prefer canonical run artifacts first:
+  1. `reports/canonical/<day>/<run_id>/*.json`
+  2. direct run artifacts / trade artifacts
+  3. event logs as fallback evidence only
+- Two-layer passive analysis:
+  - deterministic structured analysis (baseline)
+  - optional AI review layer on top of deterministic outputs
+- AI review is post-run/read-only and never writes execution/runtime control state.
+- Reporter also persists compact feedback snapshots into strategy memory:
+  - append-only store: `data/strategy_memory/feedback.jsonl`
+  - daily latest summaries: `data/strategy_memory/daily/YYYY-MM-DD.json`
+  - consumed later by Strategist as advisory context only
+- Reporter-ready reason inputs are now emitted via:
+  - `state["decision_trace_ledger"]` / `state["reason_ledger"]`
+  - EventLog `stage=decision_trace`
+- Reporter/agent raw reasoning trace is additionally captured in Evidence Ledger:
+  - JSONL path: `data/evidence_ledger/events.jsonl` (`EVIDENCE_LEDGER_PATH` override)
+  - per-entry keys: `raw_input`, `llm_prompt`, `llm_response`, `parsed_output`, `decision_link`
+  - passive only (no runtime control impact)
+- Runtime report generators: `libs/reporting/*`, `scripts/run_*report*.py`
+- Presentation outputs remain centered on `reports/trades/` for operator workflows.
+  - canonical artifacts are internal source evidence
+  - LLM reports/briefs are downstream narrative artifacts
+  - additive trade metadata files (`_provenance.json`, `_health.json`, `_artifact_links.json`) expose source linkage and health without changing existing paths
+- Operator UI consumes Reporter outputs in a same-day-safe way:
+  - same-day reporter artifacts are preferred
+  - stale previous-day reporter artifacts are not silently reused for today's run detail
+  - if same-day reporter output is missing, the UI surfaces that state explicitly and falls back to deterministic/live summaries
+- Operator UI backend access is split by responsibility:
+  - runs: `apps/operator_ui/data_access_runs.py`
+  - reports: `apps/operator_ui/data_access_reports.py`
+  - brief handling: `apps/operator_ui/data_access_brief.py`
+  - status semantics: `apps/operator_ui/data_access_status.py`
+  - linkage: `apps/operator_ui/data_access_linkage.py`
+  - compatibility facade: `apps/operator_ui/data_access.py`
+- Single-run full-chain trace report:
+  - `scripts/run_agent_pipeline_trace_report.py` -> `agent_pipeline_trace.v1`
+  - summarizes Commander/Strategist/Scanner/Monitor/Supervisor/Executor/Reporter in one artifact
+- Enhanced passive analysis output (`reporter_analysis.v1`) includes:
+  - `trade_summary` and per-trade decision summaries (buy/sell reason, hold duration, exit trigger)
+  - `decision_chains` (run_id-based decision -> supervisor -> execution trace)
+  - `decision_trace_chain_summary` (strategist/scanner/monitor/supervisor/executor chain completeness by run_id)
+  - `strategist_evaluation`, `scanner_evaluation`, `monitor_evaluation`
+  - `supervisor_activity` (block/approve frequency + reasons)
+  - `operator_facing_summary` and `developer_facing_summary`
+  - overtrading diagnostics, incidents/post-mortem, and `improvement_suggestions`
+  - optional AI review fields:
+    - `ai_summary`, `ai_findings`, `ai_root_causes`
+    - `ai_improvement_suggestions`, `ai_run_grade`, `ai_agent_evaluations`
+    - evidence-linked detailed variants:
+      - `ai_findings_detailed`
+      - `ai_root_causes_detailed`
+      - `ai_improvement_suggestions_detailed`

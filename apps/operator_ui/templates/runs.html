@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div>
+    <div class="eyebrow">Operations run index</div>
+    <h1>Recent Runs</h1>
+    <p class="lede">Latest cycles with strategy, scan, monitor, guard, execution, and AI report linkage.</p>
+  </div>
+  <div class="hero-meta">
+    <div class="metric">
+      <span class="metric-label">Rows</span>
+      <span class="metric-value">{{ runs|length }}</span>
+    </div>
+  </div>
+</section>
+
+<section class="run-filters">
+  <a href="/runs?limit={{ limit }}&activity_view=all" class="link-action {% if activity_view == 'all' and not mismatch_only %}link-action--active{% endif %}">All runs</a>
+  <a href="/runs?limit={{ limit }}&activity_view=trades" class="link-action {% if activity_view == 'trades' and not mismatch_only %}link-action--active{% endif %}">Trades</a>
+  <a href="/runs?limit={{ limit }}&activity_view=monitoring" class="link-action {% if activity_view == 'monitoring' and not mismatch_only %}link-action--active{% endif %}">Monitoring</a>
+  <a href="/runs?limit={{ limit }}&mismatch_only=true" class="link-action {% if mismatch_only %}link-action--active{% endif %}">Mismatch only</a>
+</section>
+
+<section class="card table-card">
+  <table>
+    <thead>
+      <tr>
+        <th>ts</th>
+        <th>run_id</th>
+        <th>phase</th>
+        <th>playbook</th>
+        <th>top stock</th>
+        <th>story type</th>
+        <th>activity</th>
+        <th>execution label</th>
+        <th>AI report</th>
+        <th>portfolio sync</th>
+        <th>macro stress</th>
+        <th>feature coverage</th>
+        <th>monitor</th>
+        <th>guard</th>
+        <th>execution</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in runs %}
+      <tr>
+        <td>{{ row.ts }}</td>
+        <td>
+          <a href="/runs/{{ row.run_id }}">{{ row.run_id_short or row.run_id }}</a>
+          {% if row.run_id_short and row.run_id_short != row.run_id %}
+          <div class="meta-line">full: {{ row.run_id }}</div>
+          {% endif %}
+        </td>
+        <td>{{ row.phase or row.mode }}</td>
+        <td>{{ row.strategist_playbook or "-" }}</td>
+        <td>{{ row.scanner_top_stock or "-" }}</td>
+        <td>
+          {% if row.story_type_label and row.story_type_label != "No linked report" %}
+          <span class="{{ row.story_type_badge_class or 'status-badge' }}">{{ row.story_type_label }}</span>
+          {% else %}
+          <span class="chip">No linked report</span>
+          {% endif %}
+        </td>
+        <td>
+          <span class="{{ row.activity_badge_class or 'chip' }}">{{ row.activity_label or "-" }}</span>
+          {% if row.runtime_path %}
+          <p class="subtle-meta">{{ row.runtime_path }}</p>
+          {% endif %}
+        </td>
+        <td>{{ row.execution_mode_label or "-" }}</td>
+        <td>
+          <div class="chip-list">
+            <span class="{{ row.report_status_badge_class or 'status-badge' }}">{{ row.report_status_label or "AI Report" }}</span>
+            {% if row.lifecycle_status %}
+            <span class="chip">Lifecycle {{ row.lifecycle_status | upper }}</span>
+            {% endif %}
+            {% if row.report_available and row.report_link %}
+            <a class="link-action" href="{{ row.report_link }}">Open report</a>
+            {% endif %}
+            {% if row.operator_brief_available and row.operator_brief_link %}
+            <a class="link-action" href="{{ row.operator_brief_link }}">Open brief</a>
+            {% endif %}
+          </div>
+          {% if row.trade_id %}
+          <p class="subtle-meta">Trade ID: {{ row.trade_id }}</p>
+          {% endif %}
+          <p class="subtle-meta clamp-2">{{ row.report_reason_human or row.report_summary }}</p>
+          {% if row.report_next_expected_step %}
+          <p class="subtle-meta clamp-2">Next: {{ row.report_next_expected_step }}</p>
+          {% endif %}
+        </td>
+        <td>
+          <div class="chip-list">
+            <span class="{{ row.portfolio_sync_badge_class or 'status-badge' }}">{{ row.portfolio_sync_label or "Sync status unavailable" }}</span>
+          </div>
+          {% if row.portfolio_sync_sentence %}
+          <p class="subtle-meta clamp-2">{{ row.portfolio_sync_sentence }}</p>
+          {% endif %}
+        </td>
+        <td>
+          {% if row.macro_stress_active %}
+          active {{ row.macro_stress_flags | join(", ") }}
+          {% else %}
+          normal
+          {% endif %}
+        </td>
+        <td>{{ row.feature_coverage_quality }} ({{ "%.0f"|format(row.feature_coverage_ratio * 100) }}%)</td>
+        <td>
+          <div>{{ row.monitor_reason or row.exit_reason or "-" }}</div>
+          <div class="subtle-meta">axis: {{ row.active_exit_axis or "-" }}</div>
+          <div class="subtle-meta">stop: {{ row.effective_stop or "-" }}</div>
+          {% if row.peak_drawdown and row.peak_drawdown != "-" %}
+          <div class="subtle-meta">drawdown: {{ row.peak_drawdown }}</div>
+          {% endif %}
+        </td>
+        <td>{{ row.guard_reason or "-" }}</td>
+        <td>{{ row.execution_action or "-" }} {{ row.execution_status or "" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

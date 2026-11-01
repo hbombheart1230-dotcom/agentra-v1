@@ -1,0 +1,164 @@
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from libs.core.settings import Settings
+from libs.core.http_client import HttpClient
+from libs.kiwoom.kiwoom_token_client import KiwoomTokenClient
+
+
+class RankMode(str, Enum):
+    VOLUME = "volume"
+    VALUE = "value"
+    CHANGE_RATE = "change_rate"
+
+
+def _extract_candidate_rows(payload: Any) -> List[Dict[str, Any]]:
+    """Best-effort extraction of rank rows from Kiwoom rank API payload.
+
+    Different endpoints may return different shapes. We attempt:
+      - payload['output'] list of dicts
+      - payload['output1'] list
+      - payload['data'] list
+      - any list value of dicts
+    Accept keys:
+      - 'stk_cd', 'stkcode', 'code', 'symbol'
+    """
+    if not isinstance(payload, dict):
+        return []
+
+    candidates: List[Any] = []
+    for key in ("output", "output1", "output2", "data", "list", "items"):
+        v = payload.get(key)
+        if isinstance(v, list):
+            candidates = v
+            break
+    if not candidates:
+        for v in payload.values():
+            if isinstance(v, list) and v and isinstance(v[0], dict):
+                candidates = v
+                break
+
+    out: List[Dict[str, Any]] = []
+    seen: set[str] = set()
+    for row in candidates:
+        if not isinstance(row, dict):
+            continue
+        normalized_row = dict(row)
+        symbol = ""
+        for k in ("stk_cd", "stkcode", "stk_code", "code", "symbol"):
+            if k in row and row[k]:
+                s = str(row[k]).strip()
+                if s:
+                    symbol = s
+                    break
+        if not symbol or symbol in seen:
+            continue
+        seen.add(symbol)
+        normalized_row["symbol"] = symbol
+        out.append(normalized_row)
+    return out
+
+
+@dataclass(frozen=True)
+class RankFetchResult:
+    url: str
+    status_code: Optional[int]
+    ok: bool
+    payload: Dict[str, Any]
+
+
+class KiwoomRankReader:
+    """Reader for Kiwoom rank endpoints (/api/dostk/rkinfo).
+
+    Uses:
+      - ka10030: 당일거래량상위요청 (sort_tp=1 volume, sort_tp=3 value)
+      - ka10031: 전일대비등락률상위요청 (when available)
+
+    Note: exact response fields may vary. We parse best-effort.
+    """
+
+    ENDPOINT = "/api/dostk/rkinfo"
+    API_ID_VOLUME_VALUE = "ka10030"  # 당일거래량상위요청
+    API_ID_CHANGE_RATE = "ka10027"   # 전일대비등락률상위요청
+
+    def __init__(self, settings: Settings, http: HttpClient, token: KiwoomTokenClient):
+        self.s = settings
+        self.http = http
+        self.token = token
+
+    @classmethod
+    def from_env(cls) -> "KiwoomRankReader":
+        s = Settings.from_env()
+        base = s.kiwoom_base_url_mock if s.kiwoom_mode == "mock" else s.kiwoom_base_url_real
+        http = HttpClient(
+            base_url=base,
+            timeout_sec=int(s.kiwoom_http_timeout_sec),
+            retry_max=int(s.kiwoom_retry_max),
+        )
+        token = KiwoomTokenClient(s, http)
+        return cls(s, http, token)
+
+    def get_top_symbols(self, *, mode: RankMode, topk: int = 5) -> List[str]:
+        rows = self.get_top_rank_rows(mode=mode, topk=topk)
+        return [str(row.get("symbol") or "").strip() for row in rows if str(row.get("symbol") or "").strip()][: max(1, int(topk))]
+
+    def get_top_rank_rows(self, *, mode: RankMode, topk: int = 5) -> List[Dict[str, Any]]:
+        tok = self.token.ensure_token(dry_run=False)
+        if not tok.token:
+            raise RuntimeError(f"Token not available: {tok.action} {tok.reason}")
+
+        headers: Dict[str, Any] = {}
+        headers.update(self.token.auth_headers(tok.token))
+        headers["Content-Type"] = "application/json;charset=UTF-8"
+        headers["api-id"] = (
+            self.API_ID_CHANGE_RATE if mode == RankMode.CHANGE_RATE else self.API_ID_VOLUME_VALUE
+        )
+        if self.s.kiwoom_app_key:
+            headers.setdefault("appkey", self.s.kiwoom_app_key)
+        if self.s.kiwoom_app_secret:
+            headers.setdefault("appsecret", self.s.kiwoom_app_secret)
+
+        # Default filters (safe): exclude preferred shares/ETFs where possible.
+        # See api_catalog for details; keep minimal required fields.
+        if mode in (RankMode.VOLUME, RankMode.VALUE):
+            body = {
+                "mrkt_tp": "000",
+                "sort_tp": "1" if mode == RankMode.VOLUME else "3",
+                "mang_stk_incls": "1",
+                "crd_tp": "0",
+                "trde_qty_tp": "0",
+                "pric_tp": "0",
+                "trde_prica_tp": "0",
+                "mrkt_open_tp": "1",
+                "stex_tp": "1",  # KRX
+            }
+        else:
+            # CHANGE_RATE (ka10027): 전일대비등락률상위요청
+            body = {
+                "mrkt_tp": "000",
+                "sort_tp": "1",
+                "trde_qty_cnd": "0000",
+                "stk_cnd": "1",
+                "crd_cnd": "0",
+                "updown_incls": "0",
+                "pric_cnd": "0",
+                "trde_prica_cnd": "0",
+                "stex_tp": "1",
+            }
+
+        url, resp = self.http.request("POST", self.ENDPOINT, headers=headers, json_body=body, dry_run=False)
+        if resp is None:
+            raise RuntimeError("HTTP response is None (unexpected: dry_run?)")
+
+        payload: Dict[str, Any] = {}
+        try:
+            payload = json.loads(resp.text) if resp.text else {}
+        except Exception:
+            payload = {}
+
+        rows = _extract_candidate_rows(payload)
+        return rows[: max(1, int(topk))]

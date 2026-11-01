@@ -1,0 +1,3 @@
+from typing import Any
+def _build_parser(*,facade:Any):
+ p=facade.argparse.ArgumentParser(description="M26 closeout check (dataset/replay/scorecard/A-B/promotion gate).");p.add_argument("--base-dataset-root",default="data/eval/m26_closeout/base");p.add_argument("--candidate-dataset-root",default="data/eval/m26_closeout/candidate");p.add_argument("--day",default="2026-02-17");p.add_argument("--min-delta-total-pnl-proxy",type=float,default=5.0);p.add_argument("--inject-gate-fail",action="store_true");p.add_argument("--no-clear",action="store_true");p.add_argument("--json",action="store_true");return p

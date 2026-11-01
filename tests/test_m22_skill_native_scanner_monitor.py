@@ -1,0 +1,329 @@
+from __future__ import annotations
+
+import json
+import socket
+import sys
+from types import ModuleType
+
+import pytest
+
+from graphs.nodes.monitor_node import monitor_node
+from graphs.nodes.scanner_node import scanner_node
+from scripts.demo_m22_skill_flow import main as demo_main
+
+
+
+@pytest.fixture(autouse=True)
+def _enforce_rf066_offline_contract(monkeypatch):
+    """Network must never be used, even when the host enables Yahoo seeding."""
+    ticker_requests = []
+
+    def deny_network(*_args, **_kwargs):
+        raise AssertionError("RF-066 test unexpectedly attempted a network connection")
+
+    def record_ticker(*args, **kwargs):
+        ticker_requests.append((args, kwargs))
+        raise AssertionError("RF-066 test unexpectedly requested a Yahoo Ticker")
+
+    fake_yfinance = ModuleType("yfinance")
+    fake_yfinance.Ticker = record_ticker
+    monkeypatch.setitem(sys.modules, "yfinance", fake_yfinance)
+    monkeypatch.setattr(socket.socket, "connect", deny_network)
+    monkeypatch.setattr(socket.socket, "connect_ex", deny_network)
+    monkeypatch.setenv("SCANNER_FEATURE_SEED_WITH_YF", "true")
+    yield
+    assert not ticker_requests, f"unexpected yfinance Ticker requests: {ticker_requests!r}"
+
+
+# Wednesday at noon KST: deterministic market-open time outside BUY closeout guard.
+RF066_NOON_KST_EPOCH = 1793156400
+RF066_NOON_KST_ISO = "2026-10-28T12:00:00+09:00"
+
+
+def test_m22_scanner_uses_skill_account_orders_for_penalty():
+    state = {
+        "candidates": [{"symbol": "AAA"}, {"symbol": "BBB"}],
+        "mock_scan_results": {
+            "AAA": {"score": 0.50, "risk_score": 0.20, "confidence": 0.80},
+            "BBB": {"score": 0.50, "risk_score": 0.20, "confidence": 0.80},
+        },
+        "skill_results": {
+            "market.quote": {
+                "AAA": {"symbol": "AAA", "cur": 1000},
+                "BBB": {"symbol": "BBB", "cur": 1000},
+            },
+            "account.orders": {
+                "rows": [
+                    {"symbol": "AAA", "order_id": "x-1", "side": "BUY", "order_qty": 2, "filled_qty": 0, "remaining_qty": 2, "status": "OPEN"},
+                ]
+            },
+        },
+        "policy": {
+            "max_risk": 1.0,
+            "min_confidence": 0.0,
+            "scanner_feature_seed_with_yf": False,
+        },
+    }
+
+    out = scanner_node(state)
+    assert out["selected"]["symbol"] == "BBB"
+    assert out["scanner_skill"]["contract_version"] == "m22.skill.v1"
+    assert out["scanner_skill"]["used"] is True
+    assert out["scanner_skill"]["account_order_rows"] == 1
+    assert out["scanner_skill"]["fallback"] is False
+
+    rows = {str(r.get("symbol")): r for r in out.get("scan_results", []) if isinstance(r, dict)}
+    assert rows["AAA"]["features"]["skill_open_orders"] == 1
+    assert rows["AAA"]["features"]["skill_open_orders_pending_only"] is True
+    assert rows["BBB"]["features"]["skill_open_orders"] == 0
+    assert rows["AAA"]["risk_score"] > rows["BBB"]["risk_score"]
+
+
+def test_m22_scanner_ignores_filled_account_orders_for_open_order_penalty():
+    state = {
+        "candidates": [{"symbol": "AAA"}, {"symbol": "BBB"}],
+        "mock_scan_results": {
+            "AAA": {"score": 0.50, "risk_score": 0.20, "confidence": 0.80},
+            "BBB": {"score": 0.49, "risk_score": 0.20, "confidence": 0.80},
+        },
+        "skill_results": {
+            "market.quote": {
+                "AAA": {"symbol": "AAA", "cur": 1000},
+                "BBB": {"symbol": "BBB", "cur": 1000},
+            },
+            "account.orders": {
+                "rows": [
+                    {"symbol": "AAA", "side": "BUY", "order_qty": 2, "filled_qty": 2, "remaining_qty": 0, "status": "FILLED"},
+                ]
+            },
+        },
+        "policy": {
+            "max_risk": 1.0,
+            "min_confidence": 0.0,
+            "scanner_feature_seed_with_yf": False,
+        },
+    }
+
+    out = scanner_node(state)
+    rows = {str(r.get("symbol")): r for r in out.get("scan_results", []) if isinstance(r, dict)}
+    assert rows["AAA"]["features"]["skill_open_orders"] == 0
+    assert rows["AAA"]["components"]["open_order_penalty_component"] == 0.0
+
+
+def test_m22_monitor_reads_order_status_dto_without_changing_intent_shape():
+    state = {
+        "tick_ts": RF066_NOON_KST_EPOCH,
+        "now_epoch": RF066_NOON_KST_EPOCH,
+        "now_iso": RF066_NOON_KST_ISO,
+        "plan": {"thesis": "demo"},
+        "entry_cost_filter": {"enabled": False},
+        "selected": {"symbol": "AAA", "score": 0.9, "risk_score": 0.2, "confidence": 0.8},
+        "minute_ohlcv_by_symbol": {
+            "AAA": [
+                {"ts": 1774317000, "open": 100.0, "high": 100.4, "low": 99.8, "close": 100.2, "volume": 900, "vwap": 100.0},
+                {"ts": 1774317060, "open": 100.2, "high": 100.8, "low": 100.1, "close": 100.7, "volume": 980, "vwap": 100.3},
+                {"ts": 1774317120, "open": 100.7, "high": 101.1, "low": 100.5, "close": 100.9, "volume": 1020, "vwap": 100.5},
+                {"ts": 1774317180, "open": 100.9, "high": 101.3, "low": 100.7, "close": 101.1, "volume": 1100, "vwap": 100.7},
+                {"ts": 1774317240, "open": 101.1, "high": 101.4, "low": 100.9, "close": 101.2, "volume": 1080, "vwap": 100.9},
+                {"ts": 1774317300, "open": 101.2, "high": 101.9, "low": 101.0, "close": 101.8, "volume": 2500, "vwap": 101.2},
+            ]
+        },
+        "skill_results": {
+            "order.status": {
+                "ord_no": "ord-1",
+                "symbol": "AAA",
+                "status": "PARTIAL",
+                "filled_qty": 1,
+                "order_qty": 2,
+            }
+        },
+    }
+
+    out = monitor_node(state)
+    assert isinstance(out.get("intents"), list) and len(out["intents"]) == 1
+    assert out["intents"][0]["symbol"] == "AAA"
+    assert out["monitor"]["skill_contract_version"] == "m22.skill.v1"
+    assert out["monitor"]["order_status_loaded"] is True
+    assert out["monitor"]["order_status"]["status"] == "PARTIAL"
+    assert out["monitor"]["order_status"]["ord_no"] == "ord-1"
+    assert out["monitor"]["order_status_fallback"] is False
+    assert out["monitor"]["order_lifecycle_loaded"] is True
+    assert out["monitor"]["order_lifecycle"]["stage"] == "partial_fill"
+    assert out["monitor"]["order_lifecycle"]["terminal"] is False
+    assert out["monitor"]["order_lifecycle"]["progress"] == 0.5
+
+
+def test_m22_monitor_does_not_block_entry_on_filled_account_order_feature():
+    state = {
+        "tick_ts": RF066_NOON_KST_EPOCH,
+        "now_epoch": RF066_NOON_KST_EPOCH,
+        "now_iso": RF066_NOON_KST_ISO,
+        "plan": {"thesis": "demo"},
+        "entry_cost_filter": {"enabled": False},
+        "selected": {
+            "symbol": "AAA",
+            "score": 0.9,
+            "risk_score": 0.2,
+            "confidence": 0.8,
+            "features": {"skill_open_orders": 1},
+        },
+        "minute_ohlcv_by_symbol": {
+            "AAA": [
+                {"ts": 1774317000, "open": 100.0, "high": 100.4, "low": 99.8, "close": 100.2, "volume": 900, "vwap": 100.0},
+                {"ts": 1774317060, "open": 100.2, "high": 100.8, "low": 100.1, "close": 100.7, "volume": 980, "vwap": 100.3},
+                {"ts": 1774317120, "open": 100.7, "high": 101.1, "low": 100.5, "close": 100.9, "volume": 1020, "vwap": 100.5},
+                {"ts": 1774317180, "open": 100.9, "high": 101.3, "low": 100.7, "close": 101.1, "volume": 1100, "vwap": 100.7},
+                {"ts": 1774317240, "open": 101.1, "high": 101.4, "low": 100.9, "close": 101.2, "volume": 1080, "vwap": 100.9},
+                {"ts": 1774317300, "open": 101.2, "high": 101.9, "low": 101.0, "close": 101.8, "volume": 2500, "vwap": 101.2},
+            ]
+        },
+        "skill_results": {
+            "account.orders": {
+                "rows": [
+                    {"symbol": "AAA", "side": "BUY", "order_qty": 1, "filled_qty": 1, "remaining_qty": 0, "status": "FILLED"},
+                ]
+            }
+        },
+    }
+
+    out = monitor_node(state)
+    assert out["monitor"]["entry_guard_reason"] != "same_symbol_pending_buy"
+    assert isinstance(out.get("intents"), list) and len(out["intents"]) == 1
+    assert out["intents"][0]["symbol"] == "AAA"
+
+
+def test_m22_monitor_maps_filled_lifecycle_from_qty_progress():
+    state = {
+        "selected": {"symbol": "AAA"},
+        "order_status": {
+            "ord_no": "ord-2",
+            "symbol": "AAA",
+            "status": "OPEN",
+            "filled_qty": 2,
+            "order_qty": 2,
+        },
+    }
+
+    out = monitor_node(state)
+    life = out["monitor"]["order_lifecycle"]
+    assert life["stage"] == "filled"
+    assert life["terminal"] is True
+    assert life["progress"] == 1.0
+
+
+def test_m22_monitor_maps_remaining_qty_complete_text_as_pending_unfilled():
+    state = {
+        "selected": {"symbol": "AAA"},
+        "order_status": {
+            "ord_no": "ord-2",
+            "symbol": "AAA",
+            "status": "COMPLETE",
+            "filled_qty": 0,
+            "order_qty": 2,
+            "remaining_qty": 2,
+        },
+    }
+
+    out = monitor_node(state)
+    life = out["monitor"]["order_lifecycle"]
+    assert life["stage"] == "pending_unfilled"
+    assert life["terminal"] is False
+    assert life["filled_qty"] == 0
+    assert life["remaining_qty"] == 2
+    assert life["progress"] == 0.0
+
+
+def test_m22_monitor_maps_cancelled_lifecycle_from_status_text():
+    state = {
+        "selected": {"symbol": "AAA"},
+        "order_status": {
+            "ord_no": "ord-3",
+            "symbol": "AAA",
+            "status": "CANCELLED",
+            "filled_qty": 0,
+            "order_qty": 2,
+        },
+    }
+
+    out = monitor_node(state)
+    life = out["monitor"]["order_lifecycle"]
+    assert life["stage"] == "cancelled"
+    assert life["terminal"] is True
+    assert life["progress"] == 0.0
+
+
+def test_m22_scanner_falls_back_safely_on_skill_timeout_errors():
+    state = {
+        "candidates": [{"symbol": "AAA"}, {"symbol": "BBB"}],
+        "mock_scan_results": {
+            "AAA": {"score": 0.20, "risk_score": 0.20, "confidence": 0.80},
+            "BBB": {"score": 0.80, "risk_score": 0.20, "confidence": 0.80},
+        },
+        "skill_results": {
+            "market.quote": {"action": "error", "meta": {"error_type": "TimeoutError"}},
+            "account.orders": {"result": {"action": "ask", "question": "symbol required"}},
+        },
+        "policy": {"scanner_feature_seed_with_yf": False},
+    }
+
+    out = scanner_node(state)
+    assert out["selected"]["symbol"] == "BBB"
+    assert out["scanner_skill"]["fallback"] is True
+    assert out["scanner_skill"]["error_count"] == 2
+    reasons = out["scanner_skill"]["fallback_reasons"]
+    assert any("market.quote:error:TimeoutError" in x for x in reasons)
+    assert any("account.orders:ask" in x for x in reasons)
+
+
+def test_m22_monitor_falls_back_safely_on_order_status_timeout():
+    state = {
+        "selected": {"symbol": "AAA"},
+        "skill_results": {
+            "order.status": {"result": {"action": "error", "meta": {"error_type": "TimeoutError"}}}
+        },
+    }
+
+    out = monitor_node(state)
+    assert out["monitor"]["order_status_loaded"] is False
+    assert out["monitor"]["order_lifecycle_loaded"] is False
+    assert out["monitor"]["order_status_fallback"] is True
+    assert out["monitor"]["order_status_error_count"] == 1
+    assert out["monitor"]["order_status_fallback_reasons"][0].startswith("order.status:error:TimeoutError")
+
+
+def test_m22_demo_script_outputs_skill_visible_summary(capsys, monkeypatch):
+    # The demo must stay offline even if a host enables the scanner's
+    # yfinance feature-seed environment fallback.
+    from libs.market import yfinance_support
+
+    monkeypatch.setenv("SCANNER_FEATURE_SEED_WITH_YF", "true")
+    monkeypatch.setattr(
+        yfinance_support,
+        "try_yfinance",
+        lambda _component: (_ for _ in ()).throw(AssertionError("demo attempted yfinance")),
+    )
+    rc = demo_main(["--json"])
+    out = capsys.readouterr().out.strip()
+    obj = json.loads(out)
+
+    assert rc == 0
+    assert obj["skill_contract_version"]["scanner"] == "m22.skill.v1"
+    assert obj["skill_contract_version"]["monitor"] == "m22.skill.v1"
+    assert obj["scanner_skill"]["used"] is True
+    assert obj["selected"]["symbol"] in ("005930", "000660", "035420")
+    assert isinstance(obj["top"], list) and len(obj["top"]) >= 1
+    assert obj["monitor"]["order_status_loaded"] is True
+    assert obj["order_lifecycle"]["stage"] == "partial_fill"
+
+
+def test_m22_demo_script_simulate_timeout_shows_fallbacks(capsys):
+    rc = demo_main(["--simulate-timeout", "--json"])
+    out = capsys.readouterr().out.strip()
+    obj = json.loads(out)
+
+    assert rc == 0
+    assert obj["scanner_skill"]["fallback"] is True
+    assert obj["scanner_skill"]["error_count"] >= 1
+    assert obj["monitor"]["order_status_fallback"] is True
+    assert obj["monitor"]["order_status_loaded"] is False
+    assert obj["order_lifecycle"] is None

@@ -1,0 +1,4105 @@
+from __future__ import annotations
+
+import json
+import os
+import time
+import uuid
+from datetime import datetime
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any, Dict, List, Optional, Tuple
+
+from libs.core.symbols import is_valid_symbol, normalize_symbol
+from libs.execution.order_lifecycle_policy import (
+    evaluate_unfilled_order_recovery_after_cancel,
+    evaluate_unfilled_order_recovery_start,
+    extract_fill_quantity_snapshot,
+)
+from libs.execution.recent_order_guard import (
+    evaluate_recent_buy_duplicate_guard,
+    evaluate_recent_buy_settle_sell_guard as evaluate_recent_buy_settle_sell_guard_policy,
+    evaluate_recent_sell_duplicate_guard,
+    prune_expired_orders,
+)
+from libs.runtime.canonical_artifacts import write_executor_artifact, write_supervisor_artifact
+from libs.runtime.asset_universe_policy import inspect_asset_universe_candidate
+from libs.runtime.decision_trace import append_decision_trace
+from libs.execution.guards.symbol_allowlist import (
+    parse_symbol_allowlist as _canonical_parse_symbol_allowlist,
+)
+from libs.execution.guards.broker_mutation import (
+    classify_mutation_response,
+    is_mutation_api_id,
+)
+from libs.execution.guards import unknown_quarantine as _unknown_quarantine
+from libs.core.path_isolation import isolate_canonical_path_for_pytest
+from libs.runtime.opening_rank1_controlled_probe import (
+    evaluate_opening_alpha_execution_price_guard,
+)
+import sys as _r3_sys
+from libs.execution.executor_observability import (
+    _append_execution_trace_entries_r3_impl,
+    _summarize_strategy_policy_r3_impl,
+    _extract_strategy_policy_r3_impl,
+)
+
+
+def _import_api_catalog():
+    from libs.catalog.api_catalog import ApiCatalog  # type: ignore
+    return ApiCatalog
+
+
+def _import_request_builder():
+    from libs.catalog.api_request_builder import ApiRequestBuilder  # type: ignore
+    return ApiRequestBuilder
+
+
+def _import_settings():
+    from libs.core.settings import Settings  # type: ignore
+    return Settings
+
+
+def _import_event_logger():
+    """Try multiple locations for EventLogger/new_run_id."""
+    for mod in (
+        "libs.event_logger",
+        "libs.logging.event_logger",
+        "libs.core.event_logger",
+    ):
+        try:
+            m = __import__(mod, fromlist=["EventLogger", "new_run_id"])
+            return getattr(m, "EventLogger"), getattr(m, "new_run_id")
+        except Exception:
+            continue
+    # final fallback: local minimal logger
+    from libs.core.event_logger import EventLogger, new_run_id  # type: ignore
+    return EventLogger, new_run_id
+
+
+def _import_supervisor():
+    from libs.risk.supervisor import Supervisor  # type: ignore
+    return Supervisor
+
+
+def _import_get_executor():
+    # returns get_executor() factory
+    try:
+        from libs.execution.executors import get_executor  # type: ignore
+        return get_executor
+    except Exception:
+        from libs.execution.executors.factory import get_executor  # type: ignore
+        return get_executor
+
+
+def _catalog_path_from_env() -> str:
+    # New canonical key
+    p = os.getenv("KIWOOM_API_CATALOG_PATH")
+    if p:
+        return p
+    # Legacy keys (kept for backwards compatibility)
+    for k in ("KIWOOM_REGISTRY_APIS_JSONL", "KIWOOM_REGISTRY_TAGGED_JSONL"):
+        v = os.getenv(k)
+        if v:
+            return v
+    return "./data/specs/api_catalog.jsonl"
+
+
+def _resolve_execution_mode() -> str:
+    """Resolve effective execution mode consistently with executor factory."""
+    mode = (os.getenv("EXECUTION_MODE", "") or "").strip().lower()
+    if mode in ("mock", "real"):
+        return mode
+
+    try:
+        Settings = _import_settings()
+        s = Settings.from_env()
+        base = str(getattr(s, "kiwoom_mode", "mock") or "mock").strip().lower()
+        return "real" if base == "real" else "mock"
+    except Exception:
+        return "mock"
+
+
+def _is_kiwoom_mock_mode() -> bool:
+    return str(os.getenv("KIWOOM_MODE", "mock") or "mock").strip().lower() == "mock"
+
+
+def _is_kiwoom_mock_broker_http_mode() -> bool:
+    # Kiwoom mock REST path: KIWOOM_MODE=mock with EXECUTION_MODE=real.
+    return _is_kiwoom_mock_mode() and _resolve_execution_mode() == "real"
+
+
+def _execution_mode_details() -> Dict[str, str]:
+    execution_mode = _resolve_execution_mode()
+    kiwoom_mode = "mock" if _is_kiwoom_mock_mode() else "real"
+    broker_env = "mock" if kiwoom_mode == "mock" else "real"
+    if execution_mode == "mock":
+        effective_mode = "mock_executor"
+    elif kiwoom_mode == "mock":
+        effective_mode = "mock_broker_http"
+    else:
+        effective_mode = "real_broker_http"
+    return {
+        "execution_mode": str(execution_mode),
+        "kiwoom_mode": str(kiwoom_mode),
+        "broker_env": str(broker_env),
+        "effective_mode": str(effective_mode),
+    }
+
+
+def _is_trueish(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value or "").strip().lower() in ("1", "true", "yes", "y", "on")
+
+
+def _coerce_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except Exception:
+        return default
+
+
+def _coerce_float(value: Any, default: float) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+
+def _parse_symbol_allowlist(raw: Optional[str]) -> set[str]:
+    """Delegates to the canonical parser (libs/execution/guards/symbol_allowlist.py).
+
+    Kept as a thin wrapper (same name/signature) so existing call sites in
+    this module are unchanged.
+    """
+    return _canonical_parse_symbol_allowlist(raw)
+
+
+def _resolve_limit_env_value(primary: str, alias: str) -> Tuple[int, str]:
+    v = _coerce_int(os.getenv(primary), 0)
+    if v > 0:
+        return int(v), str(primary)
+    alt = _coerce_int(os.getenv(alias), 0)
+    if alt > 0:
+        return int(alt), str(alias)
+    return 0, str(primary)
+
+
+def _evaluate_symbol_allowlist_guard(order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    if action not in ("BUY", "SELL"):
+        return True, "", {"enabled": False, "guard_applied": False, "action": action}
+
+    allow = _parse_symbol_allowlist(os.getenv("SYMBOL_ALLOWLIST"))
+    symbol = _extract_order_symbol(order)
+    details: Dict[str, Any] = {
+        "enabled": bool(allow),
+        "guard_applied": True,
+        "action": action,
+        "symbol": symbol,
+        "allowlist_size": len(allow),
+    }
+    if not allow:
+        return True, "", details
+    if not symbol:
+        details["symbol_evaluable"] = False
+        return True, "", details
+    if symbol and symbol in allow:
+        return True, "", details
+    details["allowlist"] = sorted(allow)
+    return False, "symbol_not_allowlisted", details
+
+
+def _extract_market_quotes_safe(state: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    try:
+        from graphs.nodes.skill_contracts import extract_market_quotes  # type: ignore
+
+        quotes, _meta = extract_market_quotes(state)
+        return dict(quotes or {})
+    except Exception:
+        return {}
+
+
+def _evaluate_asset_universe_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    details: Dict[str, Any] = {
+        "guard_applied": True,
+        "action": action,
+    }
+    if action != "BUY":
+        details["risk_reducing"] = action in ("SELL", "EXIT", "CLOSE")
+        return True, "", details
+
+    symbol = _extract_order_symbol(order)
+    details["symbol"] = symbol
+    if not symbol:
+        details["symbol_evaluable"] = False
+        return True, "", details
+
+    inspection = inspect_asset_universe_candidate(
+        symbol=symbol,
+        candidate=state.get("selected") if isinstance(state.get("selected"), dict) else None,
+        state=state,
+        policy=state.get("policy") if isinstance(state.get("policy"), dict) else {},
+        market_quotes=_extract_market_quotes_safe(state),
+        allow_remote_lookup=True,
+    )
+    details.update(
+        {
+            "asset_policy_type": str(inspection.get("asset_policy_type") or ""),
+            "asset_policy_source": str(inspection.get("asset_policy_source") or ""),
+            "asset_class_detected": str(inspection.get("asset_class_detected") or ""),
+            "detection_source": str(inspection.get("detection_source") or ""),
+            "detection_field": str(inspection.get("detection_field") or ""),
+            "excluded_by_asset_policy": bool(inspection.get("excluded_by_asset_policy")),
+            "exclusion_reason": str(inspection.get("exclusion_reason") or ""),
+            "detected_name": str(inspection.get("detected_name") or ""),
+        }
+    )
+    if bool(inspection.get("excluded_by_asset_policy")):
+        return False, "asset_universe_policy_blocked", details
+    return True, "", details
+
+
+def _evaluate_symbol_format_guard(order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    if action not in ("BUY", "SELL"):
+        return True, "", {"guard_applied": False, "action": action}
+
+    raw_symbol = order.get("symbol_raw") or order.get("symbol") or order.get("stk_cd")
+    symbol = normalize_symbol(raw_symbol)
+    details: Dict[str, Any] = {
+        "guard_applied": True,
+        "action": action,
+        "raw_symbol": str(raw_symbol or "").strip(),
+        "symbol": symbol,
+    }
+    if not is_valid_symbol(raw_symbol):
+        return False, "invalid_symbol_format", details
+    return True, "", details
+
+
+def _evaluate_order_limit_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    if action not in ("BUY", "SELL"):
+        return True, "", {"guard_applied": False, "action": action}
+    if action == "SELL":
+        return True, "", {"guard_applied": True, "action": action, "risk_reducing": True}
+
+    qty = _coerce_int(order.get("qty"), 0)
+    max_qty, qty_key = _resolve_limit_env_value("MAX_ORDER_QTY", "MAX_QTY")
+    max_notional, notional_key = _resolve_limit_env_value("MAX_ORDER_NOTIONAL", "MAX_NOTIONAL")
+    price, price_source = _resolve_order_price_for_notional_with_source(state, order)
+
+    details: Dict[str, Any] = {
+        "guard_applied": True,
+        "action": action,
+        "qty": int(qty),
+        "price": float(price) if price is not None else None,
+        "price_source": str(price_source),
+        "max_qty_key": str(qty_key),
+        "max_qty": int(max_qty),
+        "max_notional_key": str(notional_key),
+        "max_notional": int(max_notional),
+    }
+
+    if max_qty > 0 and qty > max_qty:
+        details["limit_exceeded"] = "qty"
+        return False, "order_qty_limit_exceeded", details
+
+    if max_notional > 0 and qty > 0 and price <= 0:
+        # 2026-09-04: only reach for a live re-fetch at the exact moment
+        # this guard is about to fail closed on a missing price -- see
+        # _live_refresh_price_candidate.
+        refreshed = _live_refresh_price_candidate(state, _extract_order_symbol(order))
+        if refreshed is not None:
+            price, price_source = refreshed
+            details["price"] = float(price)
+            details["price_source"] = str(price_source)
+        if price <= 0:
+            details["price_evaluable"] = False
+            details["limit_exceeded"] = "notional_price_missing"
+            return False, "order_notional_price_missing", details
+
+    if max_notional > 0 and qty > 0 and price > 0:
+        notional = float(qty) * float(price)
+        details["order_notional"] = float(notional)
+        if notional > float(max_notional):
+            details["limit_exceeded"] = "notional"
+            return False, "order_notional_limit_exceeded", details
+
+    return True, "", details
+
+
+def _evaluate_monitor_exit_confirmation_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    details: Dict[str, Any] = {
+        "guard_applied": True,
+        "action": action,
+        "symbol": _extract_order_symbol(order),
+    }
+    if action != "SELL":
+        details["guard_applied"] = False
+        return True, "", details
+
+    monitor_exit = state.get("monitor_exit") if isinstance(state.get("monitor_exit"), dict) else {}
+    if not monitor_exit:
+        details["monitor_exit_present"] = False
+        return True, "", details
+
+    trigger_details = (
+        monitor_exit.get("trigger_details")
+        if isinstance(monitor_exit.get("trigger_details"), dict)
+        else {}
+    )
+    guard_reason = str(
+        trigger_details.get("sell_guard_reason")
+        or monitor_exit.get("sell_guard_reason")
+        or monitor_exit.get("guard_reason")
+        or ""
+    ).strip()
+    exit_reason = str(monitor_exit.get("reason") or monitor_exit.get("exit_reason") or "").strip()
+    monitor_reason = str(monitor_exit.get("monitor_reason") or "").strip()
+    monitor_triggered = bool(monitor_exit.get("triggered"))
+    guard_blocked = bool(
+        trigger_details.get("sell_guard_blocked")
+        or monitor_exit.get("sell_guard_blocked")
+        or monitor_exit.get("guard_blocked")
+    )
+    pending_confirmation = (
+        guard_reason.startswith("exit_confirmation_pending:")
+        or exit_reason.startswith("exit_confirmation_pending:")
+        or monitor_reason == "exit_signal_pending_confirmation"
+    )
+
+    details.update(
+        {
+            "monitor_exit_present": True,
+            "monitor_exit_triggered": monitor_triggered,
+            "monitor_exit_reason": exit_reason,
+            "monitor_reason": monitor_reason,
+            "sell_guard_reason": guard_reason,
+            "sell_guard_blocked": guard_blocked,
+            "pending_confirmation": pending_confirmation,
+        }
+    )
+    if guard_blocked or pending_confirmation:
+        return False, "monitor_exit_confirmation_pending", details
+    return True, "", details
+
+
+def _extract_upper_limit_quote_snapshot(state: Dict[str, Any], symbol: str) -> Dict[str, Any]:
+    out: Dict[str, Any] = {
+        "symbol": normalize_symbol(symbol),
+        "quote_present": False,
+        "source": "",
+        "current_price": 0.0,
+        "upper_limit_price": 0.0,
+        "best_ask": 0.0,
+        "best_bid": 0.0,
+        "change_pct": 0.0,
+        "raw_row_present": False,
+        "observed_at": None,
+        "observed_epoch": None,
+    }
+    if not out["symbol"]:
+        return out
+
+    quote: Dict[str, Any] = {}
+    try:
+        from graphs.nodes.skill_contracts import extract_market_quotes  # type: ignore
+
+        quotes, _meta = extract_market_quotes(state)
+        q = quotes.get(out["symbol"])
+        if isinstance(q, dict):
+            quote = dict(q)
+    except Exception:
+        quote = {}
+
+    if not quote:
+        return out
+
+    out["quote_present"] = True
+    out["source"] = "skill.market.quote"
+    out["current_price"] = _coerce_float(quote.get("price") or quote.get("cur"), 0.0)
+    out["best_ask"] = _coerce_float(quote.get("best_ask") or quote.get("ask"), 0.0)
+    out["best_bid"] = _coerce_float(quote.get("best_bid") or quote.get("bid"), 0.0)
+    out["change_pct"] = _coerce_float(quote.get("change_pct"), 0.0)
+    out["observed_at"] = quote.get("_observed_at_utc") or quote.get("observed_at")
+    out["observed_epoch"] = quote.get("_observed_epoch") or quote.get("observed_epoch")
+
+    raw_quote = quote.get("raw") if isinstance(quote.get("raw"), dict) else {}
+    raw_rows = raw_quote.get("cntr_infr") if isinstance(raw_quote.get("cntr_infr"), list) else []
+    raw_row = raw_rows[0] if raw_rows and isinstance(raw_rows[0], dict) else {}
+    if raw_row:
+        out["raw_row_present"] = True
+        if out["current_price"] <= 0.0:
+            out["current_price"] = _coerce_float(raw_row.get("cur_prc"), 0.0)
+        if out["best_ask"] <= 0.0:
+            out["best_ask"] = _coerce_float(raw_row.get("pri_sel_bid_unit") or raw_row.get("sel_1bid"), 0.0)
+        if out["best_bid"] <= 0.0:
+            out["best_bid"] = _coerce_float(raw_row.get("pri_buy_bid_unit") or raw_row.get("buy_1bid"), 0.0)
+        if abs(out["change_pct"]) <= 1e-9:
+            out["change_pct"] = _coerce_float(raw_row.get("pre_rt") or raw_row.get("flu_rt"), 0.0)
+        out["upper_limit_price"] = _coerce_float(
+            raw_row.get("upl_pric") or raw_quote.get("upl_pric") or quote.get("upl_pric"),
+            0.0,
+        )
+
+    for key in ("current_price", "upper_limit_price", "best_ask", "best_bid"):
+        out[key] = abs(_coerce_float(out.get(key), 0.0))
+
+    return out
+
+
+def _augment_quote_snapshot_with_spread(snapshot: Dict[str, Any] | None) -> Dict[str, Any]:
+    quote = dict(snapshot or {})
+    best_ask = abs(_coerce_float(quote.get("best_ask"), 0.0))
+    best_bid = abs(_coerce_float(quote.get("best_bid"), 0.0))
+    current_price = abs(_coerce_float(quote.get("current_price"), 0.0))
+    quote["best_ask"] = float(best_ask)
+    quote["best_bid"] = float(best_bid)
+    quote["current_price"] = float(current_price)
+
+    spread_bps = 0.0
+    if best_ask > 0.0 and best_bid > 0.0:
+        mid = (best_ask + best_bid) / 2.0
+        if mid > 0.0:
+            spread_bps = ((best_ask - best_bid) / mid) * 10000.0
+    quote["spread_bps"] = float(spread_bps) if spread_bps > 0.0 else 0.0
+    return quote
+
+
+def _quote_snapshot_has_valid_price(snapshot: Dict[str, Any]) -> bool:
+    return bool(snapshot.get("quote_present")) and (
+        _coerce_float(snapshot.get("best_ask"), 0.0) > 0.0
+        or _coerce_float(snapshot.get("current_price"), 0.0) > 0.0
+    )
+
+
+def _ensure_live_market_quote(state: Dict[str, Any], symbol: str) -> Dict[str, Any]:
+    """2026-09-04 (extends the 2026-09-03 daily audit P1-A fix): one live,
+    synchronous market.quote re-fetch for `symbol`, merged into
+    `state["skill_results"]["market.quote"]` on success -- a pure
+    market-data READ (never a broker mutation; Step5B's mutation-safety
+    machinery is untouched), never a fallback to a Scanner-cached/stale
+    price.
+
+    Shared by every price-lookup call site in this module that can hit the
+    same root cause: graphs/nodes/scanner_node.py's one-time market.quote
+    hydration fan-out is capped at candidate_k (default 5) symbols from
+    Scanner's own composite ranking, or is scoped to whatever candidate
+    pool a controlled-lane/opening-alpha mechanism injects -- a symbol
+    chosen via a different selection path than that fan-out never has its
+    quote fetched, so every later `_extract_upper_limit_quote_snapshot` /
+    `_extract_market_quotes_safe` lookup for it comes back empty. Confirmed
+    2026-09-04: this also produced `order_notional_price_missing` BROKER
+    rejections for the Q10_INDEX controlled lane's KODEX 200 (069500)
+    signal, via `_resolve_order_price_for_notional_with_source`'s own
+    market.quote lookup -- a separate call site from the one this helper
+    was originally written for, sharing the identical upstream gap.
+
+    Returns a meta dict with "attempted"/"used"/"reason". Never changes
+    any guard threshold or semantics -- it only gives existing price
+    lookups a chance to see a real quote before concluding one is
+    unavailable. If the refresh fails, is unavailable, or returns a quote
+    for the wrong symbol, `state` is left untouched.
+
+    2026-09-04: multiple independent call sites within a single
+    execute_from_packet() run can need a price for the same symbol
+    (order_limit_guard and mock_cash_guard both resolve one via
+    `_resolve_order_price_for_notional_with_source`, plus the
+    controlled-lane/opening-alpha guard's own call). Memoized per
+    (state, symbol) via a plain dict on `state` -- itself a fresh object
+    per run -- so at most ONE live market.quote call is made per symbol
+    per run, regardless of how many consumers need the price; later
+    callers reuse the same outcome (including a prior failure, which is
+    not retried)."""
+    cache = state.get("_live_quote_refresh_cache")
+    if not isinstance(cache, dict):
+        cache = {}
+        state["_live_quote_refresh_cache"] = cache
+    if symbol in cache:
+        return dict(cache[symbol])
+
+    refresh_meta = _ensure_live_market_quote_uncached(state, symbol)
+    cache[symbol] = dict(refresh_meta)
+    return refresh_meta
+
+
+def _ensure_live_market_quote_uncached(state: Dict[str, Any], symbol: str) -> Dict[str, Any]:
+    refresh_meta: Dict[str, Any] = {"attempted": False, "used": False, "reason": ""}
+    if not symbol:
+        return refresh_meta
+
+    try:
+        from graphs.nodes.hydrate_skill_results_node import _resolve_runner, _fetch_market_quotes
+    except Exception as exc:
+        refresh_meta["reason"] = f"import_failed:{type(exc).__name__}"
+        return refresh_meta
+
+    try:
+        runner, runner_source, _runner_errors = _resolve_runner(state)
+    except Exception as exc:
+        refresh_meta.update({"attempted": True, "reason": f"resolve_runner_exception:{type(exc).__name__}"})
+        return refresh_meta
+
+    if runner is None or not hasattr(runner, "run"):
+        refresh_meta.update({"attempted": True, "reason": "runner_unavailable", "runner_source": runner_source})
+        return refresh_meta
+
+    refresh_meta.update({"attempted": True, "runner_source": runner_source})
+    run_id = str(state.get("run_id") or "execute_from_packet-quote-refresh")
+    try:
+        market_quote_value, fetch_meta = _fetch_market_quotes(runner, run_id=run_id, symbols=[symbol])
+    except Exception as exc:
+        refresh_meta["reason"] = f"fetch_exception:{type(exc).__name__}"
+        return refresh_meta
+
+    refresh_meta["fetch_meta"] = fetch_meta
+    if not isinstance(market_quote_value, dict) or symbol not in market_quote_value:
+        refresh_meta["reason"] = "quote_not_ready"
+        return refresh_meta
+
+    fresh_row = market_quote_value[symbol]
+    if normalize_symbol(fresh_row.get("symbol") or symbol) != symbol:
+        # Defensive: never let a wrong-symbol response through (T3).
+        refresh_meta["reason"] = "quote_symbol_mismatch"
+        return refresh_meta
+
+    skill_results = dict(state.get("skill_results") or {}) if isinstance(state.get("skill_results"), dict) else {}
+    existing_market_quote = skill_results.get("market.quote")
+    merged = dict(existing_market_quote) if isinstance(existing_market_quote, dict) else {}
+    merged[symbol] = fresh_row
+    skill_results["market.quote"] = merged
+    state["skill_results"] = skill_results
+
+    refresh_meta.update({"used": True, "reason": "live_requote_succeeded"})
+    return refresh_meta
+
+
+def _refresh_executable_quote_if_missing(
+    state: Dict[str, Any], symbol: str, quote_snapshot: Dict[str, Any]
+) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """2026-09-03 daily audit (P1-A): see `_ensure_live_market_quote` for
+    the shared refresh mechanism. This wrapper re-derives the
+    controlled-lane/opening-alpha quote snapshot shape after a successful
+    refresh; if the refresh fails or the re-derived snapshot is still
+    empty, the original (empty) snapshot is returned unchanged and the
+    existing NOT_SENT path proceeds exactly as before."""
+    if _quote_snapshot_has_valid_price(quote_snapshot) or not symbol:
+        return quote_snapshot, {"attempted": False, "used": False, "reason": ""}
+
+    refresh_meta = _ensure_live_market_quote(state, symbol)
+    if not refresh_meta.get("used"):
+        return quote_snapshot, refresh_meta
+
+    refreshed_snapshot = _augment_quote_snapshot_with_spread(
+        _extract_upper_limit_quote_snapshot(state, symbol)
+    )
+    if not _quote_snapshot_has_valid_price(refreshed_snapshot):
+        refresh_meta["reason"] = "refreshed_quote_still_empty"
+        return quote_snapshot, refresh_meta
+
+    refreshed_snapshot["refresh_source"] = "live_requote"
+    return refreshed_snapshot, refresh_meta
+
+
+def _order_entry_chart_guard_snapshot(order: Dict[str, Any]) -> Dict[str, Any]:
+    meta = order.get("meta") if isinstance(order.get("meta"), dict) else {}
+    metrics = meta.get("entry_metrics") if isinstance(meta.get("entry_metrics"), dict) else {}
+    grouped = meta.get("entry_grouped_logic_trace") if isinstance(meta.get("entry_grouped_logic_trace"), dict) else {}
+    detail = {}
+    if isinstance(metrics.get("human_chart_detail_observed"), dict):
+        detail = dict(metrics.get("human_chart_detail_observed") or {})
+    elif isinstance(grouped.get("human_chart_detail_observed"), dict):
+        detail = dict(grouped.get("human_chart_detail_observed") or {})
+
+    def first_float(*values: Any) -> float | None:
+        for value in values:
+            if value in (None, ""):
+                continue
+            parsed = _coerce_float(value, 0.0)
+            return float(parsed)
+        return None
+
+    def first_text(*values: Any) -> str:
+        for value in values:
+            text = str(value or "").strip().lower()
+            if text:
+                return text
+        return ""
+
+    reward_room_score = first_float(metrics.get("human_reward_room_score"), grouped.get("human_reward_room_score"))
+    reward_room_pct = first_float(detail.get("reward_room_pct"))
+    prev_close_distance_pct = first_float(
+        metrics.get("prev_close_distance_pct"),
+        metrics.get("entry_prev_close_distance_pct"),
+        grouped.get("prev_close_distance_pct"),
+    )
+    open_gap_pct = first_float(metrics.get("open_gap_pct"), metrics.get("entry_open_gap_pct"), grouped.get("open_gap_pct"))
+    human_chart_entry_score = first_float(
+        metrics.get("human_chart_entry_score"),
+        grouped.get("human_chart_entry_score"),
+    )
+    late_entry_risk = first_text(metrics.get("late_entry_risk"), grouped.get("late_entry_risk"))
+    min_reward_room_pct = 0.012
+    no_reward_room = bool(
+        (reward_room_score is not None and reward_room_score <= 0.05)
+        or (reward_room_pct is not None and reward_room_pct <= min_reward_room_pct)
+    )
+    near_upper_limit_zone = bool(
+        (prev_close_distance_pct is not None and prev_close_distance_pct >= 0.29)
+        or (open_gap_pct is not None and open_gap_pct >= 0.29)
+    )
+    weak_human_entry = bool(human_chart_entry_score is not None and human_chart_entry_score < 0.50)
+    insufficient_reward_room = bool(
+        reward_room_pct is not None
+        and 0.0 <= reward_room_pct < min_reward_room_pct
+        and (late_entry_risk in {"medium", "high"} or near_upper_limit_zone)
+    )
+    block = bool(
+        insufficient_reward_room
+        or (
+            late_entry_risk == "high"
+            and no_reward_room
+            and (near_upper_limit_zone or weak_human_entry)
+        )
+    )
+    reasons: List[str] = []
+    if late_entry_risk == "high" and no_reward_room:
+        reasons.append("late_entry_risk=high_with_no_reward_room")
+    if near_upper_limit_zone and late_entry_risk == "high" and no_reward_room:
+        reasons.append("near_upper_limit_zone_with_late_entry_no_reward_room")
+    if weak_human_entry and late_entry_risk == "high" and no_reward_room:
+        reasons.append("human_chart_entry_score<0.50_with_late_entry_no_reward_room")
+    if insufficient_reward_room:
+        reasons.append(f"reward_room_pct<{min_reward_room_pct:.3f}_cost_floor")
+
+    return {
+        "present": bool(metrics or grouped or detail),
+        "block": bool(block),
+        "reasons": reasons,
+        "thresholds": {
+            "near_upper_prev_close_distance_pct": 0.29,
+            "min_human_chart_entry_score": 0.50,
+            "no_reward_room_score": 0.05,
+            "no_reward_room_pct": min_reward_room_pct,
+        },
+        "observed": {
+            "reward_room_score": reward_room_score,
+            "reward_room_pct": reward_room_pct,
+            "prev_close_distance_pct": prev_close_distance_pct,
+            "open_gap_pct": open_gap_pct,
+            "late_entry_risk": late_entry_risk,
+            "human_chart_entry_score": human_chart_entry_score,
+            "no_reward_room": bool(no_reward_room),
+            "insufficient_reward_room": bool(insufficient_reward_room),
+            "near_upper_limit_zone": bool(near_upper_limit_zone),
+        },
+    }
+
+
+def _evaluate_upper_limit_buy_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    if action != "BUY":
+        return True, "", {"guard_applied": False, "action": action}
+
+    symbol = _extract_order_symbol(order)
+    details = {
+        "guard_applied": True,
+        "action": action,
+        "symbol": symbol,
+        "enabled": True,
+    }
+    if not symbol:
+        details["symbol_evaluable"] = False
+        return True, "", details
+
+    quote = _extract_upper_limit_quote_snapshot(state, symbol)
+    details["quote"] = quote
+    entry_chart_guard = _order_entry_chart_guard_snapshot(order)
+    details["entry_chart_guard"] = entry_chart_guard
+    if bool(entry_chart_guard.get("block")):
+        details["block_reason"] = "entry_chart_hard_guard_blocked"
+        return False, "entry_chart_hard_guard_blocked", details
+
+    if not bool(quote.get("quote_present")):
+        details["quote_evaluable"] = False
+        return True, "", details
+
+    current_price = _coerce_float(quote.get("current_price"), 0.0)
+    upper_limit_price = _coerce_float(quote.get("upper_limit_price"), 0.0)
+    best_ask = _coerce_float(quote.get("best_ask"), 0.0)
+    change_pct = _coerce_float(quote.get("change_pct"), 0.0)
+
+    at_upper_limit = upper_limit_price > 0.0 and current_price >= max(0.0, upper_limit_price - 1e-6)
+    no_visible_ask = best_ask <= 0.0
+    suspicious_limit_up = change_pct >= 29.5 and no_visible_ask
+    limit_locked = bool(at_upper_limit and (no_visible_ask or best_ask >= upper_limit_price > 0.0))
+
+    details.update(
+        {
+            "current_price": float(current_price),
+            "upper_limit_price": float(upper_limit_price),
+            "best_ask": float(best_ask),
+            "change_pct": float(change_pct),
+            "at_upper_limit": bool(at_upper_limit),
+            "limit_locked": bool(limit_locked),
+            "suspicious_limit_up": bool(suspicious_limit_up),
+        }
+    )
+
+    if at_upper_limit or suspicious_limit_up:
+        details["block_reason"] = "price_at_or_near_upper_limit"
+        return False, "upper_limit_buy_blocked", details
+    return True, "", details
+
+
+def _should_attempt_upper_limit_cancel(state: Dict[str, Any], execution: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    details: Dict[str, Any] = {"guard_applied": True, "action": action}
+    if action != "BUY":
+        return False, details
+    if _resolve_execution_mode() != "real":
+        details["reason"] = "execution_mode_not_real"
+        return False, details
+    if not bool(execution.get("allowed")) or not bool(execution.get("ok")):
+        details["reason"] = "execution_not_accepted"
+        return False, details
+
+    order_id = str((((execution.get("payload") or {}) if isinstance(execution.get("payload"), dict) else {}).get("order_id")) or "").strip()
+    if not order_id:
+        details["reason"] = "missing_order_id"
+        return False, details
+
+    allowed, reason, guard_details = _evaluate_upper_limit_buy_guard(state, order)
+    details["order_id"] = order_id
+    details["upper_limit_guard"] = guard_details
+    if allowed:
+        details["reason"] = "upper_limit_not_detected"
+        return False, details
+    details["reason"] = reason or "upper_limit_buy_blocked"
+    return True, details
+
+
+def _propagate_cancel_unknown_outcome(state: Dict[str, Any], cancel_order: Dict[str, Any], cancel_payload: Dict[str, Any]) -> None:
+    """CANCEL UNKNOWN propagation (Phase 1 Step 5B Safety Fix).
+
+    A CANCEL submitted from a nested recovery helper (upper-limit
+    auto-cancel, unfilled-order recovery) can itself come back UNKNOWN --
+    the cancel request's own transport/response was ambiguous, same as any
+    other mutation. Previously this only ever surfaced as a nested
+    `cancel_ok=false` deep inside state["execution"]["upper_limit_cancel"]/
+    ["unfilled_order_recovery"], with no symbol quarantine and no top-level
+    reconciliation_required -- meaning the next tick could freely retry the
+    same CANCEL, re-enter the position, or otherwise treat the symbol as
+    clear. This makes an UNKNOWN cancel outcome quarantine the symbol and
+    mark the *top-level* execution provenance the same way a top-level
+    UNKNOWN would, regardless of which helper submitted it.
+    """
+    if str(cancel_payload.get("broker_outcome") or "").strip().upper() != "UNKNOWN":
+        return
+    quarantined = _quarantine_symbol_for_unknown_outcome(
+        state, cancel_order, cancel_payload, reason="cancel_broker_outcome_unknown"
+    )
+    top_execution = state.get("execution")
+    if isinstance(top_execution, dict):
+        # Phase 1 Step 5B Safety Fix 2: the ORIGINAL order's own
+        # broker_outcome (e.g. ACCEPTED) is a separate, already-determined
+        # fact and must never be overwritten by this nested CANCEL's
+        # outcome -- these cancel_* fields are additive and namespaced so
+        # both are preserved distinctly in canonical artifact/event/state.
+        top_execution["reconciliation_required"] = True
+        top_execution["cancel_broker_outcome"] = "UNKNOWN"
+        top_execution["cancel_reconciliation_required"] = True
+        top_execution["cancel_submission_attempts"] = _coerce_int(cancel_payload.get("submission_attempts"), 0)
+        top_execution["cancel_exception_type"] = str(cancel_payload.get("exception_type") or "")
+        top_execution["cancel_quarantine_symbol"] = _extract_order_symbol(cancel_order)
+        top_execution["cancel_quarantine_persisted"] = bool(quarantined)
+
+
+def _attempt_upper_limit_cancel(*, state: Dict[str, Any], catalog: Any, executor: Any, order: Dict[str, Any], execution: Dict[str, Any]) -> Dict[str, Any]:
+    attempt, details = _should_attempt_upper_limit_cancel(state, execution, order)
+    result: Dict[str, Any] = {"attempted": bool(attempt), **details}
+    if not attempt:
+        return result
+
+    order_id = str(details.get("order_id") or "").strip()
+    symbol = _extract_order_symbol(order)
+    cancel_order: Dict[str, Any] = {
+        "api_id": "kt10003",
+        "action": "CANCEL",
+        "symbol": symbol,
+        "stk_cd": symbol,
+        "orig_ord_no": order_id,
+        "cncl_qty": "0",
+        "dmst_stex_tp": str(order.get("dmst_stex_tp") or "KRX"),
+        "rationale": "upper_limit_buy_auto_cancel",
+    }
+    dispatched = False
+    def normalize_cancel(result):
+        nonlocal dispatched
+        dispatched = result is not None
+        return _normalize_execution(allowed=True, execution_result=result, allow_result=None,
+            order=cancel_order, reason='upper_limit_buy_auto_cancel', strategy_policy_summary=None)
+    try:
+        cancel_req = _prepare_request(cancel_order, catalog)
+        from libs.execution.intent_admission import admit_order_intent
+        admit_order_intent(state=state, order=cancel_order, source="upper_limit_child_cancel", child=True)
+        from libs.execution.intent_execution_owner import execute_owned_order
+        cancel_payload = execute_owned_order(state=state, order=cancel_order, request=cancel_req,
+            executor=executor, child=True, normalize=normalize_cancel)
+        result["cancel"] = cancel_payload
+        result["cancel_ok"] = bool(cancel_payload.get("ok"))
+        _propagate_cancel_unknown_outcome(state, cancel_order, cancel_payload)
+        return result
+    except Exception as exc:
+        result["cancel_ok"] = False
+        result["cancel_error"] = str(exc)
+        if dispatched:
+            # Phase 1 Step 5B Fix 3 (HIGH2): executor.execute() already
+            # returned before this exception -- it was raised during
+            # response classification/normalization, not transport, so the
+            # mutation was physically submitted. The cancel's true broker
+            # outcome is unknowable from here; never let that escape as a
+            # bare error string with no quarantine -- treat it exactly like
+            # any other post-dispatch UNKNOWN outcome.
+            unknown_cancel_payload = {
+                "intent_id": cancel_order.get('intent_id', ''),
+                "broker_outcome": "UNKNOWN",
+                "exception_type": type(exc).__name__,
+                "submission_attempts": 1,
+            }
+            result["cancel"] = unknown_cancel_payload
+            _propagate_cancel_unknown_outcome(state, cancel_order, unknown_cancel_payload)
+        return result
+
+
+def _execution_market_open_for_recovery(state: Dict[str, Any]) -> Tuple[bool, Dict[str, Any]]:
+    details: Dict[str, Any] = {"clock_evaluable": False}
+    epoch = _coerce_int(state.get("tick_ts"), 0) or _coerce_int(state.get("now_epoch"), 0)
+    if epoch <= 0:
+        return True, details
+    try:
+        from libs.runtime.market_hours import MarketHours
+
+        mh = MarketHours()
+        dt_kst = datetime.fromtimestamp(epoch, tz=mh.tz)
+        details.update(
+            {
+                "clock_evaluable": True,
+                "epoch": int(epoch),
+                "kst_time": dt_kst.isoformat(),
+                "regular_session_open": bool(mh.is_open(dt_kst)),
+            }
+        )
+        return bool(mh.is_open(dt_kst)), details
+    except Exception as exc:
+        details["clock_error"] = str(exc)
+        return True, details
+
+
+def _build_cancel_order_for_unfilled(order: Dict[str, Any], order_id: str, *, reason: str) -> Dict[str, Any]:
+    symbol = _extract_order_symbol(order)
+    return {
+        "api_id": "kt10003",
+        "action": "CANCEL",
+        "symbol": symbol,
+        "stk_cd": symbol,
+        "orig_ord_no": order_id,
+        "cncl_qty": "0",
+        "dmst_stex_tp": str(order.get("dmst_stex_tp") or "KRX"),
+        "rationale": reason,
+    }
+
+
+def _build_market_replacement_sell_order(order: Dict[str, Any], qty: int, *, reason: str) -> Dict[str, Any]:
+    symbol = _extract_order_symbol(order)
+    replacement = dict(order)
+    replacement.update(
+        {
+            "api_id": "ORDER_SUBMIT",
+            "order_api_id": "ORDER_SUBMIT",
+            "action": "SELL",
+            "symbol": symbol,
+            "stk_cd": symbol,
+            "qty": int(max(0, qty)),
+            "ord_qty": str(int(max(0, qty))),
+            "price": None,
+            "ord_uv": "",
+            "order_type": "market",
+            "trde_tp": "3",
+            "dmst_stex_tp": str(order.get("dmst_stex_tp") or "KRX"),
+            "rationale": reason,
+        }
+    )
+    meta = replacement.get("meta") if isinstance(replacement.get("meta"), dict) else {}
+    replacement["meta"] = {**meta, "unfilled_order_recovery": True, "source_order_id": str(order.get("order_id") or "")}
+    return replacement
+
+
+def _attempt_unfilled_order_recovery(*, state: Dict[str, Any], catalog: Any, executor: Any, order: Dict[str, Any], execution: Dict[str, Any]) -> Dict[str, Any]:
+    action = str(order.get("action") or "").strip().upper()
+    result: Dict[str, Any] = {"attempted": False, "action": action, "guard_applied": True}
+    snapshot = extract_fill_quantity_snapshot(execution, order)
+    result["fill_snapshot"] = snapshot
+
+    order_id = str(execution.get("order_id") or execution.get("ord_no") or ((execution.get("payload") or {}) if isinstance(execution.get("payload"), dict) else {}).get("order_id") or "").strip()
+    start_policy = evaluate_unfilled_order_recovery_start(
+        action=action,
+        order_api_id=order.get("api_id") or order.get("order_api_id"),
+        execution_allowed=bool(execution.get("allowed")),
+        execution_ok=bool(execution.get("ok")),
+        fill_snapshot=snapshot,
+        order_id=order_id,
+    )
+    if not bool(start_policy.get("attempted")):
+        result["reason"] = str(start_policy.get("reason") or "")
+        return result
+
+    symbol = _extract_order_symbol(order)
+    remaining_qty = _coerce_int(start_policy.get("remaining_qty"), 0)
+    result.update({"attempted": True, "symbol": symbol, "order_id": order_id, "remaining_qty": int(remaining_qty)})
+    cancel_order = _build_cancel_order_for_unfilled(
+        order,
+        order_id,
+        reason=str(start_policy.get("cancel_reason") or ""),
+    )
+    dispatched = False
+    def normalize_cancel(result):
+        nonlocal dispatched
+        dispatched = result is not None
+        return _normalize_execution(allowed=True, execution_result=result, allow_result=None,
+            order=cancel_order, reason=str(cancel_order.get('rationale') or ''), strategy_policy_summary=None)
+    try:
+        cancel_req = _prepare_request(cancel_order, catalog)
+        from libs.execution.intent_admission import admit_order_intent
+        admit_order_intent(state=state, order=cancel_order, source="unfilled_recovery_child_cancel", child=True)
+        from libs.execution.intent_execution_owner import execute_owned_order
+        cancel_payload = execute_owned_order(state=state, order=cancel_order, request=cancel_req,
+            executor=executor, child=True, normalize=normalize_cancel)
+        result["cancel"] = cancel_payload
+        result["cancel_ok"] = bool(cancel_payload.get("ok"))
+        _propagate_cancel_unknown_outcome(state, cancel_order, cancel_payload)
+    except Exception as exc:
+        result["cancel_ok"] = False
+        result["cancel_error"] = str(exc)
+        if dispatched:
+            # Phase 1 Step 5B Fix 3 (HIGH2) -- see the matching comment in
+            # _attempt_upper_limit_cancel for the full rationale.
+            unknown_cancel_payload = {
+                "intent_id": cancel_order.get('intent_id', ''),
+                "broker_outcome": "UNKNOWN",
+                "exception_type": type(exc).__name__,
+                "submission_attempts": 1,
+            }
+            result["cancel"] = unknown_cancel_payload
+            _propagate_cancel_unknown_outcome(state, cancel_order, unknown_cancel_payload)
+        return result
+
+    if action == "BUY" or not bool(result.get("cancel_ok")) or remaining_qty <= 0:
+        after_cancel_policy = evaluate_unfilled_order_recovery_after_cancel(
+            action=action,
+            cancel_ok=bool(result.get("cancel_ok")),
+            remaining_qty=int(remaining_qty),
+            regular_session_open=True,
+        )
+        result["reason"] = str(after_cancel_policy.get("reason") or "")
+        return result
+
+    regular_open, clock_details = _execution_market_open_for_recovery(state)
+    result["market_clock"] = clock_details
+    after_cancel_policy = evaluate_unfilled_order_recovery_after_cancel(
+        action=action,
+        cancel_ok=bool(result.get("cancel_ok")),
+        remaining_qty=int(remaining_qty),
+        regular_session_open=bool(regular_open),
+    )
+    if not bool(after_cancel_policy.get("requires_market_replacement")):
+        result["reason"] = str(after_cancel_policy.get("reason") or "")
+        if bool(after_cancel_policy.get("after_hours_policy_required")):
+            result["after_hours_policy_required"] = True
+        return result
+
+    # CANCEL_ACCEPTED != CANCEL_CONFIRMED (Phase 1 Step 5B). `cancel_ok` above
+    # only means the broker accepted the *cancel request*; it is not broker
+    # truth that the original order is actually gone. Submitting a market
+    # replacement SELL on that assumption risks a double sell if the
+    # original order was in fact filled (or still pending) at the broker.
+    # This codebase has no live broker-truth confirmation wired into this
+    # recovery path, so the replacement is fail-closed blocked until one
+    # exists -- confirmation-unavailable is treated the same as
+    # confirmation-denied, never as confirmation-granted.
+    result["cancel_confirmed"] = False
+    result["market_replacement_blocked_reason"] = "cancel_confirmation_unavailable"
+    result["reason"] = "market_replacement_blocked_cancel_confirmation_unavailable"
+    return result
+
+
+def _extract_order_symbol(order: Dict[str, Any]) -> str:
+    sym = order.get("symbol") or order.get("stk_cd")
+    return normalize_symbol(sym)
+
+
+def _extract_active_mock_broker_restricted_symbol_record(state: Dict[str, Any], symbol: str) -> Dict[str, Any]:
+    sym = normalize_symbol(symbol)
+    if not sym:
+        return {}
+    persisted = state.get("persisted_state")
+    if not isinstance(persisted, dict):
+        return {}
+    records = persisted.get("mock_broker_restricted_symbols")
+    if not isinstance(records, dict):
+        return {}
+    raw = records.get(sym)
+    if not isinstance(raw, dict):
+        return {}
+    today = str(time.strftime("%Y-%m-%d") or "").strip()
+    detected_date = str(raw.get("detected_date") or "").strip()
+    if detected_date and today and detected_date != today:
+        return {}
+    row = dict(raw)
+    row["symbol"] = sym
+    return row
+
+
+def _evaluate_mock_broker_restricted_symbol_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    details: Dict[str, Any] = {
+        "guard_applied": True,
+        "action": action,
+        "enabled": True,
+        "mock_mode": bool(_is_kiwoom_mock_mode()),
+    }
+    if action != "BUY":
+        return True, "", details
+    if not _is_kiwoom_mock_mode():
+        return True, "", details
+
+    symbol = _extract_order_symbol(order)
+    details["symbol"] = symbol
+    if not symbol:
+        details["symbol_evaluable"] = False
+        return True, "", details
+
+    restriction_record = _extract_active_mock_broker_restricted_symbol_record(state, symbol)
+    if not restriction_record:
+        details["blocked"] = False
+        return True, "", details
+
+    details["blocked"] = True
+    details["restriction_record"] = restriction_record
+    details["broker_code"] = str(restriction_record.get("broker_code") or "")
+    details["broker_message"] = str(restriction_record.get("broker_message") or "")
+    details["detected_date"] = str(restriction_record.get("detected_date") or "")
+    return False, "mock_broker_restricted_symbol_blocked", details
+
+
+def _extract_open_symbols_from_state(state: Dict[str, Any]) -> set[str]:
+    symbols: set[str] = set()
+
+    port = state.get("portfolio_snapshot")
+    if isinstance(port, dict):
+        rows = port.get("positions")
+        if isinstance(rows, list):
+            for row in rows:
+                if not isinstance(row, dict):
+                    continue
+                sym = normalize_symbol(row.get("symbol"))
+                qty = _coerce_int(row.get("qty"), 0)
+                if sym and qty > 0:
+                    symbols.add(sym)
+
+    persisted = state.get("persisted_state")
+    if isinstance(persisted, dict):
+        rows = persisted.get("mock_positions")
+        if isinstance(rows, list):
+            for row in rows:
+                if not isinstance(row, dict):
+                    continue
+                sym = normalize_symbol(row.get("symbol"))
+                qty = _coerce_int(row.get("qty"), 0)
+                if sym and qty > 0:
+                    symbols.add(sym)
+    return symbols
+
+
+def _should_block_duplicate_mock_buy(state: Dict[str, Any], order: Dict[str, Any]) -> bool:
+    if _resolve_execution_mode() != "mock":
+        return False
+    action = str(order.get("action") or "").strip().upper()
+    if action != "BUY":
+        return False
+    sym = _extract_order_symbol(order)
+    if not sym:
+        return False
+    return sym in _extract_open_symbols_from_state(state)
+
+
+_RECENT_BUY_GUARD_DEFAULT_TTL_SEC = 600
+_RECENT_BUY_GUARD_DEFAULT_PATH = Path("data/state/execution_recent_buy_guard.json")
+_RECENT_SELL_GUARD_DEFAULT_TTL_SEC = 180
+_RECENT_SELL_GUARD_DEFAULT_PATH = Path("data/state/execution_recent_sell_guard.json")
+
+
+def _recent_buy_guard_enabled(state: Dict[str, Any]) -> bool:
+    if str(state.get("recent_buy_guard_path") or "").strip():
+        return True
+    details = _execution_mode_details()
+    if str(details.get("effective_mode") or "") not in ("mock_broker_http", "real_broker_http"):
+        return False
+    return any(str(state.get(key) or "").strip() for key in ("runtime_mode", "runtime_phase", "phase", "tick_ts"))
+
+
+def _recent_buy_guard_path(state: Dict[str, Any]) -> Path:
+    raw = str(state.get("recent_buy_guard_path") or "").strip()
+    if raw:
+        return Path(raw)
+    # Phase 1 Step 5B Safety Fix: project-wide pytest isolation, no per-test
+    # fixture required (see _reports_root in libs/runtime/canonical_artifacts.py
+    # for the same pattern).
+    return isolate_canonical_path_for_pytest(
+        _RECENT_BUY_GUARD_DEFAULT_PATH,
+        canonical_path=_RECENT_BUY_GUARD_DEFAULT_PATH,
+        isolated_name="execution_recent_buy_guard.json",
+    )
+
+
+def _recent_sell_guard_enabled(state: Dict[str, Any]) -> bool:
+    if str(state.get("recent_sell_guard_path") or "").strip():
+        return True
+    details = _execution_mode_details()
+    if str(details.get("effective_mode") or "") not in ("mock_broker_http", "real_broker_http"):
+        return False
+    return any(str(state.get(key) or "").strip() for key in ("runtime_mode", "runtime_phase", "phase", "tick_ts"))
+
+
+def _recent_sell_guard_path(state: Dict[str, Any]) -> Path:
+    raw = str(state.get("recent_sell_guard_path") or "").strip()
+    if raw:
+        return Path(raw)
+    return isolate_canonical_path_for_pytest(
+        _RECENT_SELL_GUARD_DEFAULT_PATH,
+        canonical_path=_RECENT_SELL_GUARD_DEFAULT_PATH,
+        isolated_name="execution_recent_sell_guard.json",
+    )
+
+
+def _recent_buy_guard_now_epoch(state: Dict[str, Any]) -> int:
+    for key in ("tick_ts", "now_epoch"):
+        epoch = _coerce_int(state.get(key), 0)
+        if epoch > 0:
+            return int(epoch)
+    return int(time.time())
+
+
+def _recent_buy_guard_ttl_sec(state: Dict[str, Any]) -> int:
+    raw = state.get("recent_buy_guard_ttl_sec")
+    ttl = _coerce_int(raw, _RECENT_BUY_GUARD_DEFAULT_TTL_SEC)
+    return int(ttl if ttl > 0 else _RECENT_BUY_GUARD_DEFAULT_TTL_SEC)
+
+
+def _recent_sell_guard_ttl_sec(state: Dict[str, Any]) -> int:
+    raw = state.get("recent_sell_guard_ttl_sec")
+    ttl = _coerce_int(raw, _RECENT_SELL_GUARD_DEFAULT_TTL_SEC)
+    return int(ttl if ttl > 0 else _RECENT_SELL_GUARD_DEFAULT_TTL_SEC)
+
+
+def _read_recent_buy_guard(path: Path) -> Dict[str, Any]:
+    try:
+        if not path.exists():
+            return {"schema_version": "execution_recent_buy_guard.v1", "orders": {}}
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            orders = data.get("orders")
+            if not isinstance(orders, dict):
+                data["orders"] = {}
+            return data
+    except Exception:
+        pass
+    return {"schema_version": "execution_recent_buy_guard.v1", "orders": {}}
+
+
+def _read_recent_sell_guard(path: Path) -> Dict[str, Any]:
+    try:
+        if not path.exists():
+            return {"schema_version": "execution_recent_sell_guard.v1", "orders": {}}
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            orders = data.get("orders")
+            if not isinstance(orders, dict):
+                data["orders"] = {}
+            return data
+    except Exception:
+        pass
+    return {"schema_version": "execution_recent_sell_guard.v1", "orders": {}}
+
+
+def _write_recent_buy_guard(path: Path, data: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+    tmp.replace(path)
+
+
+def _write_recent_sell_guard(path: Path, data: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+    tmp.replace(path)
+
+
+# --- UNKNOWN broker-outcome quarantine (Phase 1 Step 5B; storage model
+# redesigned for durability in Step 5B Safety Fix 2 after Codex REJECTed the
+# original single-JSON-file design) --------------------------------------
+#
+# Primary invariant: once a mutation's broker outcome is UNKNOWN, no further
+# automatic mutation on that symbol may occur before an operator reconciles
+# it against broker truth -- durably, across ticks AND process restarts,
+# and even if the attempt to persist the quarantine itself fails.
+#
+# Storage model: one small lock/marker file per symbol
+# (<dir>/<symbol>.lock), created atomically (O_CREAT|O_EXCL, so concurrent
+# writers for the same symbol can't race or corrupt it) the moment an
+# UNKNOWN outcome is detected, before anything else. The guard's fail-closed
+# decision is based on the file's *existence*, never its parsed content --
+# so a crash between "file created" and "file fully written" still blocks.
+# The file is never auto-deleted by any code path here: clearing a
+# quarantine is an out-of-band operator/reconciliation action. There is no
+# separate aggregate index to keep in sync (each symbol's lock file is
+# independent), which also removes the old design's read-modify-write
+# lost-update risk entirely.
+#
+# If even the atomic file create fails (disk full, permission denied --
+# durable persistence itself is broken), _GLOBAL_MUTATION_HALT activates as
+# a last-resort, in-memory, process-wide fallback: while active, the guard
+# blocks every mutation regardless of symbol, for the remaining lifetime of
+# this process. This is explicitly NOT a substitute for the durable
+# per-symbol lock file (it does not survive a restart) -- it only covers
+# the narrow window where disk-based durability has itself failed.
+
+
+# Phase 1 Step 5B Fix 3: the quarantine store/guard/global-halt mechanism
+# now lives in libs/execution/guards/unknown_quarantine.py, shared with
+# libs/skills/runner.py::CompositeSkillRunner (closes the confirmed HIGH gap
+# where that path -- and everything built on it, ToolFacade/ExecutorAgent --
+# could resubmit an already-UNKNOWN-quarantined mutation because it never
+# checked or wrote this state). _GLOBAL_MUTATION_HALT below is the *same*
+# dict object as the shared module's GLOBAL_MUTATION_HALT (mutable, shared
+# by reference), kept under this name for existing test fixtures
+# (tests/test_step5b_safety_fix.py::_reset_global_mutation_halt) that reset
+# it directly.
+_GLOBAL_MUTATION_HALT: Dict[str, Any] = _unknown_quarantine.GLOBAL_MUTATION_HALT
+
+
+def _unknown_quarantine_override_path(state: Dict[str, Any]) -> Optional[str]:
+    raw = str(state.get("unknown_quarantine_guard_path") or "").strip()
+    return raw or None
+
+
+def _unknown_quarantine_dir(state: Dict[str, Any]) -> Path:
+    return _unknown_quarantine.quarantine_dir(_unknown_quarantine_override_path(state))
+
+
+def _quarantine_lock_path(state: Dict[str, Any], symbol: str) -> Path:
+    return _unknown_quarantine.quarantine_lock_path(symbol, _unknown_quarantine_override_path(state))
+
+
+def _write_quarantine_lock_if_absent(lock_path: Path, payload: Dict[str, Any]) -> bool:
+    return _unknown_quarantine.write_quarantine_lock_if_absent(lock_path, payload)
+
+
+def _evaluate_unknown_quarantine_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    if action not in ("BUY", "SELL", "CANCEL", "MODIFY"):
+        return True, "", {"guard_applied": False, "action": action}
+
+    symbol = _extract_order_symbol(order)
+    if not symbol:
+        return True, "", {"guard_applied": True, "action": action, "symbol_evaluable": False}
+
+    allowed, reason, shared_details = _unknown_quarantine.evaluate_unknown_quarantine_guard(
+        symbol, override_path=_unknown_quarantine_override_path(state)
+    )
+    details: Dict[str, Any] = {"guard_applied": True, "action": action, **shared_details}
+    return allowed, reason, details
+
+
+def _quarantine_symbol_for_unknown_outcome(
+    state: Dict[str, Any], order: Dict[str, Any], execution: Dict[str, Any], *, reason: str = "broker_outcome_unknown"
+) -> bool:
+    """Durably quarantine the order's symbol. Returns whether it is now (or
+    already was) durably blocked. Callers should still record
+    broker_outcome=UNKNOWN / reconciliation_required=True on
+    state["execution"] regardless of this return value -- the guard's own
+    halt check (_evaluate_unknown_quarantine_guard) is the actual
+    enforcement mechanism for subsequent calls, not the caller's handling
+    of this return value."""
+    return _unknown_quarantine.quarantine_symbol_for_unknown_outcome(
+        symbol=_extract_order_symbol(order),
+        operation=str(order.get("action") or ""),
+        now_epoch=_recent_buy_guard_now_epoch(state),
+        run_id=str(state.get("run_id") or ""),
+        exception_type=str(execution.get("exception_type") or ""),
+        reason=reason,
+        override_path=_unknown_quarantine_override_path(state),
+    )
+
+
+def _position_qty_hint_from_order(order: Dict[str, Any]) -> int:
+    meta = order.get("meta") if isinstance(order.get("meta"), dict) else {}
+    for key in ("position_qty", "available_qty", "sellable_qty", "qty_available"):
+        qty = _coerce_int(meta.get(key), 0)
+        if qty > 0:
+            return int(qty)
+    return 0
+
+
+def _exit_qty_hint_from_order(order: Dict[str, Any]) -> int:
+    meta = order.get("meta") if isinstance(order.get("meta"), dict) else {}
+    for key in ("exit_qty", "requested_exit_qty", "sell_qty"):
+        qty = _coerce_int(meta.get(key), 0)
+        if qty > 0:
+            return int(qty)
+    return _coerce_int(order.get("qty"), 0)
+
+
+def _exit_reason_from_order(order: Dict[str, Any]) -> str:
+    meta = order.get("meta") if isinstance(order.get("meta"), dict) else {}
+    for key in ("exit_reason", "reason", "monitor_reason", "signal_source"):
+        value = meta.get(key)
+        if value not in (None, ""):
+            return str(value).strip().lower()
+    return str(order.get("reason") or "").strip().lower()
+
+
+def _evaluate_recent_buy_order_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    enabled = bool(_recent_buy_guard_enabled(state))
+    symbol = _extract_order_symbol(order)
+    path = _recent_buy_guard_path(state)
+    now_epoch = _recent_buy_guard_now_epoch(state)
+    ttl_sec = _recent_buy_guard_ttl_sec(state)
+    record: Dict[str, Any] = {}
+    if action == "BUY" and enabled and symbol:
+        data = _read_recent_buy_guard(path)
+        orders = data.get("orders") if isinstance(data.get("orders"), dict) else {}
+        record = orders.get(symbol) if isinstance(orders.get(symbol), dict) else {}
+    return evaluate_recent_buy_duplicate_guard(
+        enabled=enabled,
+        action=action,
+        symbol=symbol,
+        record=record,
+        now_epoch=now_epoch,
+        ttl_sec=ttl_sec,
+        path=str(path),
+    )
+
+
+def _evaluate_recent_buy_settle_sell_guard(
+    state: Dict[str, Any],
+    order: Dict[str, Any],
+) -> Tuple[bool, str, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    enabled = bool(_recent_buy_guard_enabled(state))
+    symbol = _extract_order_symbol(order)
+    path = _recent_buy_guard_path(state)
+    now_epoch = _recent_buy_guard_now_epoch(state)
+    ttl_sec = _recent_buy_guard_ttl_sec(state)
+    record: Dict[str, Any] = {}
+    if action == "SELL" and enabled and symbol:
+        data = _read_recent_buy_guard(path)
+        orders = data.get("orders") if isinstance(data.get("orders"), dict) else {}
+        record = orders.get(symbol) if isinstance(orders.get(symbol), dict) else {}
+    order_qty = _coerce_int(order.get("qty"), 0)
+    position_qty_hint = _position_qty_hint_from_order(order)
+    exit_reason = _exit_reason_from_order(order)
+    return evaluate_recent_buy_settle_sell_guard_policy(
+        enabled=enabled,
+        action=action,
+        symbol=symbol,
+        record=record,
+        order_qty=order_qty,
+        position_qty_hint=position_qty_hint,
+        exit_reason=exit_reason,
+        now_epoch=now_epoch,
+        ttl_sec=ttl_sec,
+        path=str(path),
+    )
+
+
+def _evaluate_recent_sell_order_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    enabled = bool(_recent_sell_guard_enabled(state))
+    symbol = _extract_order_symbol(order)
+    path = _recent_sell_guard_path(state)
+    now_epoch = _recent_buy_guard_now_epoch(state)
+    ttl_sec = _recent_sell_guard_ttl_sec(state)
+    record: Dict[str, Any] = {}
+    if action == "SELL" and enabled and symbol:
+        data = _read_recent_sell_guard(path)
+        orders = data.get("orders") if isinstance(data.get("orders"), dict) else {}
+        record = orders.get(symbol) if isinstance(orders.get(symbol), dict) else {}
+    order_qty = _coerce_int(order.get("qty"), 0)
+    return evaluate_recent_sell_duplicate_guard(
+        enabled=enabled,
+        action=action,
+        symbol=symbol,
+        record=record,
+        order_qty=order_qty,
+        now_epoch=now_epoch,
+        ttl_sec=ttl_sec,
+        path=str(path),
+    )
+
+
+def _update_recent_buy_order_guard(state: Dict[str, Any], order: Dict[str, Any], execution: Dict[str, Any]) -> Dict[str, Any]:
+    action = str(order.get("action") or "").strip().upper()
+    if action not in ("BUY", "SELL") or not _recent_buy_guard_enabled(state):
+        return {"enabled": False, "action": action, "updated": False}
+    if not bool(execution.get("execution_ok", execution.get("ok"))):
+        return {"enabled": True, "action": action, "updated": False, "reason": "execution_not_ok"}
+
+    symbol = _extract_order_symbol(order)
+    if not symbol:
+        return {"enabled": True, "action": action, "updated": False, "reason": "symbol_missing"}
+
+    path = _recent_buy_guard_path(state)
+    now_epoch = _recent_buy_guard_now_epoch(state)
+    ttl_sec = _recent_buy_guard_ttl_sec(state)
+    data = _read_recent_buy_guard(path)
+    data["schema_version"] = "execution_recent_buy_guard.v1"
+    orders = data.get("orders") if isinstance(data.get("orders"), dict) else {}
+    data["orders"] = orders
+
+    orders = prune_expired_orders(orders, now_epoch=now_epoch)
+    data["orders"] = orders
+
+    if action == "SELL":
+        removed = bool(orders.pop(symbol, None))
+        _write_recent_buy_guard(path, data)
+        return {
+            "enabled": True,
+            "action": action,
+            "symbol": symbol,
+            "updated": bool(removed),
+            "cleared": bool(removed),
+            "path": str(path),
+        }
+
+    payload = execution.get("payload") if isinstance(execution.get("payload"), dict) else {}
+    filled_qty = _coerce_int(
+        execution.get("filled_qty") if execution.get("filled_qty") not in (None, "") else payload.get("filled_qty"),
+        -1,
+    )
+    remaining_qty = _coerce_int(
+        execution.get("remaining_qty") if execution.get("remaining_qty") not in (None, "") else payload.get("remaining_qty"),
+        -1,
+    )
+    orders[symbol] = {
+        "symbol": symbol,
+        "last_buy_epoch": int(now_epoch),
+        "expires_epoch": int(now_epoch + ttl_sec),
+        "ttl_sec": int(ttl_sec),
+        "order_id": str(execution.get("order_id") or execution.get("ord_no") or payload.get("order_id") or ""),
+        "run_id": str(state.get("run_id") or ""),
+        "qty": _coerce_int(order.get("qty"), 0),
+        "filled_qty": int(filled_qty),
+        "remaining_qty": int(remaining_qty),
+        "pending_management_status": "pending_until_fill_truth_or_ttl",
+        "cancel_after_epoch": int(now_epoch + ttl_sec),
+        "effective_mode": str(_execution_mode_details().get("effective_mode") or ""),
+    }
+    _write_recent_buy_guard(path, data)
+    return {
+        "enabled": True,
+        "action": action,
+        "symbol": symbol,
+        "updated": True,
+        "expires_epoch": int(now_epoch + ttl_sec),
+        "ttl_sec": int(ttl_sec),
+        "path": str(path),
+    }
+
+
+def _update_recent_sell_order_guard(state: Dict[str, Any], order: Dict[str, Any], execution: Dict[str, Any]) -> Dict[str, Any]:
+    action = str(order.get("action") or "").strip().upper()
+    if action not in ("BUY", "SELL") or not _recent_sell_guard_enabled(state):
+        return {"enabled": False, "action": action, "updated": False}
+    if not bool(execution.get("execution_ok", execution.get("ok"))):
+        return {"enabled": True, "action": action, "updated": False, "reason": "execution_not_ok"}
+
+    symbol = _extract_order_symbol(order)
+    if not symbol:
+        return {"enabled": True, "action": action, "updated": False, "reason": "symbol_missing"}
+
+    path = _recent_sell_guard_path(state)
+    now_epoch = _recent_buy_guard_now_epoch(state)
+    ttl_sec = _recent_sell_guard_ttl_sec(state)
+    data = _read_recent_sell_guard(path)
+    data["schema_version"] = "execution_recent_sell_guard.v1"
+    orders = data.get("orders") if isinstance(data.get("orders"), dict) else {}
+    data["orders"] = orders
+
+    orders = prune_expired_orders(orders, now_epoch=now_epoch)
+    data["orders"] = orders
+
+    if action == "BUY":
+        removed = bool(orders.pop(symbol, None))
+        _write_recent_sell_guard(path, data)
+        return {
+            "enabled": True,
+            "action": action,
+            "symbol": symbol,
+            "updated": bool(removed),
+            "cleared": bool(removed),
+            "path": str(path),
+        }
+
+    payload = execution.get("payload") if isinstance(execution.get("payload"), dict) else {}
+    order_qty = _coerce_int(order.get("qty"), 0)
+    position_qty_hint = _position_qty_hint_from_order(order)
+    exit_qty_hint = _exit_qty_hint_from_order(order)
+    filled_qty = _coerce_int(
+        execution.get("filled_qty") if execution.get("filled_qty") not in (None, "") else payload.get("filled_qty"),
+        -1,
+    )
+    remaining_qty = _coerce_int(
+        execution.get("remaining_qty") if execution.get("remaining_qty") not in (None, "") else payload.get("remaining_qty"),
+        -1,
+    )
+    if remaining_qty >= 0:
+        remaining_qty_hint = int(remaining_qty)
+    elif filled_qty > 0 and position_qty_hint > 0:
+        remaining_qty_hint = max(0, position_qty_hint - filled_qty)
+    elif filled_qty > 0 and order_qty > 0:
+        remaining_qty_hint = max(0, order_qty - filled_qty)
+    elif position_qty_hint > 0 and exit_qty_hint > 0 and filled_qty < 0:
+        remaining_qty_hint = max(0, position_qty_hint - exit_qty_hint)
+    elif position_qty_hint > 0:
+        remaining_qty_hint = int(position_qty_hint)
+    else:
+        remaining_qty_hint = int(order_qty)
+    orders[symbol] = {
+        "symbol": symbol,
+        "last_sell_epoch": int(now_epoch),
+        "expires_epoch": int(now_epoch + ttl_sec),
+        "ttl_sec": int(ttl_sec),
+        "order_id": str(execution.get("order_id") or execution.get("ord_no") or payload.get("order_id") or ""),
+        "run_id": str(state.get("run_id") or ""),
+        "last_sell_qty": int(order_qty),
+        "exit_qty_hint": int(exit_qty_hint),
+        "position_qty_hint": int(position_qty_hint),
+        "remaining_qty_hint": int(remaining_qty_hint),
+        "filled_qty": int(filled_qty),
+        "remaining_qty": int(remaining_qty),
+        "fill_truth_confirmed": bool(filled_qty > 0 or remaining_qty >= 0),
+        "effective_mode": str(_execution_mode_details().get("effective_mode") or ""),
+    }
+    _write_recent_sell_guard(path, data)
+    return {
+        "enabled": True,
+        "action": action,
+        "symbol": symbol,
+        "updated": True,
+        "remaining_qty_hint": int(remaining_qty_hint),
+        "expires_epoch": int(now_epoch + ttl_sec),
+        "ttl_sec": int(ttl_sec),
+        "path": str(path),
+    }
+
+
+def _resolve_mock_cash_available(state: Dict[str, Any]) -> float:
+    persisted = state.get("persisted_state")
+    if isinstance(persisted, dict):
+        cash = _coerce_float(persisted.get("mock_cash"), 0.0)
+        if cash > 0.0:
+            return cash
+
+    port = state.get("portfolio_snapshot")
+    if isinstance(port, dict):
+        cash = _coerce_float(port.get("cash"), 0.0)
+        if cash > 0.0:
+            return cash
+
+    return _coerce_float(os.getenv("MOCK_CASH_FALLBACK"), 0.0)
+
+
+def _symbol_matches_row(row: Dict[str, Any], symbol: str) -> bool:
+    row_symbol = normalize_symbol(row.get("symbol") or row.get("code") or row.get("stk_cd"))
+    return not symbol or not row_symbol or row_symbol == symbol
+
+
+def _positive_price_from_row(row: Dict[str, Any], keys: Tuple[str, ...]) -> Tuple[float, str]:
+    for key in keys:
+        px = _coerce_float(row.get(key), 0.0)
+        # Kiwoom quote fields may carry a +/- market-direction prefix even
+        # though the absolute value is the executable price. Keep price
+        # normalization consistent with _extract_upper_limit_quote_snapshot.
+        if abs(px) > 0.0:
+            return float(abs(px)), str(key)
+    return 0.0, ""
+
+
+def _canonical_artifact_row(state: Dict[str, Any], agent: str) -> Dict[str, Any]:
+    refs = state.get("canonical_artifacts") if isinstance(state.get("canonical_artifacts"), dict) else {}
+    path_text = str(refs.get(agent) or "").strip()
+    if not path_text:
+        return {}
+    try:
+        path = Path(path_text)
+        if not path.exists():
+            return {}
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return dict(raw) if isinstance(raw, dict) else {}
+
+
+def _resolve_order_price_for_notional_with_source(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[float, str]:
+    symbol = _extract_order_symbol(order)
+    px = _coerce_float(order.get("price"), 0.0)
+    if px > 0.0:
+        return float(abs(px)), "order.price"
+
+    px = _coerce_float(order.get("order_price"), 0.0)
+    if px > 0.0:
+        return float(abs(px)), "order.order_price"
+
+    meta = order.get("meta") if isinstance(order.get("meta"), dict) else {}
+    meta_px, meta_key = _positive_price_from_row(
+        meta,
+        (
+            "price",
+            "current_price",
+            "raw_price",
+            "reference_price",
+            "monitor_price",
+            "signal_price",
+            "effective_price",
+        ),
+    )
+    if meta_px > 0.0:
+        return float(abs(meta_px)), f"order.meta.{meta_key}"
+
+    price_candidates: list[Tuple[float, str]] = []
+
+    for state_key in (
+        "selected",
+        "scanner_selected_snapshot",
+        "top_candidate",
+        "monitor_output",
+        "monitor",
+        "monitor_snapshot",
+        "monitor_state",
+    ):
+        row = state.get(state_key)
+        if not isinstance(row, dict) or not _symbol_matches_row(row, symbol):
+            continue
+        row_px, row_key = _positive_price_from_row(
+            row,
+            (
+                "price",
+                "current_price",
+                "effective_price",
+                "raw_price",
+                "account_current_price",
+                "account_mark_price",
+                "cur_price",
+                "last_price",
+                "close",
+            ),
+        )
+        if row_px > 0.0:
+            price_candidates.append((row_px, f"{state_key}.{row_key}"))
+
+        position_snapshot = row.get("position_snapshot")
+        if isinstance(position_snapshot, dict) and _symbol_matches_row(position_snapshot, symbol):
+            position_px, position_key = _positive_price_from_row(
+                position_snapshot,
+                ("current_price", "price", "mark_price", "avg_price"),
+            )
+            if position_px > 0.0:
+                price_candidates.append((position_px, f"{state_key}.position_snapshot.{position_key}"))
+
+        features = row.get("features")
+        if isinstance(features, dict):
+            feat_px, feat_key = _positive_price_from_row(
+                features,
+                ("skill_quote_price", "price", "current_price", "cur_price", "last_price", "close"),
+            )
+            if feat_px > 0.0:
+                price_candidates.append((feat_px, f"{state_key}.features.{feat_key}"))
+
+    quotes = _extract_market_quotes_safe(state)
+    quote = quotes.get(symbol) if symbol else None
+    if isinstance(quote, dict):
+        quote_px, quote_key = _positive_price_from_row(
+            quote,
+            ("best_ask", "ask", "price", "cur", "current_price", "last_price", "best_bid", "bid"),
+        )
+        if quote_px > 0.0:
+            price_candidates.append((quote_px, f"market.quote.{quote_key}"))
+
+        raw_quote = quote.get("raw") if isinstance(quote.get("raw"), dict) else {}
+        raw_rows = raw_quote.get("cntr_infr") if isinstance(raw_quote.get("cntr_infr"), list) else []
+        raw_row = raw_rows[0] if raw_rows and isinstance(raw_rows[0], dict) else {}
+        if raw_row:
+            raw_px, raw_key = _positive_price_from_row(
+                raw_row,
+                ("pri_sel_bid_unit", "sel_1bid", "cur_prc", "pri_buy_bid_unit", "buy_1bid"),
+            )
+            if raw_px > 0.0:
+                price_candidates.append((raw_px, f"market.quote.raw.{raw_key}"))
+
+    market = state.get("market_snapshot")
+    if isinstance(market, dict) and _symbol_matches_row(market, symbol):
+        market_px, market_key = _positive_price_from_row(
+            market,
+            ("best_ask", "ask", "price", "cur", "current_price", "last_price", "best_bid", "bid"),
+        )
+        if market_px > 0.0:
+            price_candidates.append((market_px, f"market_snapshot.{market_key}"))
+
+    canonical_monitor = _canonical_artifact_row(state, "monitor")
+    if isinstance(canonical_monitor, dict) and _symbol_matches_row(canonical_monitor, symbol):
+        canonical_px, canonical_key = _positive_price_from_row(
+            canonical_monitor,
+            ("price", "current_price", "effective_price", "raw_price", "cur_price", "last_price", "close"),
+        )
+        if canonical_px > 0.0:
+            price_candidates.append((canonical_px, f"canonical.monitor.{canonical_key}"))
+
+    if not price_candidates:
+        return 0.0, ""
+    return max(price_candidates, key=lambda item: item[0])
+
+
+def _live_refresh_price_candidate(state: Dict[str, Any], symbol: str) -> Tuple[float, str] | None:
+    """2026-09-04: last-resort, on-demand live market.quote re-fetch for a
+    symbol whose price every other source in
+    `_resolve_order_price_for_notional_with_source` already failed to
+    find. Deliberately NOT called unconditionally from inside that
+    function (which runs on every BUY order from multiple guards) --
+    callers invoke this ONLY at the exact point they are about to fail
+    closed for a missing price, so a live quote call happens at most once
+    per symbol per run (memoized in `_ensure_live_market_quote`) and only
+    when it will actually be used. Confirmed 2026-09-04: this closes the
+    Q10_INDEX/KODEX 200 (069500) `order_notional_price_missing` BROKER
+    rejection -- same upstream gap as the 2026-09-03 daily audit's P1-A
+    fix (scanner_node.py's hydration fan-out never covered this symbol),
+    surfacing at this separate call site. Never a broker mutation, never a
+    fallback to a stale/cached value."""
+    if not symbol:
+        return None
+    refresh_meta = _ensure_live_market_quote(state, symbol)
+    if not refresh_meta.get("used"):
+        return None
+    quotes = _extract_market_quotes_safe(state)
+    quote = quotes.get(symbol)
+    if not isinstance(quote, dict):
+        return None
+    quote_px, quote_key = _positive_price_from_row(
+        quote,
+        ("best_ask", "ask", "price", "cur", "current_price", "last_price", "best_bid", "bid"),
+    )
+    if quote_px <= 0.0:
+        return None
+    return quote_px, f"market.quote.{quote_key}.live_refresh"
+
+
+def _resolve_order_price_for_notional(state: Dict[str, Any], order: Dict[str, Any]) -> float:
+    price, _source = _resolve_order_price_for_notional_with_source(state, order)
+    return price
+
+
+def _evaluate_mock_cash_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    if _resolve_execution_mode() != "mock":
+        return True, "", {}
+
+    action = str(order.get("action") or "").strip().upper()
+    if action != "BUY":
+        return True, "", {}
+
+    qty = _coerce_int(order.get("qty"), 0)
+    if qty <= 0:
+        return True, "", {"qty_evaluable": False}
+
+    price = _resolve_order_price_for_notional(state, order)
+    if price <= 0.0:
+        # Cannot evaluate notional without price; keep existing behavior.
+        return True, "", {"price_evaluable": False}
+
+    cash = _resolve_mock_cash_available(state)
+    if cash <= 0.0:
+        return True, "", {"cash_evaluable": False}
+
+    notional = float(qty) * float(price)
+    details = {
+        "cash": float(cash),
+        "price": float(price),
+        "qty": int(qty),
+        "notional": float(notional),
+    }
+    if notional > cash:
+        return False, "insufficient_mock_cash", details
+    return True, "", details
+
+
+def _execution_runtime_clock_input_present(state: Dict[str, Any]) -> bool:
+    return _coerce_int(state.get("tick_ts"), 0) > 0 or _coerce_int(state.get("now_epoch"), 0) > 0
+
+
+def _resolve_execution_minutes_to_close(state: Dict[str, Any]) -> float | None:
+    market_context = state.get("market_context") if isinstance(state.get("market_context"), dict) else {}
+    existing = None
+    if market_context.get("minutes_to_close") not in (None, ""):
+        existing = _coerce_float(market_context.get("minutes_to_close"), -1.0)
+        if existing < 0.0:
+            existing = None
+
+    if not _execution_runtime_clock_input_present(state):
+        return existing
+
+    try:
+        from libs.runtime.market_hours import MarketHours
+
+        mh = MarketHours()
+        epoch = _coerce_int(state.get("tick_ts"), 0) or _coerce_int(state.get("now_epoch"), 0)
+        dt_kst = datetime.fromtimestamp(epoch, tz=mh.tz)
+        if not mh.is_open(dt_kst):
+            return existing
+        close_dt = dt_kst.replace(
+            hour=mh.close_time.hour,
+            minute=mh.close_time.minute,
+            second=0,
+            microsecond=0,
+        )
+        computed = max(0.0, (close_dt - dt_kst).total_seconds() / 60.0)
+        if existing is not None and abs(float(existing) - float(computed)) <= 1.0:
+            return float(existing)
+        return float(computed)
+    except Exception:
+        return existing
+
+
+def _resolve_execution_buy_closeout_cutoff(state: Dict[str, Any]) -> Tuple[bool, int, int]:
+    applied_policy = state.get("applied_policy") if isinstance(state.get("applied_policy"), dict) else {}
+    policy = state.get("policy") if isinstance(state.get("policy"), dict) else {}
+    applied_monitor = applied_policy.get("monitor") if isinstance(applied_policy.get("monitor"), dict) else {}
+    policy_monitor = policy.get("monitor") if isinstance(policy.get("monitor"), dict) else {}
+    applied_exit = applied_monitor.get("exit") if isinstance(applied_monitor.get("exit"), dict) else {}
+    policy_exit = policy_monitor.get("exit") if isinstance(policy_monitor.get("exit"), dict) else {}
+    applied_eod = applied_exit.get("eod_flat") if isinstance(applied_exit.get("eod_flat"), dict) else {}
+    policy_eod = policy_exit.get("eod_flat") if isinstance(policy_exit.get("eod_flat"), dict) else {}
+    use_eod_flat = (
+        applied_eod.get("enabled")
+        if applied_eod.get("enabled") is not None
+        else policy_eod.get("enabled")
+    )
+    if use_eod_flat is None and isinstance(policy.get("exit_policy"), dict):
+        use_eod_flat = policy["exit_policy"].get("use_eod_flat")
+    enabled = _is_trueish(use_eod_flat if use_eod_flat is not None else True)
+
+    eod_raw = applied_eod.get("cutoff_min") if applied_eod.get("cutoff_min") not in (None, "") else policy_eod.get("cutoff_min")
+    if eod_raw in (None, "") and isinstance(policy.get("exit_policy"), dict):
+        eod_raw = policy["exit_policy"].get("eod_flat_cutoff_min")
+    eod_cutoff = max(0, _coerce_int(eod_raw, 10))
+
+    applied_entry = applied_monitor.get("entry") if isinstance(applied_monitor.get("entry"), dict) else {}
+    policy_entry = policy_monitor.get("entry") if isinstance(policy_monitor.get("entry"), dict) else {}
+    buy_raw = (
+        applied_entry.get("buy_closeout_cutoff_min")
+        if applied_entry.get("buy_closeout_cutoff_min") not in (None, "")
+        else policy_entry.get("buy_closeout_cutoff_min")
+    )
+    buy_cutoff = _coerce_int(buy_raw, max(15, eod_cutoff))
+    if buy_cutoff <= 0:
+        buy_cutoff = max(15, eod_cutoff)
+    return bool(enabled), int(eod_cutoff), int(max(eod_cutoff, buy_cutoff))
+
+
+def _evaluate_execution_closeout_buy_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    action = str(order.get("action") or "").strip().upper()
+    if action != "BUY":
+        return True, "", {"enabled": False, "action": action}
+    use_eod_flat, eod_cutoff, buy_cutoff = _resolve_execution_buy_closeout_cutoff(state)
+    minutes_to_close = _resolve_execution_minutes_to_close(state)
+    details = {
+        "enabled": bool(use_eod_flat),
+        "action": action,
+        "minutes_to_close": minutes_to_close,
+        "eod_flat_cutoff_min": int(eod_cutoff),
+        "buy_closeout_cutoff_min": int(buy_cutoff),
+    }
+    if not use_eod_flat or minutes_to_close is None or minutes_to_close < 0.0:
+        details["guard_applied"] = False
+        return True, "", details
+    details["guard_applied"] = True
+    if minutes_to_close <= float(buy_cutoff):
+        details["block_reason"] = "buy_blocked_closeout_window"
+        return False, "buy_blocked_closeout_window", details
+    return True, "", details
+
+
+def _evaluate_execution_readiness_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    """P1 (execution readiness authority, 2026-09-17): the outermost,
+    system-level gate -- "is this runtime healthy enough to place a NEW
+    physical order AT ALL" -- evaluated before every other, more specific
+    guard in this chain (open-order-per-symbol, symbol allowlist, notional
+    limits, Supervisor, ...).
+
+    Scoped to NEW physical orders only (BUY/SELL) -- CANCEL/MODIFY of an
+    already-placed order are deliberately NOT gated here. Per the task's
+    own framing ("어떤 신규 물리 주문도 허용되지 않도록") this authority is
+    about preventing NEW exposure while restart/ownership/reconciliation
+    state is unverified; blocking a CANCEL during that same window would
+    be actively counter-safety (it removes exposure / lets an operator
+    escape a stuck order), so it stays reachable through this gate exactly
+    as it always has.
+
+    Consumes ONLY `state["execution_readiness"]`, built unconditionally
+    every tick by graphs/nodes/build_execution_readiness.py (wired into
+    the canonical tick flow immediately after the open-order snapshot,
+    before strategist/scanner/monitor/decision/execution ever run) --
+    this guard recomputes nothing itself; it is a pure consumer, exactly
+    like the open-order guard's own relationship to its snapshot.
+
+    Scoped to real mode only, mirroring `_evaluate_portfolio_snapshot_guard`'s
+    own established precedent in this same file: MockExecutor never
+    dispatches anywhere, so this authority (whose entire purpose is
+    protecting real broker/account state across restarts) has nothing to
+    protect in mock mode, and gating mock unconditionally would block the
+    large existing body of mock-mode tests/validation lanes that construct
+    `state` directly without ever running the full tick flow -- exactly
+    the blast-radius mistake this session's own audit already caught once
+    for the open-order guard.
+    """
+    action = str(order.get("action") or "").strip().upper()
+    if action not in ("BUY", "SELL"):
+        return True, "", {"enabled": False, "action": action}
+
+    if _resolve_execution_mode() != "real":
+        return True, "", {"enabled": False, "action": action, "reason": "execution_mode_not_real"}
+
+    if not _is_trueish(os.getenv("EXECUTION_READINESS_GATE_ENABLED", "true")):
+        return True, "", {"enabled": False, "action": action, "skip_reason": "guard_disabled"}
+
+    readiness = state.get("execution_readiness")
+    if not isinstance(readiness, dict):
+        return False, "execution_readiness_missing", {"enabled": True, "action": action}
+
+    if not bool(readiness.get("ready")):
+        return False, "execution_not_ready", {
+            "enabled": True, "action": action,
+            "reasons": list(readiness.get("reasons") or []),
+            "runtime_instance_id": readiness.get("runtime_instance_id"),
+            "ownership_generation": readiness.get("ownership_generation"),
+            "recovery_required": readiness.get("recovery_required"),
+            "orphan_claim_count": readiness.get("orphan_claim_count"),
+        }
+
+    return True, "", {"enabled": True, "action": action}
+
+
+def _record_readiness_evidence(
+    state: Dict[str, Any],
+    order: Dict[str, Any],
+    *,
+    phase: str,
+    readiness_allowed: bool,
+    readiness_reason: str,
+    readiness_details: Dict[str, Any],
+    broker_submission_allowed: bool,
+    execution_attempt_id: str = "",
+) -> Tuple[bool, str, Dict[str, Any]]:
+    """R6 (2026-10-06): persist immutable per-intent readiness/guard EVIDENCE.
+
+    Thin adapter over the shared R6 pre-admission helper
+    (libs/execution/readiness_evidence.py::record_pre_admission_evidence), used identically by every
+    production-capable mutation path. Evidence only -- the in-memory readiness value and the guard
+    verdict computed just before this call remain the sole authority.
+
+    Returns (ok, reason, details). ok=False means the evidence could not be persisted and the
+    caller MUST NOT submit to the broker (fail closed on this evidence contract only).
+    """
+    from libs.execution.readiness_evidence import record_pre_admission_evidence
+
+    mode = _resolve_execution_mode()
+    action = str(order.get("action") or "").strip().upper()
+    if action not in ("BUY", "SELL") or mode != "real":
+        return True, "", {"enabled": False, "action": action, "execution_mode": mode}
+    return record_pre_admission_evidence(
+        state=state,
+        order=order,
+        phase=phase,
+        guard_enabled=bool((readiness_details or {}).get("enabled")),
+        guard_allowed=bool(readiness_allowed),
+        guard_reason=str(readiness_reason or ""),
+        broker_submission_allowed=bool(broker_submission_allowed),
+        source="execute_from_packet",
+        execution_attempt_id=execution_attempt_id,
+    )
+
+
+def _evaluate_open_order_reconciliation_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    """P0-A (real-readiness hardening, 2026-09-17): fail-closed pending/open-order
+    reconciliation gate for the entry (BUY) path.
+
+    Restart-safety gap this closes: BUY dispatched -> broker accepts it as a
+    pending/open order -> runtime crash/restart before a position exists ->
+    a fresh tick's entry intent for the SAME symbol has nothing to stop it,
+    because the existing position-reconciliation gate
+    (_apply_portfolio_preflight_guard, graphs/commander_runtime.py) only sees
+    FILLED positions, never an order that is still open/unfilled at the
+    broker. This guard closes that gap on the one side (BUY/entry) that
+    lacked it -- the SELL/exit side already has an equivalent guard
+    (`sell_guard_open_order_pending`, graphs/nodes/monitor_node.py).
+
+    DETERMINISTIC, not opportunistic (2026-09-17 redesign): the previous
+    version of this guard only consumed `state["skill_results"]["account.
+    orders"]` if some OTHER node happened to have hydrated it this tick, and
+    passed silently when it was absent -- "insufficient for real-readiness"
+    per its own follow-up-note. This version consumes
+    `state["open_order_snapshot"]`, populated UNCONDITIONALLY every tick by
+    `graphs/nodes/build_open_order_snapshot.py`, wired directly into the
+    canonical tick flow at `libs/runtime/commander/session_context.py::
+    build_integrated_chain_session_context` (immediately after portfolio
+    snapshot, before strategist/scanner/monitor/decision/execution ever
+    run). That node uses the KiwoomOrderFillReader/KiwoomBrokerTruthClient
+    reader-class pattern (get_executor(), independent of
+    state["skill_runner"]) rather than the generic skill-runner/
+    hydrate_skill_results_node path -- this is deliberately NOT the same
+    mechanism whose forced use here previously broke ~29 tests (those tests
+    configure deliberately narrow fake skill_runners that error on an
+    unplanned account.orders call through that SHARED path; the reader
+    class resolves its own executor and never touches state["skill_runner"]
+    at all, so it cannot collide with those tests). This guard itself makes
+    no broker/skill call of its own -- it only ever reads the snapshot the
+    tick flow already produced.
+
+    Granularity decision (symbol + side, not exact qty/price/order-id
+    match): deliberately mirrors the existing sell-side guard's own
+    granularity rather than Step5C's exact physical_order_fingerprint
+    match. A physical-order-fingerprint-exact guard already exists
+    downstream (libs/execution/intent_identity.py::physical_order_fingerprint
+    + libs/supervisor/intent_state_store.py::claim_physical_order) and
+    correctly blocks a byte-identical retry; it does NOT block a second,
+    slightly different BUY into a symbol that already has an open order
+    (different qty/price still means excess/duplicate directional exposure
+    to the same symbol, which is exactly the restart-safety risk being
+    closed here). No new trading-strategy semantics are introduced -- this
+    is a system-level execution-safety guard, evaluated after guard-chain
+    entry, before Supervisor.allow()/dispatch, exactly like the other
+    BUY-path guards in this function.
+
+    Fail-closed principle: KNOWN EMPTY (snapshot present, reader_ok, fresh,
+    zero pending same-symbol-BUY rows) -> proceed. KNOWN PENDING same-
+    symbol/side -> block. Anything else -- snapshot missing (node never ran
+    this tick, e.g. a test that bypasses the real tick flow), reader error,
+    stale snapshot (older than this tick's own admission point should ever
+    see), or a malformed rows payload -- is UNKNOWN and blocks. "Broker
+    state could not be confirmed this tick" is never treated as "safe to
+    proceed."
+    """
+    action = str(order.get("action") or "").strip().upper()
+    if action != "BUY":
+        return True, "", {"enabled": False, "action": action}
+
+    if not _is_trueish(os.getenv("OPEN_ORDER_RECONCILIATION_GUARD_ENABLED", "true")):
+        return True, "", {"enabled": False, "action": action, "skip_reason": "guard_disabled"}
+
+    from libs.core.symbols import normalize_symbol
+
+    symbol = normalize_symbol(order.get("symbol") or order.get("stk_cd"))
+    if not symbol:
+        # No canonical symbol to reconcile against -- the existing
+        # symbol_format_guard (evaluated next in the chain) is the correct
+        # place to reject a malformed/missing symbol; this guard has
+        # nothing of its own to check and must not manufacture a block.
+        return True, "", {"enabled": True, "action": action, "skip_reason": "no_symbol"}
+
+    try:
+        from graphs.nodes.skill_contracts import account_order_is_pending, account_order_side
+    except Exception as exc:
+        return False, "open_order_reconciliation_unavailable", {
+            "enabled": True, "action": action, "symbol": symbol,
+            "error": f"{type(exc).__name__}: contract_import_failed",
+        }
+
+    snapshot = state.get("open_order_snapshot")
+    if not isinstance(snapshot, dict):
+        return False, "open_order_snapshot_missing", {
+            "enabled": True, "action": action, "symbol": symbol,
+        }
+
+    health = snapshot.get("_health")
+    health = health if isinstance(health, dict) else {}
+    if not _is_trueish(health.get("reader_ok", True)):
+        return False, "open_order_snapshot_reader_error", {
+            "enabled": True, "action": action, "symbol": symbol,
+            "reader_error": str(health.get("reader_error") or ""),
+            "source": str(health.get("source") or ""),
+        }
+
+    fetched_epoch = _coerce_int(health.get("fetched_epoch"), -1)
+    max_age = _coerce_int(os.getenv("OPEN_ORDER_SNAPSHOT_MAX_AGE_SECONDS"), 120)
+    if fetched_epoch < 0:
+        return False, "open_order_snapshot_missing_timestamp", {
+            "enabled": True, "action": action, "symbol": symbol,
+        }
+    age = int(time.time()) - fetched_epoch
+    if age > max_age:
+        return False, "open_order_snapshot_stale", {
+            "enabled": True, "action": action, "symbol": symbol,
+            "age_seconds": age, "max_age_seconds": max_age,
+        }
+
+    rows = snapshot.get("rows")
+    if not isinstance(rows, list):
+        return False, "open_order_snapshot_malformed", {
+            "enabled": True, "action": action, "symbol": symbol,
+        }
+
+    pending_same_symbol_buy: list = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        if not account_order_is_pending(row):
+            continue
+        row_symbol = normalize_symbol(row.get("symbol") or row.get("stk_cd") or row.get("code"))
+        if row_symbol != symbol:
+            continue
+        row_side = account_order_side(row)
+        if row_side and row_side != "BUY":
+            continue
+        pending_same_symbol_buy.append({
+            "ord_no": row.get("ord_no"),
+            "symbol": row_symbol,
+            "side": row_side or "UNKNOWN",
+        })
+
+    if pending_same_symbol_buy:
+        return False, "pending_open_order_exists_for_symbol", {
+            "enabled": True, "action": action, "symbol": symbol,
+            "pending_orders": pending_same_symbol_buy[:5],
+            "pending_count": len(pending_same_symbol_buy),
+        }
+
+    return True, "", {
+        "enabled": True, "action": action, "symbol": symbol,
+        "checked_rows": len(rows), "age_seconds": age,
+    }
+
+
+def _extract_portfolio_snapshot_health(state: Dict[str, Any]) -> Dict[str, Any]:
+    snap = state.get("portfolio_snapshot")
+    if isinstance(snap, dict):
+        h = snap.get("_health")
+        if isinstance(h, dict):
+            return dict(h)
+    h2 = state.get("portfolio_snapshot_health")
+    if isinstance(h2, dict):
+        return dict(h2)
+    return {}
+
+
+def _evaluate_portfolio_snapshot_guard(state: Dict[str, Any], order: Dict[str, Any]) -> Tuple[bool, str, Dict[str, Any]]:
+    # Guard only in real execution path; mock/offline flow remains unchanged.
+    if _resolve_execution_mode() != "real":
+        return True, "", {"enabled": False, "reason": "execution_mode_not_real"}
+
+    if not _is_trueish(os.getenv("PORTFOLIO_SNAPSHOT_HEALTH_GUARD_ENABLED", "true")):
+        return True, "", {"enabled": False, "reason": "guard_disabled"}
+
+    action = str(order.get("action") or "").strip().upper()
+    if action != "BUY":
+        return True, "", {"enabled": True, "action": action, "guard_applied": False}
+
+    health = _extract_portfolio_snapshot_health(state)
+    if not health:
+        return True, "", {"enabled": True, "health_present": False, "guard_applied": True}
+
+    reader_ok = _is_trueish(health.get("reader_ok"))
+    positions_mismatch_detected = _is_trueish(health.get("positions_mismatch_detected"))
+    reconciliation_applied = _is_trueish(health.get("reconciliation_applied"))
+    details: Dict[str, Any] = {
+        "enabled": True,
+        "health_present": True,
+        "reader_ok": bool(reader_ok),
+        "source": str(health.get("source") or ""),
+        "reader_error": str(health.get("reader_error") or ""),
+        "guard_applied": True,
+        "positions_source": str(health.get("positions_source") or ""),
+        "cash_source": str(health.get("cash_source") or ""),
+        "reader_positions_authoritative": _is_trueish(health.get("reader_positions_authoritative")),
+        "positions_mismatch_detected": bool(positions_mismatch_detected),
+        "reconciliation_applied": bool(reconciliation_applied),
+        "reconciliation_status": str(health.get("reconciliation_status") or ""),
+        "reader_positions_count": _coerce_int(health.get("reader_positions_count"), 0),
+        "persisted_positions_count": _coerce_int(health.get("persisted_positions_count"), 0),
+    }
+    if reader_ok:
+        if positions_mismatch_detected and not reconciliation_applied:
+            return False, "portfolio_snapshot_positions_mismatch_unresolved", details
+        return True, "", details
+    return False, "portfolio_snapshot_reader_error", details
+
+
+def _is_degrade_mode(state: Dict[str, Any]) -> bool:
+    resilience = state.get("resilience")
+    if not isinstance(resilience, dict):
+        return False
+    return _is_trueish(resilience.get("degrade_mode"))
+
+
+def _is_manual_approved(state: Dict[str, Any], exec_context: Dict[str, Any]) -> bool:
+    if _is_trueish(state.get("execution_manual_approved")):
+        return True
+    if _is_trueish(state.get("manual_approved")):
+        return True
+    if _is_trueish(exec_context.get("manual_approved")):
+        return True
+    approval_status = str(exec_context.get("approval_status") or "").strip().lower()
+    return approval_status in ("approved", "manual_approved")
+
+
+def _degrade_notional_ratio(state: Dict[str, Any]) -> float:
+    policy = state.get("resilience_policy") if isinstance(state.get("resilience_policy"), dict) else {}
+    ratio = _coerce_float(policy.get("degrade_notional_ratio"), _coerce_float(os.getenv("DEGRADE_NOTIONAL_RATIO"), 0.25))
+    if ratio <= 0:
+        return 0.0
+    if ratio > 1.0:
+        return 1.0
+    return ratio
+
+
+def _evaluate_degrade_execution_policy(
+    *,
+    state: Dict[str, Any],
+    order: Dict[str, Any],
+    exec_context: Dict[str, Any],
+) -> Tuple[bool, str, Dict[str, Any]]:
+    if not _is_degrade_mode(state):
+        return True, "", {"degrade_mode": False}
+
+    details: Dict[str, Any] = {"degrade_mode": True}
+
+    # M23-5 policy: degrade mode disables effective auto-approval.
+    if not _is_manual_approved(state, exec_context):
+        details["required"] = "manual_approval"
+        return False, "degrade_manual_approval_required", details
+
+    # Allowlist remains an optional guard; enforce membership only when configured.
+    allow = _parse_symbol_allowlist(os.getenv("SYMBOL_ALLOWLIST"))
+    details["allowlist_size"] = len(allow)
+    sym = _extract_order_symbol(order)
+    if allow and sym and sym not in allow:
+        details["symbol"] = sym
+        return False, "degrade_symbol_not_allowlisted", details
+
+    max_notional = _coerce_int(os.getenv("MAX_ORDER_NOTIONAL"), 0)
+    ratio = _degrade_notional_ratio(state)
+    details["degrade_notional_ratio"] = ratio
+    details["max_order_notional"] = max_notional
+    if max_notional <= 0 or ratio <= 0:
+        return True, "", details
+
+    effective_limit = max(1, int(max_notional * ratio))
+    details["effective_max_notional"] = effective_limit
+
+    action = str(order.get("action") or "").strip().upper()
+    qty = _coerce_int(order.get("qty"), 0)
+    if qty <= 0:
+        return True, "", details
+
+    px_raw = order.get("price")
+    price_source = "order.price"
+    if px_raw is not None:
+        try:
+            px = int(px_raw)
+        except Exception:
+            details["invalid_price"] = str(px_raw)
+            return False, "degrade_invalid_price_for_notional_guard", details
+    else:
+        price, price_source = _resolve_order_price_for_notional_with_source(state, order)
+        details["price_source"] = str(price_source)
+        if price <= 0.0:
+            if action == "BUY":
+                details["price_evaluable"] = False
+                return False, "degrade_missing_price_for_notional_guard", details
+            return True, "", details
+        px = int(price)
+
+    notional = qty * px
+    details["price"] = float(px)
+    details["price_source"] = str(price_source)
+    details["order_notional"] = notional
+    if notional > effective_limit:
+        return False, "degrade_notional_limit_exceeded", details
+
+    return True, "", details
+
+
+def _build_order_from_intent(intent: Dict[str, Any]) -> Dict[str, Any]:
+    """Best-effort order dict. This is intentionally thin.
+
+    Real request shaping should be done via ApiRequestBuilder + ApiSpec.
+    """
+    # Allow multiple intent schemas during transition
+    action = intent.get("action") or intent.get("intent") or intent.get("type") or "NOOP"
+    action = str(action).upper()
+    api_id = intent.get("order_api_id") or intent.get("api_id") or "ORDER_SUBMIT"
+    order_type = intent.get("order_type") or intent.get("type") or "limit"
+    order_type = str(order_type or "limit").strip().lower()
+
+    qty = intent.get("qty") or intent.get("quantity")
+    meta = intent.get("meta") if isinstance(intent.get("meta"), dict) else {}
+    price = intent.get("price")
+    if price in (None, ""):
+        for candidate in (
+            meta.get("price"),
+            meta.get("current_price"),
+            meta.get("raw_price"),
+            meta.get("quote_price"),
+            meta.get("market_price"),
+        ):
+            if candidate not in (None, ""):
+                price = candidate
+                break
+    raw_symbol = intent.get("symbol") or intent.get("code") or intent.get("stk_cd")
+    symbol = normalize_symbol(raw_symbol)
+
+    qty_int = None
+    if qty is not None:
+        try:
+            qty_int = int(float(qty))
+        except Exception:
+            qty_int = None
+
+    price_int = None
+    if price is not None:
+        try:
+            price_int = int(float(price))
+        except Exception:
+            price_int = None
+
+    order: Dict[str, Any] = {
+        "api_id": api_id,
+        "action": action,
+        "symbol": symbol,
+        "symbol_raw": raw_symbol,
+        "qty": qty_int if qty_int is not None else qty,
+        "price": price_int if price_int is not None else price,
+        "order_type": order_type,
+        "tif": intent.get("tif") or intent.get("time_in_force"),
+        "rationale": intent.get("rationale") or intent.get("reason") or "",
+    }
+
+    # Add Kiwoom order-body aliases used by kt10000/kt10001 specs.
+    if action in ("BUY", "SELL"):
+        trde_tp = intent.get("trde_tp")
+        if trde_tp is None or not str(trde_tp).strip():
+            trde_tp = "3" if order_type == "market" else "0"
+        ord_qty = "" if qty_int is None else str(max(0, int(qty_int)))
+        ord_uv = ""
+        if order_type != "market" and price_int is not None:
+            ord_uv = str(max(0, int(price_int)))
+        order["dmst_stex_tp"] = intent.get("dmst_stex_tp") or intent.get("market") or "KRX"
+        order["stk_cd"] = symbol
+        order["ord_qty"] = ord_qty
+        order["ord_uv"] = ord_uv
+        order["trde_tp"] = str(trde_tp)
+        order["cond_uv"] = intent.get("cond_uv") or ""
+
+    # Pass through any extra keys (so request builder can pick them up)
+    for k, v in intent.items():
+        if k not in order:
+            order[k] = v
+    return order
+
+
+def _apply_mock_broker_order_safety(order: Dict[str, Any]) -> Dict[str, Any]:
+    """Normalize broker-facing order for Kiwoom mock REST compatibility.
+
+    In mock broker HTTP mode, market orders are safer/reproducible than limit
+    for LLM-generated intents. We coerce BUY/SELL orders to market semantics.
+    """
+    if not _is_kiwoom_mock_broker_http_mode():
+        return order
+
+    action = str(order.get("action") or "").strip().upper()
+    if action not in ("BUY", "SELL"):
+        return order
+
+    cur_type = str(order.get("order_type") or "limit").strip().lower()
+    if cur_type == "market":
+        return order
+
+    order["order_type"] = "market"
+    # Kiwoom body aliases
+    order["trde_tp"] = "3"
+    order["ord_uv"] = ""
+
+    rationale = str(order.get("rationale") or "").strip()
+    tag = "mock_broker_force_market"
+    if not rationale:
+        order["rationale"] = tag
+    elif tag not in rationale:
+        order["rationale"] = f"{rationale};{tag}"
+    return order
+
+
+def _broker_code_success(value: Any) -> Optional[bool]:
+    if value is None:
+        return None
+    s = str(value).strip()
+    if not s:
+        return None
+    try:
+        return int(float(s)) == 0
+    except Exception:
+        pass
+    t = s.lower()
+    if t in ("ok", "success", "accepted"):
+        return True
+    if t in ("error", "failed", "rejected"):
+        return False
+    return False
+
+
+def _classify_broker_outcome(payload: Dict[str, Any]) -> Tuple[str, str]:
+    """Classify NOT_SENT/ACCEPTED/REJECTED/UNKNOWN (Phase 1 Step 5B).
+
+    Priority:
+    1) RealExecutor's own mutation classification, when present
+       (libs/execution/guards/broker_mutation.py::classify_mutation_response,
+       set into ExecutionResult.meta['broker_outcome']) -- most authoritative,
+       since it already ran the real business-code check against the actual
+       HTTP response.
+    2) Mock executor: always synthesizes success (explicit rule, not a
+       "no signal -> assume true" fallback -- MockExecutor's entire contract
+       is "never calls network, never trades, always succeeds").
+    3) Explicit broker business code on the payload (defense-in-depth for
+       payload shapes that didn't go through RealExecutor's own
+       classification, e.g. legacy/test call sites).
+    4) Otherwise UNKNOWN. HTTP 2xx alone is never sufficient for ACCEPTED,
+       and a malformed/no-signal response is never silently treated as
+       success.
+    """
+    meta = payload.get("meta") if isinstance(payload.get("meta"), dict) else {}
+    pre_classified = str(meta.get("broker_outcome") or "").strip().upper()
+    if pre_classified in ("NOT_SENT", "ACCEPTED", "REJECTED", "UNKNOWN"):
+        return pre_classified, "real_executor_meta"
+
+    # MockExecutor's own contract (libs/execution/executors/mock_executor.py):
+    # never calls network, never trades, always succeeds. Detected via
+    # meta['executor']=='mock' (set only by MockExecutor itself), NOT via
+    # payload['mode']=='mock' -- `mode` just reflects the configured
+    # EXECUTION_MODE and can be "mock" even when a test/tool injects a
+    # different executor that returns a real Kiwoom-shaped response (that
+    # response must still go through real business-code classification).
+    if str(meta.get("executor") or "").strip().lower() == "mock":
+        return "ACCEPTED", "mock_executor_default"
+
+    # Defense-in-depth fallback for payload shapes that didn't go through
+    # RealExecutor's own classification (branch 1 above). Delegates to the
+    # same classify_mutation_response() RealExecutor uses, evaluated against
+    # the *raw* nested response_payload (not the single collapsed
+    # payload["broker_code"] field) so a response carrying multiple,
+    # possibly-conflicting business-code fields is still evaluated for
+    # contradictions here too -- one semantic owner
+    # (libs/execution/guards/broker_mutation.py), not two independently
+    # drifting implementations.
+    response_payload = payload.get("response_payload") if isinstance(payload.get("response_payload"), dict) else {}
+    if not response_payload:
+        # Some callers (older test doubles, legacy call sites) set a
+        # single already-collapsed payload["broker_code"] directly instead
+        # of going through _normalize_execution's own response_payload
+        # extraction. Synthesize a minimal one-field dict so those still
+        # get classified correctly, without losing the multi-field
+        # contradiction-checking benefit for callers that DO provide the
+        # raw nested payload.
+        collapsed_code = payload.get("broker_code")
+        if collapsed_code is not None and str(collapsed_code).strip():
+            response_payload = {"return_code": collapsed_code}
+    status_code = payload.get("status_code")
+    outcome, _ref_missing = classify_mutation_response(response_payload, status_code=status_code)
+    return outcome, "broker_code" if outcome != "UNKNOWN" else "no_business_signal"
+
+
+def _infer_execution_ok(payload: Dict[str, Any]) -> Tuple[bool, str]:
+    outcome, source = _classify_broker_outcome(payload)
+    return outcome == "ACCEPTED", source
+
+
+def _supervisor_allow(supervisor: Any, order: Dict[str, Any], risk: Dict[str, Any]) -> Any:
+    """Supervisor API changed during refactors.
+
+    Current Supervisor.allow signature in libs/risk/supervisor.py:
+      allow(intent: str, context: Dict[str,Any]) -> AllowResult
+    """
+    action = order.get("action") or order.get("intent") or "NOOP"
+    action = str(action).lower().strip()
+    ctx = dict(risk); ctx["order"] = order
+    try:
+        return supervisor.allow(action, ctx)
+    except TypeError:
+        # legacy keyword versions
+        try:
+            return supervisor.allow(intent=action, context=ctx)
+        except TypeError:
+            return supervisor.allow(action, ctx)
+
+
+def _extract_strategy_policy(packet: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
+    return _extract_strategy_policy_r3_impl(packet, state, facade=_r3_sys.modules[__name__])
+
+
+def _summarize_strategy_policy(strategy_policy: Dict[str, Any], packet: Dict[str, Any]) -> Dict[str, Any]:
+    return _summarize_strategy_policy_r3_impl(strategy_policy, packet,
+        facade=_r3_sys.modules[__name__])
+
+
+def _augment_supervisor_risk_context(
+    *,
+    state: Dict[str, Any],
+    packet: Dict[str, Any],
+    order: Dict[str, Any],
+    risk: Dict[str, Any],
+) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    strategy_policy = _extract_strategy_policy(packet, state)
+    strategy_policy_summary = _summarize_strategy_policy(strategy_policy, packet)
+    enriched = dict(risk or {})
+    enriched["order"] = dict(order or {})
+    if strategy_policy:
+        enriched["strategy_policy"] = dict(strategy_policy)
+    if strategy_policy_summary:
+        enriched["strategy_policy_summary"] = dict(strategy_policy_summary)
+
+    qty = _coerce_int(order.get("qty"), 0)
+    price, price_source = _resolve_order_price_for_notional_with_source(state, order)
+    if qty > 0:
+        enriched["order_qty"] = int(qty)
+    if price > 0:
+        enriched["order_price"] = float(price)
+        enriched["order_price_source"] = str(price_source)
+    if qty > 0 and price > 0:
+        enriched["order_notional"] = float(qty) * float(price)
+    return enriched, strategy_policy_summary
+
+
+def _prepare_request(order: Dict[str, Any], catalog: Any) -> Any:
+    """Build a PreparedRequest-like object for executors.
+
+    - If api_id exists and catalog can load an ApiSpec, use ApiRequestBuilder.
+    - Otherwise fall back to a SimpleNamespace with required attrs.
+    """
+    api_id_raw = str(order.get("api_id") or order.get("order_api_id") or "").strip()
+    action = str(order.get("action") or "").strip().upper()
+
+    # Phase 1 Step 5B Safety Fix 2 (confirmed HIGH gap): a custom
+    # order_builder (state["order_builder"]) can return an order dict with
+    # action=BUY/SELL/CANCEL/MODIFY but no api_id/order_api_id at all. Without
+    # this, api_id_raw stays "" and the final fallback below would produce a
+    # PreparedRequest with an empty api_id -- silently escaping mutation
+    # detection (full retry, token-refresh replay allowed) even though the
+    # action is unambiguously a mutation. Infer a mutation-identifying
+    # api_id from action alone when none was provided; never overrides an
+    # explicitly-set api_id.
+    if not api_id_raw:
+        if action in ("BUY", "SELL"):
+            api_id_raw = "ORDER_SUBMIT"
+        elif action == "CANCEL":
+            api_id_raw = "kt10003"
+        elif action == "MODIFY":
+            api_id_raw = "kt10002"
+
+    api_candidates = []
+    if api_id_raw:
+        api_candidates.append(api_id_raw)
+
+    # Resolve canonical order alias only when target API exists in current catalog.
+    if api_id_raw.upper() == "ORDER_SUBMIT":
+        alias = ""
+        if action == "BUY":
+            alias = "kt10000"
+        elif action == "SELL":
+            alias = "kt10001"
+        if alias:
+            try:
+                spec_alias = None
+                for meth in ("get", "get_api", "lookup"):
+                    if hasattr(catalog, meth):
+                        try:
+                            spec_alias = getattr(catalog, meth)(alias)
+                        except Exception:
+                            spec_alias = None
+                        break
+                if spec_alias is not None and alias not in api_candidates:
+                    api_candidates.append(alias)
+            except Exception:
+                pass
+
+    for api_id in api_candidates:
+        # Build from spec + context (preferred)
+        try:
+            spec = None
+            for meth in ("get", "get_api", "lookup"):
+                if hasattr(catalog, meth):
+                    try:
+                        spec = getattr(catalog, meth)(api_id)
+                    except Exception:
+                        spec = None
+                    break
+
+            if spec is not None:
+                ApiRequestBuilder = _import_request_builder()
+                Settings = _import_settings()
+                s = Settings.from_env()
+                ctx: Dict[str, Any] = dict(order)
+                # provide common aliases expected by builder
+                ctx.setdefault("account_no", s.kiwoom_account_no)
+                ctx.setdefault("account", s.kiwoom_account_no)
+
+                rb = ApiRequestBuilder()
+                res = rb.prepare(spec, ctx)
+
+                if str(getattr(res, "action", "")).strip().lower() == "ready" and getattr(res, "request", None) is not None:
+                    req = res.request
+                    # ensure attributes expected by executors exist
+                    if getattr(req, "query", None) is None:
+                        setattr(req, "query", getattr(req, "params", {}) or {})
+                    if getattr(req, "headers", None) is None:
+                        setattr(req, "headers", {})
+                    if getattr(req, "body", None) is None:
+                        setattr(req, "body", {})
+                    # Phase 1 Step 5B Safety Fix: defensively guarantee the
+                    # resolved mutation identity (e.g. "kt10000") is on the
+                    # request regardless of what the builder itself set, so
+                    # RealExecutor's is_mutation_api_id() check never
+                    # silently misses a real BUY/SELL/CANCEL.
+                    if not getattr(req, "api_id", None):
+                        setattr(req, "api_id", api_id)
+                    return req
+
+                # not ready -> fall back to a safe NOOP request with hint.
+                # api_id is still set (not just embedded in body) so a
+                # missing-params fallback for a mutation still gets
+                # mutation-safe transport treatment.
+                return SimpleNamespace(
+                    api_id=api_id,
+                    method="POST",
+                    path="/__missing_params__",
+                    headers={},
+                    query={},
+                    body={"missing": res.missing, "api_id": api_id},
+                )
+        except Exception:
+            continue
+
+    # Fallback: minimal request. Phase 1 Step 5B Safety Fix (CRITICAL gap):
+    # preserve the *original* logical operation identity (e.g. "ORDER_SUBMIT"
+    # or "kt10003") here even though catalog/spec resolution failed for every
+    # candidate -- is_mutation_api_id() recognizes the unresolved
+    # "ORDER_SUBMIT" alias too, so this fallback still gets retry_override=0
+    # / no-replay mutation-safe transport treatment instead of silently
+    # falling back to ordinary (retryable) request handling.
+    return SimpleNamespace(
+        api_id=api_id_raw,
+        method="POST",
+        path="/orders",
+        headers={},
+        query={},
+        body={k: v for k, v in order.items() if k not in ("headers", "query")},
+    )
+
+
+def _normalize_execution(
+    *,
+    allowed: bool,
+    execution_result: Any,
+    allow_result: Any,
+    order: Dict[str, Any],
+    reason: str = "",
+    strategy_policy_summary: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Normalize to dict shape used by tests and reports."""
+    exec_mode = _resolve_execution_mode()
+    exec_meta = _execution_mode_details()
+    resolved_reason = str(reason or "")
+    if not resolved_reason and allow_result is not None:
+        resolved_reason = str(getattr(allow_result, "reason", "") or "")
+
+    payload: Dict[str, Any] = {}
+    if execution_result is None:
+        payload = {"mode": exec_mode}
+    else:
+        # ExecutionResult dataclass
+        if hasattr(execution_result, "payload"):
+            p = getattr(execution_result, "payload")
+            if isinstance(p, dict):
+                payload = dict(p)
+        # If still empty, build from response/meta
+        if not payload:
+            if hasattr(execution_result, "response") and getattr(execution_result, "response") is not None:
+                r = getattr(execution_result, "response")
+                payload["status_code"] = getattr(r, "status_code", None)
+                payload["api_ok"] = bool(getattr(r, "ok", False))
+                raw_text = getattr(r, "raw_text", None)
+                if raw_text is None:
+                    raw_text = getattr(r, "text", None)
+                payload["text"] = raw_text
+
+                response_payload = getattr(r, "payload", None)
+                if isinstance(response_payload, dict):
+                    response_payload = dict(response_payload)
+                    payload["response_payload"] = response_payload
+                    payload["json"] = response_payload
+
+                    for k in ("ord_no", "order_id", "orderId", "odno", "ODNO", "ordNo"):
+                        v = response_payload.get(k)
+                        if v is not None and str(v).strip():
+                            payload["order_id"] = str(v).strip()
+                            break
+
+                    for k in ("msg_cd", "message_code", "code", "rt_cd", "error_code", "err_cd", "return_code"):
+                        v = response_payload.get(k)
+                        if v is not None and str(v).strip():
+                            payload["broker_code"] = str(v).strip()
+                            break
+
+                    for k in ("msg1", "msg", "message", "return_msg", "error_message"):
+                        v = response_payload.get(k)
+                        if v is not None and str(v).strip():
+                            payload["broker_message"] = str(v).strip()
+                            break
+                else:
+                    payload["json"] = getattr(r, "json", None)
+
+                err_code = getattr(r, "error_code", None)
+                if err_code is not None and str(err_code).strip():
+                    payload["error_code"] = str(err_code).strip()
+
+                err_msg = getattr(r, "error_message", None)
+                if err_msg is not None and str(err_msg).strip():
+                    payload["error_message"] = str(err_msg).strip()
+            if hasattr(execution_result, "meta") and getattr(execution_result, "meta") is not None:
+                payload["meta"] = getattr(execution_result, "meta")
+        payload.setdefault("mode", exec_mode)
+
+    for key, value in exec_meta.items():
+        payload.setdefault(key, value)
+
+    response_payload = payload.get("response_payload") if isinstance(payload.get("response_payload"), dict) else {}
+    top_level_order_id = str(
+        payload.get("order_id")
+        or payload.get("ord_no")
+        or response_payload.get("order_id")
+        or response_payload.get("ord_no")
+        or ""
+    ).strip()
+    top_level_broker_message = str(
+        payload.get("broker_message")
+        or response_payload.get("return_msg")
+        or payload.get("error_message")
+        or ""
+    ).strip()
+    top_level_broker_code = str(
+        payload.get("broker_code")
+        or response_payload.get("msg_cd")
+        or response_payload.get("return_code")
+        or payload.get("error_code")
+        or ""
+    ).strip()
+    top_level_filled_price = (
+        payload.get("filled_price")
+        if payload.get("filled_price") not in (None, "")
+        else payload.get("avg_fill_price")
+        if payload.get("avg_fill_price") not in (None, "")
+        else payload.get("avg_price")
+    )
+    top_level_filled_qty = (
+        payload.get("filled_qty")
+        if payload.get("filled_qty") not in (None, "")
+        else payload.get("qty")
+    )
+    top_level_status = str(
+        payload.get("fill_status")
+        or payload.get("status")
+        or response_payload.get("return_msg")
+        or ""
+    ).strip()
+
+    meta_info: Dict[str, Any] = payload.get("meta") if isinstance(payload.get("meta"), dict) else {}
+    ok = bool(allowed)
+    ok_source = "allowed_gate"
+    broker_outcome = "" if allowed else "NOT_SENT"
+    if allowed and execution_result is not None:
+        broker_outcome, ok_source = _classify_broker_outcome(payload)
+        ok = broker_outcome == "ACCEPTED"
+        if not ok:
+            cur = resolved_reason.strip().lower()
+            if cur in ("", "allowed"):
+                if broker_outcome == "REJECTED":
+                    bcode = str(payload.get("broker_code") or "").strip()
+                    resolved_reason = f"broker_rejected:{bcode}" if bcode else "broker_rejected"
+                elif broker_outcome == "UNKNOWN":
+                    # Do not collapse UNKNOWN into a rejection-shaped reason --
+                    # callers (quarantine, reporting) must be able to tell the
+                    # two apart.
+                    resolved_reason = "broker_outcome_unknown"
+                else:
+                    resolved_reason = "broker_not_sent"
+    elif allowed and execution_result is None:
+        broker_outcome = "NOT_SENT"
+
+    # BrokerOutcome contract (Phase 1 Step 5B): additive fields alongside the
+    # existing `ok`/`allowed` shape. Legacy `ok` compatibility is preserved
+    # (ACCEPTED -> ok=true; NOT_SENT/REJECTED/UNKNOWN -> ok=false), but
+    # `broker_outcome` lets downstream consumers distinguish UNKNOWN from a
+    # firm REJECTED/NOT_SENT instead of treating every `ok=false` the same.
+    submission_attempts_default = 0 if (not allowed or execution_result is None) else 1
+    reconciliation_required = bool(meta_info.get("reconciliation_required")) or (broker_outcome == "UNKNOWN")
+    broker_reference_missing = bool(meta_info.get("broker_reference_missing")) or (
+        broker_outcome == "ACCEPTED" and not top_level_order_id
+    )
+
+    verdict = {
+        "intent_id": order.get('intent_id', ''),
+        "allowed": bool(allowed),
+        "ok": bool(ok),
+        "execution_ok": bool(ok),
+        "ok_source": str(ok_source),
+        "reason": resolved_reason,
+        "order_id": top_level_order_id,
+        "ord_no": top_level_order_id,
+        "broker_code": top_level_broker_code,
+        "broker_message": top_level_broker_message,
+        "status": top_level_status,
+        "filled_price": top_level_filled_price,
+        "filled_qty": top_level_filled_qty,
+        "execution_mode": str(payload.get("execution_mode") or "").strip(),
+        "kiwoom_mode": str(payload.get("kiwoom_mode") or "").strip(),
+        "broker_env": str(payload.get("broker_env") or "").strip(),
+        "effective_mode": str(payload.get("effective_mode") or "").strip(),
+        "broker_outcome": str(broker_outcome or "UNKNOWN"),
+        "submission_phase": str(meta_info.get("submission_phase") or ("guard_blocked" if not allowed else "completed")),
+        "submission_attempts": _coerce_int(meta_info.get("submission_attempts"), submission_attempts_default),
+        "exception_type": str(meta_info.get("exception_type") or ""),
+        "reconciliation_required": bool(reconciliation_required),
+        "broker_reference_missing": bool(broker_reference_missing),
+        "order": order,
+        "payload": payload,
+    }
+    if isinstance(strategy_policy_summary, dict) and strategy_policy_summary:
+        verdict["strategy_policy_summary"] = dict(strategy_policy_summary)
+        payload.setdefault("strategy_policy_summary", dict(strategy_policy_summary))
+    return verdict
+
+
+def _append_execution_trace_entries(
+    state: Dict[str, Any],
+    *,
+    order: Dict[str, Any],
+    execution: Dict[str, Any],
+    allow_result: Any = None,
+    strategy_policy_summary: Optional[Dict[str, Any]] = None,
+) -> None:
+    return _append_execution_trace_entries_r3_impl(state, order=order, execution=execution,
+        allow_result=allow_result, strategy_policy_summary=strategy_policy_summary,
+        facade=_r3_sys.modules[__name__])
+
+
+def execute_from_packet(state: dict) -> dict:
+    """Execute directly from a TradeDecisionPacket.
+
+    Expects:
+      - state['decision_packet']  # dict form
+      - state['catalog_path'] optional (fallback: env KIWOOM_API_CATALOG_PATH)
+      - state['run_id'] optional (auto-generate if missing)
+      - optional: state['executor'] injected for tests
+      - optional: state['supervisor'] injected for tests
+
+    Produces:
+      - state['execution'] (dict)
+    """
+    EventLogger, new_run_id = _import_event_logger()
+    from libs.core.event_logger import resolve_event_log_path
+
+    logger = EventLogger(log_path=resolve_event_log_path())
+
+    run_id = state.get("run_id") or new_run_id()
+    state["run_id"] = run_id
+    logger.log(run_id=run_id, stage="execute_from_packet", event="start", payload={})
+
+    ApiCatalog = _import_api_catalog()
+    Supervisor = _import_supervisor()
+    get_executor = _import_get_executor()
+
+    order: Dict[str, Any] = {}
+    allow_result: Any = None
+    portfolio_details: Dict[str, Any] = {}
+    strategy_policy_summary: Dict[str, Any] = {}
+    execution_price_guard: Dict[str, Any] = {}
+    # Execution Trace Completeness (observability-only, additive): captured
+    # once, wherever this function already computes them, so the terminal
+    # `state["execution"]` record can carry them regardless of which guard
+    # (if any) ends the run first. Never influences a guard/order decision --
+    # only read by `_finalize_execution_observability_fields` below.
+    executable_price: Optional[float] = None
+    executable_price_source: str = ""
+    order_limit_guard_details: Dict[str, Any] = {}
+    # Core phase invariant (Phase 1 Step 5B Safety Fix): before the mutation
+    # endpoint is ever contacted, NOT_SENT is a valid classification for any
+    # exception. Once submission_dispatched flips True, NOT_SENT is no
+    # longer possible -- only ACCEPTED/REJECTED/UNKNOWN. Anything that goes
+    # wrong afterward (quarantine persistence, artifact/event write,
+    # parsing, or any other downstream exception) must not be allowed to
+    # overwrite an already-determined broker outcome with NOT_SENT.
+    submission_dispatched = False
+    def _mark_submission_dispatched():
+        nonlocal submission_dispatched
+        submission_dispatched = True
+
+    def _quote_snapshot_for_order(order_obj: Dict[str, Any]) -> Dict[str, Any]:
+        symbol = _extract_order_symbol(order_obj)
+        if not symbol:
+            return {}
+        quote = _augment_quote_snapshot_with_spread(_extract_upper_limit_quote_snapshot(state, symbol))
+        if not bool(quote.get("quote_present")) and not any(
+            _coerce_float(quote.get(key), 0.0) > 0.0 for key in ("best_bid", "best_ask", "spread_bps")
+        ):
+            return {}
+        return quote
+
+    def _ensure_execution_quote_snapshot(execution_payload: Dict[str, Any]) -> Dict[str, Any]:
+        execution_obj = execution_payload if isinstance(execution_payload, dict) else {}
+        quote_snapshot = execution_obj.get("quote_snapshot") if isinstance(execution_obj.get("quote_snapshot"), dict) else {}
+        if not quote_snapshot:
+            payload_obj = execution_obj.get("payload") if isinstance(execution_obj.get("payload"), dict) else {}
+            quote_snapshot = payload_obj.get("quote_snapshot") if isinstance(payload_obj.get("quote_snapshot"), dict) else {}
+        if not quote_snapshot:
+            quote_snapshot = _quote_snapshot_for_order(order)
+        if not quote_snapshot:
+            return execution_obj
+        quote_snapshot = _augment_quote_snapshot_with_spread(quote_snapshot)
+        execution_obj["quote_snapshot"] = dict(quote_snapshot)
+        for key in ("best_bid", "best_ask", "spread_bps"):
+            value = quote_snapshot.get(key)
+            if value not in (None, "", 0, 0.0):
+                execution_obj[key] = float(_coerce_float(value, 0.0))
+        payload_obj = execution_obj.get("payload") if isinstance(execution_obj.get("payload"), dict) else {}
+        if payload_obj is not None:
+            payload_obj = dict(payload_obj)
+            payload_obj.setdefault("quote_snapshot", dict(quote_snapshot))
+            for key in ("best_bid", "best_ask", "spread_bps"):
+                value = quote_snapshot.get(key)
+                if value not in (None, "", 0, 0.0):
+                    payload_obj.setdefault(key, float(_coerce_float(value, 0.0)))
+            execution_obj["payload"] = payload_obj
+        return execution_obj
+
+    def _finalize_execution_observability_fields(execution: Dict[str, Any]) -> Dict[str, Any]:
+        """Execution Trace Completeness (observability-only, additive -- NO
+        semantic/guard/order change): materializes the minimal set of values
+        needed to reconstruct one intent's executable-price / notional /
+        broker-attempt / terminal-outcome story from `intent_id` alone,
+        using ONLY values this function already computes or already
+        receives from an existing guard. `setdefault` only -- never
+        overwrites a value a specific guard already recorded. Never invents
+        a new reason/status taxonomy -- reuses `reason`/`broker_outcome`/
+        `submission_attempts`/`submission_phase`/`ok`, all pre-existing
+        authorities, under the field names this trace contract asks for.
+        """
+        broker_outcome = str(execution.get("broker_outcome") or "").strip().upper()
+        submission_phase = str(execution.get("submission_phase") or "").strip().lower()
+        try:
+            submission_attempts = int(execution.get("submission_attempts") or 0)
+        except (TypeError, ValueError):
+            submission_attempts = 0
+
+        # Broker Attempt Invariant: "never attempted" and "attempted but
+        # rejected/unknown" must never collapse into one signal. Derived
+        # purely from the existing Step5B submission_phase/submission_attempts
+        # authority (libs/execution/intent_execution_owner.py /
+        # _normalize_execution) -- no new dispatch-evidence rule invented.
+        broker_attempted = submission_attempts > 0 or submission_phase in {
+            "completed", "mutation_http_call", "dispatched",
+        }
+        execution.setdefault("broker_attempted", bool(broker_attempted))
+        # Alias of the existing submission_attempts authority under the name
+        # this trace contract asks for -- intentionally never a second,
+        # independently-tracked counter.
+        execution.setdefault("broker_attempt_count", submission_attempts)
+        # Alias of the existing ok/execution_ok authority (broker confirmed
+        # acceptance) -- distinct from broker_attempted (a dispatch was made
+        # at all, regardless of outcome).
+        execution.setdefault("order_sent", bool(execution.get("ok")))
+
+        resolved_executable_price = executable_price if (executable_price and executable_price > 0) else None
+        execution.setdefault("executable_price", resolved_executable_price)
+        execution.setdefault("executable_price_source", executable_price_source or "")
+
+        guard_notional = order_limit_guard_details.get("order_notional") if isinstance(order_limit_guard_details, dict) else None
+        guard_notional_price = order_limit_guard_details.get("price") if isinstance(order_limit_guard_details, dict) else None
+        execution.setdefault("order_notional", float(guard_notional) if guard_notional else None)
+        execution.setdefault("order_notional_price", float(guard_notional_price) if guard_notional_price else None)
+
+        # Terminal Reason Invariant: NOT_SENT/REJECTED/guard-blocked outcomes
+        # must never carry an empty reason. This never changes WHICH outcome
+        # was reached -- it only guarantees the existing reason/broker_outcome
+        # authority is actually populated in the persisted/returned record.
+        if (not execution.get("allowed", True) or broker_outcome in ("NOT_SENT", "REJECTED")) and not str(execution.get("reason") or "").strip():
+            execution["reason"] = f"unspecified_{broker_outcome.lower()}" if broker_outcome else "unspecified_execution_block"
+
+        return execution
+
+    def _persist_execution_artifacts(*, supervisor_allowed: bool, supervisor_reason: str, supervisor_details: Dict[str, Any] | None = None) -> None:
+        try:
+            write_supervisor_artifact(
+                state,
+                order=order,
+                allowed=bool(supervisor_allowed),
+                reason=str(supervisor_reason or ""),
+                details=dict(supervisor_details or {}),
+                strategy_policy_summary=dict(strategy_policy_summary or {}),
+            )
+        except Exception:
+            pass
+        try:
+            execution_payload = state.get("execution") if isinstance(state.get("execution"), dict) else {}
+            if execution_payload:
+                if execution_price_guard.get("applicable"):
+                    execution_payload["opening_alpha_execution_price_guard"] = dict(execution_price_guard)
+                _ensure_execution_quote_snapshot(execution_payload)
+                _finalize_execution_observability_fields(execution_payload)
+                write_executor_artifact(state, execution=execution_payload, order=order)
+        except Exception:
+            pass
+    try:
+        packet: Dict[str, Any] = state["decision_packet"]
+
+        catalog_path = state.get("catalog_path") or _catalog_path_from_env()
+        catalog = ApiCatalog.load(catalog_path)
+
+        supervisor = state.get("supervisor")
+        if supervisor is None:
+            if hasattr(Supervisor, "from_settings"):
+                supervisor = Supervisor.from_settings()
+            else:
+                supervisor = Supervisor()
+        executor = state.get("executor") or get_executor()
+
+        intent = packet.get("intent") or {}
+        risk = packet.get("risk") or {}
+        exec_context = packet.get("exec_context") or {}
+
+        # Build order dict
+        if state.get("order_builder") is not None:
+            order = state["order_builder"](intent, catalog)  # type: ignore[call-arg]
+        else:
+            order = _build_order_from_intent(intent)
+        order = _apply_mock_broker_order_safety(order)
+        from libs.execution.intent_identity import bind_intent
+        if str(order.get('action') or '').upper() != 'NOOP':
+            bind_intent(state, order, intent)
+        risk_for_supervisor, strategy_policy_summary = _augment_supervisor_risk_context(
+            state=state,
+            packet=packet,
+            order=order,
+            risk=risk,
+        )
+
+        action = str(order.get("action") or "").strip().upper()
+        if action == "NOOP":
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason="noop_intent_skipped",
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            _append_execution_trace_entries(
+                state,
+                order=order,
+                execution=state["execution"],
+                allow_result=None,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="verdict",
+                payload={"allowed": False, "reason": "noop_intent_skipped", "strategy_policy_summary": strategy_policy_summary},
+            )
+            _persist_execution_artifacts(supervisor_allowed=False, supervisor_reason="noop_intent_skipped")
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        # R6.2: one explicit execution-attempt identity flows readiness/guard -> evidence -> admission ->
+        # execute_owned_order -> broker submit; evidence is bound to exactly this attempt.
+        execution_attempt_id = uuid.uuid4().hex
+        readiness_allowed, readiness_reason, readiness_details = _evaluate_execution_readiness_guard(state, order)
+        if not readiness_allowed:
+            # R6: the BLOCK verdict is recorded too (evidence only; the block is already decided).
+            _evidence_ok, _evidence_reason, readiness_evidence = _record_readiness_evidence(
+                state,
+                order,
+                phase="readiness_guard_block",
+                readiness_allowed=readiness_allowed,
+                readiness_reason=readiness_reason,
+                readiness_details=readiness_details,
+                broker_submission_allowed=False,
+                execution_attempt_id=execution_attempt_id,
+            )
+            readiness_details = {**readiness_details, "readiness_evidence": readiness_evidence}
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=readiness_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["execution_readiness_guard"] = readiness_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="execution_readiness_guard_block",
+                payload={"allowed": False, "reason": readiness_reason, **readiness_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=readiness_reason,
+                supervisor_details=readiness_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        closeout_buy_allowed, closeout_buy_reason, closeout_buy_details = _evaluate_execution_closeout_buy_guard(state, order)
+        if not closeout_buy_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=closeout_buy_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["closeout_buy_guard"] = closeout_buy_details
+            _append_execution_trace_entries(
+                state,
+                order=order,
+                execution=state["execution"],
+                allow_result=None,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="closeout_buy_guard_block",
+                payload={"allowed": False, "reason": closeout_buy_reason, **closeout_buy_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=closeout_buy_reason,
+                supervisor_details=closeout_buy_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        open_order_allowed, open_order_reason, open_order_details = _evaluate_open_order_reconciliation_guard(state, order)
+        if not open_order_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=open_order_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["open_order_reconciliation_guard"] = open_order_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="open_order_reconciliation_guard_block",
+                payload={"allowed": False, "reason": open_order_reason, **open_order_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=open_order_reason,
+                supervisor_details=open_order_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        symbol_format_allowed, symbol_format_reason, symbol_format_details = _evaluate_symbol_format_guard(order)
+        if not symbol_format_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=symbol_format_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["symbol_format_guard"] = symbol_format_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="symbol_format_guard_block",
+                payload={"allowed": False, "reason": symbol_format_reason, **symbol_format_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=symbol_format_reason,
+                supervisor_details=symbol_format_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        symbol_allowed, symbol_reason, symbol_details = _evaluate_symbol_allowlist_guard(order)
+        if not symbol_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=symbol_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["symbol_guard"] = symbol_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="symbol_guard_block",
+                payload={"allowed": False, "reason": symbol_reason, **symbol_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=symbol_reason,
+                supervisor_details=symbol_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        quarantine_allowed, quarantine_reason, quarantine_details = _evaluate_unknown_quarantine_guard(state, order)
+        if not quarantine_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=quarantine_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["unknown_quarantine_guard"] = quarantine_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="unknown_quarantine_block",
+                payload={"allowed": False, "reason": quarantine_reason, **quarantine_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=quarantine_reason,
+                supervisor_details=quarantine_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        monitor_exit_allowed, monitor_exit_reason, monitor_exit_details = _evaluate_monitor_exit_confirmation_guard(state, order)
+        if not monitor_exit_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=monitor_exit_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["monitor_exit_execution_guard"] = monitor_exit_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="monitor_exit_guard_block",
+                payload={"allowed": False, "reason": monitor_exit_reason, **monitor_exit_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=monitor_exit_reason,
+                supervisor_details=monitor_exit_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        restricted_allowed, restricted_reason, restricted_details = _evaluate_mock_broker_restricted_symbol_guard(state, order)
+        if not restricted_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=restricted_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["mock_broker_restricted_symbol_guard"] = restricted_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="mock_broker_restricted_symbol_block",
+                payload={"allowed": False, "reason": restricted_reason, **restricted_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=restricted_reason,
+                supervisor_details=restricted_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        asset_allowed, asset_reason, asset_details = _evaluate_asset_universe_guard(state, order)
+        if not asset_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=asset_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["asset_universe_guard"] = asset_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="asset_universe_guard_block",
+                payload={"allowed": False, "reason": asset_reason, **asset_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=asset_reason,
+                supervisor_details=asset_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        upper_limit_allowed, upper_limit_reason, upper_limit_details = _evaluate_upper_limit_buy_guard(state, order)
+        if not upper_limit_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=upper_limit_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["upper_limit_guard"] = upper_limit_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="upper_limit_guard_block",
+                payload={"allowed": False, "reason": upper_limit_reason, **upper_limit_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=upper_limit_reason,
+                supervisor_details=upper_limit_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        limits_allowed, limits_reason, limits_details = _evaluate_order_limit_guard(state, order)
+        order_limit_guard_details = limits_details  # captured pass-or-fail for trace completeness (see top of function)
+        if not limits_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=limits_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["order_limit_guard"] = limits_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="order_limit_guard_block",
+                payload={"allowed": False, "reason": limits_reason, **limits_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=limits_reason,
+                supervisor_details=limits_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        portfolio_allowed, portfolio_reason, portfolio_details = _evaluate_portfolio_snapshot_guard(state, order)
+        if not portfolio_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=portfolio_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["portfolio_guard"] = portfolio_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="portfolio_guard_block",
+                payload={"allowed": False, "reason": portfolio_reason, "portfolio_guard": portfolio_details, **portfolio_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=portfolio_reason,
+                supervisor_details=portfolio_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        if _should_block_duplicate_mock_buy(state, order):
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason="duplicate_buy_position_exists",
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["portfolio_guard"] = portfolio_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="verdict",
+                payload={"allowed": False, "reason": "duplicate_buy_position_exists", "portfolio_guard": portfolio_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason="duplicate_buy_position_exists",
+                supervisor_details=portfolio_details,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        recent_buy_allowed, recent_buy_reason, recent_buy_details = _evaluate_recent_buy_order_guard(state, order)
+        if not recent_buy_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=recent_buy_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["portfolio_guard"] = portfolio_details
+            state["execution"]["recent_buy_order_guard"] = recent_buy_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="recent_buy_order_guard_block",
+                payload={"allowed": False, "reason": recent_buy_reason, "portfolio_guard": portfolio_details, **recent_buy_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=recent_buy_reason,
+                supervisor_details={**dict(portfolio_details or {}), **dict(recent_buy_details or {})},
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        recent_buy_settle_allowed, recent_buy_settle_reason, recent_buy_settle_details = _evaluate_recent_buy_settle_sell_guard(
+            state,
+            order,
+        )
+        if not recent_buy_settle_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=recent_buy_settle_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["portfolio_guard"] = portfolio_details
+            state["execution"]["recent_buy_settle_sell_guard"] = recent_buy_settle_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="recent_buy_settle_sell_guard_block",
+                payload={
+                    "allowed": False,
+                    "reason": recent_buy_settle_reason,
+                    "portfolio_guard": portfolio_details,
+                    **recent_buy_settle_details,
+                },
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=recent_buy_settle_reason,
+                supervisor_details={**dict(portfolio_details or {}), **dict(recent_buy_settle_details or {})},
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        recent_sell_allowed, recent_sell_reason, recent_sell_details = _evaluate_recent_sell_order_guard(state, order)
+        if not recent_sell_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=recent_sell_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["portfolio_guard"] = portfolio_details
+            state["execution"]["recent_sell_order_guard"] = recent_sell_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="recent_sell_order_guard_block",
+                payload={"allowed": False, "reason": recent_sell_reason, "portfolio_guard": portfolio_details, **recent_sell_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=recent_sell_reason,
+                supervisor_details={**dict(portfolio_details or {}), **dict(recent_sell_details or {})},
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        cash_allowed, cash_reason, cash_details = _evaluate_mock_cash_guard(state, order)
+        if not cash_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=cash_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["cash_guard"] = cash_details
+            state["execution"]["portfolio_guard"] = portfolio_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="verdict",
+                payload={"allowed": False, "reason": cash_reason, "portfolio_guard": portfolio_details, **cash_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=cash_reason,
+                supervisor_details={**dict(portfolio_details or {}), **dict(cash_details or {})},
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        degrade_allowed, degrade_reason, degrade_details = _evaluate_degrade_execution_policy(
+            state=state,
+            order=order,
+            exec_context=exec_context,
+        )
+        if not degrade_allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=degrade_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["degrade_policy"] = degrade_details
+            state["execution"]["portfolio_guard"] = portfolio_details
+            _append_execution_trace_entries(
+                state, order=order, execution=state["execution"], allow_result=None, strategy_policy_summary=strategy_policy_summary
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="degrade_policy_block",
+                payload={"reason": degrade_reason, "portfolio_guard": portfolio_details, **degrade_details},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=degrade_reason,
+                supervisor_details={**dict(portfolio_details or {}), **dict(degrade_details or {})},
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        order_symbol = _extract_order_symbol(order)
+        quote_snapshot = _augment_quote_snapshot_with_spread(
+            _extract_upper_limit_quote_snapshot(state, order_symbol)
+        )
+        if action == "BUY":
+            quote_snapshot, quote_refresh_meta = _refresh_executable_quote_if_missing(
+                state, order_symbol, quote_snapshot
+            )
+            if quote_refresh_meta.get("attempted"):
+                logger.log(
+                    run_id=run_id,
+                    stage="execute_from_packet",
+                    event="executable_quote_refresh",
+                    payload={"symbol": order_symbol, **quote_refresh_meta},
+                )
+        executable_price = _coerce_float(quote_snapshot.get("best_ask"), 0.0)
+        executable_price_source = "market.quote.best_ask"
+        if executable_price <= 0.0:
+            executable_price = _coerce_float(quote_snapshot.get("current_price"), 0.0)
+            executable_price_source = "market.quote.current_price"
+        if bool(quote_snapshot.get("refresh_source")):
+            executable_price_source = f"{executable_price_source}.live_refresh"
+        order_meta = order.get("meta") if isinstance(order.get("meta"), dict) else {}
+        controlled_lane = (
+            order_meta.get("controlled_mock_lane")
+            if isinstance(order_meta.get("controlled_mock_lane"), dict)
+            else {}
+        )
+        if action == "BUY" and controlled_lane:
+            quote_symbol = normalize_symbol(quote_snapshot.get("symbol"))
+            quote_valid = bool(
+                quote_snapshot.get("quote_present")
+                and quote_symbol == order_symbol
+                and executable_price > 0.0
+            )
+            if not quote_valid:
+                block_reason = (
+                    "controlled_lane_executable_quote_symbol_mismatch"
+                    if quote_symbol and quote_symbol != order_symbol
+                    else "controlled_lane_executable_quote_missing"
+                )
+                integrity = {
+                    "allowed": False,
+                    "block_reason": block_reason,
+                    "lane_id": str(controlled_lane.get("lane_id") or ""),
+                    "symbol": order_symbol,
+                    "quote_symbol": quote_symbol or None,
+                    "quote_present": bool(quote_snapshot.get("quote_present")),
+                    "executable_price": executable_price or None,
+                    "executable_price_source": executable_price_source,
+                    "broker_api_called": False,
+                }
+                state["execution"] = _normalize_execution(
+                    allowed=False,
+                    execution_result=None,
+                    allow_result=None,
+                    order=order,
+                    reason=block_reason,
+                    strategy_policy_summary=strategy_policy_summary,
+                )
+                state["execution"]["controlled_lane_execution_price_guard"] = integrity
+                _append_execution_trace_entries(
+                    state,
+                    order=order,
+                    execution=state["execution"],
+                    allow_result=None,
+                    strategy_policy_summary=strategy_policy_summary,
+                )
+                logger.log(
+                    run_id=run_id,
+                    stage="execute_from_packet",
+                    event="controlled_lane_execution_price_guard_block",
+                    payload=integrity,
+                )
+                _persist_execution_artifacts(
+                    supervisor_allowed=False,
+                    supervisor_reason=block_reason,
+                    supervisor_details=integrity,
+                )
+                logger.log(
+                    run_id=run_id,
+                    stage="execute_from_packet",
+                    event="end",
+                    payload={"ok": True},
+                )
+                return state
+        execution_price_guard = evaluate_opening_alpha_execution_price_guard(
+            action=action,
+            order_meta=order_meta,
+            executable_price=executable_price,
+            executable_price_source=executable_price_source,
+            executable_price_observed_at=(
+                quote_snapshot.get("observed_at") or quote_snapshot.get("observed_epoch")
+            ),
+        )
+        if execution_price_guard.get("applicable"):
+            logger.log(
+                run_id=run_id, stage="execute_from_packet",
+                event="opening_alpha_execution_price_guard_evaluated",
+                payload=dict(execution_price_guard),
+            )
+        if not bool(execution_price_guard.get("allowed", True)):
+            block_reason = str(
+                execution_price_guard.get("block_reason")
+                or "opening_alpha_execution_price_integrity_blocked"
+            )
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=None,
+                order=order,
+                reason=block_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["opening_alpha_execution_price_guard"] = dict(
+                execution_price_guard
+            )
+            _append_execution_trace_entries(
+                state,
+                order=order,
+                execution=state["execution"],
+                allow_result=None,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="opening_alpha_execution_price_guard_block",
+                payload=dict(execution_price_guard),
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=block_reason,
+                supervisor_details=dict(execution_price_guard),
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="end",
+                payload={"ok": True},
+            )
+            return state
+
+        # Supervisor verdict
+        allow_result = _supervisor_allow(supervisor, order, risk_for_supervisor)
+        allowed = bool(getattr(allow_result, "allowed", getattr(allow_result, "allow", False)))
+        # Mock mode bypasses supervisor gating for offline-safe test flows.
+        # Real mode must honor supervisor verdict.
+        if _resolve_execution_mode() == "mock":
+            allowed = True
+
+        if not allowed:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=allow_result,
+                order=order,
+                reason=getattr(allow_result, "reason", "blocked"),
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["portfolio_guard"] = portfolio_details
+            allow_details = getattr(allow_result, "details", {})
+            if isinstance(allow_details, dict) and allow_details:
+                state["execution"]["supervisor_guard"] = dict(allow_details)
+            _append_execution_trace_entries(
+                state,
+                order=order,
+                execution=state["execution"],
+                allow_result=allow_result,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="verdict", payload=state["execution"])
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=getattr(allow_result, "reason", "blocked"),
+                supervisor_details=allow_details if isinstance(allow_details, dict) else {},
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+
+        # Prepare request and execute
+        req = _prepare_request(order, catalog)
+        # R6: immutable readiness/guard evidence MUST be durable BEFORE intent admission and
+        # broker submission. If it cannot be persisted, nothing is admitted or submitted.
+        evidence_ok, evidence_reason, readiness_evidence = _record_readiness_evidence(
+            state,
+            order,
+            phase="pre_broker_submit",
+            readiness_allowed=readiness_allowed,
+            readiness_reason=readiness_reason,
+            readiness_details=readiness_details,
+            broker_submission_allowed=True,
+            execution_attempt_id=execution_attempt_id,
+        )
+        if not evidence_ok:
+            state["execution"] = _normalize_execution(
+                allowed=False,
+                execution_result=None,
+                allow_result=allow_result,
+                order=order,
+                reason=evidence_reason,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            state["execution"]["readiness_evidence"] = readiness_evidence
+            _append_execution_trace_entries(
+                state,
+                order=order,
+                execution=state["execution"],
+                allow_result=allow_result,
+                strategy_policy_summary=strategy_policy_summary,
+            )
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="readiness_evidence_write_block",
+                payload={"allowed": False, "reason": evidence_reason, **readiness_evidence},
+            )
+            _persist_execution_artifacts(
+                supervisor_allowed=False,
+                supervisor_reason=evidence_reason,
+                supervisor_details=readiness_evidence,
+            )
+            logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+            return state
+        from libs.execution.intent_admission import admit_order_intent
+        admit_order_intent(state=state, order=order, source="execute_from_packet_policy")
+        # From this point on, any exception raised out of executor.execute()
+        # that is NOT the well-defined pre-submission marker
+        # (ExecutionDisabledError, raised only by preflight/token-acquisition
+        # failure per RealExecutor's own contract) must be treated as
+        # UNKNOWN, never NOT_SENT -- see the phase-invariant handling in the
+        # outer except block below.
+        from libs.execution.intent_execution_owner import execute_owned_order
+        state["execution"] = execute_owned_order(state=state, order=order, request=req,
+            executor=executor, on_submit=_mark_submission_dispatched,
+            readiness_evidence=readiness_evidence.get("reference"),
+            execution_attempt_id=execution_attempt_id,
+            normalize=lambda result: _finalize_execution_observability_fields(_normalize_execution(
+                allowed=True, execution_result=result, allow_result=allow_result,
+                order=order, strategy_policy_summary=strategy_policy_summary)))
+        state["execution"]["portfolio_guard"] = portfolio_details
+        if bool(readiness_evidence.get("enabled")):
+            state["execution"]["readiness_evidence"] = dict(readiness_evidence)
+        if execution_price_guard.get("applicable"):
+            state["execution"]["opening_alpha_execution_price_guard"] = dict(execution_price_guard)
+        allow_details = getattr(allow_result, "details", {})
+        if isinstance(allow_details, dict) and allow_details:
+            state["execution"]["supervisor_guard"] = dict(allow_details)
+        if str(state["execution"].get("broker_outcome") or "").strip().upper() == "UNKNOWN":
+            _quarantine_symbol_for_unknown_outcome(state, order, state["execution"])
+        recent_buy_guard_update = _update_recent_buy_order_guard(state, order, state["execution"])
+        if bool(recent_buy_guard_update.get("enabled")):
+            state["execution"]["recent_buy_order_guard"] = recent_buy_guard_update
+        recent_sell_guard_update = _update_recent_sell_order_guard(state, order, state["execution"])
+        if bool(recent_sell_guard_update.get("enabled")):
+            state["execution"]["recent_sell_order_guard"] = recent_sell_guard_update
+
+        _append_execution_trace_entries(
+            state,
+            order=order,
+            execution=state["execution"],
+            allow_result=allow_result,
+            strategy_policy_summary=strategy_policy_summary,
+        )
+        logger.log(
+            run_id=run_id,
+            stage="execute_from_packet",
+            event="verdict",
+            payload={"allowed": True, "portfolio_guard": portfolio_details, "strategy_policy_summary": strategy_policy_summary},
+        )
+        upper_limit_cancel = _attempt_upper_limit_cancel(
+            state=state,
+            catalog=catalog,
+            executor=executor,
+            order=order,
+            execution=state["execution"],
+        )
+        if upper_limit_cancel:
+            state["execution"]["upper_limit_cancel"] = upper_limit_cancel
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="upper_limit_cancel_attempt",
+                payload=upper_limit_cancel,
+            )
+        if not bool((upper_limit_cancel or {}).get("attempted")):
+            unfilled_recovery = _attempt_unfilled_order_recovery(
+                state=state,
+                catalog=catalog,
+                executor=executor,
+                order=order,
+                execution=state["execution"],
+            )
+            if unfilled_recovery:
+                state["execution"]["unfilled_order_recovery"] = unfilled_recovery
+                if bool(unfilled_recovery.get("attempted")):
+                    logger.log(
+                        run_id=run_id,
+                        stage="execute_from_packet",
+                        event="unfilled_order_recovery_attempt",
+                        payload=unfilled_recovery,
+                    )
+        logger.log(run_id=run_id, stage="execute_from_packet", event="execution", payload=state["execution"])
+        _persist_execution_artifacts(
+            supervisor_allowed=True,
+            supervisor_reason=str(getattr(allow_result, "reason", "") or "allowed"),
+            supervisor_details=allow_details if isinstance(allow_details, dict) else {},
+        )
+        logger.log(run_id=run_id, stage="execute_from_packet", event="end", payload={"ok": True})
+        return state
+
+    except Exception as e:
+        # Core phase invariant (Phase 1 Step 5B Safety Fix): before the
+        # mutation endpoint is contacted, NOT_SENT is a valid classification.
+        # Once submission begins, NOT_SENT is never possible again -- only
+        # ACCEPTED/REJECTED/UNKNOWN.
+        from libs.execution.executors.base import ExecutionDisabledError as _ExecutionDisabledError
+
+        existing_execution = state.get("execution") if isinstance(state.get("execution"), dict) else {}
+        existing_outcome = str(existing_execution.get("broker_outcome") or "").strip().upper()
+
+        if existing_outcome in ("ACCEPTED", "REJECTED", "UNKNOWN"):
+            # state["execution"] already holds a broker outcome determined
+            # by the normal success path (_normalize_execution already ran)
+            # -- this exception happened *after* that, in downstream
+            # provenance work (quarantine persistence, artifact/event write,
+            # etc). A persistence/logging failure must never be mistaken for
+            # "the mutation was never sent" -- preserve the outcome exactly
+            # as already recorded, just annotate that something failed
+            # afterward.
+            existing_execution.setdefault("post_submission_error", str(e))
+            existing_execution.setdefault("post_submission_error_type", type(e).__name__)
+            try:
+                logger.log(
+                    run_id=run_id,
+                    stage="execute_from_packet",
+                    event="post_submission_error",
+                    payload={"error": str(e), "broker_outcome": existing_outcome},
+                )
+            except Exception:
+                pass
+            raise
+
+        if isinstance(e, _ExecutionDisabledError):
+            # RealExecutor's own contract: ExecutionDisabledError is raised
+            # only for preflight failure or token-acquisition failure that
+            # happens strictly before the mutation HTTP call -- definitely
+            # NOT_SENT regardless of submission_dispatched.
+            broker_outcome = "NOT_SENT"
+        elif submission_dispatched:
+            # We were about to (or did) call executor.execute() for the
+            # mutation and got some *other* exception type. RealExecutor's
+            # mutation path is designed to never let this happen (it
+            # converts post-submission problems into a returned
+            # UNKNOWN-classified ExecutionResult instead of raising) -- but
+            # for any other injected executor implementation, or a genuinely
+            # unexpected bug, do not assume NOT_SENT just because we don't
+            # have positive proof otherwise. Conservative/fail-closed: UNKNOWN.
+            broker_outcome = "UNKNOWN"
+        else:
+            # Never reached the point of calling executor.execute() at all
+            # (guard-evaluation bug, catalog load failure, etc).
+            broker_outcome = "NOT_SENT"
+
+        state["execution"] = {
+            "intent_id": order.get('intent_id', ''),
+            "allowed": False,
+            "ok": False,
+            "reason": str(e),
+            "broker_outcome": broker_outcome,
+            "submission_phase": "mutation_http_call" if submission_dispatched else "not_dispatched",
+            "submission_attempts": 1 if (submission_dispatched and broker_outcome != "NOT_SENT") else 0,
+            "exception_type": type(e).__name__,
+            "reconciliation_required": broker_outcome == "UNKNOWN",
+            "broker_reference_missing": False,
+        }
+        if broker_outcome == "UNKNOWN":
+            _quarantine_symbol_for_unknown_outcome(state, order, state["execution"])
+        if strategy_policy_summary:
+            state["execution"]["strategy_policy_summary"] = dict(strategy_policy_summary)
+        _append_execution_trace_entries(
+            state,
+            order=order,
+            execution=state["execution"],
+            allow_result=allow_result,
+            strategy_policy_summary=strategy_policy_summary,
+        )
+        _persist_execution_artifacts(
+            supervisor_allowed=False,
+            supervisor_reason=str(e),
+            supervisor_details={},
+        )
+        if isinstance(e, _ExecutionDisabledError):
+            # Paper Trading Execution Finalization (2026-09-17): execution
+            # being disabled (or any other RealExecutor.preflight_check
+            # denial -- allowlist/ALLOW_REAL_EXECUTION/missing credentials,
+            # all raised as this same exception type) is a DETERMINISTIC,
+            # EXPECTED policy rejection, not an incident -- Step5B's own
+            # NOT_SENT classification above already proves nothing was ever
+            # sent. state["execution"] is fully populated (allowed=False,
+            # broker_outcome=NOT_SENT, reason=str(e)) -- the correct,
+            # existing ExecutionResult/BrokerOutcome contract, no new
+            # semantics invented. Returning cleanly here (never raising) is
+            # what keeps the live loop running tick after tick while
+            # EXECUTION_ENABLED=false -- previously this re-raised
+            # unconditionally, propagating uncaught through
+            # commander_runtime.py and libs/runtime/live_loop_runner.py's
+            # tick loop (no `except` around run_once_fn) and crashing the
+            # whole process the FIRST time a real-mode BUY/SELL was ever
+            # approved while disabled (live-reproduced in the Real Docker
+            # Deployment audit). Genuinely unexpected exceptions (DB
+            # corruption, internal invariant violations, any type other
+            # than this one) are NOT touched by this branch and continue to
+            # `raise` below, unchanged -- fail-loud semantics for real
+            # failures are deliberately preserved, not weakened.
+            logger.log(
+                run_id=run_id,
+                stage="execute_from_packet",
+                event="execution_disabled_blocked",
+                payload={"reason": str(e), "broker_outcome": broker_outcome},
+            )
+            return state
+        logger.log(run_id=run_id, stage="execute_from_packet", event="error", payload={"error": str(e)})
+        raise

@@ -1,0 +1,187 @@
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+from datetime import date, datetime, timezone
+from pathlib import Path
+from typing import Any
+from zoneinfo import ZoneInfo
+
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from libs.runtime.entrypoint_common import to_int
+from libs.runtime.live_loop_lock import pid_exists
+from libs.runtime.live_loop_process_query import query_live_loop_processes, read_lock_owner_pid
+
+
+KST = ZoneInfo("Asia/Seoul")
+Q10_LEAD_MARKET_ACTIVATION_DAY = "2026-08-31"
+LOOP_PATTERNS = {
+    "q10_samsung_hynix": "run_baseline_samsung_hynix.py",
+    "q11_opening_opportunity": "run_opportunity_engine_shadow.py",
+    "q12_btc_woori": "run_baseline_btc_woori_tech.py",
+}
+
+
+def _read_json(path: Path) -> dict[str, Any]:
+    from scripts.diagnostics.q9_readiness_json_projection import _read_json as owner
+    return owner(path, facade=sys.modules[__name__])
+
+
+def _parse_dt(value: Any) -> datetime | None:
+    from scripts.diagnostics.q9_readiness_time_projection import _parse_dt as owner
+    return owner(value, facade=sys.modules[__name__])
+
+
+def _powershell_processes() -> list[dict[str, Any]]:
+    command = (
+        "Get-CimInstance Win32_Process | "
+        "Where-Object { $_.CommandLine -match 'run_baseline_samsung_hynix|run_opportunity_engine_shadow|run_baseline_btc_woori_tech' } | "
+        "Select-Object Name,ProcessId,ParentProcessId,CommandLine | ConvertTo-Json -Depth 4"
+    )
+    try:
+        cp = subprocess.run(
+            ["powershell", "-NoProfile", "-Command", command],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except Exception:
+        return []
+    if cp.returncode != 0 or not (cp.stdout or "").strip():
+        return []
+    try:
+        payload = json.loads(cp.stdout)
+    except Exception:
+        return []
+    if isinstance(payload, dict):
+        payload = [payload]
+    return [row for row in payload if isinstance(row, dict)]
+
+
+def _process_status() -> dict[str, Any]:
+    rows = _powershell_processes()
+    out: dict[str, Any] = {}
+    for name, pattern in LOOP_PATTERNS.items():
+        matches = [
+            row
+            for row in rows
+            if pattern in str(row.get("CommandLine") or "")
+            and "powershell" not in str(row.get("Name") or "").lower()
+        ]
+        out[name] = {
+            "running": bool(matches),
+            "process_count": len(matches),
+            "pids": [to_int(row.get("ProcessId"), 0) for row in matches],
+        }
+    return out
+
+
+def _live_status(lock_path: Path) -> dict[str, Any]:
+    payload = _read_json(lock_path)
+    lock_pid = read_lock_owner_pid(lock_path)
+    processes = query_live_loop_processes(ROOT, lock_path)
+    heartbeat = _parse_dt(payload.get("heartbeat_ts"))
+    now = datetime.now(KST)
+    age_sec = int((now - heartbeat).total_seconds()) if heartbeat else None
+    return {
+        "lock_path": str(lock_path),
+        "lock_exists": lock_path.exists(),
+        "lock_pid": lock_pid,
+        "lock_pid_alive": bool(lock_pid and pid_exists(lock_pid)),
+        "process_count": len(processes),
+        "pids": [to_int(row.get("pid"), 0) for row in processes],
+        "heartbeat_ts": payload.get("heartbeat_ts") or "",
+        "heartbeat_age_sec": age_sec,
+        "running": bool(lock_pid and pid_exists(lock_pid) and processes),
+    }
+
+
+def _artifact(path: Path) -> dict[str, Any]:
+    from scripts.diagnostics.q9_readiness_artifact_projection import _artifact as owner
+    return owner(path, facade=sys.modules[__name__])
+
+
+def _q9_checks(reports_root: Path, day: str) -> dict[str, Any]:
+    from scripts.diagnostics.q9_readiness_window_projection import _q9_checks as owner
+    return owner(reports_root, day, facade=sys.modules[__name__])
+
+
+def _baseline_artifacts(reports_root: Path, day: str) -> dict[str, Any]:
+    from scripts.diagnostics.q9_readiness_baseline_projection import _baseline_artifacts as owner
+    return owner(reports_root, day, facade=sys.modules[__name__])
+
+
+def _evaluate(
+    *,
+    phase: str,
+    day: str,
+    live: dict[str, Any],
+    processes: dict[str, Any],
+    q9: dict[str, Any],
+    artifacts: dict[str, Any],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    from scripts.diagnostics.q9_readiness_evaluation_projection import _evaluate as owner
+    return owner(phase=phase,day=day,live=live,processes=processes,q9=q9,artifacts=artifacts,facade=sys.modules[__name__])
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Check Q9/Q10/Q11/Q12 operational readiness without changing behavior.")
+    parser.add_argument("--day", default=date.today().isoformat())
+    parser.add_argument("--phase", choices=["preopen", "intraday", "closeout"], default="preopen")
+    parser.add_argument("--reports-root", default="reports")
+    parser.add_argument("--lock-path", default="data/state/m13_live_loop.lock")
+    parser.add_argument("--json", action="store_true")
+    args = parser.parse_args()
+
+    reports_root = Path(args.reports_root)
+    if not reports_root.is_absolute():
+        reports_root = ROOT / reports_root
+    lock_path = Path(args.lock_path)
+    if not lock_path.is_absolute():
+        lock_path = ROOT / lock_path
+
+    live = _live_status(lock_path)
+    processes = _process_status()
+    q9 = _q9_checks(reports_root, args.day)
+    artifacts = _baseline_artifacts(reports_root, args.day)
+    blockers, warnings = _evaluate(
+        phase=args.phase,
+        day=args.day,
+        live=live,
+        processes=processes,
+        q9=q9,
+        artifacts=artifacts,
+    )
+    payload = {
+        "schema_version": "q9_q12_readiness_check.v1",
+        "behavior_effect": "observability_only",
+        "day": args.day,
+        "phase": args.phase,
+        "status": "BLOCKED" if blockers else "PASS_WITH_WARNINGS" if warnings else "PASS",
+        "blockers": blockers,
+        "warnings": warnings,
+        "live": live,
+        "processes": processes,
+        "q9": q9,
+        "artifacts": artifacts,
+    }
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+    else:
+        print(f"status={payload['status']}")
+        for row in blockers:
+            print(f"BLOCKER {row}")
+        for row in warnings:
+            print(f"WARNING {row}")
+    return 1 if blockers else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

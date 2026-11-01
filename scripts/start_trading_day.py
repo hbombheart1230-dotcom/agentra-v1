@@ -1,0 +1,659 @@
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+import time
+from datetime import date, datetime, timedelta
+from pathlib import Path
+from typing import Any
+from zoneinfo import ZoneInfo
+
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from libs.runtime.entrypoint_common import to_int
+from libs.runtime.host_supervisor import (
+    evaluate_supervisor,
+    load_supervisor_state,
+    public_supervisor_summary,
+    record_watchdog_result,
+    recovery_reason,
+    write_supervisor_state,
+)
+from libs.runtime.live_loop_lock import pid_exists
+from libs.runtime.live_loop_process_query import query_live_loop_processes, read_lock_owner_pid
+from libs.runtime.process_tree_status import summarize_process_tree
+from libs.runtime.runtime_mode import host_live_start_decision
+
+
+KST = ZoneInfo("Asia/Seoul")
+RUNTIME_DIR = ROOT / "reports" / "runtime"
+STATUS_DIR = ROOT / "reports" / "runtime" / "trading_day_status"
+LOCK_PATH = ROOT / "data" / "state" / "m13_live_loop.lock"
+
+SHADOW_LOOPS = {
+    "opening_macro_snapshots": {
+        "pattern": "run_opening_macro_snapshot_collector.py",
+        "cmd": [
+            "scripts/run_opening_macro_snapshot_collector.py",
+        ],
+    },
+    "q10_samsung_hynix": {
+        "pattern": "run_baseline_samsung_hynix.py",
+        "cmd": [
+            "scripts/run_baseline_samsung_hynix.py",
+            "--reports-root",
+            "reports",
+            "--state-path",
+            "data/state.json",
+            "--loop",
+            "--interval-sec",
+            "300",
+            "--reconstruct-intraday",
+        ],
+    },
+    "q11_opening_opportunity": {
+        "pattern": "run_opportunity_engine_shadow.py",
+        "cmd": [
+            "scripts/run_opportunity_engine_shadow.py",
+            "--symbols",
+            "005930,000660,009150",
+            "--reports-root",
+            "reports",
+            "--state-path",
+            "data/state.json",
+            "--loop",
+            "--interval-sec",
+            "300",
+        ],
+    },
+    "q12_btc_woori": {
+        "pattern": "run_baseline_btc_woori_tech.py",
+        "cmd": [
+            "scripts/run_baseline_btc_woori_tech.py",
+            "--reports-root",
+            "reports",
+            "--state-path",
+            "data/state.json",
+            "--loop",
+            "--interval-sec",
+            "300",
+        ],
+    },
+    # 2026-09-05 PRE-STEP5C cleanup follow-up: Q10 Index (KOSPI/KOSDAQ)
+    # 09:30/10:00/CLOSE observation capture. Reuses this exact same
+    # shadow-loop lifecycle (start/watchdog auto-restart, --day-scoped
+    # process matching, stale/duplicate cleanup) -- no new scheduler.
+    "q10_index_observation": {
+        "pattern": "run_q10_index_observation_collector.py",
+        "cmd": [
+            "scripts/run_q10_index_observation_collector.py",
+            "--loop",
+            "--poll-sec",
+            "30",
+        ],
+    },
+}
+
+
+def _session_stack_window_open(now: datetime | None = None) -> bool:
+    current = now or datetime.now(KST)
+    if current.tzinfo is None:
+        current = current.replace(tzinfo=KST)
+    current = current.astimezone(KST)
+    minutes = current.hour * 60 + current.minute
+    return (8 * 60 + 40) <= minutes <= (15 * 60 + 30)
+
+
+def _runtime_python() -> str:
+    candidate = ROOT / "venv" / "Scripts" / "python.exe"
+    return str(candidate) if candidate.exists() else sys.executable
+
+
+def _powershell_processes(patterns: list[str]) -> list[dict[str, Any]]:
+    escaped = "|".join(pattern.replace("\\", "\\\\") for pattern in patterns)
+    command = (
+        "Get-CimInstance Win32_Process | "
+        f"Where-Object {{ $_.CommandLine -match '{escaped}' }} | "
+        "Select-Object Name,ProcessId,ParentProcessId,CreationDate,CommandLine | ConvertTo-Json -Depth 4"
+    )
+    try:
+        cp = subprocess.run(
+            ["powershell", "-NoProfile", "-Command", command],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except Exception:
+        return []
+    if cp.returncode != 0 or not (cp.stdout or "").strip():
+        return []
+    try:
+        payload = json.loads(cp.stdout)
+    except Exception:
+        return []
+    if isinstance(payload, dict):
+        payload = [payload]
+    return [row for row in payload if isinstance(row, dict)]
+
+
+def _loop_processes() -> dict[str, list[dict[str, Any]]]:
+    rows = _powershell_processes([cfg["pattern"] for cfg in SHADOW_LOOPS.values()])
+    out: dict[str, list[dict[str, Any]]] = {}
+    for name, cfg in SHADOW_LOOPS.items():
+        pattern = str(cfg["pattern"])
+        matched = [
+            row
+            for row in rows
+            if pattern in str(row.get("CommandLine") or "")
+            and "powershell" not in str(row.get("Name") or "").lower()
+        ]
+        matched_pids = {to_int(row.get("ProcessId"), 0) for row in matched}
+        # Some Windows Python launches show a parent/child pair with the same
+        # command line. Count the top-level loop runner only; otherwise the
+        # watchdog reports a false duplicate and may restart healthy loops.
+        out[name] = [
+            row
+            for row in matched
+            if to_int(row.get("ParentProcessId"), 0) not in matched_pids
+        ]
+    return out
+
+
+def _has_day_arg(command_line: str, day: str) -> bool:
+    text = str(command_line or "")
+    return f"--day {day}" in text or f"--day={day}" in text
+
+
+def _stop_pid(pid: int) -> dict[str, Any]:
+    if pid <= 0:
+        return {"pid": pid, "ok": False, "reason": "invalid_pid"}
+    try:
+        cp = subprocess.run(["taskkill", "/PID", str(pid), "/F"], capture_output=True, text=True, timeout=10)
+        return {
+            "pid": pid,
+            "ok": cp.returncode == 0 or not pid_exists(pid),
+            "returncode": cp.returncode,
+            "stdout": (cp.stdout or "").strip()[-500:],
+            "stderr": (cp.stderr or "").strip()[-500:],
+        }
+    except Exception as exc:
+        return {"pid": pid, "ok": not pid_exists(pid), "error": f"{type(exc).__name__}: {exc}"}
+
+
+def _stop_stale_shadow_loops(day: str, *, replace: bool) -> list[dict[str, Any]]:
+    stopped: list[dict[str, Any]] = []
+    for name, rows in _loop_processes().items():
+        for row in rows:
+            cmd = str(row.get("CommandLine") or "")
+            stale = not _has_day_arg(cmd, day)
+            if replace or stale:
+                pid = to_int(row.get("ProcessId"), 0)
+                result = _stop_pid(pid)
+                result["loop"] = name
+                result["stale_day"] = stale
+                stopped.append(result)
+    return stopped
+
+
+def _start_shadow_loop(name: str, day: str) -> dict[str, Any]:
+    cfg = SHADOW_LOOPS[name]
+    cmd = [_runtime_python(), *list(cfg["cmd"]), "--day", day]
+    RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(KST).strftime("%Y%m%d_%H%M%S")
+    stdout = RUNTIME_DIR / f"{name}_{day}_{stamp}.out.log"
+    stderr = RUNTIME_DIR / f"{name}_{day}_{stamp}.err.log"
+    out_f = stdout.open("ab")
+    err_f = stderr.open("ab")
+    creationflags = 0
+    if sys.platform == "win32":
+        creationflags |= getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+        creationflags |= getattr(subprocess, "CREATE_NO_WINDOW", 0)
+    try:
+        proc = subprocess.Popen(
+            cmd,
+            cwd=str(ROOT),
+            stdin=subprocess.DEVNULL,
+            stdout=out_f,
+            stderr=err_f,
+            close_fds=True,
+            creationflags=creationflags,
+        )
+    finally:
+        out_f.close()
+        err_f.close()
+    return {"loop": name, "pid": proc.pid, "cmd": cmd, "stdout": str(stdout), "stderr": str(stderr)}
+
+
+def _ensure_shadow_loops(day: str, *, replace_stale: bool = True) -> dict[str, Any]:
+    stopped = _stop_stale_shadow_loops(day, replace=False) if replace_stale else []
+    started: list[dict[str, Any]] = []
+    processes = _loop_processes()
+    for name, rows in processes.items():
+        current_rows = [row for row in rows if _has_day_arg(str(row.get("CommandLine") or ""), day)]
+        for duplicate in current_rows[1:]:
+            result = _stop_pid(to_int(duplicate.get("ProcessId"), 0))
+            result["loop"] = name
+            result["stale_day"] = False
+            result["duplicate_current_day"] = True
+            stopped.append(result)
+    processes = _loop_processes()
+    for name, rows in processes.items():
+        current_rows = [row for row in rows if _has_day_arg(str(row.get("CommandLine") or ""), day)]
+        if current_rows:
+            continue
+        started.append(_start_shadow_loop(name, day))
+    time.sleep(1.0)
+    final = _loop_processes()
+    return {
+        "stopped": stopped,
+        "started": started,
+        "running": {
+            name: {
+                "process_count": len(rows),
+                "pids": [to_int(row.get("ProcessId"), 0) for row in rows],
+                "current_day_count": sum(1 for row in rows if _has_day_arg(str(row.get("CommandLine") or ""), day)),
+                "stale_count": sum(1 for row in rows if not _has_day_arg(str(row.get("CommandLine") or ""), day)),
+            }
+            for name, rows in final.items()
+        },
+    }
+
+
+def _live_status() -> dict[str, Any]:
+    lock_pid = read_lock_owner_pid(LOCK_PATH)
+    processes = query_live_loop_processes(ROOT, LOCK_PATH)
+    lock_payload: dict[str, Any] = {}
+    try:
+        parsed = json.loads(LOCK_PATH.read_text(encoding="utf-8")) if LOCK_PATH.exists() else {}
+        lock_payload = parsed if isinstance(parsed, dict) else {}
+    except Exception:
+        lock_payload = {}
+    heartbeat_epoch = to_int(lock_payload.get("heartbeat_epoch"), 0) or to_int(lock_payload.get("started_epoch"), 0)
+    heartbeat_age = max(0, int(time.time()) - heartbeat_epoch) if heartbeat_epoch > 0 else None
+    return {
+        "lock_exists": LOCK_PATH.exists(),
+        "lock_pid": lock_pid,
+        "lock_pid_alive": bool(lock_pid and pid_exists(lock_pid)),
+        "process_count": len(processes),
+        "pids": [to_int(row.get("pid"), 0) for row in processes],
+        "process_tree": summarize_process_tree(processes, owner_pid=lock_pid),
+        "heartbeat_ts": str(lock_payload.get("heartbeat_ts") or lock_payload.get("started_ts") or "") or None,
+        "heartbeat_age_seconds": heartbeat_age,
+        "running": bool(lock_pid and pid_exists(lock_pid) and processes),
+    }
+
+
+def _host_live_gate() -> tuple[bool, dict[str, Any]]:
+    """P1.3-R4: (host_live_start_allowed, info). Reads ONLY the explicit
+    TRADING_RUNTIME_MODE configuration (libs/runtime/runtime_mode.py) --
+    never Docker container state or Host PID liveness. In docker mode only
+    the Host mutation-capable live launch is suppressed; the shadow/
+    collector loops this script also owns are untouched."""
+    allowed, mode, reason = host_live_start_decision(env_file=ROOT / ".env")
+    info: dict[str, Any] = {"runtime_mode": mode}
+    if not allowed:
+        info["skipped"] = True
+        info["reason"] = reason
+        print(f"{reason} runtime_mode={mode}")
+    return allowed, info
+
+
+def _start_live() -> dict[str, Any]:
+    allowed, info = _host_live_gate()
+    if not allowed:
+        return {"returncode": 0, "stdout": "", "stderr": "", "payload": {}, **info}
+    cmd = [
+        _runtime_python(),
+        str(ROOT / "scripts" / "restart_live_session.py"),
+        "--log-tag",
+        "scheduled_start",
+        "--no-allow-offhours",
+        "--session-hard-gate",
+        "--json",
+    ]
+    cp = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, text=True, timeout=45)
+    try:
+        payload = json.loads(cp.stdout) if (cp.stdout or "").strip() else {}
+    except Exception:
+        payload = {}
+    return {
+        "returncode": cp.returncode,
+        "stdout": (cp.stdout or "").strip()[-4000:],
+        "stderr": (cp.stderr or "").strip()[-4000:],
+        "payload": payload,
+    }
+
+
+def _tail_lines(path: Path, n: int, *, chunk_size: int = 65536) -> list[str]:
+    """Reads the last `n` lines of a (potentially large, append-only) file
+    without loading the whole file into memory -- seeks backward from the
+    end in fixed-size chunks until enough newlines are found. OOM RCA
+    follow-up (2026-09-23): this replaces a `read_text().splitlines()[-N:]`
+    call that loaded the entire events.jsonl just to keep its tail."""
+    with path.open("rb") as handle:
+        handle.seek(0, 2)
+        file_size = handle.tell()
+        block = b""
+        newline_count = 0
+        pos = file_size
+        while pos > 0 and newline_count <= n:
+            read_size = min(chunk_size, pos)
+            pos -= read_size
+            handle.seek(pos)
+            block = handle.read(read_size) + block
+            newline_count = block.count(b"\n")
+        text = block.decode("utf-8", errors="replace")
+    lines = text.splitlines()
+    return lines[-n:] if n > 0 else lines
+
+
+def _event_health(day: str, *, lookback_min: int = 10) -> dict[str, Any]:
+    path = ROOT / "data" / "logs" / "events.jsonl"
+    now = datetime.now(KST)
+    cutoff = now - timedelta(minutes=max(1, int(lookback_min)))
+    counts: dict[str, int] = {
+        "scanner_events": 0,
+        "strategist_llm_failed": 0,
+        "commander_blocked": 0,
+        "q9_scanner_selection": 0,
+    }
+    if not path.exists():
+        return {"available": False, "reason": "events_log_missing", "counts": counts}
+    try:
+        lines = _tail_lines(path, 3000)
+    except Exception as exc:
+        return {"available": False, "reason": f"events_log_read_failed:{type(exc).__name__}", "counts": counts}
+    for line in lines:
+        if day not in line:
+            continue
+        try:
+            row = json.loads(line)
+        except Exception:
+            continue
+        ts_text = str(row.get("ts_kst") or row.get("ts") or "")
+        try:
+            parsed = datetime.fromisoformat(ts_text.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=KST)
+        parsed = parsed.astimezone(KST)
+        if parsed < cutoff:
+            continue
+        stage = str(row.get("stage") or "")
+        event = str(row.get("event_name") or row.get("event") or "")
+        payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+        if stage == "scanner" or event.startswith("scanner."):
+            counts["scanner_events"] += 1
+        if event == "strategist_llm.result" and payload.get("ok") is False:
+            if str(payload.get("blocked_reason") or "") == "strategist_llm_failed":
+                counts["strategist_llm_failed"] += 1
+        if event == "commander_router.fast_path" and str(payload.get("reason") or "") == "strategist_llm_failed":
+            counts["commander_blocked"] += 1
+        if (
+            "scanner_selection" in line
+            or event == "decision_trace.entry_exit_decision"
+        ):
+            counts["q9_scanner_selection"] += 1
+    status = "PASS"
+    blockers: list[dict[str, Any]] = []
+    if counts["strategist_llm_failed"] >= 3 and counts["scanner_events"] == 0:
+        status = "BLOCKED"
+        blockers.append({
+            "code": "strategist_llm_failure_blocks_scanner",
+            "lookback_min": lookback_min,
+            "strategist_llm_failed": counts["strategist_llm_failed"],
+            "scanner_events": counts["scanner_events"],
+        })
+    return {"available": True, "status": status, "counts": counts, "blockers": blockers}
+
+
+def _write_status(day: str, mode: str, payload: dict[str, Any]) -> Path:
+    STATUS_DIR.mkdir(parents=True, exist_ok=True)
+    path = STATUS_DIR / f"{day}_{mode}.json"
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    latest = STATUS_DIR / "latest.json"
+    latest.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    history_dir = STATUS_DIR / "history" / day
+    history_dir.mkdir(parents=True, exist_ok=True)
+    generated = str(payload.get("generated_at") or datetime.now(KST).isoformat(timespec="seconds"))
+    stamp = "".join(character for character in generated if character.isdigit())[:14]
+    fallback_stamp = datetime.now(KST).strftime("%Y%m%d%H%M%S")
+    history_path = history_dir / f"{stamp or fallback_stamp}_{mode}.json"
+    history_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return path
+
+
+def _supervisor_state_path() -> Path:
+    return ROOT / "data" / "state" / "trading_day_supervisor.json"
+
+
+def _supervisor_state(day: str) -> dict[str, Any]:
+    return load_supervisor_state(_supervisor_state_path(), day)
+
+
+def run_start(day: str) -> dict[str, Any]:
+    if not _session_stack_window_open():
+        payload = {
+            "schema_version": "trading_day_start.v1",
+            "day": day,
+            "mode": "start",
+            "generated_at": datetime.now(KST).isoformat(timespec="seconds"),
+            "ok": False,
+            "blockers": [{"code": "outside_regular_session_start_window"}],
+            "live_after": _live_status(),
+            "shadow_loops": {"running": {}},
+        }
+        payload["status_path"] = str(_write_status(day, "start", payload))
+        return payload
+    shadow = _ensure_shadow_loops(day, replace_stale=True)
+    host_live_allowed, host_live_info = _host_live_gate()
+    live_before = _live_status()
+    live_start = {"skipped": True, "reason": "already_running"}
+    start_reason = recovery_reason(live_before)
+    if not host_live_allowed:
+        live_start = dict(host_live_info)
+        start_reason = str(host_live_info.get("reason") or "")
+    elif start_reason:
+        live_start = _start_live()
+    live_after = _live_status()
+    payload = {
+        "schema_version": "trading_day_start.v1",
+        "day": day,
+        "mode": "start",
+        "runtime_mode": host_live_info.get("runtime_mode"),
+        "generated_at": datetime.now(KST).isoformat(timespec="seconds"),
+        "live_before": live_before,
+        "live_start": live_start,
+        "live_after": live_after,
+        "shadow_loops": shadow,
+        "supervisor": public_supervisor_summary(_supervisor_state(day)),
+        "start_reason": start_reason or "runtime_healthy",
+    }
+    blockers: list[dict[str, Any]] = []
+    # Docker canonical mode: the Host live loop is intentionally not
+    # started, so its absence is not a blocker (collector blockers below
+    # still apply unchanged).
+    if host_live_allowed and not live_after.get("running"):
+        blockers.append({"code": "live_session_not_running"})
+    for name, row in (shadow.get("running") or {}).items():
+        if to_int(row.get("current_day_count"), 0) <= 0:
+            blockers.append({"code": f"{name}_not_running_for_day"})
+        if to_int(row.get("stale_count"), 0) > 0:
+            blockers.append({"code": f"{name}_stale_process_still_running", "stale_count": row.get("stale_count")})
+    payload["blockers"] = blockers
+    payload["ok"] = not blockers
+    payload["status_path"] = str(_write_status(day, "start", payload))
+    return payload
+
+
+def _q10_closeout_recovery(day: str, *, _capture: Any = None, _now_fn: Any = None) -> dict[str, Any]:
+    """2026-09-05 PRE-STEP5C CLEANUP FIX 2 (item 7, Codex independent
+    re-audit): the Q10 Index collector's bounded CLOSE closeout re-query
+    can still be legitimately pending a few minutes after the main
+    session window closes at 15:30 (_session_stack_window_open), which is
+    also when the watchdog would otherwise stop trying to recover crashed
+    shadow loops -- if the collector subprocess died in that gap, nothing
+    would ever run its closeout re-query.
+
+    Rather than widening the watchdog's shadow-loop recovery window (which
+    would also extend the MAIN live trading loop's own recovery window,
+    since both are gated by the same `_session_stack_window_open` check --
+    explicitly out of scope: "main trading process lifecycle 대규모 변경
+    금지"), this calls the collector's closeout function directly,
+    in-process, independent of whether the collector subprocess itself is
+    alive. It is always safe to call at any time of day: closeout_requery_
+    if_missing() internally refuses to act before CLOSE's own scheduled
+    time plus its grace period has actually elapsed, and is a cheap,
+    idempotent manifest read once CLOSE is already AVAILABLE. Touches only
+    the collector's own observation manifest -- never production state,
+    locks, or halt markers, and never the main trading process."""
+    try:
+        from libs.market.q10_index_observation_collector import (
+            capture_q10_index_snapshot,
+            closeout_requery_if_missing,
+        )
+
+        root = ROOT / "data" / "logs" / "q10_index_observations"
+        kwargs: dict[str, Any] = {"day": day, "root": root}
+        kwargs["capture"] = _capture if _capture is not None else capture_q10_index_snapshot
+        if _now_fn is not None:
+            kwargs["now_fn"] = _now_fn
+        return dict(closeout_requery_if_missing(**kwargs))
+    except Exception as exc:
+        return {"error": f"{type(exc).__name__}: {exc}"}
+
+
+def run_watchdog(day: str, *, lookback_min: int) -> dict[str, Any]:
+    now = datetime.now(KST)
+    supervisor_state = _supervisor_state(day)
+    if not _session_stack_window_open():
+        supervisor = public_supervisor_summary(supervisor_state)
+        payload = {
+            "schema_version": "trading_day_watchdog.v1",
+            "day": day,
+            "mode": "watchdog",
+            "generated_at": now.isoformat(timespec="seconds"),
+            "ok": True,
+            "offhours_noop": True,
+            "blockers": [],
+            "live_after": _live_status(),
+            "shadow_loops": {"running": {}},
+            "event_health": {"available": False, "reason": "outside_regular_session_start_window"},
+            "supervisor": supervisor,
+            "q10_closeout_recovery": _q10_closeout_recovery(day),
+        }
+        payload["status_path"] = str(_write_status(day, "watchdog", payload))
+        return payload
+    shadow = _ensure_shadow_loops(day, replace_stale=True)
+    q10_closeout_recovery = _q10_closeout_recovery(day)
+    host_live_allowed, host_live_info = _host_live_gate()
+    if not host_live_allowed:
+        # P1.3-R4: Docker is the canonical trading runtime. The watchdog
+        # keeps maintaining every collector/shadow loop above, but makes NO
+        # Host live-recovery decision: it does not evaluate or write the Host
+        # supervisor's restart state and never launches run_session.
+        live_status = _live_status()
+        event_health = _event_health(day, lookback_min=lookback_min)
+        blockers = [dict(b) for b in list(event_health.get("blockers") or [])]
+        for name, row in (shadow.get("running") or {}).items():
+            if to_int(row.get("current_day_count"), 0) <= 0:
+                blockers.append({"code": f"{name}_not_running_for_day"})
+        payload = {
+            "schema_version": "trading_day_watchdog.v1",
+            "day": day,
+            "mode": "watchdog",
+            "runtime_mode": host_live_info.get("runtime_mode"),
+            "generated_at": datetime.now(KST).isoformat(timespec="seconds"),
+            "live_before": live_status,
+            "live_start": dict(host_live_info),
+            "live_after": live_status,
+            "shadow_loops": shadow,
+            "event_health": event_health,
+            "supervisor": public_supervisor_summary(supervisor_state),
+            "blockers": blockers,
+            "ok": not blockers,
+            "q10_closeout_recovery": q10_closeout_recovery,
+        }
+        payload["status_path"] = str(_write_status(day, "watchdog", payload))
+        return payload
+    live_before = _live_status()
+    decision = evaluate_supervisor(live_before, supervisor_state, now=now)
+    live_start = {"skipped": True, "reason": "already_running"}
+    recovery_attempted = bool(decision.restart_allowed)
+    if recovery_attempted:
+        live_start = _start_live()
+    live_after = _live_status()
+    remaining_runtime_issue = recovery_reason(live_after)
+    recovery_success = recovery_attempted and not remaining_runtime_issue
+    supervisor_state = record_watchdog_result(
+        supervisor_state,
+        decision,
+        now=now,
+        recovery_attempted=recovery_attempted,
+        recovery_success=recovery_success if recovery_attempted else None,
+    )
+    write_supervisor_state(_supervisor_state_path(), supervisor_state)
+    supervisor = public_supervisor_summary(supervisor_state)
+    supervisor["decision"] = decision.action
+    supervisor["decision_reason"] = decision.reason
+    supervisor["runtime_issue_after"] = remaining_runtime_issue or None
+    event_health = _event_health(day, lookback_min=lookback_min)
+    blockers: list[dict[str, Any]] = []
+    if not live_after.get("running"):
+        blockers.append({"code": "live_session_not_running"})
+    if remaining_runtime_issue and remaining_runtime_issue != "live_session_not_running":
+        blockers.append({"code": remaining_runtime_issue})
+    if decision.action == "BLOCKED":
+        blockers.append({"code": "supervisor_recovery_blocked", "reason": decision.reason})
+    if recovery_attempted and not recovery_success:
+        blockers.append({"code": "supervisor_recovery_failed", "reason": decision.reason})
+    for name, row in (shadow.get("running") or {}).items():
+        if to_int(row.get("current_day_count"), 0) <= 0:
+            blockers.append({"code": f"{name}_not_running_for_day"})
+    blockers.extend(list(event_health.get("blockers") or []))
+    payload = {
+        "schema_version": "trading_day_watchdog.v1",
+        "day": day,
+        "mode": "watchdog",
+        "generated_at": datetime.now(KST).isoformat(timespec="seconds"),
+        "live_before": live_before,
+        "live_start": live_start,
+        "live_after": live_after,
+        "shadow_loops": shadow,
+        "event_health": event_health,
+        "supervisor": supervisor,
+        "blockers": blockers,
+        "ok": not blockers,
+        "q10_closeout_recovery": q10_closeout_recovery,
+    }
+    payload["status_path"] = str(_write_status(day, "watchdog", payload))
+    return payload
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Start and verify the live trading day runtime stack.")
+    parser.add_argument("--day", default=date.today().isoformat())
+    parser.add_argument("--mode", choices=["start", "watchdog"], default="start")
+    parser.add_argument("--lookback-min", type=int, default=10)
+    parser.add_argument("--json", action="store_true")
+    args = parser.parse_args()
+    day = str(args.day)[:10]
+    payload = run_watchdog(day, lookback_min=args.lookback_min) if args.mode == "watchdog" else run_start(day)
+    if args.json:
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+    else:
+        print(f"ok={bool(payload.get('ok'))} mode={payload.get('mode')} day={day} status_path={payload.get('status_path')}")
+        for row in payload.get("blockers") or []:
+            print(f"BLOCKER {row}")
+    return 0 if payload.get("ok") else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

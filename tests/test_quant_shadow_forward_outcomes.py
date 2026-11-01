@@ -1,0 +1,241 @@
+from __future__ import annotations
+
+import json
+
+from libs.reporting.quant_shadow_forward_outcomes import (
+    attach_forward_outcomes,
+    load_minute_rows_from_state,
+)
+
+
+def test_attach_forward_outcomes_classifies_missing_minute_rows_as_unavailable() -> None:
+    out = attach_forward_outcomes(
+        [
+            {
+                "symbol": "005930",
+                "shadow_forward_base": {"baseline_epoch": 1, "baseline_price": 100.0},
+            }
+        ],
+        minute_rows_by_symbol={},
+    )
+
+    assert out[0]["shadow_forward_outcome"]["reason"] == "minute_rows_unavailable"
+
+
+def test_attach_forward_outcomes_uses_q9_snapshot_price_series_fallback() -> None:
+    candidates = [
+        {
+            "symbol": "005930",
+            "shadow_forward_base": {
+                "available": True,
+                "baseline_epoch": 1782172800,
+                "baseline_price": 100.0,
+            },
+        },
+        {
+            "symbol": "005930",
+            "shadow_forward_base": {
+                "available": True,
+                "baseline_epoch": 1782173100,
+                "baseline_price": 101.0,
+            },
+        },
+        {
+            "symbol": "005930",
+            "shadow_forward_base": {
+                "available": True,
+                "baseline_epoch": 1782173700,
+                "baseline_price": 102.0,
+            },
+        },
+    ]
+
+    out = attach_forward_outcomes(candidates, minute_rows_by_symbol={})
+
+    assert out[0]["shadow_forward_outcome"]["available"] is True
+    assert out[0]["shadow_forward_outcome"]["observation_source"] == "q9_scanner_snapshot_series"
+    assert out[0]["shadow_forward_outcome"]["checkpoints"]["+5m"]["return_pct"] == 1.0
+    assert out[0]["shadow_forward_outcome"]["checkpoints"]["+15m"]["return_pct"] == 2.0
+
+
+def test_attach_forward_outcomes_rejects_cross_day_target_row() -> None:
+    candidates = [
+        {
+            "symbol": "005930",
+            "shadow_forward_base": {
+                "available": True,
+                "baseline_epoch": 1780876980,
+                "baseline_price": 298500,
+                "baseline_raw_ts": "20260608090300",
+            },
+        }
+    ]
+    minute_rows = {
+        "005930": [
+            {"ts": 1780876980, "close": 298500, "high": 298500, "low": 298500, "raw_ts": "20260608090300"},
+            {"ts": 1781265120, "close": 335500, "high": 336500, "low": 335500, "raw_ts": "20260612125200"},
+        ]
+    }
+
+    out = attach_forward_outcomes(candidates, minute_rows_by_symbol=minute_rows)
+    checkpoint = out[0]["shadow_forward_outcome"]["checkpoints"]["+5m"]
+
+    assert out[0]["shadow_forward_outcome"]["available"] is False
+    assert checkpoint["status"] == "stale"
+    assert checkpoint["reason"] == "stale_cross_day_observation"
+    assert checkpoint["observed_ts"] == "20260612125200"
+
+
+def test_attach_forward_outcomes_rejects_same_day_stale_gap() -> None:
+    candidates = [
+        {
+            "symbol": "005930",
+            "shadow_forward_base": {
+                "available": True,
+                "baseline_epoch": 1780876980,
+                "baseline_price": 298500,
+                "baseline_raw_ts": "20260608090300",
+            },
+        }
+    ]
+    minute_rows = {
+        "005930": [
+            {"ts": 1780876980, "close": 298500, "high": 298500, "low": 298500, "raw_ts": "20260608090300"},
+            {"ts": 1780878000, "close": 301000, "high": 301000, "low": 300000, "raw_ts": "20260608092000"},
+        ]
+    }
+
+    out = attach_forward_outcomes(candidates, minute_rows_by_symbol=minute_rows)
+    checkpoint = out[0]["shadow_forward_outcome"]["checkpoints"]["+5m"]
+
+    assert checkpoint["status"] == "stale"
+    assert checkpoint["reason"] == "stale_forward_gap"
+    assert checkpoint["delay_sec"] > 180
+
+
+def test_attach_forward_outcomes_accepts_near_target_same_day_row() -> None:
+    candidates = [
+        {
+            "symbol": "005930",
+            "shadow_forward_base": {
+                "available": True,
+                "baseline_epoch": 1780876980,
+                "baseline_price": 298500,
+                "baseline_raw_ts": "20260608090300",
+            },
+        }
+    ]
+    minute_rows = {
+        "005930": [
+            {"ts": 1780876980, "close": 298500, "high": 299000, "low": 298000, "raw_ts": "20260608090300"},
+            {"ts": 1780877280, "close": 299500, "high": 300000, "low": 298500, "raw_ts": "20260608090800"},
+        ]
+    }
+
+    out = attach_forward_outcomes(candidates, minute_rows_by_symbol=minute_rows)
+    checkpoint = out[0]["shadow_forward_outcome"]["checkpoints"]["+5m"]
+
+    assert out[0]["shadow_forward_outcome"]["available"] is True
+    assert checkpoint["status"] == "observed"
+    assert checkpoint["observed_ts"] == "20260608090800"
+
+
+def test_attach_forward_outcomes_adds_eod_checkpoint() -> None:
+    candidates = [{
+        "symbol": "005930",
+        "shadow_forward_base": {
+            "available": True,
+            "baseline_epoch": 1782172800,
+            "baseline_price": 100.0,
+            "baseline_raw_ts": "20260623090000",
+        },
+    }]
+    minute_rows = {
+        "005930": [
+            {"ts": 1782172800, "close": 100.0, "high": 100.0, "low": 100.0, "raw_ts": "20260623090000"},
+            {"ts": 1782195600, "close": 102.0, "high": 103.0, "low": 99.0, "raw_ts": "20260623152000"},
+        ]
+    }
+
+    out = attach_forward_outcomes(candidates, minute_rows_by_symbol=minute_rows)
+    eod = out[0]["shadow_forward_outcome"]["checkpoints"]["EOD"]
+
+    assert eod["status"] == "observed"
+    assert eod["return_pct"] == 2.0
+
+
+def test_attach_forward_outcomes_rejects_stale_baseline_day() -> None:
+    candidates = [{
+        "symbol": "005930",
+        "_payload_generated_at": "2026-06-23T03:52:07+00:00",
+        "shadow_forward_base": {
+            "available": True,
+            "baseline_epoch": 1757572200,
+            "baseline_price": 902.0,
+            "baseline_raw_ts": "20250911153000",
+        },
+    }]
+    minute_rows = {
+        "005930": [{
+            "ts": 1757572200,
+            "close": 902.0,
+            "high": 902.0,
+            "low": 902.0,
+            "raw_ts": "20250911153000",
+        }]
+    }
+
+    out = attach_forward_outcomes(candidates, minute_rows_by_symbol=minute_rows)
+
+    assert out[0]["shadow_forward_outcome"]["available"] is False
+    assert out[0]["shadow_forward_outcome"]["reason"] == "stale_baseline_cross_day"
+
+
+def test_minute_state_cache_invalidates_when_state_file_changes(tmp_path) -> None:
+    state_path = tmp_path / "state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "recent_minute_ohlcv_by_symbol": {
+                    "005930": {
+                        "rows": [
+                            {
+                                "ts": 100,
+                                "close": 70000,
+                                "high": 70100,
+                                "low": 69900,
+                            }
+                        ]
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    first = load_minute_rows_from_state(state_path)
+    assert first["005930"][0]["close"] == 70000.0
+
+    state_path.write_text(
+        json.dumps(
+            {
+                "recent_minute_ohlcv_by_symbol": {
+                    "005930": {
+                        "rows": [
+                            {
+                                "ts": 101,
+                                "close": 71000,
+                                "high": 71100,
+                                "low": 70900,
+                            }
+                        ]
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    second = load_minute_rows_from_state(state_path)
+
+    assert second["005930"][0]["ts"] == 101
+    assert second["005930"][0]["close"] == 71000.0

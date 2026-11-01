@@ -1,0 +1,172 @@
+"""
+Candidate generators based on market ranking ("market_rank") and "top picks" logic.
+
+This module is intentionally **network-safe**:
+- In DRY_RUN (env DRY_RUN=1) it will never call external APIs and will use fallbacks.
+- In tests, callers typically inject `state["mock_rank_symbols"]` and optionally
+  `state["mock_condition_symbols"]`.
+
+Notes
+-----
+Some parts of the project import `TopPicksCandidateGenerator` from this module.
+Earlier milestones introduced the class but later refactors could accidentally remove it.
+This file keeps both generators to preserve backward compatibility.
+"""
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+
+from libs.strategies.candidates.fallback_pool import resolve_fallback_symbols
+
+_DRY_RUN_SYNTHETIC_UNIVERSE: List[str] = [
+    "TEST001",
+    "TEST002",
+    "TEST003",
+    "TEST004",
+    "TEST005",
+]
+
+
+def _is_dry_run() -> bool:
+    return str(os.getenv("DRY_RUN", "")).strip() in {"1", "true", "True", "YES", "yes"}
+
+
+def _is_live_fetch_allowed() -> bool:
+    if _is_dry_run():
+        return False
+    if os.getenv("PYTEST_CURRENT_TEST"):
+        return str(os.getenv("PYTEST_ALLOW_LIVE_KIWOOM_FETCH", "")).strip().lower() in {
+            "1",
+            "true",
+            "yes",
+            "y",
+            "on",
+        }
+    return True
+
+
+def _fallback_universe(state: Dict[str, Any], topn: int) -> List[str]:
+    syms, _source = resolve_fallback_symbols(state=state, policy=_get_policy(state), limit=max(1, int(topn)))
+    if syms:
+        return [str(x) for x in syms]
+    if _is_dry_run():
+        k = max(1, int(topn))
+        return [str(x) for x in _DRY_RUN_SYNTHETIC_UNIVERSE[:k]]
+    return []
+
+
+def _get_policy(state: Dict[str, Any]) -> Dict[str, Any]:
+    p = state.get("policy") or {}
+    return p if isinstance(p, dict) else {}
+
+
+def _take_unique(seq: List[str], k: int) -> List[str]:
+    out: List[str] = []
+    seen = set()
+    for s in seq:
+        if s in seen:
+            continue
+        seen.add(s)
+        out.append(s)
+        if len(out) >= k:
+            break
+    return out
+
+
+@dataclass
+class MarketRankCandidateGenerator:
+    """
+    Generate candidate symbols from market ranking.
+
+    Priority:
+    1) state["mock_rank_symbols"] if present
+    2) DRY_RUN fallback universe
+    3) best-effort KiwoomRankReader (if available)
+    """
+    def generate(self, state: Dict[str, Any]) -> List[str]:
+        policy = _get_policy(state)
+        topn = int(policy.get("candidate_rank_topn", 20))
+        symbols = state.get("mock_rank_symbols")
+        if isinstance(symbols, list) and symbols:
+            return _take_unique([str(x) for x in symbols], topn)
+
+        if _is_dry_run():
+            return _take_unique(_fallback_universe(state, topn), min(topn, 20))
+
+        # Best-effort live fetch (kept tolerant; if anything fails, fallback)
+        if not _is_live_fetch_allowed():
+            return _take_unique(_fallback_universe(state, topn), min(topn, 20))
+        try:
+            # This module exists from M18-1 in this project
+            from libs.read.kiwoom_rank_reader import KiwoomRankReader, RankMode  # type: ignore
+            reader = KiwoomRankReader.from_env()  # type: ignore[attr-defined]
+            mode_raw = str(policy.get("candidate_rank_mode", "value") or "value").strip().lower()
+            try:
+                mode = RankMode(mode_raw)
+            except Exception:
+                mode = RankMode.VALUE
+            # reader.get_top_symbols should be implemented in the reader;
+            # if not, this will raise and we fallback.
+            live_syms = reader.get_top_symbols(mode=mode, topk=topn)  # type: ignore
+            if isinstance(live_syms, list) and live_syms:
+                return _take_unique([str(x) for x in live_syms], topn)
+        except Exception:
+            pass
+
+        return _take_unique(_fallback_universe(state, topn), min(topn, 20))
+
+
+@dataclass
+class TopPicksCandidateGenerator:
+    rank_mode: str = "value"
+    rank_topn: int = 20
+    topk: int = 5
+
+    """
+    Generate "Top Picks" candidates by intersecting:
+    - market rank list (e.g., value/volume/return ranking)
+    - condition search result list (optional)
+    preserving rank order.
+
+    Priority:
+    1) state["mock_rank_symbols"] + state["mock_condition_symbols"] (tests)
+    2) DRY_RUN fallback universe
+    3) best-effort MarketRankCandidateGenerator + (optional) live condition results (not mandatory)
+    """
+    def generate(self, state: Dict[str, Any]) -> List[str]:
+        policy = _get_policy(state)
+        topk = int(policy.get("candidate_topk", policy.get("candidate_k", self.topk)))
+        topn = int(policy.get("candidate_rank_topn", self.rank_topn))
+
+        rank_syms = state.get("mock_rank_symbols")
+        cond_syms = state.get("mock_condition_symbols")
+
+        if isinstance(rank_syms, list) and rank_syms:
+            rank_list = _take_unique([str(x) for x in rank_syms], topn)
+            if isinstance(cond_syms, list) and len(cond_syms) > 0:
+                cond_set = {str(x) for x in cond_syms}
+                picked = [s for s in rank_list if s in cond_set]
+            else:
+                picked = rank_list
+            return _take_unique(picked, topk)
+
+        if _is_dry_run():
+            return _take_unique(_fallback_universe(state, topk), topk)
+
+        # Live best-effort: rank list from MarketRank generator
+        rank_list = MarketRankCandidateGenerator().generate(state)
+        rank_list = _take_unique(rank_list, topn)
+
+        # Condition symbols: optional. If caller injected none, we won't fetch.
+        if isinstance(cond_syms, list) and len(cond_syms) > 0:
+            cond_set = {str(x) for x in cond_syms}
+            picked = [s for s in rank_list if s in cond_set]
+        else:
+            picked = rank_list
+
+        return _take_unique(picked, topk)
+
+
+__all__ = ["MarketRankCandidateGenerator", "TopPicksCandidateGenerator"]
