@@ -2,6 +2,12 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Any, Mapping
+import sys
+from libs.runtime import strategy_horizon_feedback_epoch_seconds as _a26_epoch_seconds
+from libs.runtime import strategy_horizon_feedback_extract_commander_horizon_policy as _a26_extract_commander_horizon_policy
+from libs.runtime import strategy_horizon_feedback_extract_commander_horizon_policy_from_state as _a26_extract_commander_horizon_policy_from_state
+from libs.runtime import strategy_horizon_feedback_extract_strategy_horizon_feedback as _a26_extract_strategy_horizon_feedback
+from libs.runtime import strategy_horizon_feedback_extract_strategy_horizon_feedback_from_state as _a26_extract_strategy_horizon_feedback_from_state
 
 
 _ALLOWED_HORIZONS = {"scalp", "intraday", "overnight_probe", "1_2day_swing"}
@@ -189,27 +195,7 @@ def _safe_float(value: Any) -> float | None:
 
 
 def _epoch_seconds(value: Any) -> float | None:
-    if value in (None, ""):
-        return None
-    if isinstance(value, (int, float)):
-        raw = float(value)
-        return raw / 1000.0 if raw > 10_000_000_000 else raw
-    text = str(value or "").strip()
-    if not text:
-        return None
-    try:
-        if text.isdigit():
-            if len(text) == 14:
-                return datetime.strptime(text, "%Y%m%d%H%M%S").replace(tzinfo=timezone.utc).timestamp()
-            raw = float(text)
-            return raw / 1000.0 if raw > 10_000_000_000 else raw
-        normalized = text.replace("Z", "+00:00")
-        dt = datetime.fromisoformat(normalized)
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return dt.timestamp()
-    except Exception:
-        return None
+    return _a26_epoch_seconds._epoch_seconds(value=value, facade=sys.modules[__name__])
 
 
 def _row_epoch_seconds(row: Mapping[str, Any]) -> float | None:
@@ -578,110 +564,19 @@ def normalize_operational_commander_horizon_policy(
 
 
 def extract_commander_horizon_policy(surface: Mapping[str, Any] | None) -> dict[str, Any]:
-    obj = _as_dict(surface)
-    for key in ("commander_horizon_policy", "horizon_policy"):
-        if isinstance(obj.get(key), Mapping):
-            found = dict(obj.get(key) or {})
-            if str(found.get("owner") or "").strip().lower() == "commander" or str(
-                found.get("schema_version") or ""
-            ).startswith("commander_horizon_policy"):
-                return found
-    applied_policy = _as_dict(obj.get("applied_policy"))
-    for key in ("horizon", "commander_horizon_policy"):
-        if isinstance(applied_policy.get(key), Mapping):
-            found = dict(applied_policy.get(key) or {})
-            if str(found.get("owner") or "").strip().lower() == "commander" or str(
-                found.get("schema_version") or ""
-            ).startswith("commander_horizon_policy"):
-                return found
-    strategy_policy = _as_dict(obj.get("strategy_policy"))
-    if strategy_policy:
-        found = extract_commander_horizon_policy(strategy_policy)
-        if found:
-            return found
-    monitor_policy = _as_dict(obj.get("monitor_policy"))
-    if monitor_policy:
-        found = extract_commander_horizon_policy(monitor_policy)
-        if found:
-            return found
-    commander_context = _as_dict(obj.get("commander_context"))
-    if commander_context:
-        found = extract_commander_horizon_policy(commander_context)
-        if found:
-            return found
-    commander_context_ref = _as_dict(obj.get("commander_context_ref"))
-    if commander_context_ref:
-        found = extract_commander_horizon_policy(commander_context_ref)
-        if found:
-            return found
-    return {}
+    return _a26_extract_commander_horizon_policy.extract_commander_horizon_policy(surface=surface, facade=sys.modules[__name__])
 
 
 def extract_commander_horizon_policy_from_state(state: Mapping[str, Any] | None) -> dict[str, Any]:
-    obj = _as_dict(state)
-    direct = extract_commander_horizon_policy(obj)
-    if direct:
-        return direct
-    for key in (
-        "commander_decision",
-        "strategist_output",
-        "strategy_policy",
-        "entry_strategy_context",
-        "monitor_policy",
-        "applied_policy",
-    ):
-        surface = obj.get(key)
-        if isinstance(surface, Mapping):
-            found = extract_commander_horizon_policy(surface)
-            if found:
-                return found
-    return {}
+    return _a26_extract_commander_horizon_policy_from_state.extract_commander_horizon_policy_from_state(state=state, facade=sys.modules[__name__])
 
 
 def extract_strategy_horizon_feedback(surface: Mapping[str, Any] | None) -> dict[str, Any]:
-    obj = _as_dict(surface)
-    if isinstance(obj.get("strategy_horizon_feedback"), Mapping):
-        return dict(obj.get("strategy_horizon_feedback") or {})
-    strategy_policy = _as_dict(obj.get("strategy_policy"))
-    if not strategy_policy and isinstance(obj.get("monitor_policy"), Mapping):
-        strategy_policy = dict(obj)
-    monitor_policy = _as_dict(strategy_policy.get("monitor_policy"))
-    if isinstance(monitor_policy.get("strategy_horizon_feedback"), Mapping):
-        return dict(monitor_policy.get("strategy_horizon_feedback") or {})
-    if obj.get("strategy_horizon") not in (None, ""):
-        return build_strategy_horizon_feedback(
-            {
-                "strategy_horizon": obj.get("strategy_horizon"),
-                "expected_hold_window": _as_dict(obj.get("expected_hold_window")),
-                "exit_guidance": _as_dict(obj.get("exit_guidance")),
-                "invalidation_conditions": obj.get("invalidation_conditions"),
-                "monitor_handoff": _as_dict(obj.get("monitor_handoff")),
-            },
-            playbook=str(obj.get("playbook") or ""),
-            monitor_guidance=str(obj.get("monitor_guidance") or ""),
-            trade_aggressiveness=str(obj.get("trade_aggressiveness") or ""),
-            risk_tone=str(obj.get("risk_tone") or ""),
-            source="extracted_surface",
-        )
-    return {}
+    return _a26_extract_strategy_horizon_feedback.extract_strategy_horizon_feedback(surface=surface, facade=sys.modules[__name__])
 
 
 def extract_strategy_horizon_feedback_from_state(state: Mapping[str, Any] | None) -> dict[str, Any]:
-    obj = _as_dict(state)
-    for key in ("strategist_output", "strategy_policy", "entry_strategy_context"):
-        surface = obj.get(key)
-        if isinstance(surface, Mapping):
-            found = extract_strategy_horizon_feedback(surface)
-            if found:
-                return found
-    return build_strategy_horizon_feedback(
-        {},
-        playbook=str(obj.get("playbook") or ""),
-        monitor_guidance=str(obj.get("monitor_guidance") or ""),
-        trade_aggressiveness=str(obj.get("trade_aggressiveness") or ""),
-        risk_tone=str(obj.get("risk_tone") or ""),
-        source="state_default",
-    )
+    return _a26_extract_strategy_horizon_feedback_from_state.extract_strategy_horizon_feedback_from_state(state=state, facade=sys.modules[__name__])
 
 
 def _is_hard_exit(reason: str, exit_info: Mapping[str, Any]) -> bool:
