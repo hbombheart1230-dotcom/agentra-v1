@@ -5,6 +5,14 @@ import json
 import os
 import re
 import sys
+from libs.reporting import operator_period_summary_text_value as _a30_text_value
+from libs.reporting import operator_period_summary_first_text as _a30_first_text
+from libs.reporting import operator_period_summary_is_unavailable_pnl as _a30_is_unavailable_pnl
+from libs.reporting import operator_period_summary_ratio_to_pct as _a30_ratio_to_pct
+from libs.reporting import operator_period_summary_normalize_symbol_code as _a30_normalize_symbol_code
+from libs.reporting import operator_period_summary_metric_return_pct as _a30_metric_return_pct
+from libs.reporting import operator_period_summary_first_dict as _a30_first_dict
+from libs.reporting import operator_period_summary_metric_observed_return_pct as _a30_metric_observed_return_pct
 from libs.reporting import operator_period_summary_safe_float as _a29_safe_float
 from libs.reporting import operator_period_summary_same_day_flatten_reconciliation as _a29_same_day_flatten_reconciliation
 from libs.reporting import operator_period_summary_daily_symbol_history_rows as _a29_daily_symbol_history_rows
@@ -191,10 +199,7 @@ def _as_dict(value: Any) -> Dict[str, Any]:
 
 
 def _text_value(value: Any) -> str:
-    text = str(value or "").strip()
-    if text.lower() in {"", "-", "none", "null", "unknown", "not_captured"}:
-        return ""
-    return text
+    return _a30_text_value._text_value(value=value, facade=sys.modules[__name__])
 
 
 def _looks_like_mojibake(text: str) -> bool:
@@ -206,11 +211,7 @@ def _operator_label_fallback(value: Any, *, axis: str = "") -> str:
 
 
 def _first_text(*values: Any) -> str:
-    for value in values:
-        text = _text_value(value)
-        if text:
-            return text
-    return ""
+    return _a30_first_text._first_text(*values, facade=sys.modules[__name__])
 
 
 def _dig(source: Dict[str, Any], *keys: str) -> Any:
@@ -239,10 +240,7 @@ def _bool_bucket(value: Any) -> str:
 
 
 def _first_dict(*values: Any) -> Dict[str, Any]:
-    for value in values:
-        if isinstance(value, dict) and value:
-            return dict(value)
-    return {}
+    return _a30_first_dict._first_dict(*values, facade=sys.modules[__name__])
 
 
 def _first_recursive_dict(*roots: Any, key: str) -> Dict[str, Any]:
@@ -270,16 +268,11 @@ _UNAVAILABLE_PNL_VALUES = {"", "-", "none", "null", "unavailable", "not_availabl
 
 
 def _is_unavailable_pnl(value: Any) -> bool:
-    if value is None:
-        return True
-    return str(value).strip().lower() in _UNAVAILABLE_PNL_VALUES
+    return _a30_is_unavailable_pnl._is_unavailable_pnl(value=value, facade=sys.modules[__name__])
 
 
 def _ratio_to_pct(value: Any) -> float | None:
-    parsed = _safe_float(value)
-    if parsed is None:
-        return None
-    return float(parsed) * 100.0
+    return _a30_ratio_to_pct._ratio_to_pct(value=value, facade=sys.modules[__name__])
 
 
 def _truth_surface_candidate_paths(row: Dict[str, Any], reports_root: Path) -> List[Path]:
@@ -308,10 +301,7 @@ def _load_state_snapshot(reports_root: Path) -> Tuple[Dict[str, Any], str]:
 
 
 def _normalize_symbol_code(value: Any) -> str:
-    text = str(value or "").strip().upper()
-    if text.startswith("A") and len(text) == 7:
-        text = text[1:]
-    return text
+    return _a30_normalize_symbol_code._normalize_symbol_code(value=value, facade=sys.modules[__name__])
 
 
 def _latest_account_snapshot_path(reports_root: Path, day: str | None) -> Path:
@@ -470,15 +460,11 @@ def _enrich_rows_with_truth_surface(rows: Iterable[Dict[str, Any]], reports_root
 
 
 def _metric_return_pct(row: Dict[str, Any]) -> float | None:
-    if bool(row.get("truth_surface_available")):
-        return _safe_float(row.get("truth_net_return_pct"))
-    return _safe_float(row.get("result_pct"))
+    return _a30_metric_return_pct._metric_return_pct(row=row, facade=sys.modules[__name__])
 
 
 def _metric_observed_return_pct(row: Dict[str, Any]) -> float | None:
-    if bool(row.get("truth_surface_available")):
-        return _safe_float(row.get("truth_observed_return_pct"))
-    return None
+    return _a30_metric_observed_return_pct._metric_observed_return_pct(row=row, facade=sys.modules[__name__])
 
 
 def _parse_day(value: Any) -> date | None:
