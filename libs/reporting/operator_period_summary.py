@@ -5,6 +5,12 @@ import json
 import os
 import re
 import sys
+from libs.reporting import operator_period_summary_safe_float as _a29_safe_float
+from libs.reporting import operator_period_summary_same_day_flatten_reconciliation as _a29_same_day_flatten_reconciliation
+from libs.reporting import operator_period_summary_daily_symbol_history_rows as _a29_daily_symbol_history_rows
+from libs.reporting import operator_period_summary_runtime_activity_payload as _a29_runtime_activity_payload
+from libs.reporting import operator_period_summary_first_recursive_dict as _a29_first_recursive_dict
+from libs.reporting import operator_period_summary_first_nonempty_list as _a29_first_nonempty_list
 from collections import Counter, defaultdict
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -161,12 +167,7 @@ def _utc_now_iso() -> str:
 
 
 def _safe_float(value: Any) -> float | None:
-    try:
-        if value is None or value == "":
-            return None
-        return float(value)
-    except Exception:
-        return None
+    return _a29_safe_float._safe_float(value=value, facade=sys.modules[__name__])
 
 
 def _safe_int(value: Any, default: int = 0) -> int:
@@ -245,17 +246,11 @@ def _first_dict(*values: Any) -> Dict[str, Any]:
 
 
 def _first_recursive_dict(*roots: Any, key: str) -> Dict[str, Any]:
-    for root in roots:
-        found = _find_key_recursive(root, key)
-        if isinstance(found, dict) and found:
-            return dict(found)
-    return {}
+    return _a29_first_recursive_dict._first_recursive_dict(*roots, key=key, facade=sys.modules[__name__])
 
 
 def _first_nonempty_list(value: Any) -> List[str]:
-    if not isinstance(value, list):
-        return []
-    return [str(item or "").strip() for item in value if str(item or "").strip()]
+    return _a29_first_nonempty_list._first_nonempty_list(value=value, facade=sys.modules[__name__])
 
 
 def _first_reason_bucket(values: Any) -> str:
@@ -414,41 +409,7 @@ def _same_day_flatten_reconciliation(
     qty: int,
     avg_price: Any,
 ) -> Dict[str, Any]:
-    normalized_day = str(day or "").strip()
-    normalized_symbol = str(symbol or "").strip().upper()
-    if not normalized_day or not normalized_symbol or qty <= 0:
-        return {}
-    day_root = Path(reports_root) / "trades" / normalized_day
-    if not day_root.exists():
-        return {}
-
-    day_token = normalized_day.replace("-", "")
-    pattern = f"TRD_{day_token}_{normalized_symbol}_*/lifecycle_bundle.json"
-    for path in sorted(day_root.rglob(pattern)):
-        payload = _read_json(path)
-        if not isinstance(payload, dict):
-            continue
-        entry = payload.get("entry") if isinstance(payload.get("entry"), dict) else {}
-        exit_row = payload.get("exit") if isinstance(payload.get("exit"), dict) else {}
-        if str(exit_row.get("action") or "").strip().upper() != "SELL":
-            continue
-        entry_qty = _safe_int(entry.get("qty"))
-        exit_qty = _safe_int(exit_row.get("qty"))
-        if entry_qty < qty or exit_qty < qty:
-            continue
-        entry_price = entry.get("price")
-        if _safe_float(avg_price) is not None and not _price_matches(avg_price, entry_price):
-            continue
-        return {
-            "symbol": normalized_symbol,
-            "trade_id": str(payload.get("trade_id") or path.parent.name),
-            "lifecycle_bundle_path": str(path),
-            "reason": "same_day_lifecycle_full_sell_after_flatten_decision",
-            "exit_reason": str(exit_row.get("reason_human") or ""),
-            "exit_ts": str(exit_row.get("ts") or ""),
-            "exit_qty": exit_qty,
-        }
-    return {}
+    return _a29_same_day_flatten_reconciliation._same_day_flatten_reconciliation(reports_root=reports_root, day=day, symbol=symbol, qty=qty, avg_price=avg_price, facade=sys.modules[__name__])
 
 
 def _sell_guard_candidate_paths(*, reports_root: Path, state_path: str) -> List[Path]:
@@ -677,12 +638,7 @@ def _daily_trade_index_rows(
 
 
 def _daily_symbol_history_rows(reports_root: Path, day: str) -> List[Dict[str, Any]]:
-    normalized_day = str(day or "").strip()
-    return [
-        row
-        for row in _iter_symbol_trade_history(reports_root)
-        if str(row.get("date") or "").strip() == normalized_day
-    ]
+    return _a29_daily_symbol_history_rows._daily_symbol_history_rows(reports_root=reports_root, day=day, facade=sys.modules[__name__])
 
 
 def _merge_daily_trade_index_with_symbol_history(
@@ -723,96 +679,7 @@ def _runtime_activity_payload(
     day: str,
     source_payload: Dict[str, Any],
 ) -> Dict[str, Any]:
-    explicit_runtime_keys = {
-        "events",
-        "approvals",
-        "blocks",
-        "symbols_observed",
-        "generated_symbol_report_count",
-    }
-    q9_path = (
-        Path(reports_root)
-        / "operator_summary"
-        / "daily"
-        / day
-        / "q9_decision_windows.json"
-    )
-    # Streamed one window at a time: only the three filter ids and `commander_final`'s
-    # decision/monitor_intent are read, and the file is ~120 MB (see json_array_stream).
-    q9_window_count = 0
-    decisions: list[str] = []
-    monitor_intents: list[str] = []
-    try:
-        for row in iter_json_array(q9_path, "windows"):
-            if not isinstance(row, dict):
-                continue
-            if any(
-                marker in " ".join(
-                    str(row.get(key) or "").lower()
-                    for key in ("decision_id", "run_id", "candidate_pool_id")
-                )
-                for marker in ("test", "fixture", "synthetic")
-            ):
-                continue
-            q9_window_count += 1
-            commander_final = row.get("commander_final")
-            if isinstance(commander_final, dict):
-                decisions.append(str(commander_final.get("decision") or "").strip().lower())
-                monitor_intents.append(str(commander_final.get("monitor_intent") or "").strip().upper())
-    except ValueError:
-        q9_window_count, decisions, monitor_intents = 0, [], []  # unreadable file == no windows (as _read_json did)
-    if q9_window_count:
-        return {
-            "source": "q9_decision_windows",
-            "source_path": str(q9_path),
-            "events": q9_window_count,
-            "commander_decision_count": len(decisions),
-            "missing_commander_decision_count": max(0, q9_window_count - len(decisions)),
-            "approvals": sum(value in {"approve", "approved", "allow"} for value in decisions),
-            "blocks": sum(value in {"reject", "blocked", "veto"} for value in decisions),
-            "noops": sum(value in {"noop", "no_trade"} for value in decisions),
-            "monitor_buy_count": sum(value == "BUY" for value in monitor_intents),
-            "monitor_noop_count": sum(value == "NOOP" for value in monitor_intents),
-            "symbols_observed_count": 0,
-            "generated_symbol_report_count": 0,
-        }
-
-    if source_payload and any(key in source_payload for key in explicit_runtime_keys):
-        return {
-            "source": "daily_report_payload",
-            "events": _safe_int(source_payload.get("events")),
-            "approvals": _safe_int(source_payload.get("approvals")),
-            "blocks": _safe_int(source_payload.get("blocks")),
-            "symbols_observed_count": len(list(source_payload.get("symbols_observed") or [])),
-            "generated_symbol_report_count": _safe_int(source_payload.get("generated_symbol_report_count")),
-        }
-
-    live_payload, live_path = _latest_live_summary_payload(reports_root, day)
-    if not live_payload:
-        return {
-            "source": "not_available",
-            "events": 0,
-            "approvals": 0,
-            "blocks": 0,
-            "symbols_observed_count": 0,
-            "generated_symbol_report_count": 0,
-        }
-
-    events = live_payload.get("events") if isinstance(live_payload.get("events"), dict) else {}
-    execution = live_payload.get("execution") if isinstance(live_payload.get("execution"), dict) else {}
-    return {
-        "source": "live_summary_fallback",
-        "source_path": live_path,
-        "lookback_min": _safe_int(live_payload.get("lookback_min")),
-        "events": _safe_int(events.get("window_total")),
-        "events_scanned_total": _safe_int(events.get("scanned_total")),
-        "approvals": _safe_int(execution.get("allowed_total")),
-        "blocks": _safe_int(execution.get("blocked_total")),
-        "executed_total": _safe_int(execution.get("executed_total")),
-        "broker_fail_total": _safe_int(execution.get("executed_broker_fail_total")),
-        "symbols_observed_count": 0,
-        "generated_symbol_report_count": 0,
-    }
+    return _a29_runtime_activity_payload._runtime_activity_payload(reports_root=reports_root, day=day, source_payload=source_payload, facade=sys.modules[__name__])
 
 
 def _operator_readout(
