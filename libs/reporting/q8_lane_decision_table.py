@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 from typing import Any, Dict, Iterable, List, Mapping
 
 from libs.reporting.q8_evaluation_contract import TRUSTED_FORWARD_MIN_COVERAGE
@@ -9,104 +10,46 @@ from libs.reporting.quant_shadow_candidate_evaluation import (
     build_quant_shadow_candidate_evaluation,
     load_quant_shadow_candidate_payloads,
 )
+from libs.reporting import q8_lane_text_projection as _o9a1_owner
+from libs.reporting import q8_lane_float_projection as _o9a2_owner
+from libs.reporting import q8_lane_int_projection as _o9a3_owner
+from libs.reporting import q8_lane_rows_projection as _o9a4_owner
+from libs.reporting import q8_lane_forward_rows_projection as _o9a5_owner
+from libs.reporting import q8_lane_counts_projection as _o9a6_owner
+from libs.reporting import q8_lane_reason_summary_projection as _o9a7_owner
+from libs.reporting import q8_lane_verdict_projection as _o9a8_owner
 
 
 def _text(value: Any) -> str:
-    return str(value or "").strip()
+    return _o9a1_owner._text(value)
 
 
 def _float(value: Any, default: float = 0.0) -> float:
-    try:
-        if value in (None, ""):
-            return float(default)
-        return float(value)
-    except Exception:
-        return float(default)
+    return _o9a2_owner._float(value, default)
 
 
 def _int(value: Any, default: int = 0) -> int:
-    try:
-        if value in (None, ""):
-            return int(default)
-        return int(float(value))
-    except Exception:
-        return int(default)
+    return _o9a3_owner._int(value, default)
 
 
 def _rows(value: Any) -> List[Dict[str, Any]]:
-    return [dict(row) for row in list(value or []) if isinstance(row, Mapping)]
+    return _o9a4_owner._rows(value, facade=sys.modules[__name__])
 
 
 def _forward_rows(evaluation: Mapping[str, Any]) -> List[Dict[str, Any]]:
-    forward = evaluation.get("entry_lane_forward_outcomes")
-    if not isinstance(forward, Mapping):
-        return []
-    return _rows(forward.get("by_primary_lane"))
+    return _o9a5_owner._forward_rows(evaluation, facade=sys.modules[__name__])
 
 
 def _counts_by_name(rows: Iterable[Mapping[str, Any]]) -> Dict[str, int]:
-    out: Dict[str, int] = {}
-    for row in rows:
-        name = _text(row.get("name"))
-        if name:
-            out[name] = _int(row.get("count"))
-    return out
+    return _o9a6_owner._counts_by_name(rows, facade=sys.modules[__name__])
 
 
 def _reason_summary(evaluation: Mapping[str, Any], *, limit: int = 6) -> str:
-    parts = []
-    for row in _rows(evaluation.get("by_reason"))[:limit]:
-        name = _text(row.get("name"))
-        if name:
-            parts.append(f"{name} {row.get('count') or 0}")
-    return ", ".join(parts) if parts else "-"
+    return _o9a7_owner._reason_summary(evaluation, limit=limit, facade=sys.modules[__name__])
 
 
 def _verdict(row: Mapping[str, Any], *, promotion_allowed: bool) -> Dict[str, str]:
-    observed = _int(row.get("observed_count"))
-    coverage = _float(row.get("coverage"))
-    ret5 = _float(row.get("avg_return_5m_pct"))
-    ret15 = _float(row.get("avg_return_15m_pct"))
-    mfe5 = _float(row.get("avg_mfe_5m_pct"))
-    mae5 = _float(row.get("avg_mae_5m_pct"))
-    lane = _text(row.get("name"))
-
-    if not promotion_allowed:
-        return {
-            "verdict": "TRUST_GATE_BLOCKED",
-            "decision": "retain under observation",
-            "rationale": "Q8 trust gate blocked promotion review; lane signal is diagnostic only.",
-        }
-    if observed < 10 or coverage < TRUSTED_FORWARD_MIN_COVERAGE:
-        return {
-            "verdict": "DATA_INCOMPLETE",
-            "decision": "observe",
-            "rationale": "sample or trusted forward coverage is insufficient.",
-        }
-    if lane == "vwap_reclaim" and ret5 < 0.0 and ret15 < 0.0:
-        return {
-            "verdict": "GOOD_BLOCK",
-            "decision": "keep blocked",
-            "rationale": "VWAP reclaim lane showed weak short/mid forward returns.",
-        }
-    if ret5 >= 0.50 or ret15 >= 0.80 or mfe5 >= 1.50:
-        risk_note = " MAE is high, so only small probe or rule review is allowed." if mae5 <= -1.50 else ""
-        return {
-            "verdict": "MISSED_OPPORTUNITY",
-            "decision": "relaxation candidate",
-            "rationale": f"Blocked candidates showed positive forward potential.{risk_note}".strip(),
-        }
-    if ret5 <= 0.0 and ret15 <= 0.0:
-        return {
-            "verdict": "GOOD_BLOCK",
-            "decision": "keep blocked",
-            "rationale": "Blocked candidates showed weak forward returns.",
-        }
-    return {
-        "verdict": "DATA_INCOMPLETE",
-        "decision": "observe",
-        "rationale": "Signal direction is not decisive enough for a policy review.",
-    }
+    return _o9a8_owner._verdict(row, promotion_allowed=promotion_allowed, facade=sys.modules[__name__])
 
 
 def build_q8_lane_decision_table(
