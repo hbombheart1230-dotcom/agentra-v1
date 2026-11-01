@@ -20,6 +20,6 @@
 
 ## SUPPLY GAP / RESERVE / DELIVERY
 
-**B NEW_READY_BODY_MOVE=0/8; RESERVE_VERIFIED=0/6 (RESERVE_NOT_VERIFIED); SUPPLY_GAP.** B14 8 moves completed/integrated; trade-artifact seven Owner files are **already on B**, not new B MOVE; no eight new verified B-owned SOURCE BODY/new TARGET 404 with proven owner/effect/golden. Dead code cleanup is not a MOVE. C03 next inspect unfinished RF-063/065/044 for necessary new moves; do not manufacture parser split on already-DONE RF.
+**B NEW_READY_BODY_MOVE=0/8; RESERVE_VERIFIED=0/6 (RESERVE_NOT_VERIFIED); SUPPLY_GAP.** B14 8 moves completed/integrated; trade-artifact seven Owner files are **already on B**, not new B MOVE; no eight new verified B-owned SOURCE BODY/new TARGET 404 with proven owner/effect/golden. Dead code cleanup is not a MOVE. C03 next inspect unfinished RF-063/065/045/066/070/071 for necessary new moves; do not manufacture parser split on already-DONE RF.
 
 Perform B16-1 then B16-2 even if one blocked; B writes only permitted source/test on B branch, normal test once, commit/push (GitHub exact-tree expected-head delivery if terminal HTTPS auth fails) and re-fetch B HEAD/blobs. Report #12 `ORDER_ID | OLD/NEW_SOURCE_BLOB | TEST_BLOB | NORMAL_COMMAND/EXIT | B_REMOTE_SHA/PUSH_BLOCKED | RF063_B04_G1/G2/G3_FIRST_UNMET | RF065_G1 | NEXT | measured START/END`. No D00/RF/STATUS/C04/C05, protected writer, real/Guard/Step5C/UEF/RunLab, frozen oracle or schedules.
