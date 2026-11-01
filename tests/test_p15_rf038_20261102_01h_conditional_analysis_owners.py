@@ -50,3 +50,14 @@ def test_rf038_horizon_reversals_owner():
     result, summary = analysis.horizon_reversals(copy.deepcopy(ROWS), {"a": {"day": "fallback"}})
     assert result[0]["loss_to_win"] is True
     assert "hold" in summary
+
+
+def test_rf038_wrappers_preserve_call_time_facade(monkeypatch):
+    monkeypatch.setattr(analysis, "number", lambda value: 7 if value == "sentinel" else None)
+    assert analysis.research_candidates([]) == []
+
+
+def test_rf038_empty_inputs_are_safe():
+    assert analysis.actual_live_cost_cross_sections([]) == []
+    assert analysis.opening_archetype_analysis([]) == {}
+4443bc57f07e51945f2b833a478f3ca931b3e8d9
