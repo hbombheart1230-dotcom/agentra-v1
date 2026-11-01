@@ -89,7 +89,8 @@ def _is_closed_trade(lifecycle_bundle: Dict[str, Any], exit_payload: Dict[str, A
     ).strip().lower()
     if status == "open":
         return False
-    if _has_substantive_exit_evidence(exit_payload):
+    exit_evidence = getattr(facade, "_has_substantive_exit_evidence", _has_substantive_exit_evidence) if facade is not None else _has_substantive_exit_evidence
+    if exit_evidence(exit_payload):
         return True
     return status in {"closed", "exited", "sell"}
 
