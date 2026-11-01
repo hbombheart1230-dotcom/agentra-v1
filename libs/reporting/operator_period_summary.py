@@ -5,6 +5,12 @@ import json
 import os
 import re
 import sys
+from libs.reporting import operator_period_summary_as_dict as _a32_as_dict
+from libs.reporting import operator_period_summary_trade_action as _a32_trade_action
+from libs.reporting import operator_period_summary_row_report_day as _a32_row_report_day
+from libs.reporting import operator_period_summary_same_day_new_trade_rows as _a32_same_day_new_trade_rows
+from libs.reporting import operator_period_summary_is_recovered_partial_marker as _a32_is_recovered_partial_marker
+from libs.reporting import operator_period_summary_performance_source_rows as _a32_performance_source_rows
 from libs.reporting import operator_period_summary_safe_int as _a31_safe_int
 from libs.reporting import operator_period_summary_iso_to_kst_text as _a31_iso_to_kst_text
 from libs.reporting import operator_period_summary_has_partial_lifecycle_marker as _a31_has_partial_lifecycle_marker
@@ -200,7 +206,7 @@ def _read_json(path: Path) -> Any:
 
 
 def _as_dict(value: Any) -> Dict[str, Any]:
-    return value if isinstance(value, dict) else {}
+    return _a32_as_dict._as_dict(value=value, facade=sys.modules[__name__])
 
 
 def _text_value(value: Any) -> str:
@@ -528,7 +534,7 @@ def _trade_status(row: Dict[str, Any]) -> str:
 
 
 def _trade_action(row: Dict[str, Any]) -> str:
-    return str(row.get("last_action") or row.get("action") or "").strip().upper()
+    return _a32_trade_action._trade_action(row=row, facade=sys.modules[__name__])
 
 
 def _has_partial_lifecycle_marker(row: Dict[str, Any]) -> bool:
@@ -540,7 +546,7 @@ def _is_closed_trade(row: Dict[str, Any]) -> bool:
 
 
 def _is_recovered_partial_marker(row: Dict[str, Any]) -> bool:
-    return _has_partial_lifecycle_marker(row)
+    return _a32_is_recovered_partial_marker._is_recovered_partial_marker(row=row, facade=sys.modules[__name__])
 
 
 def _trade_id_day(value: Any) -> str:
@@ -548,7 +554,7 @@ def _trade_id_day(value: Any) -> str:
 
 
 def _row_report_day(row: Dict[str, Any]) -> str:
-    return str(row.get("date") or row.get("day") or "").strip()[:10]
+    return _a32_row_report_day._row_report_day(row=row, facade=sys.modules[__name__])
 
 
 def _is_carryover_exit_marker(row: Dict[str, Any]) -> bool:
@@ -556,7 +562,7 @@ def _is_carryover_exit_marker(row: Dict[str, Any]) -> bool:
 
 
 def _same_day_new_trade_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    return [row for row in rows if not _is_carryover_exit_marker(row)]
+    return _a32_same_day_new_trade_rows._same_day_new_trade_rows(rows=rows, facade=sys.modules[__name__])
 
 
 def _is_realized_nonclosed_exit(row: Dict[str, Any]) -> bool:
@@ -584,7 +590,7 @@ def _pattern_payload(counters: Dict[str, Counter[str]]) -> Dict[str, Any]:
 
 
 def _performance_source_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    return [row for row in rows if _is_closed_trade(row) or _is_realized_nonclosed_exit(row)]
+    return _a32_performance_source_rows._performance_source_rows(rows=rows, facade=sys.modules[__name__])
 
 
 def _performance_field_value(row: Dict[str, Any], field: str) -> Any:

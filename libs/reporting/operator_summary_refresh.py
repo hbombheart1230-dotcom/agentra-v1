@@ -3,6 +3,9 @@ from __future__ import annotations
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Dict
+import sys
+from libs.reporting import operator_summary_refresh_parse_day as _a32_parse_day
+from libs.reporting import operator_summary_refresh_summary_ref as _a32_summary_ref
 
 from libs.reporting.operator_period_summary import (
     default_month_key,
@@ -18,25 +21,11 @@ def _utc_now_iso() -> str:
 
 
 def _parse_day(value: Any) -> date | None:
-    text = str(value or "").strip()[:10]
-    if not text:
-        return None
-    try:
-        return date.fromisoformat(text)
-    except Exception:
-        return None
+    return _a32_parse_day._parse_day(value=value, facade=sys.modules[__name__])
 
 
 def _summary_ref(md_path: Path, json_path: Path, payload: Dict[str, Any] | None = None) -> Dict[str, Any]:
-    metrics = {}
-    if isinstance(payload, dict) and isinstance(payload.get("metrics"), dict):
-        metrics = dict(payload.get("metrics") or {})
-    return {
-        "status": "ok",
-        "md_path": str(md_path),
-        "json_path": str(json_path),
-        "metrics": metrics,
-    }
+    return _a32_summary_ref._summary_ref(md_path=md_path, json_path=json_path, payload=payload, facade=sys.modules[__name__])
 
 
 def refresh_operator_summaries_after_trade(
