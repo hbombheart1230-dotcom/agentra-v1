@@ -5,6 +5,9 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Mapping
+import sys
+from . import coordinator_pending_buy_symbols as _a27_pending_buy_symbols
+from . import coordinator_intent as _a27_intent
 
 from libs.core.symbols import normalize_symbol
 from libs.runtime.same_symbol_loss_reentry import evaluate_same_symbol_loss_reentry
@@ -94,32 +97,7 @@ def _held_symbols(state: Mapping[str, Any]) -> set[str]:
 
 
 def _pending_buy_symbols(state: Mapping[str, Any]) -> set[str]:
-    output: set[str] = set()
-    containers = (
-        state.get("account_orders"),
-        _mapping(state.get("portfolio_snapshot")).get("orders"),
-        _mapping(state.get("persisted_state")).get("pending_unfilled_orders"),
-    )
-    for container in containers:
-        rows = container.values() if isinstance(container, Mapping) else container or []
-        for raw in rows:
-            if not isinstance(raw, Mapping):
-                continue
-            side = _text(raw.get("side") or raw.get("action") or raw.get("ord_dvsn_name")).upper()
-            remaining = _int(
-                raw.get("remaining_qty")
-                or raw.get("unfilled_qty")
-                or raw.get("rmn_qty")
-                or raw.get("qty")
-            )
-            if "BUY" not in side and "매수" not in side:
-                continue
-            if remaining <= 0:
-                continue
-            symbol = normalize_symbol(raw.get("symbol") or raw.get("stk_cd") or raw.get("code"))
-            if symbol:
-                output.add(symbol)
-    return output
+    return _a27_pending_buy_symbols._pending_buy_symbols(state=state, facade=sys.modules[__name__])
 
 
 def _max_positions(state: Mapping[str, Any]) -> int:
@@ -251,31 +229,7 @@ def _strategy_snapshot(candidate: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _intent(candidate: Mapping[str, Any]) -> dict[str, Any]:
-    lane_id = _text(candidate.get("lane_id"))
-    return {
-        "symbol": normalize_symbol(candidate.get("symbol")),
-        "side": "BUY",
-        "qty": DEFAULT_ORDER_QTY,
-        "price": candidate.get("price"),
-        "risk_score": 0.0,
-        "confidence": 1.0,
-        "thesis": f"controlled mock validation lane: {lane_id}",
-        "meta": {
-            "entry_signal_source": "monitor_intraday_entry",
-            "entry_lane": f"controlled_mock:{lane_id}",
-            "entry_reason": "controlled_mock_lane_signal_confirmed",
-            "controlled_mock_lane": {
-                "schema_version": SCHEMA_VERSION,
-                **dict(candidate),
-                "daily_limit": 1,
-                "submission_state": "PENDING_BROKER_RESULT",
-            },
-            "position_strategy_snapshot": _strategy_snapshot(candidate),
-            "price": candidate.get("price"),
-            "current_price": candidate.get("price"),
-            "order_price_source": "controlled_mock_lane_artifact",
-        },
-    }
+    return _a27_intent._intent(candidate=candidate, facade=sys.modules[__name__])
 
 
 def inject_controlled_mock_lane_intent(
