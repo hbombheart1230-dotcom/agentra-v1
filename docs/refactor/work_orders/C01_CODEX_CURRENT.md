@@ -305,7 +305,7 @@ def _seed_demo_dataset(root: Path) -> Path:
 
 ## B-07 REMAINING — SIX INDEPENDENT VERIFIED SOURCE BODY MOVEs (B7/B8 REMOTE_DONE)
 
-## B6 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_closeout_check.py::_prepare_candidate_dataset` @ L96 | CURRENT_BLOB `f9f4ff9c200cf895c8105eb8207723bc13bba1e8`
+## B6 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_closeout_check.py::_prepare_candidate_dataset` @ L63 | CURRENT_BLOB `f9f4ff9c200cf895c8105eb8207723bc13bba1e8`
 **NEW TARGET (404 B/integration VERIFIED):** `scripts/diagnostics/m26_closeout_candidate_projection.py::_prepare_candidate_dataset`. MOVE **COMPLETE executable body below** into Owner with original signature + keyword-only facade; keep original SOURCE signature and replace with thin wrapper only.
 ```python
 def _prepare_candidate_dataset(candidate_root: Path, *, day: str) -> None:
