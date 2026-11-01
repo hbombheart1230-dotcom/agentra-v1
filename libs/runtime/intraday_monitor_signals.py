@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+
 import statistics
 from datetime import datetime, timedelta, timezone
 from dataclasses import replace
@@ -334,35 +336,8 @@ def _empty_human_chart_buy_guard() -> Dict[str, Any]:
 
 
 def _empty_human_chart_entry_setup() -> Dict[str, Any]:
-    return {
-        "schema_version": "human_chart_entry_setup.v1",
-        "available": False,
-        "applied": False,
-        "mode": "none",
-        "authority": "qualified_buy_promotion",
-        "setup_label": "",
-        "setup_quality": "none",
-        "setup_score": 0.0,
-        "thresholds": {
-            "min_a_setup_score": 0.72,
-            "min_entry_chart_score": 0.68,
-            "min_live_promotion_entry_chart_score": 0.48,
-            "min_live_promotion_entry_quality_score": 0.78,
-            "min_live_promotion_transition_readiness_score": 0.72,
-            "max_exit_risk_score": 0.20,
-            "min_candle_quality_score": 0.45,
-            "min_vwap_reference_quality_score": 0.35,
-            "min_reward_room_score": 0.25,
-            "min_multi_window_structure_score": 0.35,
-            "reclaim_near_ready_distance_min": -0.0025,
-            "breakout_near_ready_distance_min": -0.0015,
-            "volume_near_ready_distance_min": -0.15,
-        },
-        "observed": {},
-        "matched_features": [],
-        "blocking_features": [],
-        "notes": [],
-    }
+    from . import intraday_monitor_signals_empty_human_chart_entry_setup as _owner
+    return _owner._empty_human_chart_entry_setup(facade=sys.modules[__name__])
 
 
 def _empty_human_chart_detail_context() -> Dict[str, Any]:
@@ -2008,43 +1983,8 @@ def _session_vwap(candles: Sequence[Mapping[str, Any]]) -> float | None:
 
 
 def _session_gap_context(candles: Sequence[Mapping[str, Any]], current_close: float) -> Dict[str, Any]:
-    context: Dict[str, Any] = {
-        "session_context_available": False,
-        "session_open": None,
-        "previous_close": None,
-        "open_gap_pct": None,
-        "prev_close_distance_pct": None,
-        "minutes_since_session_open": None,
-    }
-    _latest_key, start_idx, _latest_minute = _current_kst_session_anchor(candles)
-    if start_idx is None:
-        return context
-    first = candles[start_idx]
-    prior = candles[start_idx - 1] if start_idx > 0 else {}
-    session_open = _to_float(first.get("open"), _to_float(first.get("close")))
-    previous_close = _to_float(prior.get("close"))
-    first_ts = _to_int(first.get("ts"), 0)
-    last_ts = _to_int(candles[-1].get("ts"), 0)
-    minutes_since_open = None
-    if first_ts > 0 and last_ts >= first_ts:
-        minutes_since_open = round(float(last_ts - first_ts) / 60.0, 3)
-    open_gap_pct = None
-    if previous_close > 0.0 and session_open > 0.0:
-        open_gap_pct = (session_open / previous_close) - 1.0
-    prev_close_distance_pct = None
-    if previous_close > 0.0 and current_close > 0.0:
-        prev_close_distance_pct = (current_close / previous_close) - 1.0
-    context.update(
-        {
-            "session_context_available": bool(previous_close > 0.0 and session_open > 0.0),
-            "session_open": session_open if session_open > 0.0 else None,
-            "previous_close": previous_close if previous_close > 0.0 else None,
-            "open_gap_pct": open_gap_pct,
-            "prev_close_distance_pct": prev_close_distance_pct,
-            "minutes_since_session_open": minutes_since_open,
-        }
-    )
-    return context
+    from . import intraday_monitor_signals_session_gap_context as _owner
+    return _owner._session_gap_context(candles, current_close, facade=sys.modules[__name__])
 
 
 def _infer_spacing_seconds(candles: Sequence[Mapping[str, Any]]) -> float | None:
