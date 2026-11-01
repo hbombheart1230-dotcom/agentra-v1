@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 33387)
-Total output lines: 2665
-
 from __future__ import annotations
 
 import sys
@@ -1351,7 +1348,298 @@ def _chart_feature_status_item(
         "source": source,
         "feature_level": "high_level_feature",
         "spec_valid": bool(spec.get("is_valid", True)),
-     …3387 tokens truncated…reakout_path_ok"))):
+        "validation_notes": list(spec.get("validation_notes") or []),
+    }
+
+
+def _build_monitor_policy_interpreter_trace(
+    *,
+    policy_interpretation: Mapping[str, Any] | None = None,
+    signal_evidence: Mapping[str, Any] | None = None,
+    chart_structure_features: Mapping[str, Any] | None = None,
+) -> Dict[str, Any]:
+    interpretation = dict(policy_interpretation or {}) if isinstance(policy_interpretation, Mapping) else {}
+    evidence = dict(signal_evidence or {}) if isinstance(signal_evidence, Mapping) else {}
+    chart_states = _flatten_chart_structure_feature_states(chart_structure_features)
+    trace = _empty_monitor_policy_interpreter_trace()
+
+    policy_available = bool(interpretation.get("policy_available"))
+    trace["policy_available"] = policy_available
+    trace["entry_style"] = interpretation.get("entry_style")
+    trace["focus_alignment"] = {
+        "primary_focus": _dedupe_non_empty(((interpretation.get("evidence_focus") or {}).get("primary")) or []),
+        "secondary_focus": _dedupe_non_empty(((interpretation.get("evidence_focus") or {}).get("secondary")) or []),
+    }
+    if not policy_available:
+        return trace
+
+    checks = dict(evidence.get("checks") or {}) if isinstance(evidence.get("checks"), Mapping) else {}
+    derived = dict(evidence.get("derived") or {}) if isinstance(evidence.get("derived"), Mapping) else {}
+    scores = dict(evidence.get("scores") or {}) if isinstance(evidence.get("scores"), Mapping) else {}
+
+    def _status_item(spec_value: Any, *, blocker: bool = False) -> Dict[str, Any]:
+        spec = _parse_policy_signal_spec(spec_value)
+        name = str(spec.get("name") or "").strip()
+        if name in checks:
+            return {
+                "name": str(name),
+                "expected_state": None,
+                "actual_state": None,
+                "status": ("active" if not bool(checks.get(name)) else "inactive") if blocker else ("pass" if bool(checks.get(name)) else "fail"),
+                "source": f"signal_evidence.checks.{name}",
+                "feature_level": "low_level_signal",
+                "spec_valid": bool(spec.get("is_valid", True)),
+                "validation_notes": list(spec.get("validation_notes") or []),
+            }
+        if name in derived:
+            value = derived.get(name)
+            if isinstance(value, bool):
+                return {
+                    "name": str(name),
+                    "expected_state": None,
+                    "actual_state": None,
+                    "status": ("active" if bool(value) else "inactive") if blocker else ("pass" if bool(value) else "fail"),
+                    "source": f"signal_evidence.derived.{name}",
+                    "feature_level": "low_level_signal",
+                    "spec_valid": bool(spec.get("is_valid", True)),
+                    "validation_notes": list(spec.get("validation_notes") or []),
+                }
+        feature_item = _chart_feature_status_item(spec=spec, chart_states=chart_states, blocker=blocker)
+        if feature_item is not None:
+            return feature_item
+        return {
+            "name": str(name),
+            "expected_state": spec.get("expected_state"),
+            "actual_state": None,
+            "status": "unknown",
+            "source": None,
+            "feature_level": spec.get("feature_level") or "unknown",
+            "spec_valid": bool(spec.get("is_valid")),
+            "validation_notes": list(spec.get("validation_notes") or []),
+        }
+
+    required_rows = [_status_item(name) for name in _dedupe_non_empty(interpretation.get("required_checks") or [])]
+    preferred_rows = [_status_item(name) for name in _dedupe_non_empty(interpretation.get("preferred_checks") or [])]
+    relaxable_rows = [_status_item(name) for name in _dedupe_non_empty(interpretation.get("relaxable_checks") or [])]
+    blocker_names = _dedupe_non_empty([
+        *(interpretation.get("blockers") or []),
+        "too_extended" if "too_extended" in derived else "",
+    ])
+    blocker_rows = [_status_item(name, blocker=True) for name in blocker_names]
+
+    trace["available"] = True
+    trace["check_status"] = {
+        "required": required_rows,
+        "preferred": preferred_rows,
+        "relaxable": relaxable_rows,
+        "blockers": blocker_rows,
+    }
+
+    failed_required = [row["name"] for row in required_rows if row.get("status") == "fail"]
+    active_blockers = [row["name"] for row in blocker_rows if row.get("status") == "active"]
+    failed_preferred = [row["name"] for row in preferred_rows if row.get("status") == "fail"]
+
+    alignment_state: str | None
+    if active_blockers or failed_required:
+        alignment_state = "misaligned"
+    elif failed_preferred:
+        alignment_state = "partial"
+    elif required_rows or preferred_rows or relaxable_rows:
+        alignment_state = "aligned"
+    else:
+        alignment_state = "unknown"
+
+    primary_blocker = None
+    secondary_blockers: List[str] = []
+    blocker_order = [*active_blockers, *failed_required, *failed_preferred]
+    if blocker_order:
+        primary_blocker = blocker_order[0]
+        secondary_blockers = blocker_order[1:]
+
+    trace["alignment_summary"] = {
+        "policy_alignment_state": alignment_state,
+        "primary_blocker": primary_blocker,
+        "secondary_blockers": _dedupe_non_empty(secondary_blockers),
+    }
+    higher_level_used = any(
+        str((row or {}).get("feature_level") or "") == "high_level_feature"
+        for row in [*required_rows, *preferred_rows, *relaxable_rows, *blocker_rows]
+        if isinstance(row, Mapping)
+    )
+    notes = list(interpretation.get("notes") or [])
+    if higher_level_used:
+        notes.append("chart_structure_features_consumed")
+    trace["notes"] = _dedupe_non_empty(notes)
+    return trace
+
+
+def _build_monitor_policy_alignment_summary(
+    *,
+    policy_interpreter_trace: Mapping[str, Any] | None = None,
+) -> Dict[str, Any]:
+    trace = dict(policy_interpreter_trace or {}) if isinstance(policy_interpreter_trace, Mapping) else {}
+    summary = _empty_monitor_policy_alignment_summary()
+
+    available = bool(trace.get("available"))
+    policy_available = bool(trace.get("policy_available"))
+    summary["policy_available"] = policy_available
+    summary["entry_style"] = trace.get("entry_style")
+    if not available:
+        return summary
+
+    check_status = dict(trace.get("check_status") or {}) if isinstance(trace.get("check_status"), Mapping) else {}
+    alignment_summary = dict(trace.get("alignment_summary") or {}) if isinstance(trace.get("alignment_summary"), Mapping) else {}
+    focus_alignment = dict(trace.get("focus_alignment") or {}) if isinstance(trace.get("focus_alignment"), Mapping) else {}
+
+    def _failed(rows: Any, *, statuses: Sequence[str] = ("fail",)) -> List[str]:
+        out: List[str] = []
+        for row in list(rows or []):
+            if not isinstance(row, Mapping):
+                continue
+            status = str(row.get("status") or "").strip().lower()
+            if status not in {str(x).strip().lower() for x in list(statuses or [])}:
+                continue
+            out.append(str(row.get("name") or "").strip())
+        return _dedupe_non_empty(out)
+
+    primary_focus = _dedupe_non_empty(focus_alignment.get("primary_focus") or [])
+    secondary_focus = _dedupe_non_empty(focus_alignment.get("secondary_focus") or [])
+    failed_required = _failed(check_status.get("required"), statuses=("fail",))
+    failed_preferred = _failed(check_status.get("preferred"), statuses=("fail",))
+    failed_relaxable = _failed(check_status.get("relaxable"), statuses=("fail",))
+    active_blockers = _failed(check_status.get("blockers"), statuses=("active",))
+    focus_mismatch = _dedupe_non_empty(
+        [
+            *(name for name in primary_focus if name in failed_required or name in failed_preferred or name in failed_relaxable),
+            *(name for name in secondary_focus if name in failed_required or name in failed_preferred),
+        ]
+    )
+
+    summary["available"] = True
+    summary["alignment_state"] = alignment_summary.get("policy_alignment_state")
+    summary["primary_blocker"] = alignment_summary.get("primary_blocker")
+    summary["secondary_blockers"] = _dedupe_non_empty(
+        [*list(alignment_summary.get("secondary_blockers") or []), *active_blockers]
+    )
+    summary["focus_mismatch"] = focus_mismatch
+    summary["top_failed_required_checks"] = failed_required[:3]
+    summary["top_failed_preferred_checks"] = failed_preferred[:3]
+    summary["top_relaxable_gaps"] = failed_relaxable[:3]
+    summary_notes = list(trace.get("notes") or [])
+    high_level_mismatch_present = any(
+        str((row or {}).get("feature_level") or "") == "high_level_feature"
+        and str((row or {}).get("status") or "") in {"fail", "active"}
+        for section in ("required", "preferred", "relaxable", "blockers")
+        for row in list(check_status.get(section) or [])
+        if isinstance(row, Mapping)
+    )
+    if high_level_mismatch_present:
+        summary_notes.append("higher_level_feature_mismatch_present")
+    summary["summary_notes"] = _dedupe_non_empty(summary_notes)
+    return summary
+
+
+def _build_monitor_policy_aware_gating(
+    *,
+    policy_interpretation: Mapping[str, Any] | None = None,
+    signal_evidence: Mapping[str, Any] | None = None,
+    policy_interpreter_trace: Mapping[str, Any] | None = None,
+    policy_alignment_summary: Mapping[str, Any] | None = None,
+    legacy_triggered: bool = False,
+    legacy_reason: str | None = None,
+) -> Dict[str, Any]:
+    interpretation = dict(policy_interpretation or {}) if isinstance(policy_interpretation, Mapping) else {}
+    evidence = dict(signal_evidence or {}) if isinstance(signal_evidence, Mapping) else {}
+    trace = dict(policy_interpreter_trace or {}) if isinstance(policy_interpreter_trace, Mapping) else {}
+    summary = dict(policy_alignment_summary or {}) if isinstance(policy_alignment_summary, Mapping) else {}
+
+    out = _empty_monitor_policy_aware_gating()
+    policy_available = bool(interpretation.get("policy_available"))
+    if not policy_available:
+        return out
+
+    out["available"] = True
+    relaxable_checks = _dedupe_non_empty(interpretation.get("relaxable_checks") or [])
+    out["relaxations_considered"] = list(relaxable_checks)
+    failed_required = _dedupe_non_empty(summary.get("top_failed_required_checks") or [])
+    out["required_failures"] = list(failed_required)
+
+    checks = dict(evidence.get("checks") or {}) if isinstance(evidence.get("checks"), Mapping) else {}
+    derived = dict(evidence.get("derived") or {}) if isinstance(evidence.get("derived"), Mapping) else {}
+    entry_style = str(interpretation.get("entry_style") or "").strip().lower()
+    alignment_state = str(summary.get("alignment_state") or "").strip().lower()
+    legacy_reason_code = str(legacy_reason or "").strip()
+
+    if failed_required:
+        out["blocked_by_required"] = list(failed_required)
+        out["notes"] = _dedupe_non_empty(
+            [
+                *list(out.get("notes") or []),
+                "required_checks_failed",
+            ]
+        )
+        return out
+    if bool(legacy_triggered):
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "legacy_gate_already_triggered"])
+        return out
+
+    can_consider_reclaim_relax = (
+        entry_style == "breakout"
+        and "reclaim_gate_ok" in relaxable_checks
+    )
+    if not can_consider_reclaim_relax:
+        return out
+
+    reclaim_distance = derived.get("reclaim_distance_to_ready")
+    reclaim_distance_value: float | None = None
+    if reclaim_distance not in (None, ""):
+        try:
+            reclaim_distance_value = float(reclaim_distance)
+        except Exception:
+            reclaim_distance_value = None
+
+    standard_near_ready = (
+        reclaim_distance_value is not None
+        and _RECLAIM_NEAR_READY_DISTANCE_MIN_BASE <= reclaim_distance_value < 0.0
+    )
+    tuned_near_ready = (
+        reclaim_distance_value is not None
+        and _RECLAIM_NEAR_READY_DISTANCE_MIN_TUNED <= reclaim_distance_value < 0.0
+    )
+    tuned_only_band = (
+        legacy_reason_code == "below_vwap_reclaim_not_ready"
+        and not standard_near_ready
+        and tuned_near_ready
+    )
+    near_ready = bool(standard_near_ready or tuned_only_band)
+    safe_to_relax = (
+        bool(checks.get("breakout_path_ok"))
+        and bool(checks.get("confidence_ok"))
+        and not bool(derived.get("too_extended"))
+        and alignment_state in {"aligned", "partial"}
+    )
+    relaxable_reason = legacy_reason_code in {
+        "",
+        "below_vwap_reclaim_not_ready",
+    }
+    if not relaxable_reason:
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "legacy_reason_not_relaxable"])
+        return out
+    if bool(checks.get("reclaim_gate_ok")):
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "reclaim_gate_already_passed"])
+        return out
+    if not near_ready:
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "reclaim_not_near_ready"])
+        return out
+    if not safe_to_relax:
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "safe_relaxation_conditions_not_met"])
+        return out
+    if tuned_only_band and not bool(checks.get("volume_ok")):
+        out["notes"] = _dedupe_non_empty(
+            [*list(out.get("notes") or []), "tuned_reclaim_requires_volume_confirmation"]
+        )
+        return out
+    if not (bool(checks.get("volume_ok")) or bool(checks.get("breakout_path_ok"))):
         out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "supporting_path_not_ready"])
         return out
 
