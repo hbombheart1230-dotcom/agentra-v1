@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import sys
 
+import sys
+
 import statistics
 from datetime import datetime, timedelta, timezone
 from dataclasses import replace
@@ -80,14 +82,8 @@ def _to_int(value: Any, default: int = 0) -> int:
 
 
 def _to_bool(value: Any, default: bool = False) -> bool:
-    if value is None:
-        return bool(default)
-    if isinstance(value, bool):
-        return bool(value)
-    text = str(value or "").strip().lower()
-    if not text:
-        return bool(default)
-    return text in {"1", "true", "yes", "y", "on"}
+    from . import intraday_monitor_signals_to_bool as _owner
+    return _owner._to_bool(value, default, facade=sys.modules[__name__])
 
 
 def _clamp_score(value: float) -> float:
@@ -98,33 +94,18 @@ def _clamp_score(value: float) -> float:
 
 
 def _min_threshold_score(actual: float, threshold: float) -> float:
-    actual_value = float(actual)
-    threshold_value = float(threshold)
-    if threshold_value <= 0.0:
-        return 1.0 if actual_value > 0.0 else 0.0
-    return _clamp_score(actual_value / threshold_value)
+    from . import intraday_monitor_signals_min_threshold_score as _owner
+    return _owner._min_threshold_score(actual, threshold, facade=sys.modules[__name__])
 
 
 def _range_threshold_score(actual: float, minimum: float, maximum: float) -> float:
-    actual_value = float(actual)
-    minimum_value = float(minimum)
-    maximum_value = float(maximum)
-    if minimum_value <= actual_value <= maximum_value:
-        return 1.0
-    if actual_value < minimum_value:
-        return _min_threshold_score(actual_value, minimum_value)
-    if actual_value <= 0.0:
-        return 0.0
-    return _clamp_score(maximum_value / actual_value if maximum_value > 0.0 else 0.0)
+    from . import intraday_monitor_signals_range_threshold_score as _owner
+    return _owner._range_threshold_score(actual, minimum, maximum, facade=sys.modules[__name__])
 
 
 def _entry_quality_tier(score: float) -> str:
-    value = _clamp_score(score)
-    if value >= 0.80:
-        return "strong"
-    if value >= 0.65:
-        return "watch"
-    return "weak"
+    from . import intraday_monitor_signals_entry_quality_tier as _owner
+    return _owner._entry_quality_tier(score, facade=sys.modules[__name__])
 
 
 def _empty_entry_transition_trace() -> Dict[str, Any]:
@@ -139,23 +120,8 @@ def _env_trueish(value: Any, default: bool = False) -> bool:
 
 
 def _resolve_monitor_scoring_settings(scoring: Mapping[str, Any] | None = None) -> Dict[str, Any]:
-    raw = dict(scoring or {}) if isinstance(scoring, Mapping) else {}
-    enabled = _env_trueish(raw.get("enabled"), False)
-    shadow_mode = _env_trueish(raw.get("shadow_mode"), False)
-    threshold = _to_float(raw.get("threshold") if raw.get("threshold") not in (None, "") else raw.get("entry_threshold"), 3.0)
-    threshold = float(threshold if threshold > 0.0 else 3.0)
-    if enabled:
-        mode = "enabled"
-    elif shadow_mode:
-        mode = "shadow"
-    else:
-        mode = "disabled"
-    return {
-        "enabled": bool(enabled),
-        "shadow_mode": bool(shadow_mode),
-        "entry_threshold": threshold,
-        "scoring_mode": mode,
-    }
+    from . import intraday_monitor_signals_resolve_monitor_scoring_settings as _owner
+    return _owner._resolve_monitor_scoring_settings(scoring, facade=sys.modules[__name__])
 
 
 def _build_monitor_score_breakdown(
@@ -167,29 +133,8 @@ def _build_monitor_score_breakdown(
     confidence_gate_ok: bool,
     chart_structure_features: Mapping[str, Any] | None = None,
 ) -> Dict[str, float]:
-    breakdown = {
-        "vwap_reclaim_ok": 2.0 if bool(vwap_reclaim_ok) else 0.0,
-        "breakout_ok": 2.0 if bool(breakout_ok) else 0.0,
-        "pullback_mature": 1.0 if bool(pullback_mature) else 0.0,
-        "volume_ok": 1.0 if bool(volume_ok) else 0.0,
-        "confidence_gate_ok": 1.0 if bool(confidence_gate_ok) else 0.0,
-    }
-    chart_payload = dict(chart_structure_features or {}) if isinstance(chart_structure_features, Mapping) else {}
-    chart_context = (
-        dict(chart_payload.get("human_chart_context") or {})
-        if isinstance(chart_payload.get("human_chart_context"), Mapping)
-        else {}
-    )
-    if bool(chart_context.get("available")):
-        entry_chart_score = _clamp_score(_to_float(chart_context.get("entry_chart_score")))
-        exit_risk_score = _clamp_score(_to_float(chart_context.get("exit_risk_score")))
-        late_entry_risk = str(chart_context.get("late_entry_risk") or "").strip().lower()
-        breakdown["chart_structure_confirmation"] = round(0.75 * entry_chart_score, 4)
-        if late_entry_risk in {"medium", "high"}:
-            breakdown["late_entry_risk_penalty"] = -0.25 if late_entry_risk == "medium" else -0.5
-        if exit_risk_score >= 0.55:
-            breakdown["chart_exit_risk_penalty"] = -0.25
-    return breakdown
+    from . import intraday_monitor_signals_build_monitor_score_breakdown as _owner
+    return _owner._build_monitor_score_breakdown(vwap_reclaim_ok=vwap_reclaim_ok, breakout_ok=breakout_ok, pullback_mature=pullback_mature, volume_ok=volume_ok, confidence_gate_ok=confidence_gate_ok, chart_structure_features=chart_structure_features, facade=sys.modules[__name__])
 
 
 def _build_monitor_signal_evidence(
@@ -275,23 +220,13 @@ def _empty_monitor_signal_evidence(*, score_threshold: float=3.0) -> Dict[str, A
 
 
 def _dedupe_non_empty(values: Sequence[Any]) -> List[str]:
-    seen: set[str] = set()
-    out: List[str] = []
-    for value in list(values or []):
-        text = str(value or "").strip()
-        if not text or text in seen:
-            continue
-        seen.add(text)
-        out.append(text)
-    return out
+    from . import intraday_monitor_signals_dedupe_non_empty as _owner
+    return _owner._dedupe_non_empty(values, facade=sys.modules[__name__])
 
 
 def _volume_priority_hint(volume_ratio_min: float) -> str:
-    if float(volume_ratio_min) >= 1.0:
-        return "high"
-    if float(volume_ratio_min) <= 0.75:
-        return "low"
-    return "normal"
+    from . import intraday_monitor_signals_volume_priority_hint as _owner
+    return _owner._volume_priority_hint(volume_ratio_min, facade=sys.modules[__name__])
 
 
 def _empty_monitor_policy_interpretation() -> Dict[str, Any]:
