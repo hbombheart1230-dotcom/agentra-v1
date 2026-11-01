@@ -3,11 +3,13 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 from libs.runtime.quant.factors import build_factor_snapshot_from_candidate
-from libs.agents.scanner.projections import scanner_output_numeric as _c03_12_a8_owner
 
 
 def _to_float(value: Any, default: float = 0.0) -> float:
-    return _c03_12_a8_owner._to_float(value, default)
+    try:
+        return float(value)
+    except Exception:
+        return float(default)
 
 
 def build_candidate_ranking_table_payload(

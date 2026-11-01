@@ -186,9 +186,20 @@ def scan_select_value_state_scanner_output(top_score, visible_ranked_candidates,
 
 
 def scan_select_value_state_scanner_skill(fallback_reasons, skill_quotes, skill_order_counts, skill_order_rows, quote_meta, order_meta, *, facade):
-    from libs.agents.scanner.projections import scanner_selection_skill as _c03_12_a6_owner
-
-    return _c03_12_a6_owner.scan_select_value_state_scanner_skill(fallback_reasons, skill_quotes, skill_order_counts, skill_order_rows, quote_meta, order_meta, facade=facade)
+    return (
+{
+        "contract_version": facade.SKILL_CONTRACT_VERSION,
+        "used": bool(skill_quotes) or bool(skill_order_counts),
+        "quote_symbols": len(skill_quotes),
+        "account_open_order_symbols": len(skill_order_counts),
+        "account_order_rows": int(skill_order_rows),
+        "quote_present": bool(quote_meta.get("present")),
+        "account_orders_present": bool(order_meta.get("present")),
+        "fallback": bool(fallback_reasons),
+        "fallback_reasons": fallback_reasons,
+        "error_count": len(fallback_reasons),
+    }
+    )
 
 
 def scan_select_commander_memory_application_trace_selec(selected, scanner_memory_bias, selected_symbol, candidate_memory_bias_adjustments, scanner_memory_bias_summary, scanner_memory_bias_applied, selection_summary, *, facade):
@@ -218,6 +229,23 @@ def scan_select_commander_memory_application_trace_selec(selected, scanner_memor
 
 
 def scan_select_reasons_row_conf(row, selected_score, selected_confidence, selected_risk, runner_up_reasons, *, facade):
-    from libs.agents.scanner.projections import selection_evidence_projection_scan_select_reasons_row_conf as _c03_12_a7_owner
-
-    return _c03_12_a7_owner.scan_select_reasons_row_conf(row, selected_score, selected_confidence, selected_risk, runner_up_reasons, facade=facade)
+    if True:
+            reasons: facade.List[str] = []
+            row_score = float(facade._to_float(row.get("score_total") or row.get("score")))
+            row_conf = float(facade._to_float(row.get("confidence")))
+            row_risk = float(facade._to_float(row.get("risk_score")))
+            if row_score < selected_score:
+                reasons.append(f"lower total score ({row_score:.3f} vs {selected_score:.3f})")
+            if row_conf < selected_confidence:
+                reasons.append(f"lower confidence ({row_conf:.2f} vs {selected_confidence:.2f})")
+            if row_risk > selected_risk:
+                reasons.append(f"higher risk ({row_risk:.2f} vs {selected_risk:.2f})")
+            if not reasons:
+                reasons.append("lost on tie-break after score, confidence, and risk comparison")
+            runner_up_reasons.append(
+                {
+                    "symbol": str(row.get("symbol") or ""),
+                    "why_lost": reasons,
+                }
+            )
+    return (reasons, row_conf, row_risk, row_score)
