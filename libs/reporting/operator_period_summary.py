@@ -4,10 +4,19 @@ import calendar
 import json
 import os
 import re
+import sys
 from collections import Counter, defaultdict
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple
+from libs.reporting import operator_period_summary_looks_like_mojibake as _a28_looks_like_mojibake
+from libs.reporting import operator_period_summary_truth_surface_candidate_paths as _a28_truth_surface_candidate_paths
+from libs.reporting import operator_period_summary_closeout_broker_skip_for_row as _a28_closeout_broker_skip_for_row
+from libs.reporting import operator_period_summary_state_snapshot_candidate_paths as _a28_state_snapshot_candidate_paths
+from libs.reporting import operator_period_summary_first_snapshot_call_payload as _a28_first_snapshot_call_payload
+from libs.reporting import operator_period_summary_price_matches as _a28_price_matches
+from libs.reporting import operator_period_summary_sell_guard_candidate_paths as _a28_sell_guard_candidate_paths
+from libs.reporting import operator_period_summary_trade_dir_for_row as _a28_trade_dir_for_row
 
 from libs.performance.strategy_memory import sync_strategy_memory_artifacts
 from libs.reporting.llm_artifacts import (
@@ -188,15 +197,7 @@ def _text_value(value: Any) -> str:
 
 
 def _looks_like_mojibake(text: str) -> bool:
-    if not text:
-        return False
-    if "\ufffd" in text:
-        return True
-    compatibility_count = sum(1 for ch in text if "\uf900" <= ch <= "\ufaff")
-    if compatibility_count:
-        return True
-    question_count = text.count("?")
-    return question_count >= 2 and any(ord(ch) > 127 for ch in text)
+    return _a28_looks_like_mojibake._looks_like_mojibake(text=text, facade=sys.modules[__name__])
 
 
 def _operator_label_fallback(value: Any, *, axis: str = "") -> str:
@@ -287,39 +288,7 @@ def _ratio_to_pct(value: Any) -> float | None:
 
 
 def _truth_surface_candidate_paths(row: Dict[str, Any], reports_root: Path) -> List[Path]:
-    candidates: List[Path] = []
-    for key in ("trade_root_path",):
-        raw = str(row.get(key) or "").strip()
-        if raw:
-            candidates.append(Path(raw) / "reports" / "ai_trade_summary.json")
-            candidates.append(Path(raw) / "reports" / "ai_trade_summary_input.json")
-    report_path = str(row.get("report_path") or "").strip()
-    if report_path:
-        report_dir = Path(report_path).parent
-        candidates.append(report_dir / "ai_trade_summary.json")
-        candidates.append(report_dir / "ai_trade_summary_input.json")
-    lifecycle_path = str(row.get("lifecycle_bundle_path") or "").strip()
-    if lifecycle_path:
-        trade_root = Path(lifecycle_path).parent
-        candidates.append(trade_root / "reports" / "ai_trade_summary.json")
-        candidates.append(trade_root / "reports" / "ai_trade_summary_input.json")
-    trade_id = str(row.get("trade_id") or "").strip()
-    day = str(row.get("date") or row.get("day") or "").strip()[:10]
-    if trade_id and day:
-        trade_root = find_trade_dir(canonical_trade_day_root(Path(reports_root), day), trade_id)
-        if trade_root is None:
-            trade_root = Path(reports_root) / "trades" / day / trade_id
-        candidates.append(trade_root / "reports" / "ai_trade_summary.json")
-        candidates.append(trade_root / "reports" / "ai_trade_summary_input.json")
-    out: List[Path] = []
-    seen: set[str] = set()
-    for path in candidates:
-        key = str(path)
-        if key in seen:
-            continue
-        seen.add(key)
-        out.append(path)
-    return out
+    return _a28_truth_surface_candidate_paths._truth_surface_candidate_paths(row=row, reports_root=reports_root, facade=sys.modules[__name__])
 
 
 def _extract_truth_surface_metrics(row: Dict[str, Any], reports_root: Path) -> Dict[str, Any]:
@@ -328,50 +297,11 @@ def _extract_truth_surface_metrics(row: Dict[str, Any], reports_root: Path) -> D
 
 
 def _closeout_broker_skip_for_row(row: Dict[str, Any], reports_root: Path) -> Dict[str, Any]:
-    day = str(row.get("date") or row.get("day") or "").strip()[:10]
-    trade_id = str(row.get("trade_id") or "").strip()
-    if not day or not trade_id:
-        return {}
-    closeout = _read_json(Path(reports_root) / "operator_summary" / "daily" / day / "closeout_maintenance.json")
-    if not isinstance(closeout, dict):
-        return {}
-    steps = closeout.get("steps") if isinstance(closeout.get("steps"), dict) else {}
-    broker = (
-        steps.get("broker_closed_trade_reconciliation")
-        if isinstance(steps.get("broker_closed_trade_reconciliation"), dict)
-        else {}
-    )
-    for skipped in broker.get("skipped") or []:
-        if not isinstance(skipped, dict):
-            continue
-        if str(skipped.get("trade_id") or "") != trade_id:
-            continue
-        return {
-            "broker_reconciliation_status": "skipped_unresolved",
-            "broker_reconciliation_reason": str(skipped.get("reason") or ""),
-            "broker_reconciliation_snapshot_path": str(broker.get("snapshot_path") or ""),
-        }
-    return {}
+    return _a28_closeout_broker_skip_for_row._closeout_broker_skip_for_row(row=row, reports_root=reports_root, facade=sys.modules[__name__])
 
 
 def _state_snapshot_candidate_paths(reports_root: Path) -> List[Path]:
-    candidates: List[Path] = []
-    raw = str(os.getenv("STATE_STORE_PATH") or "").strip()
-    if raw:
-        candidates.append(Path(raw))
-    candidates.append(Path(reports_root).parent / "data" / "state.json")
-    out: List[Path] = []
-    seen: set[str] = set()
-    for path in candidates:
-        try:
-            key = str(path.resolve())
-        except Exception:
-            key = str(path)
-        if key in seen:
-            continue
-        seen.add(key)
-        out.append(path)
-    return out
+    return _a28_state_snapshot_candidate_paths._state_snapshot_candidate_paths(reports_root=reports_root, facade=sys.modules[__name__])
 
 
 def _load_state_snapshot(reports_root: Path) -> Tuple[Dict[str, Any], str]:
@@ -410,14 +340,7 @@ def _latest_account_snapshot(reports_root: Path, day: str | None) -> Dict[str, A
 
 
 def _first_snapshot_call_payload(snapshot: Dict[str, Any], api_id: str) -> Dict[str, Any]:
-    for call in list(snapshot.get("calls") or []):
-        if not isinstance(call, dict):
-            continue
-        if str(call.get("api_id") or "").strip() != api_id:
-            continue
-        payload = call.get("payload")
-        return payload if isinstance(payload, dict) else {}
-    return {}
+    return _a28_first_snapshot_call_payload._first_snapshot_call_payload(snapshot=snapshot, api_id=api_id, facade=sys.modules[__name__])
 
 
 def _snapshot_day_trade_diary_rows(snapshot: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -480,12 +403,7 @@ def _overnight_recorded_context(decision: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _price_matches(left: Any, right: Any) -> bool:
-    left_value = _safe_float(left)
-    right_value = _safe_float(right)
-    if left_value is None or right_value is None or left_value <= 0 or right_value <= 0:
-        return False
-    tolerance = max(1.0, abs(left_value) * 0.001)
-    return abs(left_value - right_value) <= tolerance
+    return _a28_price_matches._price_matches(left=left, right=right, facade=sys.modules[__name__])
 
 
 def _same_day_flatten_reconciliation(
@@ -534,24 +452,7 @@ def _same_day_flatten_reconciliation(
 
 
 def _sell_guard_candidate_paths(*, reports_root: Path, state_path: str) -> List[Path]:
-    candidates: List[Path] = []
-    state_raw = str(state_path or "").strip()
-    if state_raw:
-        state_file = Path(state_raw)
-        candidates.append(state_file.parent / "state" / "execution_recent_sell_guard.json")
-    candidates.append(Path(reports_root).parent / "data" / "state" / "execution_recent_sell_guard.json")
-    out: List[Path] = []
-    seen: set[str] = set()
-    for path in candidates:
-        try:
-            key = str(path.resolve())
-        except Exception:
-            key = str(path)
-        if key in seen:
-            continue
-        seen.add(key)
-        out.append(path)
-    return out
+    return _a28_sell_guard_candidate_paths._sell_guard_candidate_paths(reports_root=reports_root, state_path=state_path, facade=sys.modules[__name__])
 
 
 def _epoch_day_kst(epoch: Any) -> str:
@@ -763,20 +664,7 @@ def _pattern_performance_payload(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 def _trade_dir_for_row(row: Dict[str, Any], reports_root: Path) -> Path | None:
-    explicit_path = str(row.get("trade_root_path") or "").strip()
-    if explicit_path:
-        explicit = Path(explicit_path)
-        if explicit.exists() and explicit.is_dir():
-            return explicit
-    trade_id = str(row.get("trade_id") or "").strip()
-    day = str(row.get("date") or row.get("day") or "").strip()[:10]
-    if not trade_id or not day:
-        return None
-    found = find_trade_dir(canonical_trade_day_root(Path(reports_root), day), trade_id)
-    if found is not None:
-        return found
-    fallback = Path(reports_root) / "trades" / day / trade_id
-    return fallback if fallback.exists() else None
+    return _a28_trade_dir_for_row._trade_dir_for_row(row=row, reports_root=reports_root, facade=sys.modules[__name__])
 
 
 def _daily_trade_index_rows(
