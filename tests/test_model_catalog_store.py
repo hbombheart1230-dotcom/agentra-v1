@@ -54,36 +54,24 @@ def test_build_model_cards_payload_generates_expected_fields() -> None:
     first = get_model_card("minimax/minimax-m2.5", cards_payload=payload)
     assert first["provider"] == "minimax"
     assert first["context_window"] == 1_000_000
-    assert first["cost_tier"] == "free_or_low"
+    assert first["cost_tier"] == "free"
     assert first["latency_tier"] == "fast"
-    assert first["reliability"] == "high"
-    assert "cheap" in first["tags"]
-    assert "json_stable" in first["tags"]
     assert "recommended_roles" in first
     assert "strengths" in first
     assert "weaknesses" in first
     assert isinstance(first["recommended_roles"], list)
     assert isinstance(first["strengths"], list)
     assert isinstance(first["weaknesses"], list)
-    assert first["json_stability_note"]
-    assert first["latency_note"]
-    assert first["cost_note"]
-    assert first["long_context_note"]
+    assert isinstance(first["json_stability_note"], str)
+    assert isinstance(first["latency_note"], str)
+    assert isinstance(first["cost_note"], str)
+    assert isinstance(first["long_context_note"], str)
 
 
-def test_manual_model_cards_include_expected_quality_guidance() -> None:
+def test_manual_model_cards_do_not_prescribe_removed_operational_models() -> None:
     payload = build_model_cards_payload(_sample_openrouter_payload())
-
-    minimax = get_model_card("minimax/minimax-m2.5", cards_payload=payload)
-    deepseek = get_model_card("deepseek/deepseek-v3.2", cards_payload=payload)
-    kimi = get_model_card("moonshotai/kimi-k2.5", cards_payload=payload)
-
-    assert "reporter_intraday" in minimax["recommended_roles"]
-    assert any("cost" in str(row).lower() or "low-cost" in str(row).lower() for row in minimax["strengths"])
-    assert "strategist" in deepseek["recommended_roles"]
-    assert deepseek["json_stability_note"]
-    assert "reporter_daily" in kimi["recommended_roles"]
-    assert kimi["long_context_note"]
+    for model_id in ("minimax/minimax-m2.5", "deepseek/deepseek-v3.2", "moonshotai/kimi-k2.5"):
+        assert get_model_card(model_id, cards_payload=payload)["recommended_roles"] == []
 
 
 def test_list_models_by_tag_filters_expected_models() -> None:

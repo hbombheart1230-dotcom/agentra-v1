@@ -101,7 +101,7 @@ def summarize_daily_report_with_artifact(*, state: Dict[str, Any], policy: Dict[
     )
     env_model = normalize_openrouter_model_name(
         str(llm_slot.get("primary") or "")
-        or "moonshotai/kimi-k2.5"
+        or "nvidia/nemotron-3-ultra-550b-a55b:free"
     )
     llm_policy.setdefault("max_tokens", int(float(execution_slot.get("max_tokens") or 8192)))
     llm_policy.setdefault("temperature", float(execution_slot.get("temperature") or 0.2))

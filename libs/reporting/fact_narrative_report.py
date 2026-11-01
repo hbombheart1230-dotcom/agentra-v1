@@ -4,6 +4,7 @@ import os
 from libs.llm.llm_router import LLMRouter
 from libs.llm.model_catalog import build_execution_profile_observability
 from libs.llm.json_response import parse_llm_json_response
+from libs.llm.model_policy import fallback_model, is_allowed_model
 
 def build_fact_payload(
     trade_model: Optional[Dict[str, Any]] = None,
@@ -78,7 +79,16 @@ def generate_narrative(
     ]
 
     primary_model = explicit_model
-    fallback_model = "minimax/minimax-m2.5"
+    role = (
+        "operator_ui" if explicit_model == "nvidia/nemotron-3.5-lightning:free"
+        else "trade_report" if explicit_model == "google/gemma-4-26b-a4b-it:free"
+        else "reporter_final"
+    )
+    if not is_allowed_model(role, explicit_model):
+        narrative["status"] = "unavailable"
+        narrative["reason"] = "reporter_model_not_allowed"
+        return narrative
+    fallback = fallback_model(role, explicit_model)
     
     def _attempt_call(target_model: str) -> Dict[str, Any]:
         policy = {
@@ -89,7 +99,7 @@ def generate_narrative(
         }
         if target_model:
             policy["model"] = target_model
-        raw = router.chat("reporter_final", messages, policy=policy)
+        raw = router.chat(role, messages, policy=policy)
         parsed = parse_llm_json_response(raw)
         return parsed.get("full_object") or parsed.get("partial_object") or {}
 
@@ -100,15 +110,15 @@ def generate_narrative(
         narrative["recommendation"] = str(obj.get("recommendation", "")).strip()
         narrative["status"] = "ok"
     except Exception as e:
-        if primary_model != fallback_model:
+        if fallback and primary_model != fallback:
             try:
-                obj = _attempt_call(fallback_model)
+                obj = _attempt_call(fallback)
                 narrative["summary"] = str(obj.get("summary", "")).strip()
                 narrative["insight"] = str(obj.get("insight", "")).strip()
                 narrative["recommendation"] = str(obj.get("recommendation", "")).strip()
                 narrative["status"] = "ok"
                 narrative["fallback_used"] = True
-                narrative["fallback_model"] = fallback_model
+                narrative["fallback_model"] = fallback
                 narrative["primary_error"] = str(e)
                 return narrative
             except Exception as e2:

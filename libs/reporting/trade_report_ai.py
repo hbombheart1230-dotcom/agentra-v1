@@ -179,11 +179,11 @@ def _safe_fullmatch(pattern: str, text: str, *, flags: int = 0):
     return _safe_fullmatch_impl(pattern, text, flags=flags)
 
 def _resolve_intraday_report_model(source: Dict[str, Any] | None, *, explicit_model: Optional[str] = None) -> str:
-    resolved = resolve_policy_llm_slot(source if isinstance(source, dict) else {}, "reporter", "intraday", default_profile="fast_free")
+    resolved = resolve_policy_llm_slot(source if isinstance(source, dict) else {}, "reporter", "trade_report", default_profile="trade_report_free")
     return normalize_openrouter_model_name(
         str(explicit_model or "").strip()
         or str(resolved.get("primary") or "").strip()
-        or "minimax/minimax-m2.5"
+        or "google/gemma-4-26b-a4b-it:free"
     )
 
 

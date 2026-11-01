@@ -1853,7 +1853,7 @@ def build_separated_operator_brief(trade_dir: str, symbol: str, trades_root: str
     chosen_model = normalize_openrouter_model_name(
         str(model or "").strip()
         or str(resolve_policy_llm_slot(llm_scope if isinstance(llm_scope, dict) else {}, "reporter", "intraday", default_profile="fast_free").get("primary") or "").strip()
-        or "minimax/minimax-m2.5"
+        or "nvidia/nemotron-3.5-lightning:free"
     )
     execution_profile = resolve_policy_llm_execution_slot(
         llm_scope if isinstance(llm_scope, dict) else {},
