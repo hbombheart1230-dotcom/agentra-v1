@@ -1,279 +1,268 @@
-# C02 — Claude A | A-20261101-10 | FAST-3 EIGHT NEW VERIFIED SOURCE BODY MOVEs
+# C02 — Claude A | A-20261101-11 | FAST-3 8 NEW SOURCE BODY MOVEs
 
-**SINGLE ENTRY / PIN:** At start record CANONICAL_HEAD, ORDER_FILE_BLOB_SHA, OWNER_REMOTE_SHA and ORDER_ID=A-20261101-10. Read THIS document and named code/test only; do not read D00/RF/queue/C03/CURRENT/HANDOFF, do not self-select. Execute ALL A1–A8/B1–B8; any blocked item → next safe item. Previously pinned start order remains valid. C03 document commit is NOT G1/G2/G3 code work.
+**SINGLE ENTRY / PIN:** At start pin CANONICAL_HEAD, ORDER_FILE_BLOB_SHA, OWNER_REMOTE_SHA and ORDER_ID=A-20261101-11. Read only THIS document plus named code/test files. Do not read D00/RF/queue/C03/CURRENT/HANDOFF, self-select, modify other actor paths, or repeat old PASS. Execute all A1–A8; blocked item → next safe item. A-10 was 8/8 REMOTE_DONE at 9eb7ed3f27e8b362407196d13c6b5c035c50d8f3, normal 8/8 exit0, #11 comment 6551673840; no old item is assigned here.
 
-**REMOTE_DONE:** 8/8 at A 4c264f96; normal unittest 8/8 exit0, #11 6551064560. Do not reimplement completed prior order or rerun same-SHA tests. Source and Owner branch pinned for issuance: `4c264f9612d8ce82cb8d3ff3ec7844a6892e9ea0`; canonical input HEAD must be rechecked at actor start. Each item has real function body and new Owner path; each TARGET verified absent on actor and integration before publication. **NEW_READY=8**. 
+**RF/OWNER/REMOTE BASIS:** RF-035, CLAUDE_A exclusive; SOURCE `libs/reporting/live_execution_event_evidence.py` blob `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c` verified same on integration and actor; A branch `work/p15-a-reporter-pure-20261021` HEAD `9eb7ed3f27e8b362407196d13c6b5c035c50d8f3`. All 8 target paths and 6 future reserve targets are absent on BOTH integration and A branch at issuance (directory membership check). Only SOURCE, the enumerated new Owner modules, and `tests/test_p15_rf035_20261101_11h_event_owners.py` are writable for this order. No C01/C03/D00/RF/STATUS/C04/C05/other-actor edits.
 
-**OWNER/SAFETY:** RF-035 CLAUDE_A only; actor branch `work/p15-a-reporter-pure-20261021`. Allowed SOURCE paths: `libs/reporting/q8_lane_decision_table.py`, `libs/reporting/q8_trusted_reaggregation.py`, `libs/reporting/quant_shadow_forward_outcomes.py`; allowed NEW TARGET paths only those enumerated below; NEW targeted test `tests/test_p15_rf035_20261101_10h_owners.py`. Do not modify other actor code, D00/RF/STATUS/queue/C04/C05/RunLab, real operations, Broker/Guard/Step5C/UEF, frozen oracle/CI workflow, production state, trading/network/real data or force-push. No actual order, promotion, guard, file write or subprocess; evaluate/render in memory. B audit parser may only parse fake argv; A trust policy thresholds/permissions remain byte-identical. Any safety ambiguity blocks that item, not others.
+**SAFETY:** These are in-memory reporting evidence projections ONLY, not trading, live orders, Broker/Guard/Step5C/UEF, RunLab, deployment, filesystem/network writes, policy thresholds, or real data. Do not call actual runtime pipeline. SOURCE must retain same signature as thin facade; move entire original executable BODY to one new Owner, no duplicate calculation, no Owner→SOURCE import. Owner imports required typing/types and accepts extra keyword-only `facade` to resolve monkeypatch-sensitive globals at call time. Source wrapper imports new module inside function with unique alias `_c03_11_aN_owner`, delegates `return owner.fn(..., facade=sys.modules[__name__])`; import sys in SOURCE. Preserve positional/keyword/default, mutation/copy/iterator, order, exceptions, and monkeypatch behavior. For each test, capture original function golden BEFORE editing, compare wrapper/Owner with original and AST confirm source BODY removed.
 
-**TEST / PUSH:** Snapshot original golden and exact source blob before edit; Owner holds complete actual BODY and original SOURCE becomes a thin wrapper with call-time facade seams, unique import aliases `_c03_10_aN_owner` (avoid collision with previous orders). One new unittest per item in `tests/test_p15_rf035_20261101_10h_owners.py`. Normal command `python -m unittest tests/test_p15_rf035_20261101_10h_owners.py -v` expected exit0 **8/8** (NOT_RUN until actor executes); optional narrow existing tests, no mandatory blanket -O/full peer/hosted CI. Commit ONLY actor code/test, normal non-force push or approved expected-head lease, re-fetch actor HEAD and all changed SOURCE/Owner/test blobs; report per item, normal command/exit, exact SHA and measured START/END/ELAPSED to #11. Git auth failure=PUSH_BLOCKED not G1, continue safe work. C04 integrates, C05 G1/G2/G3/DONE/STATUS. No test/PASS is claimed by this order publication.
+**TEST/DELIVERY:** Add 8 independently named `unittest` tests to `tests/test_p15_rf035_20261101_11h_event_owners.py` using fake dicts and patched facade globals only. `python -m unittest tests/test_p15_rf035_20261101_11h_event_owners.py -v` expected exit0/8 tests (NOT_RUN until actor). Commit only allowed code/test, normal non-force push or approved expected-HEAD lease, re-fetch actor HEAD, source/Owner/test blob SHAs, and report exact commands/exits, each A1–A8, measured START_KST/END_KST/ELAPSED_MIN to #11. Git auth failure=PUSH_BLOCKED (not G1), pytest absence does not prevent stdlib unittest; continue other safe items. C04 integrates and C05 decides G1/G2/G3; this C03 document commit is DOC_ONLY, not a code MOVE.
 
-## A1 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_lane_decision_table.py::_fmt_pct` @ L116 | CURRENT_BLOB `d291b1d2b065a1e9cb31223c2f21213607235202`
-**TARGET (404 on both refs VERIFIED):** `libs/reporting/q8_lane_pct_projection.py::_fmt_pct`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+## A1 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::row_event_name` @ L11 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
+**TARGET (404 both refs):** `libs/reporting/live_event_name_projection.py::row_event_name`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
 ```python
-def _fmt_pct(value: Any) -> str:
-    if value in (None, ""):
-        return "-"
-    return f"{_float(value):.4f}%"
+def row_event_name(row: Dict[str, Any]) -> str:
+    text = str(row.get("event_name") or "").strip()
+    if text:
+        return text
+    stage = str(row.get("stage") or "").strip()
+    event = str(row.get("event") or "").strip()
+    return ".".join(part for part in (stage, event) if part)
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE _fmt_pct, import libs.reporting.q8_lane_pct_projection as _c03_10_a1_owner; return _c03_10_a1_owner._fmt_pct(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **_float** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_a1_fmt_pct`:** None→'-'; 0.125→'0.1250%'. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #11; continue A2.
+**WRAPPER / CALL-TIME PATCH:** `row_event_name(...)` delegates via `_c03_11_a1_owner.row_event_name(..., facade=sys.modules[__name__])`; Owner resolves no module globals through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
+**TARGETED `test_a1_row_event_name`:** row={'event_name':' scanner.hit '} -> 'scanner.hit'; {'stage':'scanner','event':'hit'} -> 'scanner.hit'; empty -> ''. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A2.
 
-## A2 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_lane_decision_table.py::render_q8_lane_decision_table_markdown` @ L122 | CURRENT_BLOB `d291b1d2b065a1e9cb31223c2f21213607235202`
-**TARGET (404 on both refs VERIFIED):** `libs/reporting/q8_lane_render_projection.py::render_q8_lane_decision_table_markdown`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+## A2 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::event_row_symbol` @ L20 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
+**TARGET (404 both refs):** `libs/reporting/live_event_symbol_projection.py::event_row_symbol`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
 ```python
-def render_q8_lane_decision_table_markdown(payload: Mapping[str, Any]) -> str:
-    gate = payload.get("evaluation_trust_gate") if isinstance(payload.get("evaluation_trust_gate"), Mapping) else {}
-    lines = [
-        f"# Q8 Lane Decision Table - {payload.get('day')}",
-        "",
-        "## Summary",
-        "",
-        f"- payloads: {payload.get('payload_count')}",
-        f"- candidates: {payload.get('candidate_count')}",
-        f"- deduped candidates: {payload.get('deduped_candidate_count')}",
-        f"- duplicates: {payload.get('duplicate_candidate_count')}",
-        f"- dedupe_key: `{', '.join(list(payload.get('dedupe_key') or []))}`",
-        f"- evaluated: {payload.get('evaluated_count')}",
-        f"- forward observed: {payload.get('forward_outcome_available_count')} "
-        f"({float(payload.get('forward_outcome_coverage') or 0.0):.1%})",
-        f"- trust_gate: `{gate.get('status') or '-'}`",
-        f"- promotion_allowed: `{bool(gate.get('promotion_allowed'))}`",
-        f"- trust_block_reasons: `{', '.join(list(gate.get('block_reasons') or gate.get('reasons') or [])) or '-'}`",
-        f"- would-enter: {payload.get('would_enter_count')}",
-        f"- top reasons: {payload.get('reason_summary') or '-'}",
-        "",
-        "## Lane Verdicts",
-        "",
-        "| Lane | Verdict | Decision | n | obs | +5m | +15m | +30m | MFE5 | MAE5 | Rationale |",
-        "|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---|",
-    ]
-    for row in _rows(payload.get("rows")):
-        lines.append(
-            "| "
-            + " | ".join(
-                [
-                    _text(row.get("lane")) or "-",
-                    _text(row.get("verdict")) or "-",
-                    _text(row.get("decision")) or "-",
-                    str(row.get("candidate_count") or 0),
-                    str(row.get("observed_count") or 0),
-                    _fmt_pct(row.get("avg_return_5m_pct")),
-                    _fmt_pct(row.get("avg_return_15m_pct")),
-                    _fmt_pct(row.get("avg_return_30m_pct")),
-                    _fmt_pct(row.get("avg_mfe_5m_pct")),
-                    _fmt_pct(row.get("avg_mae_5m_pct")),
-                    _text(row.get("rationale")) or "-",
-                ]
-            )
-            + " |"
-        )
-    lines += [
-        "",
-        "## Operating Interpretation",
-        "",
-        "- `TRUST_GATE_BLOCKED`: lane signal is visible, but Q8 evidence is not eligible for policy promotion.",
-        "- `MISSED_OPPORTUNITY`: blocked candidates rose afterward. This is a review target, not direct permission to buy.",
-        "- `GOOD_BLOCK`: blocked candidates underperformed after the block. Keep the gate under observation.",
-        "- `DATA_INCOMPLETE`: sample or coverage is insufficient for a policy conclusion.",
-        "",
-        "## Current Action",
-        "",
-        "No new behavior patch is implied by this table unless the Q8 trust gate allows promotion review.",
-        "",
-    ]
-    return "\n".join(lines)
+def event_row_symbol(row: Dict[str, Any]) -> str:
+    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+    return normalize_symbol(
+        row.get("symbol")
+        or payload.get("symbol")
+        or payload.get("selected_symbol")
+        or payload.get("position_symbol")
+        or "",
+        allow_test_symbols=True,
+    )
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE render_q8_lane_decision_table_markdown, import libs.reporting.q8_lane_render_projection as _c03_10_a2_owner; return _c03_10_a2_owner.render_q8_lane_decision_table_markdown(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **Mapping,_rows,_text,_fmt_pct** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_a2_render_q8_lane_decision_table_markdown`:** minimal day/rows=[] produces table and no trading permission; patched _rows. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #11; continue A3.
+**WRAPPER / CALL-TIME PATCH:** `event_row_symbol(...)` delegates via `_c03_11_a2_owner.event_row_symbol(..., facade=sys.modules[__name__])`; Owner resolves `normalize_symbol` through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
+**TARGETED `test_a2_event_row_symbol`:** row={'symbol':'005930'} -> normalize_symbol('005930',allow_test_symbols=True); payload.selected_symbol fallback; monkeypatch SOURCE.normalize_symbol to fake to prove call-time. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A3.
 
-## A3 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_trusted_reaggregation.py::_iter_days` @ L21 | CURRENT_BLOB `47f5e9fcc30d699c0ea2d6d5ea7bf36c3491bfb2`
-**TARGET (404 on both refs VERIFIED):** `libs/reporting/q8_trusted_day_projection.py::_iter_days`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+## A3 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::event_row_name` @ L32 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
+**TARGET (404 both refs):** `libs/reporting/live_event_row_name_projection.py::event_row_name`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
 ```python
-def _iter_days(start: str, end: str) -> Iterable[str]:
-    current = date.fromisoformat(str(start)[:10])
-    final = date.fromisoformat(str(end)[:10])
-    while current <= final:
-        yield current.isoformat()
-        current += timedelta(days=1)
+def event_row_name(row: Dict[str, Any]) -> str:
+    return str(row.get("event_name") or row.get("name") or row.get("event") or "").strip()
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE _iter_days, import libs.reporting.q8_trusted_day_projection as _c03_10_a3_owner; yield from _c03_10_a3_owner._iter_days(<original arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **date,timedelta** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_a3_iter_days`:** 2026-11-01..2026-11-02→two dates; invalid date raises; generator yield-from parity. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #11; continue A4.
+**WRAPPER / CALL-TIME PATCH:** `event_row_name(...)` delegates via `_c03_11_a3_owner.event_row_name(..., facade=sys.modules[__name__])`; Owner resolves no module globals through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
+**TARGETED `test_a3_event_row_name`:** row={'name':'fallback'} -> 'fallback'; {'event_name':'x'} -> 'x'; absent -> ''. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A4.
 
-## A4 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_trusted_reaggregation.py::_fmt_pct` @ L29 | CURRENT_BLOB `47f5e9fcc30d699c0ea2d6d5ea7bf36c3491bfb2`
-**TARGET (404 on both refs VERIFIED):** `libs/reporting/q8_trusted_pct_projection.py::_fmt_pct`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+## A4 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::merge_rows_by_identity` @ L36 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
+**TARGET (404 both refs):** `libs/reporting/live_event_identity_merge_projection.py::merge_rows_by_identity`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
 ```python
-def _fmt_pct(value: Any) -> str:
-    try:
-        return f"{float(value):.2%}"
-    except Exception:
-        return "-"
-```
-**THIN WRAPPER / PATCH:** inside SOURCE _fmt_pct, import libs.reporting.q8_trusted_pct_projection as _c03_10_a4_owner; return _c03_10_a4_owner._fmt_pct(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **none** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_a4_fmt_pct`:** 0.125→'12.50%'; invalid→'-'. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #11; continue A5.
-
-## A5 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_trusted_reaggregation.py::_fmt_num` @ L36 | CURRENT_BLOB `47f5e9fcc30d699c0ea2d6d5ea7bf36c3491bfb2`
-**TARGET (404 on both refs VERIFIED):** `libs/reporting/q8_trusted_num_projection.py::_fmt_num`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
-```python
-def _fmt_num(value: Any) -> str:
-    try:
-        return f"{int(value):,}"
-    except Exception:
-        return "0"
-```
-**THIN WRAPPER / PATCH:** inside SOURCE _fmt_num, import libs.reporting.q8_trusted_num_projection as _c03_10_a5_owner; return _c03_10_a5_owner._fmt_num(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **none** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_a5_fmt_num`:** 1234→'1,234'; invalid→'0'. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #11; continue A6.
-
-## A6 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_trusted_reaggregation.py::_watchlist_rows` @ L43 | CURRENT_BLOB `47f5e9fcc30d699c0ea2d6d5ea7bf36c3491bfb2`
-**TARGET (404 on both refs VERIFIED):** `libs/reporting/q8_trusted_watchlist_projection.py::_watchlist_rows`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
-```python
-def _watchlist_rows(scorecard: Mapping[str, Any]) -> List[Dict[str, Any]]:
-    return [dict(row) for row in list(scorecard.get("promotion_watchlist") or []) if isinstance(row, Mapping)]
-```
-**THIN WRAPPER / PATCH:** inside SOURCE _watchlist_rows, import libs.reporting.q8_trusted_watchlist_projection as _c03_10_a6_owner; return _c03_10_a6_owner._watchlist_rows(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **Mapping** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_a6_watchlist_rows`:** watchlist [{x:1},None]→[{x:1}] copy, absent→[]. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #11; continue A7.
-
-## A7 | RF-035 CLAUDE_A | SOURCE `libs/reporting/q8_trusted_reaggregation.py::render_q8_trusted_reaggregation_markdown` @ L126 | CURRENT_BLOB `47f5e9fcc30d699c0ea2d6d5ea7bf36c3491bfb2`
-**TARGET (404 on both refs VERIFIED):** `libs/reporting/q8_trusted_render_projection.py::render_q8_trusted_reaggregation_markdown`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
-```python
-def render_q8_trusted_reaggregation_markdown(payload: Mapping[str, Any]) -> str:
-    date_range = payload.get("range") if isinstance(payload.get("range"), Mapping) else {}
-    aggregate = payload.get("aggregate") if isinstance(payload.get("aggregate"), Mapping) else {}
-    daily = list(payload.get("daily") or [])
-    lines = [
-        f"# Q8 Trusted Reaggregation ({date_range.get('start') or '-'} ~ {date_range.get('end') or '-'})",
-        "",
-        "This report is evaluation-only. It does not change trading behavior.",
-        "",
-        "## Summary",
-        "",
-        f"- raw candidates: **{_fmt_num(aggregate.get('candidate_count'))}**",
-        f"- deduped candidates: **{_fmt_num(aggregate.get('deduped_candidate_count'))}**",
-        f"- duplicate count/rate: **{_fmt_num(aggregate.get('duplicate_candidate_count'))} / {_fmt_pct(aggregate.get('duplicate_rate'))}**",
-        f"- trusted forward: **{_fmt_num(aggregate.get('forward_outcome_available_count'))} / {_fmt_pct(aggregate.get('trusted_forward_coverage'))}**",
-        f"- promotion allowed days: **{_fmt_num(aggregate.get('promotion_allowed_day_count'))}**",
-        f"- cumulative trust gate: **`{aggregate.get('cumulative_trust_gate_status') or 'not_available'}`**",
-        f"- cumulative promotion allowed: **`{bool(aggregate.get('cumulative_promotion_allowed'))}`**",
-        f"- cumulative block reasons: **{', '.join(str(x) for x in list(aggregate.get('cumulative_trust_reasons') or [])) or '-'}**",
-        "",
-        "## Daily Trust Gate",
-        "",
-        "| Day | Raw | Deduped | Dup Rate | Trusted Forward | Trust Gate | Promotion | Reasons |",
-        "|---|---:|---:|---:|---:|---|---|---|",
-    ]
-    for row in daily:
-        reasons = ", ".join(str(x) for x in list(row.get("trust_reasons") or [])) or "-"
-        lines.append(
-            "| {day} | {raw} | {deduped} | {dup_rate} | {forward} ({coverage}) | `{gate}` | `{allowed}` | {reasons} |".format(
-                day=row.get("day") or "-",
-                raw=_fmt_num(row.get("candidate_count")),
-                deduped=_fmt_num(row.get("deduped_candidate_count")),
-                dup_rate=_fmt_pct(row.get("duplicate_rate")),
-                forward=_fmt_num(row.get("trusted_forward_count")),
-                coverage=_fmt_pct(row.get("trusted_forward_coverage")),
-                gate=row.get("trust_gate_status") or "-",
-                allowed=bool(row.get("promotion_allowed")),
-                reasons=reasons,
-            )
-        )
-    lines += [
-        "",
-        "## Promotion Watchlist",
-        "",
-        "| Day | Candidate | Observed | Days | +5m | +15m | MAE5 | State |",
-        "|---|---|---:|---:|---:|---:|---:|---|",
-    ]
-    watch_count = 0
-    for item in list(aggregate.get("promotion_watchlist") or []):
-        if not isinstance(item, Mapping):
-            continue
-        watch_count += 1
-        lines.append(
-            "| {day} | `{name}` | {obs}/{count} | {days} | {ret5} | {ret15} | {mae5} | `{state}` |".format(
-                day="cumulative",
-                name=item.get("name") or "-",
-                obs=_fmt_num(item.get("observed_count")),
-                count=_fmt_num(item.get("candidate_count")),
-                days=_fmt_num(item.get("observed_day_count")),
-                ret5=f"{float(item.get('avg_return_5m_pct')):.4f}%" if item.get("avg_return_5m_pct") is not None else "-",
-                ret15=f"{float(item.get('avg_return_15m_pct')):.4f}%" if item.get("avg_return_15m_pct") is not None else "-",
-                mae5=f"{float(item.get('avg_mae_5m_pct')):.4f}%" if item.get("avg_mae_5m_pct") is not None else "-",
-                state=item.get("review_state") or "-",
-            )
-        )
-    for row in daily:
-        for item in list(row.get("promotion_watchlist") or []):
-            if not isinstance(item, Mapping):
+def merge_rows_by_identity(*collections: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    out: List[Dict[str, Any]] = []
+    seen: set[tuple[str, str, str, str]] = set()
+    for rows in collections:
+        for row in list(rows or []):
+            if not isinstance(row, dict):
                 continue
-            watch_count += 1
-            lines.append(
-                "| {day} | `{name}` | {obs}/{count} | {days} | {ret5} | {ret15} | {mae5} | `{state}` |".format(
-                    day=row.get("day") or "-",
-                    name=item.get("name") or "-",
-                    obs=_fmt_num(item.get("observed_count")),
-                    count=_fmt_num(item.get("candidate_count")),
-                    days=_fmt_num(item.get("observed_day_count")),
-                    ret5=f"{float(item.get('avg_return_5m_pct')):.4f}%" if item.get("avg_return_5m_pct") is not None else "-",
-                    ret15=f"{float(item.get('avg_return_15m_pct')):.4f}%" if item.get("avg_return_15m_pct") is not None else "-",
-                    mae5=f"{float(item.get('avg_mae_5m_pct')):.4f}%" if item.get("avg_mae_5m_pct") is not None else "-",
-                    state=item.get("review_state") or "-",
-                )
+            key = (
+                str(row.get("ts") or row.get("timestamp") or ""),
+                str(row.get("run_id") or ""),
+                event_row_name(row),
+                event_row_symbol(row),
             )
-    if watch_count <= 0:
-        lines.append("| - | - | 0/0 | 0 | - | - | - | no_watchlist |")
-    lines += [
-        "",
-        "## Decision Rule",
-        "",
-        "- PROMOTE is not allowed unless the daily trust gate has `promotion_allowed=true`.",
-        f"- A day is promotion-review eligible only when trusted forward count >= {TRUSTED_FORWARD_MIN_COUNT}, "
-        f"trusted coverage >= {TRUSTED_FORWARD_MIN_COVERAGE:.0%}, and duplicate rate <= {DUPLICATE_RATE_MAX:.0%}.",
-        f"- Candidate-level promotion requires at least {PROMOTION_CANDIDATE_MIN_OBSERVED} trusted observations "
-        f"across at least {PROMOTION_CANDIDATE_MIN_DAYS} observed days.",
-        "- Cross-day or stale forward observations are excluded from trusted forward counts.",
-        "- Duplicate candidates are removed before forward performance is averaged.",
-    ]
-    return "\n".join(lines)
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append(row)
+    return out
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE render_q8_trusted_reaggregation_markdown, import libs.reporting.q8_trusted_render_projection as _c03_10_a7_owner; return _c03_10_a7_owner.render_q8_trusted_reaggregation_markdown(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **Mapping,_fmt_num,_fmt_pct,TRUSTED_FORWARD_MIN_COUNT,TRUSTED_FORWARD_MIN_COVERAGE,DUPLICATE_RATE_MAX,PROMOTION_CANDIDATE_MIN_OBSERVED,PROMOTION_CANDIDATE_MIN_DAYS** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_a7_render_q8_trusted_reaggregation_markdown`:** minimal payload range/aggregate/daily=[] yields heading and no_watchlist; fake one daily and one watchlist row preserve Markdown byte order. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #11; continue A8.
+**WRAPPER / CALL-TIME PATCH:** `merge_rows_by_identity(...)` delegates via `_c03_11_a4_owner.merge_rows_by_identity(..., facade=sys.modules[__name__])`; Owner resolves `event_row_name`, `event_row_symbol` through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
+**TARGETED `test_a4_merge_rows_by_identity`:** two equal (ts,run_id,event name,symbol) dicts -> first object retained, order preserved, duplicate removed; non-dict ignored; monkeypatch SOURCE.event_row_name/event_row_symbol. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A5.
 
-## A8 | RF-035 CLAUDE_A | SOURCE `libs/reporting/quant_shadow_forward_outcomes.py::_normalize_rows` @ L60 | CURRENT_BLOB `f53b8f56a1c6afca60b46eb8cc18568c561504d9`
-**TARGET (404 on both refs VERIFIED):** `libs/reporting/quant_forward_normalize_projection.py::_normalize_rows`. MOVE EXACT ORIGINAL executable BODY (below) to this new Owner; remove original computation and leave same-signature thin facade wrapper. No duplicate body, no Owner→SOURCE import.
+## A5 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::filter_canonical_events` @ L56 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
+**TARGET (404 both refs):** `libs/reporting/live_event_canonical_filter_projection.py::filter_canonical_events`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
 ```python
-def _normalize_rows(value: Any) -> list[Dict[str, Any]]:
-    if isinstance(value, Mapping) and isinstance(value.get("rows"), list):
-        raw_rows = value.get("rows") or []
-    elif isinstance(value, list):
-        raw_rows = value
-    else:
-        raw_rows = []
-    rows: list[Dict[str, Any]] = []
-    for raw in raw_rows:
-        if not isinstance(raw, Mapping):
+def filter_canonical_events(
+    rows: List[Dict[str, Any]],
+    *,
+    run_ids: List[str],
+    agent: str,
+    event_names: List[str],
+) -> List[Dict[str, Any]]:
+    run_set = {str(item or "").strip() for item in list(run_ids or []) if str(item or "").strip()}
+    names = {str(item or "").strip() for item in list(event_names or []) if str(item or "").strip()}
+    out: List[Dict[str, Any]] = []
+    for row in rows:
+        if run_set and str(row.get("run_id") or "").strip() not in run_set:
             continue
-        ts = _to_int(raw.get("ts"), 0)
-        close = _to_float(raw.get("close") or raw.get("price"), None)
-        if ts <= 0 or close is None or close <= 0:
+        row_agent = str(row.get("agent") or row.get("stage") or "").strip().lower()
+        if row_agent != str(agent or "").strip().lower():
             continue
-        high = _to_float(raw.get("high"), close) or close
-        low = _to_float(raw.get("low"), close) or close
-        rows.append(
+        if names and row_event_name(row) not in names:
+            continue
+        out.append(
             {
-                "ts": ts,
-                "close": float(close),
-                "high": float(high),
-                "low": float(low),
-                "raw_ts": _text(raw.get("raw_ts") or raw.get("datetime") or raw.get("time")),
+                "ts": str(row.get("ts") or ""),
+                "event_name": row_event_name(row),
+                "level": str(row.get("level") or "info"),
+                "run_id": str(row.get("run_id") or ""),
+                "trade_id": str(row.get("trade_id") or ""),
+                "session_id": str(row.get("session_id") or ""),
+                "cycle_id": str(row.get("cycle_id") or ""),
+                "agent": str(row.get("agent") or row.get("stage") or ""),
+                "phase": str(row.get("phase") or ""),
+                "symbol": str(row.get("symbol") or ""),
+                "payload": dict(row.get("payload") or {}) if isinstance(row.get("payload"), dict) else {},
             }
         )
-    rows.sort(key=lambda item: int(item["ts"]))
-    return rows
+    out.sort(key=lambda item: to_epoch(item.get("ts")) or 0)
+    return out
 ```
-**THIN WRAPPER / PATCH:** inside SOURCE _normalize_rows, import libs.reporting.quant_forward_normalize_projection as _c03_10_a8_owner; return _c03_10_a8_owner._normalize_rows(<original positional/keyword arguments>, facade=sys.modules[__name__]). Owner accepts additional keyword-only `facade` and resolves call-time globals **Mapping,_to_int,_to_float,_text** through `facade` (where `none`, no source-global seam). Owner must preserve original signature semantics, default args, output/error ordering, iterator behavior, copy/alias, and caller monkeypatch behavior. If a function requires globals, do not silently snapshot them at import. Import sys in SOURCE only if absent. No changes to public callers.
-**NORMAL TARGETED `test_a8_normalize_rows`:** rows=[{ts:2,close:3,high:4,low:2},{ts:1,price:2},{ts:0,close:4}] => sorted ts [1,2], copies and high/low defaults; patched _to_int and exception parity. Capture original golden before editing; compare original vs wrapper vs direct Owner, positive/negative/exception; patch facade globals where applicable. AST check SOURCE has no old computation and TARGET has actual BODY; no cyclic imports. Use only in-memory/fake/temp fixture, never live effects. **BLOCKED→NEXT:** exact SHA/error to #11; continue all other safe items and push.
+**WRAPPER / CALL-TIME PATCH:** `filter_canonical_events(...)` delegates via `_c03_11_a5_owner.filter_canonical_events(..., facade=sys.modules[__name__])`; Owner resolves `row_event_name`, `to_epoch` through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
+**TARGETED `test_a5_filter_canonical_events`:** rows with agent=strategist/run_id=r1, timestamp 2 and 1, event_names=['strategist.decision_frame'] -> chronological ts 1,2; wrong agent/run excluded; payload copied; patch SOURCE.to_epoch. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A6.
 
-## FUTURE RESERVE — RESERVE_NOT_VERIFIED 0/6 (DESIGN ONLY, NOT EXECUTABLE)
-All six previously VERIFIED candidates have been promoted into this executable order and cannot be reused as future reserve. RESERVE_NOT_VERIFIED 0/6: next analyze remaining RF-035 reporting pure functions, verify SOURCE/TARGET blob and owner exclusivity before labeling VERIFIED. Do not infer safe new functions from names alone. Next C03 must independently inspect new SOURCE BODY/blob, Owner exclusivity, target 404 on both refs, effect/monkeypatch, normal fixture before issuing or marking VERIFIED.
+## A6 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::resolve_strategist_source_run_ids` @ L93 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
+**TARGET (404 both refs):** `libs/reporting/live_event_strategist_source_ids_projection.py::resolve_strategist_source_run_ids`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
+```python
+def resolve_strategist_source_run_ids(
+    *,
+    event_rows: List[Dict[str, Any]],
+    lifecycle: Dict[str, Any],
+) -> Tuple[List[str], Dict[str, str]]:
+    lifecycle_run_ids = [str(x or "").strip() for x in list(lifecycle.get("run_ids_all") or []) if str(x or "").strip()]
+    if not lifecycle_run_ids:
+        return [], {}
 
-**COUNTS:** previous REMOTE_DONE as above; NEW_READY=8 actual source BODY MOVEs, FUTURE_RESERVE_VERIFIED=0/6; C03 DOC_ONLY code G1/G2/G3=0 and RF_DONE_DELTA=0. RunLab Exited(255), RUN_SOURCE_SHA=UNKNOWN; do not touch runtime.
+    strategist_event_names = {
+        "strategist.market_context_snapshot",
+        "strategist.global_sentiment_breakdown",
+        "strategist.news_evidence_ranked",
+        "strategist.decision_frame",
+        "strategist.llm_response_saved",
+    }
+    strategist_run_ids = {
+        str(row.get("run_id") or "").strip()
+        for row in event_rows
+        if str(row.get("run_id") or "").strip() in set(lifecycle_run_ids)
+        and str(row.get("agent") or row.get("stage") or "").strip().lower() == "strategist"
+        and row_event_name(row) in strategist_event_names
+    }
+
+    strategist_frame_rows = [
+        row
+        for row in event_rows
+        if str(row.get("agent") or row.get("stage") or "").strip().lower() == "strategist"
+        and row_event_name(row) == "strategist.decision_frame"
+    ]
+    strategist_frame_rows.sort(key=lambda row: to_epoch(row.get("ts")) or 0)
+
+    linked_cached_frames: Dict[str, str] = {}
+    for run_id in lifecycle_run_ids:
+        if run_id in strategist_run_ids:
+            continue
+        fast_path_rows = [
+            row
+            for row in event_rows
+            if str(row.get("run_id") or "").strip() == run_id
+            and row_event_name(row) == "commander_router.fast_path"
+        ]
+        if not fast_path_rows:
+            continue
+        fast_path = fast_path_rows[-1]
+        payload = fast_path.get("payload") if isinstance(fast_path.get("payload"), dict) else {}
+        if str(payload.get("path") or "").strip() != "integrated_chain_cached_frame":
+            continue
+        target_ts = to_epoch(fast_path.get("ts")) or 0
+        reuse_sec = max(30, safe_int(payload.get("reuse_sec"), 180))
+        candidate_rows = [
+            row
+            for row in strategist_frame_rows
+            if str(row.get("run_id") or "").strip() != run_id
+            and (to_epoch(row.get("ts")) or 0) <= target_ts
+            and target_ts - (to_epoch(row.get("ts")) or 0) <= reuse_sec + 30
+        ]
+        if not candidate_rows:
+            continue
+        source_run_id = str(candidate_rows[-1].get("run_id") or "").strip()
+        if not source_run_id:
+            continue
+        strategist_run_ids.add(source_run_id)
+        linked_cached_frames[run_id] = source_run_id
+
+    return sorted(strategist_run_ids), linked_cached_frames
+```
+**WRAPPER / CALL-TIME PATCH:** `resolve_strategist_source_run_ids(...)` delegates via `_c03_11_a6_owner.resolve_strategist_source_run_ids(..., facade=sys.modules[__name__])`; Owner resolves `row_event_name`, `to_epoch`, `safe_int` through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
+**TARGETED `test_a6_resolve_strategist_source_run_ids`:** lifecycle={'run_ids_all':['r1']} + direct strategist decision_frame run r1 -> (['r1'],{}); cached commander fast_path r1 at ts=200 with strategist frame r0 at ts=190 and reuse_sec=180 -> (['r0'],{'r1':'r0'}); patch SOURCE.safe_int/to_epoch. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A7.
+
+## A7 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::expand_targeted_run_ids_with_cached_strategist_sources` @ L161 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
+**TARGET (404 both refs):** `libs/reporting/live_event_expand_run_ids_projection.py::expand_targeted_run_ids_with_cached_strategist_sources`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
+```python
+def expand_targeted_run_ids_with_cached_strategist_sources(
+    *,
+    event_rows: List[Dict[str, Any]],
+    targeted_run_ids: Iterable[str],
+) -> Set[str]:
+    out: Set[str] = {
+        str(run_id or "").strip()
+        for run_id in list(targeted_run_ids or [])
+        if str(run_id or "").strip()
+    }
+    if not out:
+        return out
+
+    strategist_frame_rows = [
+        row
+        for row in list(event_rows or [])
+        if str(row.get("agent") or row.get("stage") or "").strip().lower() == "strategist"
+        and row_event_name(row) == "strategist.decision_frame"
+    ]
+    strategist_frame_rows.sort(key=lambda row: to_epoch(row.get("ts")) or 0)
+    if not strategist_frame_rows:
+        return out
+
+    fast_path_rows = [
+        row
+        for row in list(event_rows or [])
+        if str(row.get("run_id") or "").strip() in out
+        and row_event_name(row) == "commander_router.fast_path"
+    ]
+    for fast_path in fast_path_rows:
+        payload = fast_path.get("payload") if isinstance(fast_path.get("payload"), dict) else {}
+        if str(payload.get("path") or "").strip() != "integrated_chain_cached_frame":
+            continue
+        target_run_id = str(fast_path.get("run_id") or "").strip()
+        target_ts = to_epoch(fast_path.get("ts")) or 0
+        reuse_sec = max(30, safe_int(payload.get("reuse_sec"), 180))
+        candidate_rows = [
+            row
+            for row in strategist_frame_rows
+            if str(row.get("run_id") or "").strip() != target_run_id
+            and (to_epoch(row.get("ts")) or 0) <= target_ts
+            and target_ts - (to_epoch(row.get("ts")) or 0) <= reuse_sec + 30
+        ]
+        if not candidate_rows:
+            continue
+        source_run_id = str(candidate_rows[-1].get("run_id") or "").strip()
+        if source_run_id:
+            out.add(source_run_id)
+    return out
+```
+**WRAPPER / CALL-TIME PATCH:** `expand_targeted_run_ids_with_cached_strategist_sources(...)` delegates via `_c03_11_a7_owner.expand_targeted_run_ids_with_cached_strategist_sources(..., facade=sys.modules[__name__])`; Owner resolves `row_event_name`, `to_epoch`, `safe_int` through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
+**TARGETED `test_a7_expand_targeted_run_ids_with_cached_strategist_sources`:** targeted_run_ids=['r1'], commander fast_path r1 ts=200 and strategist frame r0 ts=190 -> {'r1','r0'}; absent/expired cached frame -> {'r1'}; no clock or disk. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A8.
+
+## A8 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::latest_event_payload` @ L212 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
+**TARGET (404 both refs):** `libs/reporting/live_event_latest_payload_projection.py::latest_event_payload`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
+```python
+def latest_event_payload(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    if not rows:
+        return {}
+    payload = rows[-1].get("payload") if isinstance(rows[-1], dict) else {}
+    return dict(payload or {}) if isinstance(payload, dict) else {}
+```
+**WRAPPER / CALL-TIME PATCH:** `latest_event_payload(...)` delegates via `_c03_11_a8_owner.latest_event_payload(..., facade=sys.modules[__name__])`; Owner resolves no module globals through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
+**TARGETED `test_a8_latest_event_payload`:** [{'payload':{'a':1}}] -> {'a':1} new dict, [] -> {}, last non-dict -> {}; original vs facade vs Owner parity. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue all other safe items and push.
+
+## FUTURE RESERVE — VERIFIED 6/6 (DESIGN ONLY; NOT EXECUTABLE, NO SELF-SELECTION)
+
+- **R1 RF-035 CLAUDE_A VERIFIED:** SOURCE `libs/reporting/live_execution_event_evidence.py::headline_count` @ L219 blob `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`; TARGET `libs/reporting/live_event_headline_count_projection.py::headline_count` absent both refs. BODY: `total = 0 for row in list(news_rows or []): if not isinstance(row, dict):` (full original BODY confirmed, not a wrapper); facade seams safe_int; in-memory/no IO, test [{'headline_count':2},{'headline_count':'3'},{}] -> 5; invalid dict skipped. Reserve only; next C03 must revalidate source/target before promotion.
+- **R2 RF-035 CLAUDE_A VERIFIED:** SOURCE `libs/reporting/live_execution_event_evidence.py::hydrate_strategist_payload_from_evidence` @ L228 blob `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`; TARGET `libs/reporting/live_event_hydrate_projection.py::hydrate_strategist_payload_from_evidence` absent both refs. BODY: `strategist_payload: Dict[str, Any], strategist_evidence: Dict[str, Any], ) -> Dict[str, Any]:` (full original BODY confirmed, not a wrapper); facade seams latest_event_payload,safe_float,safe_int,headline_count; in-memory/no IO, test empty evidence preserves supplied payload; fake market_context/decision_frame populates missing keys only, never overwrites existing. Reserve only; next C03 must revalidate source/target before promotion.
+- **R3 RF-035 CLAUDE_A VERIFIED:** SOURCE `libs/reporting/live_execution_report_context.py::null_if_empty` @ L10 blob `52f877f641d552e34e529c95182035a0d1c013ff`; TARGET `libs/reporting/live_report_null_projection.py::null_if_empty` absent both refs. BODY: `if value in (None, ""): return None if isinstance(value, str):` (full original BODY confirmed, not a wrapper); facade seams none; in-memory/no IO, test '  ' -> None; ' hi ' -> 'hi'; 0 -> 0. Reserve only; next C03 must revalidate source/target before promotion.
+- **R4 RF-035 CLAUDE_A VERIFIED:** SOURCE `libs/reporting/live_execution_report_context.py::build_failure_classification` @ L19 blob `52f877f641d552e34e529c95182035a0d1c013ff`; TARGET `libs/reporting/live_report_failure_projection.py::build_failure_classification` absent both refs. BODY: `*, lifecycle: Dict[str, Any], diagnostics: Dict[str, Any],` (full original BODY confirmed, not a wrapper); facade seams none; in-memory/no IO, test empty lifecycle -> entry_failure True; closed without exit -> exit_failure True; reporter missing -> reporting_failure True. Reserve only; next C03 must revalidate source/target before promotion.
+- **R5 RF-035 CLAUDE_A VERIFIED:** SOURCE `libs/reporting/live_execution_report_context.py::to_epoch` @ L51 blob `52f877f641d552e34e529c95182035a0d1c013ff`; TARGET `libs/reporting/live_report_epoch_projection.py::to_epoch` absent both refs. BODY: `if ts is None: return None if isinstance(ts, (int, float)):` (full original BODY confirmed, not a wrapper); facade seams datetime,timezone; in-memory/no IO, test 1970-01-01T00:00:01Z -> 1; invalid -> None; naive UTC parity. Reserve only; next C03 must revalidate source/target before promotion.
+- **R6 RF-035 CLAUDE_A VERIFIED:** SOURCE `libs/reporting/live_execution_report_context.py::utc_day` @ L73 blob `52f877f641d552e34e529c95182035a0d1c013ff`; TARGET `libs/reporting/live_report_utc_day_projection.py::utc_day` absent both refs. BODY: `epoch = to_epoch(ts) if epoch is None: return ""` (full original BODY confirmed, not a wrapper); facade seams to_epoch,datetime,timezone; in-memory/no IO, test epoch 1 -> 1970-01-01; invalid -> ''. Reserve only; next C03 must revalidate source/target before promotion.
+
+**COUNTS:** A-10 REMOTE_DONE=8/8; NEW_READY=8 real SOURCE BODY MOVEs; FUTURE_RESERVE_VERIFIED=6/6; actor implementation/testing NOT_RUN at issuance; C03 DOC_ONLY G1/G2/G3=0, RF_DONE_DELTA=0. RunLab Exited(255), RUN_SOURCE_SHA=UNKNOWN; no runtime action.
