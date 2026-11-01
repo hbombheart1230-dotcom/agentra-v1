@@ -1,5 +1,16 @@
 # C03 — 지팀장 | 구체 실행 설계·A/B 연속 작업 공급
 
+## 2026-11-01 — 홍사장 신규 시정 지시: RF-014 A-12 / RF-009 (최우선)
+
+- RF-014 A-12 원격 `0bce5e386fa5e70e79c2d98d958d4e5d3bf2d089`의 세 SOURCE(`output_snapshots.py`, `output_payloads.py`, `selection_evidence_projection.py`) blob이 `tests/test_p171_v3055_scanner_projection_migration.py`의 역사적 고정값 및 exactly-one-body 불변식과 충돌. **기존 oracle·fixture·고정값 완화/갱신/삭제 금지**. 충돌 해결 전 G3/DONE 금지.
+- 현재 C02 `A-20261101-13`의 A13-R1(세 SOURCE 정확 canonical blob 복원, A-12 전용 Owner/테스트 조건부 정리)과 A13-R2(RF-009 read-only fake node seam 검증)를 **중복 신규 주문 없이 우선 실행**. C03은 C02 계약·진행 상태를 확인하고 미해결 계약은 신규 C02에 완결된 owner 구조로 설계·공급한다. 정당한 계약 변경이 필요하면 승인 전 보류한다.
+- RF-009 `graphs/nodes/scanner_node.py` repeat/risk/NOOP 소비 경로는 fake targeted 테스트로 검증한다. C02 R2의 wrapper→impl 위임 테스트만으로 전체 runtime 소비 경로가 증명되었다고 주장하지 말 것. 실제 repeat/risk/NOOP 분기·상태/부작용 억제의 미검증 범위는 C04에 명시적으로 인계한다. RF-009 소유 코드 무단 변경 금지.
+- **다음 인수 기준:** 충돌 해결된 A 원격 SHA 및 세 blob 증거, 원래 pinned 회귀 + 신규 targeted 정상 실행 exit 0, C04의 선택 통합 SHA·G3 수용 근거. C05만 RF 단계/DONE/STATUS를 판정한다. 정상 테스트가 실패하면 실패 원인과 canonical baseline 차이를 기록하고 수용 보류한다.
+- C03 공급 공백 해소 의무는 유지하되 안전하지 않은 8개 BODY MOVE를 숫자 맞추기로 발행하지 않는다. D00 변경 금지. 이 문서 변경 자체는 G1/G2/G3 개발 실적 0.
+
+---
+
+
 ## 2026-10-30 10:40 KST — 홍사장 직접 지시 · **공급 공백 0 강행 계약** (이하 과거 체크포인트보다 우선)
 
 **적용순위:** D00 신규 "C01/C02 연속 공급" 절 및 여기의 이 절은 이 문서 내부 과거 1~3개 배정·오래된 SHA·RF-031 우선/KEEP-only 최우선/이전 회차 유지 문구보다 우선한다. 기존 FAST-3 G1/G2/G3, Owner 독점·안전 HOLD·실거래 금지·C04/C05 권한은 절대 완화하지 않는다. 이번 명령서 갱신은 C03 문서 작업이며 신규 G1/G2/G3 개발 실적이 아니다.
