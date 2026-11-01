@@ -16,6 +16,8 @@ from libs.runtime.live_loop_lock import pid_exists
 from libs.runtime.live_loop_process_query import read_lock_owner_pid
 from libs.runtime.runtime_output_helpers import latest_event_epoch, parse_stdout_json, tail_text
 from libs.runtime.windows_subprocess import run_hidden
+from libs.runtime.entrypoints import live_session_watch_build_markdown as _a26_build_markdown
+from libs.runtime.entrypoints import live_session_watch_build_console_line as _a26_build_console_line
 KST = timezone.utc
 try:
     from zoneinfo import ZoneInfo
@@ -118,55 +120,7 @@ def evaluate_watch_health(
 
 
 def _build_markdown(snapshot: Dict[str, Any]) -> str:
-    health = snapshot.get("health") if isinstance(snapshot.get("health"), dict) else {}
-    metrics = health.get("metrics") if isinstance(health.get("metrics"), dict) else {}
-    reasons = health.get("reasons") if isinstance(health.get("reasons"), list) else []
-    actions = health.get("recommended_actions") if isinstance(health.get("recommended_actions"), list) else []
-    summary = snapshot.get("summary") if isinstance(snapshot.get("summary"), dict) else {}
-    decision = summary.get("decision") if isinstance(summary.get("decision"), dict) else {}
-    action_counts = decision.get("action_counts") if isinstance(decision.get("action_counts"), dict) else {}
-
-    lines = [
-        f"# Live Session Watch ({snapshot.get('ts_kst')})",
-        "",
-        f"- status: **{health.get('status', 'UNKNOWN')}**",
-        f"- loop_alive: **{bool(snapshot.get('loop_alive'))}** (pid={int(snapshot.get('loop_pid') or 0)})",
-        f"- event_lag_sec: **{snapshot.get('event_lag_sec')}**",
-        f"- summary_rc: **{int(snapshot.get('summary_rc') or 0)}**",
-        "",
-        "## Metrics",
-        "",
-        f"- window_total: **{int(metrics.get('window_total') or 0)}**",
-        f"- decision action_counts: `{json.dumps(action_counts, ensure_ascii=False)}`",
-        f"- llm_error_rate: **{float(metrics.get('llm_error_rate') or 0.0):.2%}**",
-        f"- blocked_rate: **{float(metrics.get('blocked_rate') or 0.0):.2%}**",
-        f"- executed_broker_fail_total: **{int(metrics.get('executed_broker_fail_total') or 0)}**",
-        "",
-        "## Reasons",
-        "",
-    ]
-    if reasons:
-        for r in reasons:
-            lines.append(f"- {str(r)}")
-    else:
-        lines.append("- none")
-    lines.extend(["", "## Recommended Actions", ""])
-    if actions:
-        for a in actions:
-            lines.append(f"- {str(a)}")
-    else:
-        lines.append("- none")
-    lines.extend(
-        [
-            "",
-            "## Artifacts",
-            "",
-            f"- summary_report_json_path: `{snapshot.get('summary_report_json_path')}`",
-            f"- summary_report_md_path: `{snapshot.get('summary_report_md_path')}`",
-            f"- watch_jsonl_path: `{snapshot.get('watch_jsonl_path')}`",
-        ]
-    )
-    return "\n".join(lines)
+    return _a26_build_markdown._build_markdown(snapshot=snapshot, facade=sys.modules[__name__])
 
 
 def _run_live_summary(
@@ -304,22 +258,7 @@ def _run_once(args: argparse.Namespace) -> Dict[str, Any]:
 
 
 def _build_console_line(snapshot: Dict[str, Any]) -> str:
-    health = snapshot.get("health") if isinstance(snapshot.get("health"), dict) else {}
-    metrics = health.get("metrics") if isinstance(health.get("metrics"), dict) else {}
-    summary = snapshot.get("summary") if isinstance(snapshot.get("summary"), dict) else {}
-    decision = summary.get("decision") if isinstance(summary.get("decision"), dict) else {}
-    actions = decision.get("action_counts") if isinstance(decision.get("action_counts"), dict) else {}
-    return (
-        f"[{snapshot.get('ts_kst')}] status={health.get('status')} "
-        f"loop_alive={bool(snapshot.get('loop_alive'))} "
-        f"lag_sec={snapshot.get('event_lag_sec')} "
-        f"window={int(metrics.get('window_total') or 0)} "
-        f"buy={int(actions.get('BUY') or 0)} "
-        f"sell={int(actions.get('SELL') or 0)} "
-        f"noop={int(actions.get('NOOP') or 0)} "
-        f"llm_error_rate={float(metrics.get('llm_error_rate') or 0.0):.2%} "
-        f"blocked_rate={float(metrics.get('blocked_rate') or 0.0):.2%}"
-    )
+    return _a26_build_console_line._build_console_line(snapshot=snapshot, facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:
