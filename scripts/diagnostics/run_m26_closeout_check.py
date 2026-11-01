@@ -61,32 +61,8 @@ def _run_gate_json(
 
 
 def _prepare_candidate_dataset(candidate_root: Path, *, day: str) -> None:
-    # Overwrite candidate timeline so candidate clearly outperforms baseline on realized PnL.
-    _write_jsonl(
-        candidate_root / "execution" / "intents.jsonl",
-        [
-            {"ts": f"{day}T00:01:00+00:00", "intent_id": "c-intent-1", "symbol": "005930", "action": "BUY", "qty": 1},
-            {"ts": f"{day}T00:02:00+00:00", "intent_id": "c-intent-2", "symbol": "005930", "action": "SELL", "qty": 1},
-        ],
-    )
-    _write_jsonl(
-        candidate_root / "execution" / "order_status.jsonl",
-        [
-            {"ts": f"{day}T00:01:05+00:00", "intent_id": "c-intent-1", "status": "filled"},
-            {"ts": f"{day}T00:02:05+00:00", "intent_id": "c-intent-2", "status": "filled"},
-        ],
-    )
-    _write_jsonl(
-        candidate_root / "execution" / "fills.jsonl",
-        [
-            {"ts": f"{day}T00:01:05+00:00", "intent_id": "c-intent-1", "fill_price": 100, "fill_qty": 1},
-            {"ts": f"{day}T00:02:05+00:00", "intent_id": "c-intent-2", "fill_price": 115, "fill_qty": 1},
-        ],
-    )
-    (candidate_root / "market" / "ohlcv_1d.csv").write_text(
-        f"ts,symbol,open,high,low,close,volume\n{day}T00:00:00+00:00,005930,100,116,99,115,1000\n",
-        encoding="utf-8",
-    )
+    from scripts.diagnostics import m26_closeout_candidate_projection as _c03_11_k4_owner
+    return _c03_11_k4_owner._prepare_candidate_dataset(candidate_root, day=day, facade=sys.modules[__name__])
 
 
 def _build_parser() -> argparse.ArgumentParser:
