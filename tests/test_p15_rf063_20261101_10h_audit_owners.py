@@ -7,4 +7,5 @@ class T(unittest.TestCase):
  def test_b4_extract_decision_action(self):self.assertEqual(a._extract_decision_action({'payload':{'decision_packet':{'intent':{'action':'buy'}}}}),'BUY')
  def test_b5_extract_allowed(self):self.assertTrue(a._extract_allowed({'payload':{'allowed':True}}));self.assertIsNone(a._extract_allowed({'payload':{'allowed':1}}))
  def test_b6_latest_day(self):self.assertEqual(a._latest_day([{'_day':'2026-10-30'},{'_day':'2026-11-01'}]),'2026-11-01')
+ def test_k2__build_parser(self):self.assertEqual(a._build_parser().parse_args([]).event_log_path,'data/logs/events.jsonl')
 if __name__=='__main__':unittest.main()
