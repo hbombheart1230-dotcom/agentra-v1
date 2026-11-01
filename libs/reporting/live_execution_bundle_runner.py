@@ -1329,7 +1329,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         str(args.trade_report_ai_model).strip()
         if args.trade_report_ai_model
         else str(trade_report_policy.get("llm_primary") or "")
-        or "minimax/minimax-m2.5"
+        or "google/gemma-4-26b-a4b-it:free"
     )
 
     if not day:

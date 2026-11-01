@@ -24,13 +24,17 @@ from libs.llm.openrouter_client import OpenRouterClient
 
 
 ROLE_DEFAULT_MODELS: Dict[str, str] = {
-    "strategist": "deepseek/deepseek-v3.2",
-    "trade_report": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "operator_ui": "minimax/minimax-m2.5",
-    "reporter_intraday": "minimax/minimax-m2.5",
-    "reporter_final": "moonshotai/kimi-k2.5",
-    "daily_report": "moonshotai/kimi-k2.5",
+    "strategist": "openai/gpt-6-luna",
+    "trade_report": "google/gemma-4-26b-a4b-it:free",
+    "operator_ui": "nvidia/nemotron-3.5-lightning:free",
+    "reporter_intraday": "nvidia/nemotron-3.5-lightning:free",
+    "reporter_final": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "daily_report": "nvidia/nemotron-3-ultra-550b-a55b:free",
 }
+REPORTER_FREE_MODELS = frozenset({
+    "nvidia/nemotron-3.5-lightning:free", "google/gemma-4-26b-a4b-it:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free",
+})
 
 
 def _env_model_key(role: str) -> str:
@@ -117,6 +121,8 @@ class LLMRouter:
             model = _sanitize_resolved_model(os.getenv("OPENROUTER_DEFAULT_MODEL", "") or "")
         if not model:
             model = _role_default_model(role)
+        if str(role).lower() in {"trade_report", "operator_ui", "reporter_intraday", "reporter_final", "daily_report"} and model not in REPORTER_FREE_MODELS:
+            model = ""
 
         temperature = float(policy.get("temperature") or os.getenv("OPENROUTER_DEFAULT_TEMPERATURE", "0.2"))
         max_tokens = int(policy.get("max_tokens") or os.getenv("OPENROUTER_DEFAULT_MAX_TOKENS", "512"))
@@ -126,6 +132,8 @@ class LLMRouter:
         if self.client is None:
             return ""
         route = self.resolve(role, policy=policy)
+        if not route.model:
+            return ""
         payload: Dict[str, Any] = {
             "model": route.model,
             "messages": messages,

@@ -8,46 +8,18 @@ from libs.llm import model_catalog_resolve_policy_llm_slot as _slot_owner
 
 
 MODEL_CATALOG: Dict[str, Dict[str, Any]] = {
-    "minimax/minimax-m2.5": {
-        "name": "minimax/minimax-m2.5",
-        "provider": "minimax",
-        "tier": "budget",
-        "cost": "free_or_low",
-        "latency": "fast",
-        "supports_json": True,
-    },
-    "deepseek/deepseek-v3.2": {
-        "name": "deepseek/deepseek-v3.2",
-        "provider": "deepseek",
-        "tier": "standard",
-        "cost": "low",
-        "latency": "medium",
-        "supports_json": True,
-    },
-    "moonshotai/kimi-k2.5": {
-        "name": "moonshotai/kimi-k2.5",
-        "provider": "kimi",
-        "tier": "reasoning",
-        "cost": "medium",
-        "latency": "medium",
-        "supports_json": True,
-    },
+    "openai/gpt-6-luna": {"name": "openai/gpt-6-luna", "provider": "openai", "tier": "budget", "cost": "paid", "latency": "fast", "supports_json": True},
+    "anthropic/claude-haiku-5.5": {"name": "anthropic/claude-haiku-5.5", "provider": "anthropic", "tier": "budget", "cost": "paid", "latency": "fast", "supports_json": True},
+    "nvidia/nemotron-3.5-lightning:free": {"name": "nvidia/nemotron-3.5-lightning:free", "provider": "nvidia", "tier": "free", "cost": "free", "latency": "fast", "supports_json": False},
+    "google/gemma-4-26b-a4b-it:free": {"name": "google/gemma-4-26b-a4b-it:free", "provider": "google", "tier": "free", "cost": "free", "latency": "fast", "supports_json": False},
+    "nvidia/nemotron-3-ultra-550b-a55b:free": {"name": "nvidia/nemotron-3-ultra-550b-a55b:free", "provider": "nvidia", "tier": "free", "cost": "free", "latency": "medium", "supports_json": False},
 }
 
 
 MODEL_PROFILES: Dict[str, List[str]] = {
-    "fast_free": [
-        "minimax/minimax-m2.5",
-        "deepseek/deepseek-v3.2",
-    ],
-    "balanced": [
-        "deepseek/deepseek-v3.2",
-        "minimax/minimax-m2.5",
-    ],
-    "strong_reasoning": [
-        "moonshotai/kimi-k2.5",
-        "deepseek/deepseek-v3.2",
-    ],
+    "fast_free": ["nvidia/nemotron-3.5-lightning:free", "google/gemma-4-26b-a4b-it:free"],
+    "balanced": ["openai/gpt-6-luna", "anthropic/claude-haiku-5.5"],
+    "strong_reasoning": ["nvidia/nemotron-3-ultra-550b-a55b:free", "google/gemma-4-26b-a4b-it:free"],
 }
 
 

@@ -269,7 +269,7 @@ def _resolve_intraday_report_model(source: Dict[str, Any] | None, *, explicit_mo
     return normalize_openrouter_model_name(
         str(explicit_model or "").strip()
         or str(resolved.get("primary") or "").strip()
-        or "minimax/minimax-m2.5"
+        or "google/gemma-4-26b-a4b-it:free"
     )
 
 

@@ -43,7 +43,7 @@ def build_separated_daily_report(daily_model: dict, *, model: str = None) -> dic
     chosen_model = normalize_openrouter_model_name(
         str(model or "").strip()
         or str(llm_slot.get("primary") or "").strip()
-        or "moonshotai/kimi-k2.5"
+        or "nvidia/nemotron-3-ultra-550b-a55b:free"
     )
     return build_separated_report(
         daily_model=daily_model,
