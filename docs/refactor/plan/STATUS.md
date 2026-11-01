@@ -1,4 +1,6 @@
-# Agentra P1.5 — STATUS (2026-11-02 02h KST FAST-3 · RF 93/93 · DONE 44/93 · 신규 +3)
+# Agentra P1.5 — STATUS (2026-11-02 03:45 KST FAST-3 · RF 93/93 · DONE 46/93 · 신규 +2)
+
+**C05 2026-11-02 03:45 KST — 신규 개발 DONE +2: RF-024/025 `01_PENDING/UNASSIGNED→05_DONE`.** 이전 DONE44 보존 → **46/93**, PENDING38/DEV7/PEER2/LEAD0/DONE46/REWORK0, 93 unique. G1 BASE KEEP RF024 17/18, RF025 12/13; 각 SOURCE의 pure BODY MOVE 6/2와 thin wrapper, 보호 효과 HOLD. G2 B27 RF024+RF026 combined normal 8 PASS exit0, A27 RF025 normal 21 PASS exit0. G3 C04 정확 통합 `0f5e19b6` SOURCE/Owner/test RF024 8/8, RF025 4/4 blob 일치, deps 5/5·6/6 동일 G3_REUSE, HEAD `5fe637b4`에서 유지. RF026은 기존 `exit_policy→monitor_exit` 순환 import·RF021 소유 안전 경계 때문에 G1 BLOCKED_POLICY, 새 두 함수의 G2/G3 scoped MET만 수용하고 PENDING 유지. RF030 G3 `_build_run_contexts` 정확 통합 SHA normal fake smoke 필요; RF063 G1 잔여/G3 trade closure C03/B→C04; RF032 G1 validation-id 정책 C03/A+safety 승인. C05 직접 pytest/sync NOT_RUN; real/RunLab/Guard/Step5C/UEF HOLD.
 
 **C05 2026-11-02 02h KST — 신규 개발 DONE +3: RF-038/027/023 `01_PENDING/UNASSIGNED→05_DONE`.** 이전 DONE41 보존 → **44/93**, PENDING40/DEV7/PEER2/LEAD0/DONE44/REWORK0, 93 unique. G1 전수 frozen BASE Owner KEEP: RF038 38/39, RF027 76/77, RF023 20/21; 각 1개 SOURCE의 계산 본문 8/5/2개를 독점 Owner로 분리. G2 B26 정상 8 PASS, A26 정상 72+16 PASS, 모두 exit0. G3 C04 정확 통합 `f3de59d09214bffccdc761045c4417477d303913`, actor↔canonical SOURCE/Owner/test 각각 10/10, 7/7, 4/4 Git blob 동일; G3_REUSE. 같은 통합 SHA 자동 안전 CI #41332796435 SUCCESS(보조). RF030은 Owner 15/16 KEEP 및 A26 정상 14 PASS, 그러나 canonical selective hunk SOURCE blob이 A와 달라 정확 통합 대상 targeted smoke 부재로 G3 FIRST_UNMET, PENDING 유지. NEXT RF030 C04 exact integrated normal fake targeted; RF063 C03/B→C04 trade closure; RF032 C03/A+safety validation-id 정책. RF065 writer/UEF HOLD. C05 직접 테스트/공식 sync NOT_RUN; 실거래·RunLab·Guard·Step5C·UEF HOLD.
 
@@ -71,11 +73,11 @@
 ## 현재 물리 큐
 | PENDING | DEV | PEER | LEAD | DONE | REWORK | TOTAL |
 |---:|---:|---:|---:|---:|---:|---:|
-| 46 | 8 | 2 | 0 | 37 | 0 | **93** |
+| 38 | 7 | 2 | 0 | 46 | 0 | **93** |
 
 - **C05 2026-10-29 13:39 KST 최신 판정:** #11 6487113514 A `32d86ba` RF-033 cumulative fail-closed 및 5 exact tests(normal/`-O` cumulative 30, preopen 11, pipeline 7, report 10 PASS worker); integration cumulative blob 상이. A B 정확 `44b36a23` scoped peer 6+16+11 PASS 양 모드(044/045/066, full C4 아님). #12 6486877513 B 과거 A `fffa761a` 혼합 scoped peer 51 PASS·2 deselected 양 모드(028/029/033/034, 현 A보다 112 commits 뒤), `exchange_calendars`/`yaml` 수집 BLOCKED, B local `28fe8c12` push 실패·remote `44b36a23`. CSV RF-033 +5→4097 unique, RF-074 frozen 75. C1~C5 PARTIAL/C6-C7 PENDING, LEAD0/DONE20, 단계 불변. FIRST_UNMET A 033 45-owner/B 044 16,045 10,066 17-owner ACTION; full opposite C4 필요. RF-021 C2/C3 safety, RF-032 C1+validation-id, RF-069 C1+historical 승인 HOLD; #32 `RUN_SOURCE_SHA=UNKNOWN`/OPEN. C05 직접 normal/`-O` pytest/sync `--write`/`--check` NOT_RUN(DNS), exact SHA CI 0. NEXT 원래 C1/negative effect, 최신 SHA full peer, C04 CI; 운영 broker/UEF/--apply HOLD. **C05 13:41 추가:** B `fffa761a` 혼합 peer 51 PASS·2 deselected(normal/`-O`)의 RF-028/029/034 owner source 경로는 현 A `32d86ba`까지 원격 compare에서 변경 0(112 commits/106 paths), 국소 C4 PARTIAL 증거만 수용; RF-033 source 변경 6개는 동등성 제외. B local push 실패, full C4/DONE 아님.
 - **역사 스냅샷 (2026-10-29 당시 LEAD 1건, 현재 LEAD 0):** RF-067은 C1~C4/C6/C7 MET, C5 N/A로 [DONE](queue/05_DONE/CODEX_B/RF-067.md) 이동. hosted [run 40623624802](https://github.com/hbombheart1230-dotcom/agentra/actions/runs/40623624802)의 CI_BASE_SHA `beca55b47e4ad2cde1bc8fc9fe2b8db6cec07989` normal/`-O` SUCCESS. 문서 전용 후속 커밋은 D00 §2.2 동등성 인수이며 HEAD 직접 CI PASS로 표기하지 않음.
-- **DONE 37건:** 기존 DONE36 전부 보존 + RF-061 ToolFacade 3 Owner KEEP_VERIFIED FAST-3 개발 DONE. RF-035 기존 DONE의 추가 BODY MOVE는 신규 종결 미계상. 보호된 real/RunLab 효과는 별도 HOLD.
+- **현재 DONE 46건:** 기존 DONE44 전부 보존 + RF-024/RF-025 신규 2건. RF-035 등 기존 DONE의 추가 BODY MOVE는 신규 종결 미계상. 보호된 real/RunLab 효과는 별도 HOLD.
 
 <!-- RF_LEAD_CHECKLIST_START -->
 ## 우선 14건 RF 원본 체크리스트 — 현재 실물 단계 연동
@@ -99,7 +101,7 @@ FAST-3: **G1 원격 코드·Owner 범위**, **G2 변경 부분 smoke/pytest**, *
 | [RF-065](queue/02_DEVELOPING/CODEX_B/RF-065.md) | DEV · B → A | MET 0 · N/A 0 · 3남음 | G1,G2,G3 | **G1** FAST-3 first unmet (**C05**) | FAST_3_PENDING |
 | [RF-069](queue/03_PEER_REVIEW/CODEX_B/RF-069.md) | PEER · B → A | MET 0 · N/A 0 · 3남음 | G1,G2,G3 | **G1** FAST-3 first unmet (**C05**) | FAST_3_PENDING |
 
-**우선 14건:** **MET 30/42 · N/A 0/42 · 미완료 12/42**. 실제 DEV 2 + PEER 2 + LEAD 0, 물리 DONE 36건.
+**우선 14건:** **MET 30/42 · N/A 0/42 · 미완료 12/42**. 실제 DEV 2 + PEER 2 + LEAD 0, 물리 DONE 46건.
 
 **STATUS 갱신 책임: 지팀장.** RF 변경/증거 인수 및 물리 이동 시 같은 작업에서 `python docs/refactor/tools/sync_rf_checklist_status.py --write` 후 `--check` 확인. 이 도구는 93개 실물 파일의 유일성/단계 수와 우선 14개 원본 체크를 대조하며 RF 합격/안전 실행을 자동 승인하지 않습니다.
 <!-- RF_LEAD_CHECKLIST_END -->
