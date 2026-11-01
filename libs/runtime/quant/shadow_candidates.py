@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+
 import json
 from datetime import UTC, datetime, time as dt_time
 from pathlib import Path
@@ -117,36 +119,8 @@ def _candidate_lookup(rows: Iterable[Any]) -> Dict[str, Dict[str, Any]]:
 
 
 def _candidate_context(row: Mapping[str, Any]) -> Dict[str, Any]:
-    suitability = _as_dict(row.get("tactic_suitability"))
-    factor_snapshot = _candidate_factor_snapshot(row)
-    factors = _as_dict(factor_snapshot.get("factors"))
-    return {
-        "symbol": _symbol(row),
-        "name": _text(row.get("name") or row.get("stock_name") or row.get("symbol_name")),
-        "rank": _rank(row),
-        "score_total": _score(row),
-        "theme": _text(row.get("theme") or row.get("matched_theme") or row.get("theme_name")),
-        "quant_tactic_id": _text(
-            row.get("quant_tactic_id")
-            or row.get("tactic_id")
-            or factor_snapshot.get("tactic_id")
-            or row.get("tactical_strategy")
-        ),
-        "tactic_suitability_tier": _text(
-            row.get("tactic_suitability_tier")
-            or suitability.get("tier")
-        ),
-        "tactic_suitability_score": (
-            row.get("tactic_suitability_score")
-            if row.get("tactic_suitability_score") not in (None, "")
-            else suitability.get("score")
-        ),
-        "entry_quant_cost_floor_state": _text(
-            row.get("entry_quant_cost_floor_state")
-            or row.get("cost_floor_state")
-            or factors.get("cost_floor_state")
-        ),
-    }
+    from . import shadow_candidates_candidate_context as _owner
+    return _owner._candidate_context(row, facade=sys.modules[__name__])
 
 
 def _cost_floor_state_from_entry(entry_info: Mapping[str, Any]) -> str:
@@ -196,33 +170,8 @@ def _candidate_factor_snapshot(row: Mapping[str, Any]) -> Dict[str, Any]:
 
 
 def _normalize_minute_rows(value: Any) -> List[Dict[str, Any]]:
-    if isinstance(value, Mapping) and isinstance(value.get("rows"), list):
-        raw_rows = list(value.get("rows") or [])
-    elif isinstance(value, list):
-        raw_rows = list(value)
-    else:
-        raw_rows = []
-    rows: List[Dict[str, Any]] = []
-    for raw in raw_rows:
-        if not isinstance(raw, Mapping):
-            continue
-        ts = _float(raw.get("ts"), None)
-        close = _float(raw.get("close") or raw.get("price"), None)
-        if ts is None or close is None or close <= 0:
-            continue
-        rows.append(
-            {
-                "ts": int(ts),
-                "open": _float(raw.get("open"), close),
-                "high": _float(raw.get("high"), close),
-                "low": _float(raw.get("low"), close),
-                "close": float(close),
-                "volume": _float(raw.get("volume"), None),
-                "raw_ts": _text(raw.get("raw_ts") or raw.get("datetime") or raw.get("time")),
-            }
-        )
-    rows.sort(key=lambda item: int(item["ts"]))
-    return rows
+    from . import shadow_candidates_normalize_minute_rows as _owner
+    return _owner._normalize_minute_rows(value, facade=sys.modules[__name__])
 
 
 def _minute_root(state: Mapping[str, Any]) -> Dict[str, Any]:
@@ -240,37 +189,8 @@ def _minute_root(state: Mapping[str, Any]) -> Dict[str, Any]:
 
 
 def _market_snapshot_for_symbol(state: Mapping[str, Any], symbol: str, *, now_epoch: int) -> Dict[str, Any]:
-    rows = _normalize_minute_rows(_minute_root(state).get(symbol))
-    if not rows:
-        return {"available": False, "reason": "minute_rows_unavailable"}
-    now_day = datetime.fromtimestamp(int(now_epoch), tz=ZoneInfo("Asia/Seoul")).date()
-    same_day_rows = [
-        row
-        for row in rows
-        if datetime.fromtimestamp(int(row.get("ts") or 0), tz=ZoneInfo("Asia/Seoul")).date()
-        == now_day
-    ]
-    if not same_day_rows:
-        latest = rows[-1]
-        return {
-            "available": False,
-            "reason": "same_day_minute_rows_unavailable",
-            "latest_epoch": int(latest.get("ts") or 0),
-            "latest_raw_ts": _text(latest.get("raw_ts")),
-        }
-    usable = [
-        row for row in same_day_rows if int(row.get("ts") or 0) <= int(now_epoch)
-    ]
-    if not usable:
-        return {"available": False, "reason": "same_day_baseline_not_reached"}
-    baseline = usable[-1]
-    return {
-        "available": True,
-        "baseline_epoch": int(baseline["ts"]),
-        "baseline_price": float(baseline["close"]),
-        "baseline_raw_ts": _text(baseline.get("raw_ts")),
-        "source": "state.minute_ohlcv_by_symbol",
-    }
+    from . import shadow_candidates_market_snapshot_for_symbol as _owner
+    return _owner._market_snapshot_for_symbol(state, symbol, now_epoch=now_epoch, facade=sys.modules[__name__])
 
 
 def _attach_market_snapshot(row: Dict[str, Any], state: Mapping[str, Any], *, now_epoch: int) -> Dict[str, Any]:
@@ -401,54 +321,8 @@ def _cost_ok_for_opening_probe(row: Mapping[str, Any]) -> bool:
 
 
 def _opening_probe_payload(row: Mapping[str, Any], *, opening_minutes: int | None) -> Dict[str, Any]:
-    if opening_minutes is None or opening_minutes > 20:
-        return {
-            "eligible": False,
-            "would_probe": False,
-            "reason": "outside_opening_window",
-            "minutes_since_open": opening_minutes,
-        }
-
-    factors = _factor_snapshot(row)
-    volume_ratio = _float(row.get("volume_ratio"), _float(factors.get("volume_ratio"), 0.0)) or 0.0
-    vwap_distance = _float(row.get("vwap_distance"), _float(factors.get("vwap_distance_pct"), 0.0)) or 0.0
-    human_chart_entry_score = _float(factors.get("human_chart_entry_score"), 0.0) or 0.0
-    breakout_ok = _bool(row.get("breakout_ok")) or _bool(factors.get("breakout_ok"))
-    weighted_score_passed = _bool(factors.get("weighted_score_passed"))
-    cost_ok = _cost_ok_for_opening_probe(row)
-    momentum_ok = bool(
-        cost_ok
-        and volume_ratio >= 0.8
-        and vwap_distance >= 0.0
-        and (
-            breakout_ok
-            or weighted_score_passed
-            or human_chart_entry_score >= 0.65
-        )
-    )
-    reason_parts: List[str] = []
-    if not cost_ok:
-        reason_parts.append("cost_edge_not_met")
-    if volume_ratio < 0.8:
-        reason_parts.append("volume_ratio_below_probe_floor")
-    if vwap_distance < 0.0:
-        reason_parts.append("below_vwap")
-    if not (breakout_ok or weighted_score_passed or human_chart_entry_score >= 0.65):
-        reason_parts.append("momentum_structure_not_confirmed")
-    return {
-        "eligible": True,
-        "would_probe": momentum_ok,
-        "reason": "opening_momentum_probe_ready" if momentum_ok else ",".join(reason_parts),
-        "minutes_since_open": opening_minutes,
-        "cost_ok": cost_ok,
-        "volume_ratio": volume_ratio,
-        "vwap_distance_pct": vwap_distance,
-        "breakout_ok": breakout_ok,
-        "weighted_score_passed": weighted_score_passed,
-        "human_chart_entry_score": human_chart_entry_score,
-        "probe_size_hint": "small",
-        "behavior_effect": "observation_only",
-    }
+    from . import shadow_candidates_opening_probe_payload as _owner
+    return _owner._opening_probe_payload(row, opening_minutes=opening_minutes, facade=sys.modules[__name__])
 
 
 def _attach_opening_probe(row: Dict[str, Any], *, opening_minutes: int | None) -> Dict[str, Any]:
@@ -507,51 +381,8 @@ def _top_pick_row(
 
 
 def _runner_row(trace: Mapping[str, Any], ranked_by_symbol: Mapping[str, Dict[str, Any]]) -> Dict[str, Any]:
-    symbol = _symbol(trace)
-    base = _candidate_context(ranked_by_symbol.get(symbol, {}))
-    base.update(
-        {
-            "symbol": symbol,
-            "shadow_role": "runner_up_evaluated",
-            "evaluated": True,
-            "rank": trace.get("rank") or base.get("rank"),
-            "score_total": trace.get("score_total") or base.get("score_total"),
-            "triggered": _bool(trace.get("triggered")),
-            "guard_blocked": _bool(trace.get("guard_blocked")),
-            "guard_reason": _text(trace.get("guard_reason")),
-            "intent_submitted": _bool(trace.get("intent_submitted")),
-            "buy_blocked_open_position": _bool(trace.get("buy_blocked_open_position")),
-            "buy_blocked_same_symbol": _bool(trace.get("buy_blocked_same_symbol")),
-            "buy_blocked_pending_buy": _bool(trace.get("buy_blocked_pending_buy")),
-            "buy_blocked_post_exit_cooldown": _bool(trace.get("buy_blocked_post_exit_cooldown")),
-            "buy_blocked_closeout_window": _bool(trace.get("buy_blocked_closeout_window")),
-            "reason": _text(trace.get("reason")),
-            "primary_failure_axis": _text(trace.get("primary_failure_axis")),
-            "transition_readiness_score": trace.get("transition_readiness_score"),
-            "vwap_distance": trace.get("vwap_distance"),
-            "volume_ratio": trace.get("volume_ratio"),
-            "breakout_ok": trace.get("breakout_ok"),
-            "pullback_ok": trace.get("pullback_ok"),
-            "extension_ok": trace.get("extension_ok"),
-            "confidence_score": trace.get("confidence_score"),
-            "confidence_threshold": trace.get("confidence_threshold"),
-            "runner_up_quality_gate": _as_dict(trace.get("runner_up_quality_gate")),
-            "pullback_evidence_profile": _as_dict(trace.get("pullback_evidence_profile")),
-            "runner_up_quality_blocked": _bool(trace.get("runner_up_quality_blocked")),
-            "weak_fallback_blocked": _bool(trace.get("weak_fallback_blocked")),
-            "entry_cost_filter": _as_dict(trace.get("entry_cost_filter")),
-            "directional_edge_estimate": _as_dict(
-                trace.get("directional_edge_estimate")
-            ),
-        }
-    )
-    base["would_enter"] = (
-        _bool(base.get("triggered"))
-        and not _bool(base.get("guard_blocked"))
-        and not _bool(base.get("runner_up_quality_blocked"))
-        and not _bool(base.get("weak_fallback_blocked"))
-    )
-    return base
+    from . import shadow_candidates_runner_row as _owner
+    return _owner._runner_row(trace, ranked_by_symbol, facade=sys.modules[__name__])
 
 
 def _skipped_row(row: Mapping[str, Any], ranked_by_symbol: Mapping[str, Dict[str, Any]]) -> Dict[str, Any]:
@@ -607,83 +438,8 @@ def _same_symbol_metric_row(symbol: str, candidates: Iterable[Mapping[str, Any]]
 
 
 def _opening_largecap_watchlist_row(row: Mapping[str, Any], *, metric_row: Mapping[str, Any] | None = None) -> Dict[str, Any]:
-    base = _candidate_context(row)
-    symbol = _symbol(row)
-    metrics = _as_dict(metric_row)
-    row_features = _as_dict(row.get("features"))
-    row_metrics = _as_dict(row.get("metrics"))
-    metric_factors = _factor_snapshot(metrics)
-    row_factors = _factor_snapshot(row)
-    volume_ratio = _metric_value(
-        metrics.get("volume_ratio"),
-        metric_factors.get("volume_ratio"),
-        row.get("volume_ratio"),
-        row_factors.get("volume_ratio"),
-        row_features.get("volume_ratio"),
-        row_metrics.get("volume_ratio"),
-    )
-    vwap_distance = _metric_value(
-        metrics.get("vwap_distance"),
-        metric_factors.get("vwap_distance_pct"),
-        metric_factors.get("vwap_distance"),
-        row.get("vwap_distance"),
-        row.get("vwap_distance_pct"),
-        row_factors.get("vwap_distance_pct"),
-        row_factors.get("vwap_distance"),
-        row_features.get("vwap_distance_pct"),
-        row_metrics.get("vwap_distance_pct"),
-    )
-    breakout_ok = _metric_value(
-        metrics.get("breakout_ok"),
-        metric_factors.get("breakout_ok"),
-        row.get("breakout_ok"),
-        row_factors.get("breakout_ok"),
-        row_features.get("breakout_ok"),
-        row_metrics.get("breakout_ok"),
-    )
-    cost_adjusted_edge_ok = _metric_value(
-        metrics.get("cost_adjusted_edge_ok"),
-        metric_factors.get("cost_adjusted_edge_ok"),
-        row.get("cost_adjusted_edge_ok"),
-        row_factors.get("cost_adjusted_edge_ok"),
-    )
-    metric_source = (
-        f"{_text(metrics.get('shadow_role'))}_same_symbol"
-        if metrics
-        else "ranked_candidates"
-    )
-    metric_missing = not any(value not in (None, "") for value in (volume_ratio, vwap_distance, breakout_ok, cost_adjusted_edge_ok))
-    factor_snapshot = _candidate_factor_snapshot(row)
-    if metrics:
-        merged_factors = _as_dict(factor_snapshot.get("factors"))
-        merged_factors.update({key: value for key, value in metric_factors.items() if value not in (None, "")})
-        if volume_ratio not in (None, ""):
-            merged_factors["volume_ratio"] = volume_ratio
-        if vwap_distance not in (None, ""):
-            merged_factors["vwap_distance_pct"] = vwap_distance
-        if breakout_ok not in (None, ""):
-            merged_factors["breakout_ok"] = breakout_ok
-        if cost_adjusted_edge_ok not in (None, ""):
-            merged_factors["cost_adjusted_edge_ok"] = cost_adjusted_edge_ok
-        factor_snapshot = {"factors": merged_factors} if merged_factors else factor_snapshot
-    base.update(
-        {
-            "symbol": symbol,
-            "shadow_role": "opening_largecap_watchlist",
-            "evaluated": False,
-            "reason": "opening_largecap_watchlist_not_evaluated_by_monitor",
-            "would_enter": False,
-            "volume_ratio": volume_ratio,
-            "vwap_distance": vwap_distance,
-            "breakout_ok": breakout_ok,
-            "cost_adjusted_edge_ok": _bool(cost_adjusted_edge_ok),
-            "quant_factor_snapshot": factor_snapshot,
-            "source": "ranked_candidates",
-            "metric_source": metric_source,
-            "metric_missing_reason": "minute_metrics_not_available" if metric_missing else "",
-        }
-    )
-    return base
+    from . import shadow_candidates_opening_largecap_watchlist_row as _owner
+    return _owner._opening_largecap_watchlist_row(row, metric_row=metric_row, facade=sys.modules[__name__])
 
 
 def _q9_decision_candidate_rows(
