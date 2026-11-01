@@ -5,6 +5,14 @@ import json
 import os
 import re
 import sys
+from libs.reporting import operator_period_summary_safe_int as _a31_safe_int
+from libs.reporting import operator_period_summary_iso_to_kst_text as _a31_iso_to_kst_text
+from libs.reporting import operator_period_summary_has_partial_lifecycle_marker as _a31_has_partial_lifecycle_marker
+from libs.reporting import operator_period_summary_is_realized_nonclosed_exit as _a31_is_realized_nonclosed_exit
+from libs.reporting import operator_period_summary_render_quant_shadow_candidate_lines as _a31_render_quant_shadow_candidate_lines
+from libs.reporting import operator_period_summary_render_strategist_llm_evaluation_lines as _a31_render_strategist_llm_evaluation_lines
+from libs.reporting import operator_period_summary_first_reason_bucket as _a31_first_reason_bucket
+from libs.reporting import operator_period_summary_trade_status as _a31_trade_status
 from libs.reporting import operator_period_summary_text_value as _a30_text_value
 from libs.reporting import operator_period_summary_first_text as _a30_first_text
 from libs.reporting import operator_period_summary_is_unavailable_pnl as _a30_is_unavailable_pnl
@@ -179,10 +187,7 @@ def _safe_float(value: Any) -> float | None:
 
 
 def _safe_int(value: Any, default: int = 0) -> int:
-    try:
-        return int(float(value))
-    except Exception:
-        return int(default)
+    return _a31_safe_int._safe_int(value=value, default=default, facade=sys.modules[__name__])
 
 
 def _read_json(path: Path) -> Any:
@@ -252,8 +257,7 @@ def _first_nonempty_list(value: Any) -> List[str]:
 
 
 def _first_reason_bucket(values: Any) -> str:
-    rows = _first_nonempty_list(values)
-    return rows[0] if rows else ""
+    return _a31_first_reason_bucket._first_reason_bucket(values=values, facade=sys.modules[__name__])
 
 
 def _confirmation_bucket(value: Any) -> str:
@@ -359,10 +363,7 @@ def _iso_to_kst_dt(value: Any) -> datetime | None:
 
 
 def _iso_to_kst_text(value: Any) -> str:
-    dt = _iso_to_kst_dt(value)
-    if dt is None:
-        return ""
-    return dt.strftime("%Y-%m-%d %H:%M:%S KST")
+    return _a31_iso_to_kst_text._iso_to_kst_text(value=value, facade=sys.modules[__name__])
 
 
 def _closeout_state_metadata(closeout: Dict[str, Any], day: str | None) -> Dict[str, Any]:
@@ -523,7 +524,7 @@ def _top_counter(counter: Counter[str], limit: int = 5) -> List[Dict[str, Any]]:
 
 
 def _trade_status(row: Dict[str, Any]) -> str:
-    return str(row.get("last_status") or row.get("status") or "").strip().lower()
+    return _a31_trade_status._trade_status(row=row, facade=sys.modules[__name__])
 
 
 def _trade_action(row: Dict[str, Any]) -> str:
@@ -531,10 +532,7 @@ def _trade_action(row: Dict[str, Any]) -> str:
 
 
 def _has_partial_lifecycle_marker(row: Dict[str, Any]) -> bool:
-    return (
-        _trade_status(row) == "partial"
-        or str(row.get("trade_origin") or "").strip().lower() == "recovered_partial"
-    )
+    return _a31_has_partial_lifecycle_marker._has_partial_lifecycle_marker(row=row, facade=sys.modules[__name__])
 
 
 def _is_closed_trade(row: Dict[str, Any]) -> bool:
@@ -562,11 +560,7 @@ def _same_day_new_trade_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]
 
 
 def _is_realized_nonclosed_exit(row: Dict[str, Any]) -> bool:
-    if str(row.get("broker_reconciliation_status") or "") == "skipped_unresolved":
-        return False
-    if _is_closed_trade(row) or _trade_action(row) != "SELL":
-        return False
-    return _is_recovered_partial_marker(row)
+    return _a31_is_realized_nonclosed_exit._is_realized_nonclosed_exit(row=row, facade=sys.modules[__name__])
 
 
 def _return_count_payload(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -824,17 +818,11 @@ def _render_pattern_performance_lines(payload: Dict[str, Any]) -> List[str]:
 
 
 def _render_quant_shadow_candidate_lines(payload: Dict[str, Any]) -> List[str]:
-    shadow_eval = payload.get("quant_shadow_candidate_evaluation")
-    if not isinstance(shadow_eval, dict):
-        return []
-    return render_quant_shadow_candidate_evaluation_lines(shadow_eval)
+    return _a31_render_quant_shadow_candidate_lines._render_quant_shadow_candidate_lines(payload=payload, facade=sys.modules[__name__])
 
 
 def _render_strategist_llm_evaluation_lines(payload: Dict[str, Any]) -> List[str]:
-    evaluation = payload.get("strategist_llm_evaluation")
-    if not isinstance(evaluation, dict):
-        return []
-    return render_strategist_llm_evaluation_lines(evaluation)
+    return _a31_render_strategist_llm_evaluation_lines._render_strategist_llm_evaluation_lines(payload=payload, facade=sys.modules[__name__])
 
 
 def _render_market_regime_rail_lines(payload: Dict[str, Any]) -> List[str]:
