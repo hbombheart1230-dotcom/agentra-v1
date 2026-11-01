@@ -1,340 +1,56 @@
-# C01 — Codex B | B-20261101-14 | BOOTSTRAP REQUIRED; RF-014 CONTRACT PRESERVATION FIRST
+# C01 — Codex B | B-20261101-14-C03 | RF DONE FIRST + NEW VERIFIED 8
 
-## NON-NEGOTIABLE SESSION BOOTSTRAP — GIT + PYTEST
+**ONE FILE / PIN:** Record CANONICAL_HEAD, ORDER_BLOB, B_REMOTE_HEAD, ORDER_ID at session start. Already pinned earlier B14/B13 is not retroactively cancelled; finish safe pinned tasks first. B only writes code/tests on `work/p15-b-operator-structure-20261022`. No D00/RF/queue/C03/HANDOFF reread, no autonomous RF choice. No A-owned scanner source, frozen oracle, RF/STATUS/C04/C05 or operational code writes.
 
-Before reading, editing, testing, or reporting any assigned item, every newly created C01 session MUST make `git` and `pytest` usable in that session. Run `git --version` and `python -m pytest --version`. If `git` is absent, install it using the available system package manager; if pytest is absent, run `python -m pip install --user pytest` (or create/use the repository virtualenv and install pytest there), then rerun both checks. Record the actual executable/version in #12. `pytest unavailable`, `command not found`, or a missing module is a **BOOTSTRAP_BLOCKED** condition, not a valid test result and not a reason to report only stdlib smoke. Continue with the safe installation/recheck; only a concrete installation failure with its command and error may block pytest. Before delivery also verify `git status`, `git remote -v`, authenticated `git fetch origin`, and the target remote ref. Commit B-owned changes and normal-push; authentication/push failure is `PUSH_BLOCKED` only and never permits omission of the required test attempt.
+**REMOTE FACTS:** Before issuance canonical `77d527122addec442f615747a2f23307913c7070`; B actor `d530c2c6f6e3c99e8522b8631b4c0cddb37351bc`. #12 6553332265: old K1/K3/K4/B1/B2/B3/B7 **7/7 REMOTE_DONE**, C04 integrated exact seven at `1456f4a188a4383e1a829f661032ba046dead6d5`. Prior C01 still named those seven and asked B to resolve RF-014 A-owned frozen SOURCE collision; **both stale/cross-owner tasks removed**. RF-014 source blobs restored by A, frozen tests cannot be modified. Do not repeat old K2/B4/B5/B6/B8 or seven new integrated bodies.
 
-## DIRECT ORDER — RF-014 A-12 FROZEN-INVARIANT COLLISION (C01 B)
+## P0 — GIT/PYTEST BOOTSTRAP
+Run `git --version` and `python -m pytest --version`; if pytest missing try `python -m pip install --user pytest` or isolated venv, rerun version check. Check `git remote -v`, `git fetch origin`, remote B ref. Report exact installation/auth errors as TEST_BLOCKED or PUSH_BLOCKED, not PASS. No full peer, blanket -O, per-RF hosted CI, real execution or mandatory 30min.
 
-Remote A evidence `0bce5e38` shows the SOURCE blobs for `output_snapshots.py`, `output_payloads.py`, and `selection_evidence_projection.py` conflict with pinned expectations in `tests/test_p171_v3055_scanner_projection_migration.py`. **Do not weaken, rewrite, delete, skip, or repin that existing verification criterion.** Do not claim a fix merely by modifying expected blobs. Resolve only through an owner/wrapper structure that keeps each original public contract and preserves the existing source/test evidence, or obtain an explicit, recorded contract-change approval before any incompatible change.
+## P1 — FIRST PRIORITY: RF-063/065 G2/G1 CLOSEOUT (NOT NEW MOVES)
+1. RF-063 **new reproducible G2**: `tests/test_p15_rf063_20261101_13h_residual_owners.py` exact blob `5acdb6f68c5e63aaeb4dc605d4adebed5c504dc7` is integrated but #12 only supplied an abbreviated `python -c` smoke. Run **once** `python -m pytest -q tests/test_p15_rf063_20261101_13h_residual_owners.py` on pinned B HEAD, report exit and count; do not claim pass until executed. No duplicate old K2 test.
+2. RF-063 K3/K4 **populated-manifest golden+exception**: add B-owned `tests/test_p15_rf063_20261101_14h_manifest_golden.py`. In `TemporaryDirectory`, fake UTC clock and all manifest component paths, capture exact original pre-MOVE behavior from recorded preimage if available, compare `run_m26_dataset_manifest_check::_seed_demo_dataset` and `run_m26_closeout_check::_prepare_candidate_dataset` through their single Owners for JSON/CSV/JSONL bytes, manifest components and candidate close=115; invalid/exception parity. If original preimage unavailable report GOLDEN_NOT_VERIFIED, never invent parity. Run this new test once normal. Never call main or real filesystem paths.
+3. RF-063 old **B-04 integrated-source G3** and **B1 normal G2**: supply exact existing SHA/test command/evidence if available; do not rerun same-SHA PASS or claim whole RF G3 from seven moves. C04/C05 own acceptance.
+4. RF-065 G1 first unmet: `scripts/research/run_phase5_validation_bundle.py::_render_bundle_markdown` source blob `1beb655be5e3ec31c39ea05ded8da044c8b34e84` is already thin wrapper to `scripts/research/phase5_validation_markdown.py` blob `cc37e3ddf7ee1ed5b6eee7e8d28f6bff3d6ca7cb`; KEEP/REMOTE_DONE, no re-MOVE. Read-only static evidence for representative RF-065-owned `scripts/research/__init__.py`, `daily_profitability_scorecard.py`, `run_agent_effectiveness_scorecard.py`, `run_alpha_hypothesis_competition.py`: exact unchanged blobs, CLI entry/argv/cwd/output-root, safe KEEP or explicit SAFETY_HOLD. No research main, subprocess, UEF, live writes. Report specific G1 gaps for C05, not blanket 54-file retest.
 
-C01 B must add a fake targeted consumer test for the real `graphs/nodes/scanner_node.py` path: exercise the actual repeat/risk/NOOP handling with controlled fakes and prove the outputs/effects consumed by the node, including a NOOP path. The test must not merely call a helper or reimplement scanner logic. Use no network, broker, live files, or real orders. Capture normal, negative, and exception/guard behavior as applicable; run the frozen legacy test plus the new targeted test with pytest and exit 0 after bootstrap. If the collision cannot be resolved without changing the frozen contract, stop the incompatible implementation, record the exact blob/path mismatch, and deliver a C02-ready Owner remediation order to C03/C04; do not self-authorize a contract change. C04 acceptance handoff must contain: conflict-resolving remote SHA, exact pytest command/exit 0, and concrete G3 consumer evidence. This RF-014 order takes precedence over RF-063 items for a session that has not already pinned B-13.
+## P2 — NEW RF-063 EIGHT REAL BODY MOVES, ONLY AFTER P1
+Eight SOURCE functions verified as **real bodies** on identical B/integration blobs, TARGET 404 on BOTH refs. RF-063 CODEX_B exclusive `scripts/diagnostics/`; no B/A overlap. Move each complete computation BODY to its unique TARGET Owner, retain same-signature thin SOURCE wrapper with function-local import and `facade=sys.modules[__name__]` for call-time SOURCE monkeypatch/global references (`argparse`, `json`, `_extract_decision_action`, `_extract_allowed`). No duplicate computation. For `_iter_rows` only fake TemporaryDirectory file IO; `analyze_day_rows` in-memory only. Preserve return, ordering, exceptions, facade monkeypatch and original-before-edit golden. Create B-only `tests/test_p15_rf063_20261101_14h_supply_owners.py` with one test per item, normal/negative/exception + AST thin wrapper; run `python -m pytest -q tests/test_p15_rf063_20261101_14h_supply_owners.py` once, actual exit required. If one item blocked, record exact cause and continue next. No main, allocation, portfolio Guard, real orders or production State.
 
-**ONE-FILE ENTRY / PIN:** Record CANONICAL_HEAD, ORDER_FILE_BLOB_SHA, B_OWNER_REMOTE_SHA, ORDER_ID=B-20261101-14 before work. Read only this C01 and named source/test files. No RF/D00/queue/C03/HANDOFF exploration, no actor self-selection. Previously pinned B-13 (or B-12) remains valid for that already-started session; do not retroactively cancel it.
-
-**NEW VERIFIED DELTA:** B-12 #12 6552680980 remote B HEAD `c2a20380ab4e5db2407e6160a08c100b0bb21b78`: RF-063 K2 `check_audit_trail_completeness.py::_build_parser` SOURCE blob `699a1c5ad1e0ae59d4817e4a2b9ed651c5e85917`, new Owner `audit_trail_parser_projection.py` blob `db2a3a9312eabc30cefde0a6b7387439f126b48f`, targeted test blob `1d8b7e606d04e5db897e5b7418687e917d6f8722`, normal 7/7 exit0. C04 integrated exact `2427778f4316c7869971c754bb925a09aeed1673`; C05 scoped G1/G2/G3 K2 only. **K2 REMOTE_DONE — never reassign or retest same SHA.** B-11 B4/B5/B6/B8 also REMOTE_DONE. Current B branch HEAD rechecked unchanged.
-
-**DIRECT ORDER / RF-063 CODEX_B 02_DEV:** Execute **K1 audit Markdown → K3 manifest seed → K4 candidate dataset → B1 archive day → B2 archive Markdown → B3 archive parser → B7 conflict intents**. These are **7 verified uncompleted source bodies** (CURRENT_READY=7, NEW_READY=0, not eight newly supplied). K1 SOURCE blob updated after K2, other source blobs as in each item. All seven target paths absent on B branch; do not use completed K2 or old B4/B5/B6/B8 as filler. Complete every safe item; per-item SAFETY_BLOCKED is not a reason to stop other items. A/B branches and Owner scopes never cross.
-
-**GATE PATH TO NEW RF DONE:** Whole RF-063 G1/G2/G3 PARTIAL; scoped K2 G3 cannot close whole RF. K3/K4 need populated-manifest fake TemporaryDirectory original-vs-Owner bytes/exception parity; earlier B-04 exact integrated-source G3 and old B1 normal G2 remain first missing after these seven. Send exact source/test SHA to C04 for minimal integration and C05 for G1/G2/G3 and STATUS; do not claim DONE yourself. After these seven finish, C03 will switch B to another unfinished RF such as RF-065 after verifying ownership, rather than endlessly reassigning RF-063.
-
-**SAFETY / OWNERSHIP:** RF-063 CODEX_B only `scripts/diagnostics/` paths in items and `tests/test_p15_rf063_20261101_13h_residual_owners.py`. No diagnostic main, live portfolio, network, operational files/DB, Broker/Guard/Step5C/UEF/RunLab effects, real orders, frozen oracle, CI policy, D00/RF/STATUS/C04/C05, other actor code or force-push. K3/K4 all IO under TemporaryDirectory, mock clock and facade writes. Preserve full original BODY, exact signature thin wrapper, call-time monkeypatch globals via facade, original result/exception/golden. No copy-only or duplicate computation.
-
-**TARGETED TEST / DELIVERY:** New `tests/test_p15_rf063_20261101_13h_residual_owners.py`: seven independently named `test_k1_*`, `test_k3_*`, `test_k4_*`, `test_b1_*`, `test_b2_*`, `test_b3_*`, `test_b7_*`, normal `python -m unittest tests/test_p15_rf063_20261101_13h_residual_owners.py -v` expected 7/7 exit0, **NOT_RUN** at issuance. Original before edit vs Owner/wrapper golden, negative and exception, patch seams, AST body removal. Do not rerun old K2 7/7 on same SHA. Commit only B-owned code/test, normal push, re-fetch B HEAD and all modified blobs, report individual results and measured times to #12. Git auth failure=PUSH_BLOCKED only, tests not automatically blocked; continue other safe items.
-
-## CLOSEOUT-FIRST — THREE OLDER G1 GAPS (K1/K3/K4; K2 REMOTE_DONE)
-
-### K1 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_audit_trail_completeness.py::_build_markdown` @ L184 | CURRENT_BLOB `699a1c5ad1e0ae59d4817e4a2b9ed651c5e85917`
-**TARGET (404 both refs):** `scripts/diagnostics/audit_trail_markdown_projection.py::_build_markdown`; previous order pending, not new. Move COMPLETE actual body below, original thin wrapper with call-time facade and no duplicate body:
-```python
-def _build_markdown(*, day: str, out: Dict[str, Any]) -> str:
-    anomalies = out.get("anomaly_examples") if isinstance(out.get("anomaly_examples"), dict) else {}
-    stage_event_total = out.get("stage_event_total") if isinstance(out.get("stage_event_total"), dict) else {}
-    lines = [
-        f"# Audit Trail Completeness ({day})",
-        "",
-        f"- ok: **{bool(out.get('ok'))}**",
-        f"- events: **{int(out.get('events') or 0)}**",
-        f"- runs: **{int(out.get('run_total') or 0)}**",
-        f"- actionable_decision_run_total: **{int(out.get('actionable_decision_run_total') or 0)}**",
-        f"- linked_complete_run_total: **{int(out.get('linked_complete_run_total') or 0)}**",
-        f"- link_success_rate: **{float(out.get('link_success_rate') or 0.0):.2%}**",
-        "",
-        "## Anomaly Totals",
-        "",
-        f"- missing_execution_start_total: {int(out.get('missing_execution_start_total') or 0)}",
-        f"- missing_execution_resolution_total: {int(out.get('missing_execution_resolution_total') or 0)}",
-        f"- missing_execution_payload_total: {int(out.get('missing_execution_payload_total') or 0)}",
-        f"- missing_terminal_event_total: {int(out.get('missing_terminal_event_total') or 0)}",
-        f"- orphan_execution_run_total: {int(out.get('orphan_execution_run_total') or 0)}",
-        "",
-        "## execute_from_packet stage_event_total",
-        "",
-    ]
-
-    for k in ("start", "verdict", "execution", "degrade_policy_block", "end", "error"):
-        lines.append(f"- {k}: {int(stage_event_total.get(k) or 0)}")
-
-    lines += ["", "## Anomaly Examples", ""]
-    for key in (
-        "missing_execution_start",
-        "missing_execution_resolution",
-        "missing_execution_payload",
-        "missing_terminal_event",
-        "orphan_execution",
-    ):
-        vals = anomalies.get(key) if isinstance(anomalies.get(key), list) else []
-        if vals:
-            lines.append(f"- {key}: {', '.join(str(x) for x in vals)}")
-        else:
-            lines.append(f"- {key}: (none)")
-
-    failures = out.get("failures") if isinstance(out.get("failures"), list) else []
-    lines += ["", "## Failures", ""]
-    if failures:
-        for x in failures:
-            lines.append(f"- {x}")
-    else:
-        lines.append("- (none)")
-    lines.append("")
-    return "\n".join(lines)
-```
-**WRAPPER/PATCH:** SOURCE original signature; unique alias `_c03_11_k1_owner` local import, sole Owner delegation with `facade=sys.modules[__name__]`; Owner call-time globals none; preserve errors, outputs, mutation, order, effects in isolated temp ONLY.
-**NORMAL TARGETED:** add NEW `test_k1__build_markdown` in `tests/test_p15_rf063_20261101_13h_residual_owners.py`: day=2026-11-01,out={ok:True,events:0} -> header, no failures, terminal newline; fake in-memory. Golden original vs wrapper/Owner, AST check; write this item's NEW test in `tests/test_p15_rf063_20261101_13h_residual_owners.py`; run only the new 12h targeted suite once (normal exit0), never repeat prior same-SHA PASS. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
-
-### K3 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_dataset_manifest_check.py::_seed_demo_dataset` @ L52 | CURRENT_BLOB `c039f3df0b2427e901f07219990c63da70d7b95e`
-**TARGET (404 both refs):** `scripts/diagnostics/m26_manifest_seed_projection.py::_seed_demo_dataset`; previous order pending, not new. Move COMPLETE actual body below, original thin wrapper with call-time facade and no duplicate body:
-```python
-def _seed_demo_dataset(root: Path) -> Path:
-    root.mkdir(parents=True, exist_ok=True)
-
-    csv_seed = "ts,symbol,open,high,low,close,volume\n2026-02-17T00:00:00+00:00,005930,70000,70500,69900,70300,120000\n"
-    _write_text(root / "market" / "ohlcv_1m.csv", csv_seed)
-    _write_text(root / "market" / "ohlcv_5m.csv", csv_seed)
-    _write_text(root / "market" / "ohlcv_1d.csv", csv_seed)
-    _write_text(
-        root / "market" / "corporate_actions.csv",
-        "symbol,action,effective_date,ratio\n005930,split,2026-01-15,1.0\n",
-    )
-
-    _write_text(
-        root / "execution" / "intents.jsonl",
-        json.dumps(
-            {
-                "ts": "2026-02-17T00:01:00+00:00",
-                "intent_id": "demo-intent-1",
-                "symbol": "005930",
-                "action": "BUY",
-                "qty": 1,
-            },
-            ensure_ascii=False,
-        )
-        + "\n",
-    )
-    _write_text(
-        root / "execution" / "order_status.jsonl",
-        json.dumps(
-            {
-                "ts": "2026-02-17T00:01:05+00:00",
-                "intent_id": "demo-intent-1",
-                "status": "filled",
-            },
-            ensure_ascii=False,
-        )
-        + "\n",
-    )
-    _write_text(
-        root / "execution" / "fills.jsonl",
-        json.dumps(
-            {
-                "ts": "2026-02-17T00:01:05+00:00",
-                "intent_id": "demo-intent-1",
-                "fill_price": 70300,
-                "fill_qty": 1,
-            },
-            ensure_ascii=False,
-        )
-        + "\n",
-    )
-
-    _write_text(
-        root / "microstructure" / "top_of_book.jsonl",
-        json.dumps(
-            {
-                "ts": "2026-02-17T00:00:30+00:00",
-                "symbol": "005930",
-                "bid": 70200,
-                "ask": 70300,
-            },
-            ensure_ascii=False,
-        )
-        + "\n",
-    )
-
-    _write_text(
-        root / "features" / "scanner_monitor_features.jsonl",
-        json.dumps(
-            {
-                "ts": "2026-02-17T00:00:40+00:00",
-                "symbol": "005930",
-                "features": {"rsi14": 55.2, "ma20_gap": 0.01},
-            },
-            ensure_ascii=False,
-        )
-        + "\n",
-    )
-
-    _write_text(
-        root / "news" / "headlines.jsonl",
-        json.dumps(
-            {
-                "ts": "2026-02-17T00:00:50+00:00",
-                "symbol": "005930",
-                "title": "demo headline",
-            },
-            ensure_ascii=False,
-        )
-        + "\n",
-    )
-    _write_text(
-        root / "news" / "sentiment_by_symbol.jsonl",
-        json.dumps(
-            {
-                "ts": "2026-02-17T00:00:55+00:00",
-                "symbol": "005930",
-                "sentiment": 0.15,
-            },
-            ensure_ascii=False,
-        )
-        + "\n",
-    )
-    _write_text(
-        root / "news" / "sentiment_daily.jsonl",
-        json.dumps(
-            {
-                "ts": "2026-02-17T00:00:59+00:00",
-                "market_sentiment": 0.08,
-            },
-            ensure_ascii=False,
-        )
-        + "\n",
-    )
-
-    manifest: Dict[str, Any] = {
-        "schema_version": SCHEMA_VERSION,
-        "dataset_id": "m26-fixed-demo-v1",
-        "generated_at": _utc_now_iso(),
-        "components": {k: list(v) for k, v in REQUIRED_COMPONENT_FILES.items()},
-    }
-    manifest_path = root / "manifest.json"
-    _write_text(manifest_path, json.dumps(manifest, ensure_ascii=False, indent=2))
-    return manifest_path
-```
-**WRAPPER/PATCH:** SOURCE original signature; unique alias `_c03_11_k3_owner` local import, sole Owner delegation with `facade=sys.modules[__name__]`; Owner call-time globals _write_text,_utc_now_iso,json,SCHEMA_VERSION,REQUIRED_COMPONENT_FILES; preserve errors, outputs, mutation, order, effects in isolated temp ONLY.
-**NORMAL TARGETED:** add NEW `test_k3__seed_demo_dataset` in `tests/test_p15_rf063_20261101_13h_residual_owners.py`: TemporaryDirectory -> manifest.json, all original CSV/JSONL bytes and 12 component paths; fake _utc_now_iso, no real files. Golden original vs wrapper/Owner, AST check; write this item's NEW test in `tests/test_p15_rf063_20261101_13h_residual_owners.py`; run only the new 12h targeted suite once (normal exit0), never repeat prior same-SHA PASS. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
-
-### K4 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_closeout_check.py::_prepare_candidate_dataset` @ L63 | CURRENT_BLOB `f9f4ff9c200cf895c8105eb8207723bc13bba1e8`
-**TARGET (404 both refs):** `scripts/diagnostics/m26_closeout_candidate_projection.py::_prepare_candidate_dataset`; previous order pending, not new. Move COMPLETE actual body below, original thin wrapper with call-time facade and no duplicate body:
-```python
-def _prepare_candidate_dataset(candidate_root: Path, *, day: str) -> None:
-    # Overwrite candidate timeline so candidate clearly outperforms baseline on realized PnL.
-    _write_jsonl(
-        candidate_root / "execution" / "intents.jsonl",
-        [
-            {"ts": f"{day}T00:01:00+00:00", "intent_id": "c-intent-1", "symbol": "005930", "action": "BUY", "qty": 1},
-            {"ts": f"{day}T00:02:00+00:00", "intent_id": "c-intent-2", "symbol": "005930", "action": "SELL", "qty": 1},
-        ],
-    )
-    _write_jsonl(
-        candidate_root / "execution" / "order_status.jsonl",
-        [
-            {"ts": f"{day}T00:01:05+00:00", "intent_id": "c-intent-1", "status": "filled"},
-            {"ts": f"{day}T00:02:05+00:00", "intent_id": "c-intent-2", "status": "filled"},
-        ],
-    )
-    _write_jsonl(
-        candidate_root / "execution" / "fills.jsonl",
-        [
-            {"ts": f"{day}T00:01:05+00:00", "intent_id": "c-intent-1", "fill_price": 100, "fill_qty": 1},
-            {"ts": f"{day}T00:02:05+00:00", "intent_id": "c-intent-2", "fill_price": 115, "fill_qty": 1},
-        ],
-    )
-    (candidate_root / "market" / "ohlcv_1d.csv").write_text(
-        f"ts,symbol,open,high,low,close,volume\n{day}T00:00:00+00:00,005930,100,116,99,115,1000\n",
-        encoding="utf-8",
-    )
-```
-**WRAPPER/PATCH:** SOURCE original signature; unique alias `_c03_11_k4_owner` local import, sole Owner delegation with `facade=sys.modules[__name__]`; Owner call-time globals _write_jsonl; preserve errors, outputs, mutation, order, effects in isolated temp ONLY.
-**NORMAL TARGETED:** add NEW `test_k4__prepare_candidate_dataset` in `tests/test_p15_rf063_20261101_13h_residual_owners.py`: TemporaryDirectory with market/ and execution/ precreated; fake _write_jsonl; candidate market close=115 vs open=100. Golden original vs wrapper/Owner, AST check; write this item's NEW test in `tests/test_p15_rf063_20261101_13h_residual_owners.py`; run only the new 12h targeted suite once (normal exit0), never repeat prior same-SHA PASS. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
-
-## B1 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_log_archive_integrity.py::_parse_day` @ L38 | CURRENT_BLOB `d1f0b80eb488188d70e30a78f227a1f289f1d2f5`
-**TARGET (404 both refs VERIFIED):** `scripts/diagnostics/archive_integrity_day_projection.py::_parse_day`; actual original BODY to move, not KEEP or copy:
-```python
-def _parse_day(value: str) -> Optional[date]:
-    s = str(value or "").strip()
-    if not s:
-        return None
-    try:
-        return datetime.strptime(s, "%Y-%m-%d").date()
-    except Exception:
-        return None
-```
-**THIN WRAPPER/PATCH:** `_parse_day(...)` delegates via `_c03_11_b1_owner._parse_day(..., facade=sys.modules[__name__])`; Owner call-time globals: datetime. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
-**TARGETED `test_b1__parse_day`:** '2026-11-01' -> date(2026,11,1); bad/empty -> None; patched SOURCE.datetime.strptime reaches Owner. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B2.
-
-## B2 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_log_archive_integrity.py::_markdown` @ L48 | CURRENT_BLOB `d1f0b80eb488188d70e30a78f227a1f289f1d2f5`
-**TARGET (404 both refs VERIFIED):** `scripts/diagnostics/archive_integrity_markdown_projection.py::_markdown`; actual original BODY to move, not KEEP or copy:
-```python
-def _markdown(out: Dict[str, Any]) -> str:
-    lines = [
-        f"# Log Archive Integrity ({out.get('day')})",
-        "",
-        f"- ok: **{bool(out.get('ok'))}**",
-        f"- archive_dir: `{out.get('archive_dir')}`",
-        f"- manifest_path: `{out.get('manifest_path')}`",
-        f"- file_total: **{int(out.get('file_total') or 0)}**",
-        f"- verified_total: **{int(out.get('verified_total') or 0)}**",
-        "",
-        "## Integrity Totals",
-        "",
-        f"- missing_file_total: {int(out.get('missing_file_total') or 0)}",
-        f"- hash_mismatch_total: {int(out.get('hash_mismatch_total') or 0)}",
-        f"- bytes_mismatch_total: {int(out.get('bytes_mismatch_total') or 0)}",
-        f"- line_count_mismatch_total: {int(out.get('line_count_mismatch_total') or 0)}",
-        "",
-        "## Retention",
-        "",
-        f"- retention_days: {int(out.get('retention_days') or 0)}",
-        f"- stale_archive_total: {int(out.get('stale_archive_total') or 0)}",
-    ]
-    stale = out.get("stale_archive_days") if isinstance(out.get("stale_archive_days"), list) else []
-    if stale:
-        lines.append(f"- stale_archive_days: {', '.join(str(x) for x in stale)}")
-    else:
-        lines.append("- stale_archive_days: (none)")
-    lines += ["", "## Failures", ""]
-    failures = out.get("failures") if isinstance(out.get("failures"), list) else []
-    if failures:
-        for msg in failures:
-            lines.append(f"- {msg}")
-    else:
-        lines.append("- (none)")
-    lines.append("")
-    return "\n".join(lines)
-```
-**THIN WRAPPER/PATCH:** `_markdown(...)` delegates via `_c03_11_b2_owner._markdown(..., facade=sys.modules[__name__])`; Owner call-time globals: none. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
-**TARGETED `test_b2__markdown`:** {'day':'2026-11-01','ok':True,'file_total':0,'failures':[]} -> heading '# Log Archive Integrity (2026-11-01)', '(none)' failures and terminal newline; stale days deterministic. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B3.
-
-## B3 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_log_archive_integrity.py::_build_parser` @ L86 | CURRENT_BLOB `d1f0b80eb488188d70e30a78f227a1f289f1d2f5`
-**TARGET (404 both refs VERIFIED):** `scripts/diagnostics/archive_integrity_parser_projection.py::_build_parser`; actual original BODY to move, not KEEP or copy:
+### P2-1 | RF-063 CODEX_B | `scripts/diagnostics/run_m27_portfolio_budget_boundary_check.py::_build_parser` @ L17 | CURRENT SOURCE BLOB `e8c050b18e8a523becf28db5c6c0f22198f46f37`
+**TARGET 404 B+integration:** `scripts/diagnostics/m27_budget_parser_projection.py::_build_parser`. **ACTUAL SOURCE BODY TO MOVE:**
 ```python
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Check archive manifest/hash integrity and retention policy.")
-    p.add_argument("--archive-dir", default="data/logs/archive")
-    p.add_argument("--report-dir", default="reports/archive_integrity")
-    p.add_argument("--day", default=None)
-    p.add_argument("--retention-days", type=int, default=30)
-    p.add_argument("--allow-stale", action="store_true", help="Do not fail on stale archive days.")
+    p = argparse.ArgumentParser(description="M27-3 portfolio budget boundary check.")
     p.add_argument("--json", action="store_true")
+    p.add_argument("--inject-fail", action="store_true")
     return p
 ```
-**THIN WRAPPER/PATCH:** `_build_parser(...)` delegates via `_c03_11_b3_owner._build_parser(..., facade=sys.modules[__name__])`; Owner call-time globals: argparse. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
-**TARGETED `test_b3__build_parser`:** parse_args([]) -> retention_days=30, archive_dir='data/logs/archive'; --retention-days 7 --json -> 7,True. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B7 (B4 already REMOTE_DONE).
+**WRAPPER:** original signature + local import of sole Owner, forward args and call-time facade; for `analyze_day_rows` use `facade._extract_decision_action` and `facade._extract_allowed`, for parser use `facade.argparse`, for JSONL use `facade.json.loads`. **TARGETED NORMAL expected:** [] -> json=False, inject_fail=False; --json --inject-fail -> True/True. Compare original golden vs wrapper/Owner, negative/exception and patched SOURCE seam; no IO except temp JSONL. **BLOCKED→NEXT:** P2-2.
 
-## B7 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m27_conflict_resolution_check.py::_default_intents` @ L21 | CURRENT_BLOB `f5ccbc0d12ea0cf594539482a97cf64a9ef9ad9b`
-**TARGET (404 both refs VERIFIED):** `scripts/diagnostics/m27_conflict_intents_projection.py::_default_intents`; actual original BODY to move, not KEEP or copy:
+### P2-2 | RF-063 CODEX_B | `scripts/diagnostics/run_m27_portfolio_budget_boundary_check.py::_profiles` @ L24 | CURRENT SOURCE BLOB `e8c050b18e8a523becf28db5c6c0f22198f46f37`
+**TARGET 404 B+integration:** `scripts/diagnostics/m27_budget_profiles_projection.py::_profiles`. **ACTUAL SOURCE BODY TO MOVE:**
 ```python
-def _default_intents(*, inject_fail: bool) -> List[Dict[str, Any]]:
+def _profiles() -> List[Dict[str, Any]]:
+    return [
+        {"strategy_id": "trend", "enabled": True, "weight": 0.5},
+        {"strategy_id": "mean_reversion", "enabled": True, "weight": 0.3},
+        {"strategy_id": "event_driven", "enabled": True, "weight": 0.2},
+    ]
+```
+**WRAPPER:** original signature + local import of sole Owner, forward args and call-time facade; for `analyze_day_rows` use `facade._extract_decision_action` and `facade._extract_allowed`, for parser use `facade.argparse`, for JSONL use `facade.json.loads`. **TARGETED NORMAL expected:** three weights .5/.3/.2, order trend/mean_reversion/event_driven. Compare original golden vs wrapper/Owner, negative/exception and patched SOURCE seam; no IO except temp JSONL. **BLOCKED→NEXT:** P2-3.
+
+### P2-3 | RF-063 CODEX_B | `scripts/diagnostics/run_m27_portfolio_budget_boundary_check.py::_intents` @ L32 | CURRENT SOURCE BLOB `e8c050b18e8a523becf28db5c6c0f22198f46f37`
+**TARGET 404 B+integration:** `scripts/diagnostics/m27_budget_intents_projection.py::_intents`. **ACTUAL SOURCE BODY TO MOVE:**
+```python
+def _intents(*, inject_fail: bool) -> List[Dict[str, Any]]:
     if inject_fail:
-        # no opposite-side conflict and no cap overflow on purpose.
         return [
             {
                 "intent_id": "i1",
                 "strategy_id": "trend",
                 "symbol": "005930",
                 "side": "BUY",
-                "qty": 1,
-                "price": 100,
+                "requested_notional": 300,
                 "priority": 9,
                 "confidence": 0.9,
             },
@@ -343,8 +59,7 @@ def _default_intents(*, inject_fail: bool) -> List[Dict[str, Any]]:
                 "strategy_id": "mean_reversion",
                 "symbol": "000660",
                 "side": "BUY",
-                "qty": 1,
-                "price": 100,
+                "requested_notional": 200,
                 "priority": 8,
                 "confidence": 0.8,
             },
@@ -356,53 +71,236 @@ def _default_intents(*, inject_fail: bool) -> List[Dict[str, Any]]:
             "strategy_id": "trend",
             "symbol": "005930",
             "side": "BUY",
-            "qty": 1,
-            "price": 100,
+            "requested_notional": 700,
             "priority": 9,
             "confidence": 0.9,
         },
         {
             "intent_id": "i2",
-            "strategy_id": "mean_reversion",
+            "strategy_id": "trend",
             "symbol": "005930",
-            "side": "SELL",
-            "qty": 1,
-            "price": 100,
+            "side": "BUY",
+            "requested_notional": 400,
             "priority": 3,
-            "confidence": 0.4,
+            "confidence": 0.3,
         },
         {
             "intent_id": "i3",
-            "strategy_id": "event_driven",
-            "symbol": "000660",
-            "side": "BUY",
-            "qty": 4,
-            "price": 40,
+            "strategy_id": "mean_reversion",
+            "symbol": "005930",
+            "side": "SELL",
+            "requested_notional": 300,
             "priority": 8,
             "confidence": 0.8,
         },
         {
             "intent_id": "i4",
-            "strategy_id": "trend",
+            "strategy_id": "event_driven",
             "symbol": "000660",
             "side": "BUY",
-            "qty": 3,
-            "price": 40,
-            "priority": 2,
+            "requested_notional": 350,
+            "priority": 9,
+            "confidence": 0.9,
+        },
+        {
+            "intent_id": "i5",
+            "strategy_id": "mean_reversion",
+            "symbol": "000660",
+            "side": "BUY",
+            "requested_notional": 300,
+            "priority": 4,
             "confidence": 0.4,
         },
     ]
 ```
-**THIN WRAPPER/PATCH:** `_default_intents(...)` delegates via `_c03_11_b7_owner._default_intents(..., facade=sys.modules[__name__])`; Owner call-time globals: none. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
-**TARGETED `test_b7__default_intents`:** inject_fail=False -> 4 intents including opposing BUY/SELL on 005930; True -> 2 BUY intents on distinct symbols; fresh list. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12; B8 already REMOTE_DONE, report remaining blocker and do not rerun it.
+**WRAPPER:** original signature + local import of sole Owner, forward args and call-time facade; for `analyze_day_rows` use `facade._extract_decision_action` and `facade._extract_allowed`, for parser use `facade.argparse`, for JSONL use `facade.json.loads`. **TARGETED NORMAL expected:** normal 5 intents; inject_fail 2 intents, all dictionaries, independent returned list. Compare original golden vs wrapper/Owner, negative/exception and patched SOURCE seam; no IO except temp JSONL. **BLOCKED→NEXT:** P2-4.
 
-## FUTURE RESERVE — VERIFIED 6/6 (DESIGN ONLY; NOT EXECUTABLE)
+### P2-4 | RF-063 CODEX_B | `scripts/diagnostics/run_m27_portfolio_budget_boundary_check.py::_symbol_caps` @ L104 | CURRENT SOURCE BLOB `e8c050b18e8a523becf28db5c6c0f22198f46f37`
+**TARGET 404 B+integration:** `scripts/diagnostics/m27_budget_caps_projection.py::_symbol_caps`. **ACTUAL SOURCE BODY TO MOVE:**
+```python
+def _symbol_caps(*, inject_fail: bool) -> Dict[str, float]:
+    if inject_fail:
+        return {"005930": 10_000.0, "000660": 10_000.0}
+    return {"005930": 10_000.0, "000660": 500.0}
+```
+**WRAPPER:** original signature + local import of sole Owner, forward args and call-time facade; for `analyze_day_rows` use `facade._extract_decision_action` and `facade._extract_allowed`, for parser use `facade.argparse`, for JSONL use `facade.json.loads`. **TARGETED NORMAL expected:** normal 000660=500.0; inject_fail 000660=10000.0. Compare original golden vs wrapper/Owner, negative/exception and patched SOURCE seam; no IO except temp JSONL. **BLOCKED→NEXT:** P2-5.
 
-- **R1 RF-063 CODEX_B VERIFIED:** SOURCE `scripts/diagnostics/run_m27_portfolio_budget_boundary_check.py::_build_parser` @ L17, current blob `e8c050b18e8a523becf28db5c6c0f22198f46f37`; TARGET `scripts/diagnostics/m27_budget_parser_projection.py::_build_parser` absent on B/integration. Original actual BODY confirmed: `p = argparse.ArgumentParser(description="M27-3 portfolio budget boundary check.") p.add_argument("--json", action="store_true") p.add_argument("--inject-fail", action="store_true")` (not a wrapper). Call-time facade argparse; fake in-memory test [] -> inject_fail False, --inject-fail True. No actual guard/allocation/main invocation. NOT EXECUTABLE until C03 revalidates and promotes.
-- **R2 RF-063 CODEX_B VERIFIED:** SOURCE `scripts/diagnostics/run_m27_portfolio_budget_boundary_check.py::_profiles` @ L24, current blob `e8c050b18e8a523becf28db5c6c0f22198f46f37`; TARGET `scripts/diagnostics/m27_budget_profiles_projection.py::_profiles` absent on B/integration. Original actual BODY confirmed: `return [ {"strategy_id": "trend", "enabled": True, "weight": 0.5}, {"strategy_id": "mean_reversion", "enabled": True, "weight": 0.3},` (not a wrapper). Call-time facade none; fake in-memory test 3 profiles, weights .5/.3/.2. No actual guard/allocation/main invocation. NOT EXECUTABLE until C03 revalidates and promotes.
-- **R3 RF-063 CODEX_B VERIFIED:** SOURCE `scripts/diagnostics/run_m27_portfolio_budget_boundary_check.py::_intents` @ L32, current blob `e8c050b18e8a523becf28db5c6c0f22198f46f37`; TARGET `scripts/diagnostics/m27_budget_intents_projection.py::_intents` absent on B/integration. Original actual BODY confirmed: `if inject_fail: return [ {` (not a wrapper). Call-time facade none; fake in-memory test normal 5 intents, inject_fail 2 intents; in-memory only, no guard call. No actual guard/allocation/main invocation. NOT EXECUTABLE until C03 revalidates and promotes.
-- **R4 RF-063 CODEX_B VERIFIED:** SOURCE `scripts/diagnostics/run_m27_portfolio_budget_boundary_check.py::_symbol_caps` @ L104, current blob `e8c050b18e8a523becf28db5c6c0f22198f46f37`; TARGET `scripts/diagnostics/m27_budget_caps_projection.py::_symbol_caps` absent on B/integration. Original actual BODY confirmed: `if inject_fail: return {"005930": 10_000.0, "000660": 10_000.0} return {"005930": 10_000.0, "000660": 500.0}` (not a wrapper). Call-time facade none; fake in-memory test normal 000660=500; inject_fail 000660=10000. No actual guard/allocation/main invocation. NOT EXECUTABLE until C03 revalidates and promotes.
-- **R5 RF-063 CODEX_B VERIFIED:** SOURCE `scripts/diagnostics/run_m27_closeout_check.py::_build_parser` @ L30, current blob `1f48a79ecff887921682f180a1a3aa9214795416`; TARGET `scripts/diagnostics/m27_closeout_parser_projection.py::_build_parser` absent on B/integration. Original actual BODY confirmed: `p = argparse.ArgumentParser(description="M27 closeout check (allocation/conflict/guard/metrics/notify).") p.add_argument("--event-log-dir", default="data/logs/m27_closeout") p.add_argument("--report-dir", default="reports/m27_closeout")` (not a wrapper). Call-time facade argparse; fake in-memory test parse_args([]) default event-log-dir, parse_args(['--json']) sets json=True. No actual guard/allocation/main invocation. NOT EXECUTABLE until C03 revalidates and promotes.
-- **R6 RF-063 CODEX_B VERIFIED:** SOURCE `scripts/diagnostics/run_m29_closeout_check.py::_build_parser` @ L25, current blob `ac491cb4ec89ff72ed64d9466055f06f936019f3`; TARGET `scripts/diagnostics/m29_closeout_parser_projection.py::_build_parser` absent on B/integration. Original actual BODY confirmed: `p = argparse.ArgumentParser(description="M29 governance closeout check (audit/archive/timeline/dr).") p.add_argument("--event-log-dir", default="data/logs/m29_closeout") p.add_argument("--report-dir", default="reports/m29_closeout")` (not a wrapper). Call-time facade argparse; fake in-memory test parse_args([]) default day=None or declared default; --json=True, fake argv only. No actual guard/allocation/main invocation. NOT EXECUTABLE until C03 revalidates and promotes.
+### P2-5 | RF-063 CODEX_B | `scripts/diagnostics/run_m27_closeout_check.py::_build_parser` @ L30 | CURRENT SOURCE BLOB `1f48a79ecff887921682f180a1a3aa9214795416`
+**TARGET 404 B+integration:** `scripts/diagnostics/m27_closeout_parser_projection.py::_build_parser`. **ACTUAL SOURCE BODY TO MOVE:**
+```python
+def _build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(description="M27 closeout check (allocation/conflict/guard/metrics/notify).")
+    p.add_argument("--event-log-dir", default="data/logs/m27_closeout")
+    p.add_argument("--report-dir", default="reports/m27_closeout")
+    p.add_argument("--day", default="2026-02-20")
+    p.add_argument("--inject-fail", action="store_true")
+    p.add_argument("--no-clear", action="store_true")
+    p.add_argument("--json", action="store_true")
+    return p
+```
+**WRAPPER:** original signature + local import of sole Owner, forward args and call-time facade; for `analyze_day_rows` use `facade._extract_decision_action` and `facade._extract_allowed`, for parser use `facade.argparse`, for JSONL use `facade.json.loads`. **TARGETED NORMAL expected:** default day=2026-02-20; --json --no-clear -> True/True. Compare original golden vs wrapper/Owner, negative/exception and patched SOURCE seam; no IO except temp JSONL. **BLOCKED→NEXT:** P2-6.
 
-**COUNT / FIRST_BLOCKER / NEXT:** K2 remote done + earlier B-11 B4/B5/B6/B8 remote done; 7 independent safe unfinished SOURCE BODY MOVE items (K1,K3,K4,B1–B3,B7). CURRENT_READY=7, NEW_READY=0, RESERVE_VERIFIED=6/6 DESIGN_ONLY from unchanged SOURCE blobs/target absence (not executed). FIRST_BLOCKER RF-063 whole-DONE: remaining seven G1 moves, K3/K4 populated-manifest parity, older B-04 integrated G3 and B1 normal G2. C04/C05 own G3/DONE. If fewer than 6 remain next C03 must supply newly verified 8–10 or report SUPPLY_GAP. RF-065 next B-owned closeout candidate after precise owner/KEEP/CLI-effect proof; no self-selection. C03 DOC_ONLY, RF_DONE_DELTA=0. RunLab Exited(255), RUN_SOURCE_SHA UNKNOWN; operational HOLD.
+### P2-6 | RF-063 CODEX_B | `scripts/diagnostics/run_m29_closeout_check.py::_build_parser` @ L25 | CURRENT SOURCE BLOB `ac491cb4ec89ff72ed64d9466055f06f936019f3`
+**TARGET 404 B+integration:** `scripts/diagnostics/m29_closeout_parser_projection.py::_build_parser`. **ACTUAL SOURCE BODY TO MOVE:**
+```python
+def _build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(description="M29 governance closeout check (audit/archive/timeline/dr).")
+    p.add_argument("--event-log-dir", default="data/logs/m29_closeout")
+    p.add_argument("--report-dir", default="reports/m29_closeout")
+    p.add_argument("--day", default="2026-02-21")
+    p.add_argument("--inject-fail", action="store_true")
+    p.add_argument("--no-clear", action="store_true")
+    p.add_argument("--json", action="store_true")
+    return p
+```
+**WRAPPER:** original signature + local import of sole Owner, forward args and call-time facade; for `analyze_day_rows` use `facade._extract_decision_action` and `facade._extract_allowed`, for parser use `facade.argparse`, for JSONL use `facade.json.loads`. **TARGETED NORMAL expected:** default day=2026-02-21; --json --no-clear -> True/True. Compare original golden vs wrapper/Owner, negative/exception and patched SOURCE seam; no IO except temp JSONL. **BLOCKED→NEXT:** P2-7.
+
+### P2-7 | RF-063 CODEX_B | `scripts/diagnostics/check_audit_trail_completeness.py::_iter_rows` @ L30 | CURRENT SOURCE BLOB `30da7a766711b8a242cafe003cc1de2968e61cb3`
+**TARGET 404 B+integration:** `scripts/diagnostics/audit_trail_rows_projection.py::_iter_rows`. **ACTUAL SOURCE BODY TO MOVE:**
+```python
+def _iter_rows(path: Path) -> List[Dict[str, Any]]:
+    if not path.exists():
+        return []
+    out: List[Dict[str, Any]] = []
+    with path.open("r", encoding="utf-8") as f:
+        for line in f:
+            s = line.strip()
+            if not s:
+                continue
+            try:
+                obj = json.loads(s)
+            except Exception:
+                continue
+            if isinstance(obj, dict):
+                out.append(obj)
+    return out
+```
+**WRAPPER:** original signature + local import of sole Owner, forward args and call-time facade; for `analyze_day_rows` use `facade._extract_decision_action` and `facade._extract_allowed`, for parser use `facade.argparse`, for JSONL use `facade.json.loads`. **TARGETED NORMAL expected:** temp JSONL blank/malformed/list/{'run_id':'r1'} -> only one dict; missing path -> []. Compare original golden vs wrapper/Owner, negative/exception and patched SOURCE seam; no IO except temp JSONL. **BLOCKED→NEXT:** P2-8.
+
+### P2-8 | RF-063 CODEX_B | `scripts/diagnostics/check_audit_trail_completeness.py::analyze_day_rows` @ L63 | CURRENT SOURCE BLOB `30da7a766711b8a242cafe003cc1de2968e61cb3`
+**TARGET 404 B+integration:** `scripts/diagnostics/audit_trail_analysis_projection.py::analyze_day_rows`. **ACTUAL SOURCE BODY TO MOVE:**
+```python
+def analyze_day_rows(day_rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    by_run: Dict[str, List[Dict[str, Any]]] = {}
+    stage_event_total: Dict[str, int] = {
+        "start": 0,
+        "verdict": 0,
+        "execution": 0,
+        "degrade_policy_block": 0,
+        "end": 0,
+        "error": 0,
+    }
+
+    for row in day_rows:
+        run_id = str(row.get("run_id") or "").strip()
+        if run_id:
+            by_run.setdefault(run_id, []).append(row)
+
+        stage = str(row.get("stage") or "")
+        event = str(row.get("event") or "")
+        if stage == "execute_from_packet" and event in stage_event_total:
+            stage_event_total[event] = int(stage_event_total.get(event) or 0) + 1
+
+    actionable_run_total = 0
+    execution_run_total = 0
+    linked_complete_run_total = 0
+
+    missing_start: List[str] = []
+    missing_resolution: List[str] = []
+    missing_execution_payload: List[str] = []
+    missing_terminal: List[str] = []
+    orphan_execution: List[str] = []
+
+    for run_id, rows in by_run.items():
+        has_actionable = False
+        has_exec_activity = False
+        has_start = False
+        has_verdict = False
+        has_degrade_block = False
+        has_execution = False
+        has_end = False
+        has_error = False
+        has_allowed_true = False
+
+        for row in rows:
+            stage = str(row.get("stage") or "")
+            event = str(row.get("event") or "")
+
+            if stage == "decision" and event == "trace":
+                action = _extract_decision_action(row)
+                if action in ("BUY", "SELL"):
+                    has_actionable = True
+
+            if stage == "execute_from_packet":
+                has_exec_activity = True
+                if event == "start":
+                    has_start = True
+                elif event == "verdict":
+                    has_verdict = True
+                    if _extract_allowed(row) is True:
+                        has_allowed_true = True
+                elif event == "degrade_policy_block":
+                    has_degrade_block = True
+                elif event == "execution":
+                    has_execution = True
+                elif event == "end":
+                    has_end = True
+                elif event == "error":
+                    has_error = True
+
+        if has_exec_activity:
+            execution_run_total += 1
+        if has_exec_activity and not has_actionable:
+            orphan_execution.append(run_id)
+
+        if not has_actionable:
+            continue
+
+        actionable_run_total += 1
+
+        has_resolution = has_verdict or has_degrade_block or has_error
+        has_terminal = has_end or has_error
+
+        if not has_start:
+            missing_start.append(run_id)
+        if not has_resolution:
+            missing_resolution.append(run_id)
+        if has_allowed_true and not has_execution:
+            missing_execution_payload.append(run_id)
+        if not has_terminal:
+            missing_terminal.append(run_id)
+
+        if has_start and has_resolution and (not has_allowed_true or has_execution) and has_terminal:
+            linked_complete_run_total += 1
+
+    link_success_rate = (
+        float(linked_complete_run_total) / float(actionable_run_total)
+        if actionable_run_total > 0
+        else 1.0
+    )
+
+    return {
+        "run_total": int(len(by_run)),
+        "actionable_decision_run_total": int(actionable_run_total),
+        "execution_run_total": int(execution_run_total),
+        "linked_complete_run_total": int(linked_complete_run_total),
+        "link_success_rate": float(link_success_rate),
+        "missing_execution_start_total": int(len(missing_start)),
+        "missing_execution_resolution_total": int(len(missing_resolution)),
+        "missing_execution_payload_total": int(len(missing_execution_payload)),
+        "missing_terminal_event_total": int(len(missing_terminal)),
+        "orphan_execution_run_total": int(len(orphan_execution)),
+        "stage_event_total": stage_event_total,
+        "anomaly_examples": {
+            "missing_execution_start": missing_start[:10],
+            "missing_execution_resolution": missing_resolution[:10],
+            "missing_execution_payload": missing_execution_payload[:10],
+            "missing_terminal_event": missing_terminal[:10],
+            "orphan_execution": orphan_execution[:10],
+        },
+    }
+```
+**WRAPPER:** original signature + local import of sole Owner, forward args and call-time facade; for `analyze_day_rows` use `facade._extract_decision_action` and `facade._extract_allowed`, for parser use `facade.argparse`, for JSONL use `facade.json.loads`. **TARGETED NORMAL expected:** empty -> run_total=0, link_success_rate=1.0; one fake decision BUY + start/verdict allowed/exec/end -> actionable=1 linked_complete=1; omit end -> missing_terminal=1. Compare original golden vs wrapper/Owner, negative/exception and patched SOURCE seam; no IO except temp JSONL. **BLOCKED→NEXT:** P2-report.
+
+## DELIVERY / SUPPLY STATUS
+Push B code/tests normally (no force), re-fetch remote B HEAD and SOURCE/TARGET/test blobs; report all P1/P2 items individually with actual test commands/exits, measured START/END, G1/G2/G3 first unmet to #12. C04 alone integrates; C05 alone writes RF/STATUS/DONE. **NEW_READY=8 verified**; **FUTURE RESERVE_VERIFIED=0/6, RESERVE_NOT_VERIFIED** because former six reserves promoted; never claim six future. Old B13 seven are REMOTE_DONE, new tests NOT_RUN at issuance. RunLab Exited(255), RUN_SOURCE_SHA UNKNOWN; no real trading, Broker/Guard/Step5C/UEF/RunLab operational effects.
