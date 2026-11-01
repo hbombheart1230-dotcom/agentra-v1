@@ -13,38 +13,18 @@ if str(ROOT) not in sys.path:
 
 
 def _to_epoch(ts: Any) -> Optional[int]:
-    if ts is None:
-        return None
-    if isinstance(ts, (int, float)):
-        return int(ts)
-    s = str(ts).strip()
-    if not s:
-        return None
-    try:
-        return int(float(s))
-    except Exception:
-        pass
-    if s.endswith("Z"):
-        s = s[:-1] + "+00:00"
-    try:
-        dt = datetime.fromisoformat(s)
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return int(dt.timestamp())
-    except Exception:
-        return None
+    from scripts.diagnostics import audit_trail_epoch_projection as _c03_10_b1_owner
+    return _c03_10_b1_owner._to_epoch(ts,facade=sys.modules[__name__])
 
 
 def _utc_day(ts: Any) -> str:
-    epoch = _to_epoch(ts)
-    if epoch is None:
-        return datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    return datetime.fromtimestamp(epoch, tz=timezone.utc).strftime("%Y-%m-%d")
+    from scripts.diagnostics import audit_trail_utc_day_projection as _c03_10_b2_owner
+    return _c03_10_b2_owner._utc_day(ts,facade=sys.modules[__name__])
 
 
 def _extract_ts(row: Dict[str, Any]) -> Any:
-    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
-    return row.get("ts") or payload.get("ts")
+    from scripts.diagnostics import audit_trail_extract_ts_projection as _c03_10_b3_owner
+    return _c03_10_b3_owner._extract_ts(row,facade=sys.modules[__name__])
 
 
 def _iter_rows(path: Path) -> List[Dict[str, Any]]:
@@ -66,26 +46,18 @@ def _iter_rows(path: Path) -> List[Dict[str, Any]]:
 
 
 def _extract_decision_action(row: Dict[str, Any]) -> str:
-    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
-    packet = payload.get("decision_packet") if isinstance(payload.get("decision_packet"), dict) else {}
-    intent = packet.get("intent") if isinstance(packet.get("intent"), dict) else {}
-    action = intent.get("action") or payload.get("action") or payload.get("intent")
-    return str(action or "").strip().upper()
+    from scripts.diagnostics import audit_trail_decision_action_projection as _c03_10_b4_owner
+    return _c03_10_b4_owner._extract_decision_action(row,facade=sys.modules[__name__])
 
 
 def _extract_allowed(row: Dict[str, Any]) -> Optional[bool]:
-    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
-    v = payload.get("allowed")
-    if isinstance(v, bool):
-        return v
-    return None
+    from scripts.diagnostics import audit_trail_allowed_projection as _c03_10_b5_owner
+    return _c03_10_b5_owner._extract_allowed(row,facade=sys.modules[__name__])
 
 
 def _latest_day(rows: List[Dict[str, Any]]) -> str:
-    days = sorted({str(r.get("_day") or "") for r in rows if str(r.get("_day") or "").strip()})
-    if days:
-        return str(days[-1])
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    from scripts.diagnostics import audit_trail_latest_day_projection as _c03_10_b6_owner
+    return _c03_10_b6_owner._latest_day(rows,facade=sys.modules[__name__])
 
 
 def analyze_day_rows(day_rows: List[Dict[str, Any]]) -> Dict[str, Any]:
