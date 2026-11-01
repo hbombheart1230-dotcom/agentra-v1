@@ -70,7 +70,7 @@ def _build_markdown(*, day: str, out: Dict[str, Any]) -> str:
     return "\n".join(lines)
 ```
 **WRAPPER/PATCH:** SOURCE original signature; unique alias `_c03_11_k1_owner` local import, sole Owner delegation with `facade=sys.modules[__name__]`; Owner call-time globals none; preserve errors, outputs, mutation, order, effects in isolated temp ONLY.
-**NORMAL TARGETED:** add missing `test_k1__build_markdown` in `tests/test_p15_rf063_20261101_10h_audit_owners.py`: day=2026-11-01,out={ok:True,events:0} -> header, no failures, terminal newline; fake in-memory. Golden original vs wrapper/Owner, AST check; run that exact file via `python -m unittest tests/test_p15_rf063_20261101_10h_audit_owners.py -v` expecting full original+new suite exit0, no stale PASS reuse. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
+**NORMAL TARGETED:** add missing `test_k1__build_markdown` in `tests/test_p15_rf063_20261101_10h_audit_owners.py`: day=2026-11-01,out={ok:True,events:0} -> header, no failures, terminal newline; fake in-memory. Golden original vs wrapper/Owner, AST check; write this item's NEW test in `tests/test_p15_rf063_20261101_12h_residual_owners.py`; run only the new 12h targeted suite once (normal exit0), never repeat prior same-SHA PASS. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
 
 ### K2 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/check_audit_trail_completeness.py::_build_parser` @ L237 | CURRENT_BLOB `fa531aebeeb1ff6d72905bc1b50be96721b94d4e`
 **TARGET (404 both refs):** `scripts/diagnostics/audit_trail_parser_projection.py::_build_parser`; previous order pending, not new. Move COMPLETE actual body below, original thin wrapper with call-time facade and no duplicate body:
@@ -85,7 +85,7 @@ def _build_parser() -> argparse.ArgumentParser:
     return p
 ```
 **WRAPPER/PATCH:** SOURCE original signature; unique alias `_c03_11_k2_owner` local import, sole Owner delegation with `facade=sys.modules[__name__]`; Owner call-time globals argparse; preserve errors, outputs, mutation, order, effects in isolated temp ONLY.
-**NORMAL TARGETED:** add missing `test_k2__build_parser` in `tests/test_p15_rf063_20261101_10h_audit_owners.py`: parse_args([]) -> event_log_path='data/logs/events.jsonl'; --day 2026-11-01 --json -> expected fields. Golden original vs wrapper/Owner, AST check; run that exact file via `python -m unittest tests/test_p15_rf063_20261101_10h_audit_owners.py -v` expecting full original+new suite exit0, no stale PASS reuse. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
+**NORMAL TARGETED:** add missing `test_k2__build_parser` in `tests/test_p15_rf063_20261101_10h_audit_owners.py`: parse_args([]) -> event_log_path='data/logs/events.jsonl'; --day 2026-11-01 --json -> expected fields. Golden original vs wrapper/Owner, AST check; write this item's NEW test in `tests/test_p15_rf063_20261101_12h_residual_owners.py`; run only the new 12h targeted suite once (normal exit0), never repeat prior same-SHA PASS. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
 
 ### K3 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_dataset_manifest_check.py::_seed_demo_dataset` @ L52 | CURRENT_BLOB `c039f3df0b2427e901f07219990c63da70d7b95e`
 **TARGET (404 both refs):** `scripts/diagnostics/m26_manifest_seed_projection.py::_seed_demo_dataset`; previous order pending, not new. Move COMPLETE actual body below, original thin wrapper with call-time facade and no duplicate body:
@@ -216,7 +216,7 @@ def _seed_demo_dataset(root: Path) -> Path:
     return manifest_path
 ```
 **WRAPPER/PATCH:** SOURCE original signature; unique alias `_c03_11_k3_owner` local import, sole Owner delegation with `facade=sys.modules[__name__]`; Owner call-time globals _write_text,_utc_now_iso,json,SCHEMA_VERSION,REQUIRED_COMPONENT_FILES; preserve errors, outputs, mutation, order, effects in isolated temp ONLY.
-**NORMAL TARGETED:** add missing `test_k3__seed_demo_dataset` in `tests/test_p15_rf063_20261101_06h_owners.py`: TemporaryDirectory -> manifest.json, all original CSV/JSONL bytes and 12 component paths; fake _utc_now_iso, no real files. Golden original vs wrapper/Owner, AST check; run that exact file via `python -m unittest tests/test_p15_rf063_20261101_06h_owners.py -v` expecting full original+new suite exit0, no stale PASS reuse. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
+**NORMAL TARGETED:** add missing `test_k3__seed_demo_dataset` in `tests/test_p15_rf063_20261101_06h_owners.py`: TemporaryDirectory -> manifest.json, all original CSV/JSONL bytes and 12 component paths; fake _utc_now_iso, no real files. Golden original vs wrapper/Owner, AST check; write this item's NEW test in `tests/test_p15_rf063_20261101_12h_residual_owners.py`; run only the new 12h targeted suite once (normal exit0), never repeat prior same-SHA PASS. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
 
 ### K4 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m26_closeout_check.py::_prepare_candidate_dataset` @ L63 | CURRENT_BLOB `f9f4ff9c200cf895c8105eb8207723bc13bba1e8`
 **TARGET (404 both refs):** `scripts/diagnostics/m26_closeout_candidate_projection.py::_prepare_candidate_dataset`; previous order pending, not new. Move COMPLETE actual body below, original thin wrapper with call-time facade and no duplicate body:
@@ -250,7 +250,7 @@ def _prepare_candidate_dataset(candidate_root: Path, *, day: str) -> None:
     )
 ```
 **WRAPPER/PATCH:** SOURCE original signature; unique alias `_c03_11_k4_owner` local import, sole Owner delegation with `facade=sys.modules[__name__]`; Owner call-time globals _write_jsonl; preserve errors, outputs, mutation, order, effects in isolated temp ONLY.
-**NORMAL TARGETED:** add missing `test_k4__prepare_candidate_dataset` in `tests/test_p15_rf063_20261101_07h_owners.py`: TemporaryDirectory with market/ and execution/ precreated; fake _write_jsonl; candidate market close=115 vs open=100. Golden original vs wrapper/Owner, AST check; run that exact file via `python -m unittest tests/test_p15_rf063_20261101_07h_owners.py -v` expecting full original+new suite exit0, no stale PASS reuse. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
+**NORMAL TARGETED:** add missing `test_k4__prepare_candidate_dataset` in `tests/test_p15_rf063_20261101_07h_owners.py`: TemporaryDirectory with market/ and execution/ precreated; fake _write_jsonl; candidate market close=115 vs open=100. Golden original vs wrapper/Owner, AST check; write this item's NEW test in `tests/test_p15_rf063_20261101_12h_residual_owners.py`; run only the new 12h targeted suite once (normal exit0), never repeat prior same-SHA PASS. **BLOCKED→NEXT:** exact reason to #12; continue next safe carryover/new item.
 
 ## SECOND — FOUR UNFINISHED B-11 ITEMS (B1/B2/B3/B7; NOT NEW_READY)
 
@@ -326,7 +326,7 @@ def _build_parser() -> argparse.ArgumentParser:
     return p
 ```
 **THIN WRAPPER/PATCH:** `_build_parser(...)` delegates via `_c03_11_b3_owner._build_parser(..., facade=sys.modules[__name__])`; Owner call-time globals: argparse. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
-**TARGETED `test_b3__build_parser`:** parse_args([]) -> retention_days=30, archive_dir='data/logs/archive'; --retention-days 7 --json -> 7,True. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B4.
+**TARGETED `test_b3__build_parser`:** parse_args([]) -> retention_days=30, archive_dir='data/logs/archive'; --retention-days 7 --json -> 7,True. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B7 (B4 already REMOTE_DONE).
 
 ## B7 | RF-063 CODEX_B | SOURCE `scripts/diagnostics/run_m27_conflict_resolution_check.py::_default_intents` @ L21 | CURRENT_BLOB `f5ccbc0d12ea0cf594539482a97cf64a9ef9ad9b`
 **TARGET (404 both refs VERIFIED):** `scripts/diagnostics/m27_conflict_intents_projection.py::_default_intents`; actual original BODY to move, not KEEP or copy:
@@ -401,7 +401,7 @@ def _default_intents(*, inject_fail: bool) -> List[Dict[str, Any]]:
     ]
 ```
 **THIN WRAPPER/PATCH:** `_default_intents(...)` delegates via `_c03_11_b7_owner._default_intents(..., facade=sys.modules[__name__])`; Owner call-time globals: none. Do not call original CLI main; preserve source import and caller monkeypatch. No production effects.
-**TARGETED `test_b7__default_intents`:** inject_fail=False -> 4 intents including opposing BUY/SELL on 005930; True -> 2 BUY intents on distinct symbols; fresh list. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12, continue B8.
+**TARGETED `test_b7__default_intents`:** inject_fail=False -> 4 intents including opposing BUY/SELL on 005930; True -> 2 BUY intents on distinct symbols; fresh list. Compare original golden, wrapper and Owner with normal/negative/exception and AST check. **BLOCKED→NEXT:** record exact SHA/error to #12; B8 already REMOTE_DONE, report remaining blocker and do not rerun it.
 
 ## FUTURE RESERVE — VERIFIED 6/6 (DESIGN ONLY; NOT EXECUTABLE)
 
