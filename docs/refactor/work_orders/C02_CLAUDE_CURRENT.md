@@ -1,268 +1,342 @@
-# C02 — Claude A | A-20261101-11 | FAST-3 8 NEW SOURCE BODY MOVEs
+# C02 — Claude A | A-20261101-12 | RF-DONE-FIRST / RF-014 8 VERIFIED BODY MOVEs + bounded G2 closeout seam
 
-**SINGLE ENTRY / PIN:** At start pin CANONICAL_HEAD, ORDER_FILE_BLOB_SHA, OWNER_REMOTE_SHA and ORDER_ID=A-20261101-11. Read only THIS document plus named code/test files. Do not read D00/RF/queue/C03/CURRENT/HANDOFF, self-select, modify other actor paths, or repeat old PASS. Execute all A1–A8; blocked item → next safe item. A-10 was 8/8 REMOTE_DONE at 9eb7ed3f27e8b362407196d13c6b5c035c50d8f3, normal 8/8 exit0, #11 comment 6551673840; no old item is assigned here.
+**ONE-FILE ENTRY / PIN:** At start record CANONICAL_HEAD, C02 ORDER_FILE_BLOB_SHA, A_OWNER_REMOTE_SHA and ORDER_ID=A-20261101-12. Read only THIS C02 and the named source/target/test code. No D00/RF/queue/C03/CURRENT/HANDOFF read or RF self-selection. Previous A-20261101-11 8/8 REMOTE_DONE at A remote `b4504878e80786a95a28e13178de89cdf30567c6`, normal 8/8 exit0 (#11 6552247540); do not repeat or rename. New C02 changes next start only, not an in-flight pinned order.
 
-**RF/OWNER/REMOTE BASIS:** RF-035, CLAUDE_A exclusive; SOURCE `libs/reporting/live_execution_event_evidence.py` blob `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c` verified same on integration and actor; A branch `work/p15-a-reporter-pure-20261021` HEAD `9eb7ed3f27e8b362407196d13c6b5c035c50d8f3`. All 8 target paths and 6 future reserve targets are absent on BOTH integration and A branch at issuance (directory membership check). Only SOURCE, the enumerated new Owner modules, and `tests/test_p15_rf035_20261101_11h_event_owners.py` are writable for this order. No C01/C03/D00/RF/STATUS/C04/C05/other-actor edits.
+**DIRECT PRIORITY CHANGE:** RF-035 is already 05_DONE; no more RF-035 development assigned. This order targets unfinished **RF-014 (03_PEER_REVIEW, CLAUDE_A exclusive)**. Aim to advance G1/G2 toward C04 scoped integration and C05 new RF DONE; **8 actual SOURCE BODY MOVEs are supply requirement, not 8 RF DONE**. RF-014 G1 remains PARTIAL on Scanner→RF-009 repeat/risk/NOOP consumer; G2 partial; G3 pending. Do not claim whole-RF DONE from the eight projections or the bounded seam smoke.
 
-**SAFETY:** These are in-memory reporting evidence projections ONLY, not trading, live orders, Broker/Guard/Step5C/UEF, RunLab, deployment, filesystem/network writes, policy thresholds, or real data. Do not call actual runtime pipeline. SOURCE must retain same signature as thin facade; move entire original executable BODY to one new Owner, no duplicate calculation, no Owner→SOURCE import. Owner imports required typing/types and accepts extra keyword-only `facade` to resolve monkeypatch-sensitive globals at call time. Source wrapper imports new module inside function with unique alias `_c03_11_aN_owner`, delegates `return owner.fn(..., facade=sys.modules[__name__])`; import sys in SOURCE. Preserve positional/keyword/default, mutation/copy/iterator, order, exceptions, and monkeypatch behavior. For each test, capture original function golden BEFORE editing, compare wrapper/Owner with original and AST confirm source BODY removed.
+**SOURCE BLOBS / OWNERSHIP:** `libs/agents/scanner/projections/output_snapshots.py` `02ef48a408338fcb010e82241ef2c694b039979e`, `libs/agents/scanner/projections/selection_evidence_projection.py` `bf20e9af5ec4988e7fef831b0cbb3e44644f6914`, `libs/agents/scanner/projections/output_payloads.py` `fe5e34d58aecb7972adc02e0faa8c89eeb8555f0`; same exact blob on A branch and integration at issuance. All A1–A8 target paths 404/absent on both refs at issuance; only `libs/agents/scanner/` RF-014 code plus new RF-014 targeted tests writable. RF-009 `graphs/nodes/scanner_node.py` and any other RF owner are **READ ONLY**. Do not alter policy thresholds, broker/Guard/Step5C/UEF, operational state, RunLab, real orders/network/files, CI/frozen tests, D00/RF/STATUS/C04/C05, or other actor branches. All fixture tests in-memory, no scanner pipeline execution.
 
-**TEST/DELIVERY:** Add 8 independently named `unittest` tests to `tests/test_p15_rf035_20261101_11h_event_owners.py` using fake dicts and patched facade globals only. `python -m unittest tests/test_p15_rf035_20261101_11h_event_owners.py -v` expected exit0/8 tests (NOT_RUN until actor). Commit only allowed code/test, normal non-force push or approved expected-HEAD lease, re-fetch actor HEAD, source/Owner/test blob SHAs, and report exact commands/exits, each A1–A8, measured START_KST/END_KST/ELAPSED_MIN to #11. Git auth failure=PUSH_BLOCKED (not G1), pytest absence does not prevent stdlib unittest; continue other safe items. C04 integrates and C05 decides G1/G2/G3; this C03 document commit is DOC_ONLY, not a code MOVE.
+**BODY MOVE CONTRACT:** For each A1–A8, move the entire exact executable function BODY below into the specified *single* new Owner module; remove it from original SOURCE leaving original signature with a thin local-import delegation wrapper. No copy-only move or duplicate calculation. For SOURCE functions without existing `facade`, Owner accepts extra keyword-only `facade` and all original global lookups resolve through `facade.NAME` at call time; SOURCE adds `import sys` and passes `facade=sys.modules[__name__]`. For selection_evidence functions **already accepting facade**, forward that same facade (do not inject another). Preserve signature, kwargs/defaults, order, exception types, mutation/copy, module-level monkeypatch, and external imports. Owner never imports SOURCE. Use unique aliases `_c03_12_aN_owner`. Before editing capture exact golden result/exception for each fixture from original SOURCE, then compare original vs wrapper vs Owner and AST assert original calculation is gone. If any effect or monkeypatch seam cannot be safely preserved, mark that item SAFETY_BLOCKED and continue the next.
 
-## A1 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::row_event_name` @ L11 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
-**TARGET (404 both refs):** `libs/reporting/live_event_name_projection.py::row_event_name`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
+**TEST / PUSH:** Add `tests/test_p15_rf014_20261101_12h_projection_owners.py` with one independent `test_aN_*` per item, normal `python -m unittest tests/test_p15_rf014_20261101_12h_projection_owners.py -v` expected 8/8 exit0 **NOT_RUN at issuance**. Add optional bounded G2 closeout test C0 below as a separate test, never count it as BODY MOVE. Commit only A-owned source/new Owner/tests on A branch, normal non-force push, re-fetch A HEAD and all source/target/test blobs, report A1–A8 plus C0, exact exit, SHA and actually measured START/END to #11. Git auth failure=PUSH_BLOCKED only; continue safe local items; pytest missing does not block stdlib unittest. C04 integrates exact code/test SHA, C05 alone moves RF/STATUS.
+
+## C0 — RF-014 CLOSEOUT G2 SEAM (not BODY MOVE, do after A1–A8 or independently if blocked)
+Create `tests/test_p15_rf014_scanner_repeat_risk_noop_20261101_12h.py` with fake-only normal unittest for read-only `libs/agents/scanner/candidate_risk.py::resolve_candidate_base_risk` (SOURCE blob `8dea30aebd811d8d9f214c8bca7bef8ea41fa3f9`): scanner_row={'risk_score':0.25} -> risk_score=0.25/source='scanner_row'; empty inputs -> original deterministic fallback. Read-only `libs/agents/scanner/policy/repeat_guard.py::_normalize_scanner_blocker_family_r3_impl` (blob `5f794e544dd0597d36c1f2dee8f474b386df120c`): 'risk_blocked' -> 'risk_guard', 'none' -> ''. Read-only `libs/agents/scanner/projections/control_eligibility.py::build_full_strategist_control_eligibility` (blob `d47013045a37b97a6a1b5d50e067934b628d3251`): {} -> behavior_effect='observation_only', eligible=False; no action/order/noop effect. Command `python -m unittest tests/test_p15_rf014_scanner_repeat_risk_noop_20261101_12h.py -v` expected exit0 with 3 scoped tests (NOT_RUN at issuance). These are bounded pure-function evidence, **not** proof of the entire RF-009 caller or actual runtime NOOP. Record precise remaining caller seam as G1_FIRST_UNMET for C04/C05; never edit RF-009. Do not rerun unchanged existing PASS.
+
+## A1 | RF-014 CLAUDE_A | SOURCE `libs/agents/scanner/projections/output_snapshots.py::to_float` @ L9 | CURRENT_BLOB `02ef48a408338fcb010e82241ef2c694b039979e`
+**TARGET (404 both refs):** `libs/agents/scanner/projections/scanner_snapshot_numeric.py::to_float`. Move this actual original BODY (not KEEP/copy) into target:
 ```python
-def row_event_name(row: Dict[str, Any]) -> str:
-    text = str(row.get("event_name") or "").strip()
-    if text:
-        return text
-    stage = str(row.get("stage") or "").strip()
-    event = str(row.get("event") or "").strip()
-    return ".".join(part for part in (stage, event) if part)
+def to_float(v: Any, default: float = 0.0) -> float:
+    try:
+        return float(v)
+    except Exception:
+        return float(default)
 ```
-**WRAPPER / CALL-TIME PATCH:** `row_event_name(...)` delegates via `_c03_11_a1_owner.row_event_name(..., facade=sys.modules[__name__])`; Owner resolves no module globals through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
-**TARGETED `test_a1_row_event_name`:** row={'event_name':' scanner.hit '} -> 'scanner.hit'; {'stage':'scanner','event':'hit'} -> 'scanner.hit'; empty -> ''. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A2.
+**THIN WRAPPER / CALL-TIME:** keep exact source signature and delegate via unique alias `_c03_12_a1_owner` to target `to_float`; pass facade=sys.modules[__name__] as an extra target-only kwarg. Globals/seams: none; direct float/exception. Preserve original callers, original exception and any mutation/copy/iteration behavior; never call operational pipeline.
+**TARGETED `test_a1_to_float`:** '2.5' -> 2.5; 'bad',default=7 -> 7.0; nonnumeric object matches original exception fallback. Compare exact original golden + wrapper + Owner, patched SOURCE globals and AST body removal. Normal expected exit0; no test run at publication. **BLOCKED→NEXT:** #11 exact error/SHA, continue A2.
 
-## A2 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::event_row_symbol` @ L20 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
-**TARGET (404 both refs):** `libs/reporting/live_event_symbol_projection.py::event_row_symbol`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
+## A2 | RF-014 CLAUDE_A | SOURCE `libs/agents/scanner/projections/output_snapshots.py::compact_selected_snapshot` @ L16 | CURRENT_BLOB `02ef48a408338fcb010e82241ef2c694b039979e`
+**TARGET (404 both refs):** `libs/agents/scanner/projections/scanner_snapshot_selected.py::compact_selected_snapshot`. Move this actual original BODY (not KEEP/copy) into target:
 ```python
-def event_row_symbol(row: Dict[str, Any]) -> str:
-    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
-    return normalize_symbol(
-        row.get("symbol")
-        or payload.get("symbol")
-        or payload.get("selected_symbol")
-        or payload.get("position_symbol")
-        or "",
-        allow_test_symbols=True,
-    )
+def compact_selected_snapshot(selected: Dict[str, Any] | None) -> Dict[str, Any]:
+    if not isinstance(selected, dict):
+        return {}
+    candidate = selected.get("candidate") if isinstance(selected.get("candidate"), dict) else {}
+    features = selected.get("features") if isinstance(selected.get("features"), dict) else {}
+    components = selected.get("components") if isinstance(selected.get("components"), dict) else {}
+    return {
+        "symbol": str(selected.get("symbol") or ""),
+        "why": str(selected.get("why") or ""),
+        "asset_class_detected": str(selected.get("asset_class_detected") or ""),
+        "detection_source": str(selected.get("detection_source") or ""),
+        "detection_field": str(selected.get("detection_field") or ""),
+        "sources": list(candidate.get("sources") or [])[:8],
+        "source_scores": dict(candidate.get("source_scores") or {}),
+        "source_observations": dict(candidate.get("source_observations") or {}),
+        "rank_score": to_float(candidate.get("rank_score") or 0.0),
+        "universe_score": to_float(candidate.get("universe_score") or 0.0),
+        "score_total": to_float(selected.get("score_total") or selected.get("score") or 0.0),
+        "risk_score": to_float(selected.get("risk_score") or 0.0),
+        "confidence": to_float(selected.get("confidence") or 0.0),
+        "best_bid": features.get("quote_best_bid"),
+        "best_ask": features.get("quote_best_ask"),
+        "spread_bps": features.get("quote_spread_bps"),
+        "score_breakdown": dict(selected.get("score_breakdown") or {}),
+        "feature_snapshot": {
+            "quote_trading_value": features.get("quote_trading_value"),
+            "quote_volume": features.get("quote_volume"),
+            "intraday_change_pct": features.get("intraday_change_pct"),
+            "skill_quote_price": features.get("skill_quote_price"),
+            "quote_best_bid": features.get("quote_best_bid"),
+            "quote_best_ask": features.get("quote_best_ask"),
+            "quote_spread_bps": features.get("quote_spread_bps"),
+            "quote_payload_available": features.get("quote_payload_available"),
+            "quote_source": features.get("quote_source"),
+            "quote_evidence_status": features.get("quote_evidence_status"),
+            "entry_compatibility_score": features.get("entry_compatibility_score"),
+            "compatibility_bias": features.get("compatibility_bias"),
+            "compatibility_source": features.get("compatibility_source"),
+            "compat_vwap_distance_abs": features.get("compat_vwap_distance_abs"),
+            "compat_is_below_vwap": features.get("compat_is_below_vwap"),
+            "compat_reclaim_proximity": features.get("compat_reclaim_proximity"),
+            "compat_volume_ratio": features.get("compat_volume_ratio"),
+            "compat_breakout_gap_pct": features.get("compat_breakout_gap_pct"),
+            "engine_ma20_gap": features.get("engine_ma20_gap"),
+            "engine_close_last": features.get("engine_close_last"),
+            "engine_ma60": features.get("engine_ma60"),
+            "engine_ma120": features.get("engine_ma120"),
+            "engine_adx14": features.get("engine_adx14"),
+            "engine_trend_strength": features.get("engine_trend_strength"),
+            "engine_volume_spike20": features.get("engine_volume_spike20"),
+            "engine_volatility20": features.get("engine_volatility20"),
+            "engine_vwap_distance": features.get("engine_vwap_distance"),
+            "engine_sector_relative_strength": features.get("engine_sector_relative_strength"),
+            "engine_cross_section_rank": features.get("engine_cross_section_rank"),
+            "engine_regime": features.get("engine_regime"),
+            "engine_signal_score": features.get("engine_signal_score"),
+        },
+        "component_snapshot": {
+            "news_sentiment": components.get("news_sentiment"),
+            "global_sentiment": components.get("global_sentiment"),
+            "trading_value_component": components.get("trading_value_component"),
+            "momentum_component": components.get("momentum_component"),
+            "trend_component": components.get("trend_component"),
+            "volume_surge_component": components.get("volume_surge_component"),
+            "intraday_strength_component": components.get("intraday_strength_component"),
+            "theme_boost_component": components.get("theme_boost_component"),
+            "sentiment_component": components.get("sentiment_component"),
+            "volatility_penalty_component": components.get("volatility_penalty_component"),
+            "gap_penalty_component": components.get("gap_penalty_component"),
+            "avoid_theme_penalty_component": components.get("avoid_theme_penalty_component"),
+        },
+        "quant_factor_snapshot": build_factor_snapshot_from_candidate(
+            selected,
+            tactic_id=str(selected.get("tactical_strategy") or ""),
+            playbook=str(selected.get("playbook") or ""),
+        ),
+        "tactic_suitability": dict(selected.get("tactic_suitability") or {}),
+    }
 ```
-**WRAPPER / CALL-TIME PATCH:** `event_row_symbol(...)` delegates via `_c03_11_a2_owner.event_row_symbol(..., facade=sys.modules[__name__])`; Owner resolves `normalize_symbol` through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
-**TARGETED `test_a2_event_row_symbol`:** row={'symbol':'005930'} -> normalize_symbol('005930',allow_test_symbols=True); payload.selected_symbol fallback; monkeypatch SOURCE.normalize_symbol to fake to prove call-time. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A3.
+**THIN WRAPPER / CALL-TIME:** keep exact source signature and delegate via unique alias `_c03_12_a2_owner` to target `compact_selected_snapshot`; pass facade=sys.modules[__name__] as an extra target-only kwarg. Globals/seams: facade.to_float, facade.build_factor_snapshot_from_candidate. Preserve original callers, original exception and any mutation/copy/iteration behavior; never call operational pipeline.
+**TARGETED `test_a2_compact_selected_snapshot`:** None -> {}; selected={'symbol':'005930','candidate':{}} -> result['symbol']=='005930'; patch facade.build_factor_snapshot_from_candidate to return {} and verify golden. Compare exact original golden + wrapper + Owner, patched SOURCE globals and AST body removal. Normal expected exit0; no test run at publication. **BLOCKED→NEXT:** #11 exact error/SHA, continue A3.
 
-## A3 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::event_row_name` @ L32 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
-**TARGET (404 both refs):** `libs/reporting/live_event_row_name_projection.py::event_row_name`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
+## A3 | RF-014 CLAUDE_A | SOURCE `libs/agents/scanner/projections/output_snapshots.py::feature_coverage_summary` @ L96 | CURRENT_BLOB `02ef48a408338fcb010e82241ef2c694b039979e`
+**TARGET (404 both refs):** `libs/agents/scanner/projections/scanner_snapshot_coverage.py::feature_coverage_summary`. Move this actual original BODY (not KEEP/copy) into target:
 ```python
-def event_row_name(row: Dict[str, Any]) -> str:
-    return str(row.get("event_name") or row.get("name") or row.get("event") or "").strip()
+def feature_coverage_summary(row: Dict[str, Any]) -> Dict[str, Any]:
+    features = row.get("features") if isinstance(row.get("features"), dict) else {}
+    if not isinstance(features, dict):
+        return {
+            "present": 0,
+            "total": 0,
+            "coverage_ratio": 0.0,
+            "quality": "missing",
+            "present_keys": [],
+            "missing_keys": [],
+        }
+    interesting_keys = [
+        "engine_ma20_gap",
+        "engine_ma60",
+        "engine_ma120",
+        "engine_adx14",
+        "engine_trend_strength",
+        "engine_atr14",
+        "engine_volume_spike20",
+        "engine_volatility20",
+        "engine_vwap_distance",
+        "engine_sector_relative_strength",
+        "engine_cross_section_rank",
+        "engine_regime",
+        "engine_signal_score",
+    ]
+    present_keys = [key for key in interesting_keys if features.get(key) not in (None, "")]
+    missing_keys = [key for key in interesting_keys if features.get(key) in (None, "")]
+    total = len(interesting_keys)
+    present = len(present_keys)
+    ratio = float(present) / float(total) if total else 0.0
+    if ratio >= 0.75:
+        quality = "strong"
+    elif ratio >= 0.5:
+        quality = "partial"
+    else:
+        quality = "weak"
+    return {
+        "present": int(present),
+        "total": int(total),
+        "coverage_ratio": float(ratio),
+        "quality": quality,
+        "present_keys": present_keys,
+        "missing_keys": missing_keys,
+    }
 ```
-**WRAPPER / CALL-TIME PATCH:** `event_row_name(...)` delegates via `_c03_11_a3_owner.event_row_name(..., facade=sys.modules[__name__])`; Owner resolves no module globals through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
-**TARGETED `test_a3_event_row_name`:** row={'name':'fallback'} -> 'fallback'; {'event_name':'x'} -> 'x'; absent -> ''. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A4.
+**THIN WRAPPER / CALL-TIME:** keep exact source signature and delegate via unique alias `_c03_12_a3_owner` to target `feature_coverage_summary`; pass facade=sys.modules[__name__] as an extra target-only kwarg. Globals/seams: no mutable module globals. Preserve original callers, original exception and any mutation/copy/iteration behavior; never call operational pipeline.
+**TARGETED `test_a3_feature_coverage_summary`:** {'features':{}} -> present=0; a row with one present feature compared to original golden, no mutation. Compare exact original golden + wrapper + Owner, patched SOURCE globals and AST body removal. Normal expected exit0; no test run at publication. **BLOCKED→NEXT:** #11 exact error/SHA, continue A4.
 
-## A4 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::merge_rows_by_identity` @ L36 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
-**TARGET (404 both refs):** `libs/reporting/live_event_identity_merge_projection.py::merge_rows_by_identity`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
+## A4 | RF-014 CLAUDE_A | SOURCE `libs/agents/scanner/projections/output_snapshots.py::compact_feature_snapshot` @ L143 | CURRENT_BLOB `02ef48a408338fcb010e82241ef2c694b039979e`
+**TARGET (404 both refs):** `libs/agents/scanner/projections/scanner_snapshot_features.py::compact_feature_snapshot`. Move this actual original BODY (not KEEP/copy) into target:
 ```python
-def merge_rows_by_identity(*collections: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def compact_feature_snapshot(row: Dict[str, Any]) -> Dict[str, Any]:
+    features = row.get("features") if isinstance(row.get("features"), dict) else {}
+    if not isinstance(features, dict):
+        return {}
+    return {
+        "skill_quote_price": features.get("skill_quote_price"),
+        "quote_trading_value": features.get("quote_trading_value"),
+        "quote_volume": features.get("quote_volume"),
+        "quote_best_bid": features.get("quote_best_bid"),
+        "quote_best_ask": features.get("quote_best_ask"),
+        "quote_spread_bps": features.get("quote_spread_bps"),
+        "quote_payload_available": features.get("quote_payload_available"),
+        "quote_source": features.get("quote_source"),
+        "quote_evidence_status": features.get("quote_evidence_status"),
+        "intraday_change_pct": features.get("intraday_change_pct"),
+        "entry_compatibility_score": features.get("entry_compatibility_score"),
+        "compatibility_bias": features.get("compatibility_bias"),
+        "compatibility_source": features.get("compatibility_source"),
+        "compat_vwap_distance_abs": features.get("compat_vwap_distance_abs"),
+        "compat_is_below_vwap": features.get("compat_is_below_vwap"),
+        "compat_reclaim_proximity": features.get("compat_reclaim_proximity"),
+        "compat_volume_ratio": features.get("compat_volume_ratio"),
+        "compat_breakout_gap_pct": features.get("compat_breakout_gap_pct"),
+        "engine_ma20_gap": features.get("engine_ma20_gap"),
+        "engine_close_last": features.get("engine_close_last"),
+        "engine_ma60": features.get("engine_ma60"),
+        "engine_ma120": features.get("engine_ma120"),
+        "engine_adx14": features.get("engine_adx14"),
+        "engine_trend_strength": features.get("engine_trend_strength"),
+        "engine_atr14": features.get("engine_atr14"),
+        "engine_volume_spike20": features.get("engine_volume_spike20"),
+        "engine_volatility20": features.get("engine_volatility20"),
+        "engine_vwap_distance": features.get("engine_vwap_distance"),
+        "engine_sector_relative_strength": features.get("engine_sector_relative_strength"),
+        "engine_cross_section_rank": features.get("engine_cross_section_rank"),
+        "engine_regime": features.get("engine_regime"),
+        "engine_signal_score": features.get("engine_signal_score"),
+    }
+```
+**THIN WRAPPER / CALL-TIME:** keep exact source signature and delegate via unique alias `_c03_12_a4_owner` to target `compact_feature_snapshot`; pass facade=sys.modules[__name__] as an extra target-only kwarg. Globals/seams: no mutable module globals. Preserve original callers, original exception and any mutation/copy/iteration behavior; never call operational pipeline.
+**TARGETED `test_a4_compact_feature_snapshot`:** {'features':{'skill_quote_price':101}} -> output['skill_quote_price']==101; {} -> original golden; input unchanged. Compare exact original golden + wrapper + Owner, patched SOURCE globals and AST body removal. Normal expected exit0; no test run at publication. **BLOCKED→NEXT:** #11 exact error/SHA, continue A5.
+
+## A5 | RF-014 CLAUDE_A | SOURCE `libs/agents/scanner/projections/output_snapshots.py::ranking_table_rows` @ L183 | CURRENT_BLOB `02ef48a408338fcb010e82241ef2c694b039979e`
+**TARGET (404 both refs):** `libs/agents/scanner/projections/scanner_snapshot_ranking.py::ranking_table_rows`. Move this actual original BODY (not KEEP/copy) into target:
+```python
+def ranking_table_rows(rows: List[Dict[str, Any]], *, max_rows: int = 5) -> List[Dict[str, Any]]:
     out: List[Dict[str, Any]] = []
-    seen: set[tuple[str, str, str, str]] = set()
-    for rows in collections:
-        for row in list(rows or []):
-            if not isinstance(row, dict):
-                continue
-            key = (
-                str(row.get("ts") or row.get("timestamp") or ""),
-                str(row.get("run_id") or ""),
-                event_row_name(row),
-                event_row_symbol(row),
-            )
-            if key in seen:
-                continue
-            seen.add(key)
-            out.append(row)
-    return out
-```
-**WRAPPER / CALL-TIME PATCH:** `merge_rows_by_identity(...)` delegates via `_c03_11_a4_owner.merge_rows_by_identity(..., facade=sys.modules[__name__])`; Owner resolves `event_row_name`, `event_row_symbol` through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
-**TARGETED `test_a4_merge_rows_by_identity`:** two equal (ts,run_id,event name,symbol) dicts -> first object retained, order preserved, duplicate removed; non-dict ignored; monkeypatch SOURCE.event_row_name/event_row_symbol. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A5.
-
-## A5 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::filter_canonical_events` @ L56 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
-**TARGET (404 both refs):** `libs/reporting/live_event_canonical_filter_projection.py::filter_canonical_events`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
-```python
-def filter_canonical_events(
-    rows: List[Dict[str, Any]],
-    *,
-    run_ids: List[str],
-    agent: str,
-    event_names: List[str],
-) -> List[Dict[str, Any]]:
-    run_set = {str(item or "").strip() for item in list(run_ids or []) if str(item or "").strip()}
-    names = {str(item or "").strip() for item in list(event_names or []) if str(item or "").strip()}
-    out: List[Dict[str, Any]] = []
-    for row in rows:
-        if run_set and str(row.get("run_id") or "").strip() not in run_set:
-            continue
-        row_agent = str(row.get("agent") or row.get("stage") or "").strip().lower()
-        if row_agent != str(agent or "").strip().lower():
-            continue
-        if names and row_event_name(row) not in names:
-            continue
+    for idx, row in enumerate(list(rows or [])[: max(0, int(max_rows))], start=1):
+        candidate = row.get("candidate") if isinstance(row.get("candidate"), dict) else {}
         out.append(
             {
-                "ts": str(row.get("ts") or ""),
-                "event_name": row_event_name(row),
-                "level": str(row.get("level") or "info"),
-                "run_id": str(row.get("run_id") or ""),
-                "trade_id": str(row.get("trade_id") or ""),
-                "session_id": str(row.get("session_id") or ""),
-                "cycle_id": str(row.get("cycle_id") or ""),
-                "agent": str(row.get("agent") or row.get("stage") or ""),
-                "phase": str(row.get("phase") or ""),
+                "rank": int(idx),
                 "symbol": str(row.get("symbol") or ""),
-                "payload": dict(row.get("payload") or {}) if isinstance(row.get("payload"), dict) else {},
+                "score_total": float(to_float(row.get("score_total") or row.get("score"))),
+                "score_breakdown": dict(row.get("score_breakdown") or {}),
+                "sources": list(candidate.get("sources") or [])[:8],
+                "source_scores": dict(candidate.get("source_scores") or {}),
+                "source_observations": dict(candidate.get("source_observations") or {}),
+                "candidate_source": str(candidate.get("source_why") or ""),
+                "rank_score": float(to_float(candidate.get("rank_score"))),
+                "universe_score": float(to_float(candidate.get("universe_score"))),
+                "risk_score": float(to_float(row.get("risk_score"))),
+                "confidence": float(to_float(row.get("confidence"))),
+                "bias_adjustment": float(to_float(row.get("bias_adjustment"))),
+                "bias_adjustments": list(row.get("bias_adjustments") or []),
+                "bias_summary": dict(row.get("bias_summary") or {}),
+                "entry_compatibility_score": float(to_float(row.get("entry_compatibility_score"))),
+                "compatibility_bias": float(to_float(row.get("compatibility_bias"))),
+                "compatibility_components": dict(row.get("compatibility_components") or {}),
+                "scanner_chart_fit_score": float(to_float(row.get("scanner_chart_fit_score"))),
+                "scanner_chart_fit_authority": str(row.get("scanner_chart_fit_authority") or ""),
+                "scanner_chart_fit_components": dict(row.get("scanner_chart_fit_components") or {}),
+                "scanner_macro_chart_fit_score": float(to_float(row.get("scanner_macro_chart_fit_score"), 0.5)),
+                "scanner_macro_chart_fit_bias": float(to_float(row.get("scanner_macro_chart_fit_bias"))),
+                "scanner_macro_chart_fit_authority": str(row.get("scanner_macro_chart_fit_authority") or ""),
+                "scanner_macro_chart_fit_components": dict(row.get("scanner_macro_chart_fit_components") or {}),
+                "expected_monitor_block_reason": str(row.get("expected_monitor_block_reason") or ""),
+                "dominant_block_reason": str(row.get("dominant_block_reason") or ""),
+                "dominant_block_reason_ratio": float(to_float(row.get("dominant_block_reason_ratio"))),
+                "bias_scale": float(to_float(row.get("bias_scale"))),
+                "soft_penalty": float(to_float(row.get("soft_penalty"))),
+                "compatibility_score_pre_penalty": float(to_float(row.get("compatibility_score_pre_penalty"))),
+                "compatibility_score_post_penalty": float(to_float(row.get("compatibility_score_post_penalty"))),
+                "pre_adjust_score_total": float(to_float(row.get("pre_adjust_score_total"))),
+                "post_adjust_score_total": float(to_float(row.get("post_adjust_score_total") or row.get("score_total") or row.get("score"))),
+                "theme_match": candidate_theme_match(row),
+                "feature_coverage": feature_coverage_summary(row),
+                "status": "selected" if idx == 1 else "runner_up",
+                "exclusion_reason": str(row.get("exclusion_reason") or ""),
+                "compact_feature_snapshot": compact_feature_snapshot(row),
+                "quant_factor_snapshot": build_factor_snapshot_from_candidate(
+                    row,
+                    tactic_id=str(row.get("tactical_strategy") or ""),
+                    playbook=str(row.get("playbook") or ""),
+                ),
+                "tactic_suitability": dict(row.get("tactic_suitability") or {}),
             }
         )
-    out.sort(key=lambda item: to_epoch(item.get("ts")) or 0)
     return out
 ```
-**WRAPPER / CALL-TIME PATCH:** `filter_canonical_events(...)` delegates via `_c03_11_a5_owner.filter_canonical_events(..., facade=sys.modules[__name__])`; Owner resolves `row_event_name`, `to_epoch` through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
-**TARGETED `test_a5_filter_canonical_events`:** rows with agent=strategist/run_id=r1, timestamp 2 and 1, event_names=['strategist.decision_frame'] -> chronological ts 1,2; wrong agent/run excluded; payload copied; patch SOURCE.to_epoch. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A6.
+**THIN WRAPPER / CALL-TIME:** keep exact source signature and delegate via unique alias `_c03_12_a5_owner` to target `ranking_table_rows`; pass facade=sys.modules[__name__] as an extra target-only kwarg. Globals/seams: facade.to_float, facade.candidate_theme_match, facade.feature_coverage_summary, facade.compact_feature_snapshot, facade.build_factor_snapshot_from_candidate. Preserve original callers, original exception and any mutation/copy/iteration behavior; never call operational pipeline.
+**TARGETED `test_a5_ranking_table_rows`:** [] -> []; any rows with max_rows=0 -> []; one fake row with patched facade.candidate_theme_match=lambda _:False and factor snapshot=lambda *a,**kw:{} -> one output row, exact original golden and order. Compare exact original golden + wrapper + Owner, patched SOURCE globals and AST body removal. Normal expected exit0; no test run at publication. **BLOCKED→NEXT:** #11 exact error/SHA, continue A6.
 
-## A6 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::resolve_strategist_source_run_ids` @ L93 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
-**TARGET (404 both refs):** `libs/reporting/live_event_strategist_source_ids_projection.py::resolve_strategist_source_run_ids`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
+## A6 | RF-014 CLAUDE_A | SOURCE `libs/agents/scanner/projections/selection_evidence_projection.py::scan_select_value_state_scanner_skill` @ L188 | CURRENT_BLOB `bf20e9af5ec4988e7fef831b0cbb3e44644f6914`
+**TARGET (404 both refs):** `libs/agents/scanner/projections/scanner_selection_skill.py::scan_select_value_state_scanner_skill`. Move this actual original BODY (not KEEP/copy) into target:
 ```python
-def resolve_strategist_source_run_ids(
-    *,
-    event_rows: List[Dict[str, Any]],
-    lifecycle: Dict[str, Any],
-) -> Tuple[List[str], Dict[str, str]]:
-    lifecycle_run_ids = [str(x or "").strip() for x in list(lifecycle.get("run_ids_all") or []) if str(x or "").strip()]
-    if not lifecycle_run_ids:
-        return [], {}
-
-    strategist_event_names = {
-        "strategist.market_context_snapshot",
-        "strategist.global_sentiment_breakdown",
-        "strategist.news_evidence_ranked",
-        "strategist.decision_frame",
-        "strategist.llm_response_saved",
+def scan_select_value_state_scanner_skill(fallback_reasons, skill_quotes, skill_order_counts, skill_order_rows, quote_meta, order_meta, *, facade):
+    return (
+{
+        "contract_version": facade.SKILL_CONTRACT_VERSION,
+        "used": bool(skill_quotes) or bool(skill_order_counts),
+        "quote_symbols": len(skill_quotes),
+        "account_open_order_symbols": len(skill_order_counts),
+        "account_order_rows": int(skill_order_rows),
+        "quote_present": bool(quote_meta.get("present")),
+        "account_orders_present": bool(order_meta.get("present")),
+        "fallback": bool(fallback_reasons),
+        "fallback_reasons": fallback_reasons,
+        "error_count": len(fallback_reasons),
     }
-    strategist_run_ids = {
-        str(row.get("run_id") or "").strip()
-        for row in event_rows
-        if str(row.get("run_id") or "").strip() in set(lifecycle_run_ids)
-        and str(row.get("agent") or row.get("stage") or "").strip().lower() == "strategist"
-        and row_event_name(row) in strategist_event_names
-    }
-
-    strategist_frame_rows = [
-        row
-        for row in event_rows
-        if str(row.get("agent") or row.get("stage") or "").strip().lower() == "strategist"
-        and row_event_name(row) == "strategist.decision_frame"
-    ]
-    strategist_frame_rows.sort(key=lambda row: to_epoch(row.get("ts")) or 0)
-
-    linked_cached_frames: Dict[str, str] = {}
-    for run_id in lifecycle_run_ids:
-        if run_id in strategist_run_ids:
-            continue
-        fast_path_rows = [
-            row
-            for row in event_rows
-            if str(row.get("run_id") or "").strip() == run_id
-            and row_event_name(row) == "commander_router.fast_path"
-        ]
-        if not fast_path_rows:
-            continue
-        fast_path = fast_path_rows[-1]
-        payload = fast_path.get("payload") if isinstance(fast_path.get("payload"), dict) else {}
-        if str(payload.get("path") or "").strip() != "integrated_chain_cached_frame":
-            continue
-        target_ts = to_epoch(fast_path.get("ts")) or 0
-        reuse_sec = max(30, safe_int(payload.get("reuse_sec"), 180))
-        candidate_rows = [
-            row
-            for row in strategist_frame_rows
-            if str(row.get("run_id") or "").strip() != run_id
-            and (to_epoch(row.get("ts")) or 0) <= target_ts
-            and target_ts - (to_epoch(row.get("ts")) or 0) <= reuse_sec + 30
-        ]
-        if not candidate_rows:
-            continue
-        source_run_id = str(candidate_rows[-1].get("run_id") or "").strip()
-        if not source_run_id:
-            continue
-        strategist_run_ids.add(source_run_id)
-        linked_cached_frames[run_id] = source_run_id
-
-    return sorted(strategist_run_ids), linked_cached_frames
+    )
 ```
-**WRAPPER / CALL-TIME PATCH:** `resolve_strategist_source_run_ids(...)` delegates via `_c03_11_a6_owner.resolve_strategist_source_run_ids(..., facade=sys.modules[__name__])`; Owner resolves `row_event_name`, `to_epoch`, `safe_int` through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
-**TARGETED `test_a6_resolve_strategist_source_run_ids`:** lifecycle={'run_ids_all':['r1']} + direct strategist decision_frame run r1 -> (['r1'],{}); cached commander fast_path r1 at ts=200 with strategist frame r0 at ts=190 and reuse_sec=180 -> (['r0'],{'r1':'r0'}); patch SOURCE.safe_int/to_epoch. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A7.
+**THIN WRAPPER / CALL-TIME:** keep exact source signature and delegate via unique alias `_c03_12_a6_owner` to target `scan_select_value_state_scanner_skill`; forward the existing facade argument unchanged. Globals/seams: EXISTING facade parameter; preserve same facade, facade.SKILL_CONTRACT_VERSION. Preserve original callers, original exception and any mutation/copy/iteration behavior; never call operational pipeline.
+**TARGETED `test_a6_scan_select_value_state_scanner_skill`:** fallback_reasons=[], skill_quotes={}, skill_order_counts={}, skill_order_rows=[], quote_meta={},order_meta={},facade=SimpleNamespace(SKILL_CONTRACT_VERSION='fixture') -> first returned dict contract_version='fixture', used=False; compare full original tuple. Compare exact original golden + wrapper + Owner, patched SOURCE globals and AST body removal. Normal expected exit0; no test run at publication. **BLOCKED→NEXT:** #11 exact error/SHA, continue A7.
 
-## A7 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::expand_targeted_run_ids_with_cached_strategist_sources` @ L161 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
-**TARGET (404 both refs):** `libs/reporting/live_event_expand_run_ids_projection.py::expand_targeted_run_ids_with_cached_strategist_sources`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
+## A7 | RF-014 CLAUDE_A | SOURCE `libs/agents/scanner/projections/selection_evidence_projection.py::scan_select_reasons_row_conf` @ L231 | CURRENT_BLOB `bf20e9af5ec4988e7fef831b0cbb3e44644f6914`
+**TARGET (404 both refs):** `libs/agents/scanner/projections/selection_evidence_projection_scan_select_reasons_row_conf.py::scan_select_reasons_row_conf`. Move this actual original BODY (not KEEP/copy) into target:
 ```python
-def expand_targeted_run_ids_with_cached_strategist_sources(
-    *,
-    event_rows: List[Dict[str, Any]],
-    targeted_run_ids: Iterable[str],
-) -> Set[str]:
-    out: Set[str] = {
-        str(run_id or "").strip()
-        for run_id in list(targeted_run_ids or [])
-        if str(run_id or "").strip()
-    }
-    if not out:
-        return out
-
-    strategist_frame_rows = [
-        row
-        for row in list(event_rows or [])
-        if str(row.get("agent") or row.get("stage") or "").strip().lower() == "strategist"
-        and row_event_name(row) == "strategist.decision_frame"
-    ]
-    strategist_frame_rows.sort(key=lambda row: to_epoch(row.get("ts")) or 0)
-    if not strategist_frame_rows:
-        return out
-
-    fast_path_rows = [
-        row
-        for row in list(event_rows or [])
-        if str(row.get("run_id") or "").strip() in out
-        and row_event_name(row) == "commander_router.fast_path"
-    ]
-    for fast_path in fast_path_rows:
-        payload = fast_path.get("payload") if isinstance(fast_path.get("payload"), dict) else {}
-        if str(payload.get("path") or "").strip() != "integrated_chain_cached_frame":
-            continue
-        target_run_id = str(fast_path.get("run_id") or "").strip()
-        target_ts = to_epoch(fast_path.get("ts")) or 0
-        reuse_sec = max(30, safe_int(payload.get("reuse_sec"), 180))
-        candidate_rows = [
-            row
-            for row in strategist_frame_rows
-            if str(row.get("run_id") or "").strip() != target_run_id
-            and (to_epoch(row.get("ts")) or 0) <= target_ts
-            and target_ts - (to_epoch(row.get("ts")) or 0) <= reuse_sec + 30
-        ]
-        if not candidate_rows:
-            continue
-        source_run_id = str(candidate_rows[-1].get("run_id") or "").strip()
-        if source_run_id:
-            out.add(source_run_id)
-    return out
+def scan_select_reasons_row_conf(row, selected_score, selected_confidence, selected_risk, runner_up_reasons, *, facade):
+    if True:
+            reasons: facade.List[str] = []
+            row_score = float(facade._to_float(row.get("score_total") or row.get("score")))
+            row_conf = float(facade._to_float(row.get("confidence")))
+            row_risk = float(facade._to_float(row.get("risk_score")))
+            if row_score < selected_score:
+                reasons.append(f"lower total score ({row_score:.3f} vs {selected_score:.3f})")
+            if row_conf < selected_confidence:
+                reasons.append(f"lower confidence ({row_conf:.2f} vs {selected_confidence:.2f})")
+            if row_risk > selected_risk:
+                reasons.append(f"higher risk ({row_risk:.2f} vs {selected_risk:.2f})")
+            if not reasons:
+                reasons.append("lost on tie-break after score, confidence, and risk comparison")
+            runner_up_reasons.append(
+                {
+                    "symbol": str(row.get("symbol") or ""),
+                    "why_lost": reasons,
+                }
+            )
+    return (reasons, row_conf, row_risk, row_score)
 ```
-**WRAPPER / CALL-TIME PATCH:** `expand_targeted_run_ids_with_cached_strategist_sources(...)` delegates via `_c03_11_a7_owner.expand_targeted_run_ids_with_cached_strategist_sources(..., facade=sys.modules[__name__])`; Owner resolves `row_event_name`, `to_epoch`, `safe_int` through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
-**TARGETED `test_a7_expand_targeted_run_ids_with_cached_strategist_sources`:** targeted_run_ids=['r1'], commander fast_path r1 ts=200 and strategist frame r0 ts=190 -> {'r1','r0'}; absent/expired cached frame -> {'r1'}; no clock or disk. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue A8.
+**THIN WRAPPER / CALL-TIME:** keep exact source signature and delegate via unique alias `_c03_12_a7_owner` to target `scan_select_reasons_row_conf`; forward the existing facade argument unchanged. Globals/seams: EXISTING facade parameter; preserve facade._to_float and facade.List at call time; mutation of runner_up_reasons. Preserve original callers, original exception and any mutation/copy/iteration behavior; never call operational pipeline.
+**TARGETED `test_a7_scan_select_reasons_row_conf`:** row={'symbol':'005930','score_total':0.5,'confidence':0.3,'risk_score':0.9}, selected_score=0.8,selected_confidence=0.6,selected_risk=0.2,runner_up_reasons=[],facade=SimpleNamespace(_to_float=float,List=list) -> 3 lower/confidence/higher-risk reasons and appended symbol='005930'; tuple and list match golden. Compare exact original golden + wrapper + Owner, patched SOURCE globals and AST body removal. Normal expected exit0; no test run at publication. **BLOCKED→NEXT:** #11 exact error/SHA, continue A8.
 
-## A8 | RF-035 CLAUDE_A | SOURCE `libs/reporting/live_execution_event_evidence.py::latest_event_payload` @ L212 | CURRENT_BLOB `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`
-**TARGET (404 both refs):** `libs/reporting/live_event_latest_payload_projection.py::latest_event_payload`. Move entire original computation (below) into target; original becomes thin wrapper only. No double body, no Owner import of SOURCE.
+## A8 | RF-014 CLAUDE_A | SOURCE `libs/agents/scanner/projections/output_payloads.py::_to_float` @ L8 | CURRENT_BLOB `fe5e34d58aecb7972adc02e0faa8c89eeb8555f0`
+**TARGET (404 both refs):** `libs/agents/scanner/projections/scanner_output_numeric.py::_to_float`. Move this actual original BODY (not KEEP/copy) into target:
 ```python
-def latest_event_payload(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
-    if not rows:
-        return {}
-    payload = rows[-1].get("payload") if isinstance(rows[-1], dict) else {}
-    return dict(payload or {}) if isinstance(payload, dict) else {}
+def _to_float(value: Any, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return float(default)
 ```
-**WRAPPER / CALL-TIME PATCH:** `latest_event_payload(...)` delegates via `_c03_11_a8_owner.latest_event_payload(..., facade=sys.modules[__name__])`; Owner resolves no module globals through facade when used, with original argument binding and error parity. Preserve source module import/use-time patch seams; no caller changes.
-**TARGETED `test_a8_latest_event_payload`:** [{'payload':{'a':1}}] -> {'a':1} new dict, [] -> {}, last non-dict -> {}; original vs facade vs Owner parity. Original golden vs thin wrapper vs Owner; positive/negative and exception/patch parity; AST ensures original computation gone. Fake/in-memory only. **BLOCKED→NEXT:** record first exact error/SHA to #11 and continue all other safe items and push.
+**THIN WRAPPER / CALL-TIME:** keep exact source signature and delegate via unique alias `_c03_12_a8_owner` to target `_to_float`; pass facade=sys.modules[__name__] as an extra target-only kwarg. Globals/seams: none; direct float/exception. Preserve original callers, original exception and any mutation/copy/iteration behavior; never call operational pipeline.
+**TARGETED `test_a8__to_float`:** '3.25' -> 3.25; 'bad',default=9 -> 9.0; exception fallback identical. Compare exact original golden + wrapper + Owner, patched SOURCE globals and AST body removal. Normal expected exit0; no test run at publication. **BLOCKED→NEXT:** #11 exact error/SHA, continue C0 and reserve (design-only).
 
-## FUTURE RESERVE — VERIFIED 6/6 (DESIGN ONLY; NOT EXECUTABLE, NO SELF-SELECTION)
+## FUTURE RESERVE — RF-014 CLAUDE_A VERIFIED 6/6, DESIGN_ONLY / NOT EXECUTABLE
+All SOURCE blobs same A/integration; targets absent on both refs; all RF-014 exclusive, no external real effects. These are NOT part of A-12 order; C03 must revalidate before promotion:
+- **R1 VERIFIED DESIGN ONLY:** `libs/agents/scanner/candidate_risk.py::_optional_float` L6 blob `8dea30aebd811d8d9f214c8bca7bef8ea41fa3f9` → `libs/agents/scanner/scanner_candidate_risk_numeric.py::_optional_float` (404 both refs). Actual original BODY confirmed (7 lines, first executable `if value in (None, ""):`), original source is not a thin wrapper. Candidate extraction only after call-time facade and original-golden parity. Fixture: '0.2' -> 0.2, None -> None; no IO. No network/operational IO; any transitive factor builder must be fake patched. NOT ASSIGNED.
+- **R2 VERIFIED DESIGN ONLY:** `libs/agents/scanner/candidate_risk.py::_clamp` L15 blob `8dea30aebd811d8d9f214c8bca7bef8ea41fa3f9` → `libs/agents/scanner/scanner_candidate_risk_clamp.py::_clamp` (404 both refs). Actual original BODY confirmed (2 lines, first executable `return max(lower, min(upper, float(value)))`), original source is not a thin wrapper. Candidate extraction only after call-time facade and original-golden parity. Fixture: -0.2 -> 0.0, 1.4 -> 1.0; no IO. No network/operational IO; any transitive factor builder must be fake patched. NOT ASSIGNED.
+- **R3 VERIFIED DESIGN ONLY:** `libs/agents/scanner/candidate_risk.py::_first_number` L19 blob `8dea30aebd811d8d9f214c8bca7bef8ea41fa3f9` → `libs/agents/scanner/scanner_candidate_risk_first_number.py::_first_number` (404 both refs). Actual original BODY confirmed (6 lines, first executable `for key in keys:`), original source is not a thin wrapper. Candidate extraction only after call-time facade and original-golden parity. Fixture: {'a':None,'b':'0.4'},'a','b' -> 0.4; fake mapping. No network/operational IO; any transitive factor builder must be fake patched. NOT ASSIGNED.
+- **R4 VERIFIED DESIGN ONLY:** `libs/agents/scanner/candidate_risk.py::resolve_candidate_base_risk` L27 blob `8dea30aebd811d8d9f214c8bca7bef8ea41fa3f9` → `libs/agents/scanner/scanner_candidate_base_risk_projection.py::resolve_candidate_base_risk` (404 both refs). Actual original BODY confirmed (86 lines, first executable `*,`), original source is not a thin wrapper. Candidate extraction only after call-time facade and original-golden parity. Fixture: scanner_row risk 0.25 -> risk_score 0.25/source scanner_row; pure no order. No network/operational IO; any transitive factor builder must be fake patched. NOT ASSIGNED.
+- **R5 VERIFIED DESIGN ONLY:** `libs/agents/scanner/projections/output_payloads.py::build_candidate_ranking_table_payload` L15 blob `fe5e34d58aecb7972adc02e0faa8c89eeb8555f0` → `libs/agents/scanner/projections/scanner_ranking_payload_projection.py::build_candidate_ranking_table_payload` (404 both refs). Actual original BODY confirmed (80 lines, first executable `ranking_table: List[Dict[str, Any]],`), original source is not a thin wrapper. Candidate extraction only after call-time facade and original-golden parity. Fixture: fake ranking [] -> original golden; sorted fake rows, patch source numeric helper; no IO. No network/operational IO; any transitive factor builder must be fake patched. NOT ASSIGNED.
+- **R6 VERIFIED DESIGN ONLY:** `libs/agents/scanner/projections/output_payloads.py::build_candidate_selection_reason_payload` L97 blob `fe5e34d58aecb7972adc02e0faa8c89eeb8555f0` → `libs/agents/scanner/projections/scanner_selection_reason_payload_projection.py::build_candidate_selection_reason_payload` (404 both refs). Actual original BODY confirmed (134 lines, first executable `*,`), original source is not a thin wrapper. Candidate extraction only after call-time facade and original-golden parity. Fixture: fake selected/empty reasons + patched factor snapshot, golden payload; no IO. No network/operational IO; any transitive factor builder must be fake patched. NOT ASSIGNED.
 
-- **R1 RF-035 CLAUDE_A VERIFIED:** SOURCE `libs/reporting/live_execution_event_evidence.py::headline_count` @ L219 blob `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`; TARGET `libs/reporting/live_event_headline_count_projection.py::headline_count` absent both refs. BODY: `total = 0 for row in list(news_rows or []): if not isinstance(row, dict):` (full original BODY confirmed, not a wrapper); facade seams safe_int; in-memory/no IO, test [{'headline_count':2},{'headline_count':'3'},{}] -> 5; invalid dict skipped. Reserve only; next C03 must revalidate source/target before promotion.
-- **R2 RF-035 CLAUDE_A VERIFIED:** SOURCE `libs/reporting/live_execution_event_evidence.py::hydrate_strategist_payload_from_evidence` @ L228 blob `af7cc5dd91e9c8325542ddb63eba7c03d5a41e8c`; TARGET `libs/reporting/live_event_hydrate_projection.py::hydrate_strategist_payload_from_evidence` absent both refs. BODY: `strategist_payload: Dict[str, Any], strategist_evidence: Dict[str, Any], ) -> Dict[str, Any]:` (full original BODY confirmed, not a wrapper); facade seams latest_event_payload,safe_float,safe_int,headline_count; in-memory/no IO, test empty evidence preserves supplied payload; fake market_context/decision_frame populates missing keys only, never overwrites existing. Reserve only; next C03 must revalidate source/target before promotion.
-- **R3 RF-035 CLAUDE_A VERIFIED:** SOURCE `libs/reporting/live_execution_report_context.py::null_if_empty` @ L10 blob `52f877f641d552e34e529c95182035a0d1c013ff`; TARGET `libs/reporting/live_report_null_projection.py::null_if_empty` absent both refs. BODY: `if value in (None, ""): return None if isinstance(value, str):` (full original BODY confirmed, not a wrapper); facade seams none; in-memory/no IO, test '  ' -> None; ' hi ' -> 'hi'; 0 -> 0. Reserve only; next C03 must revalidate source/target before promotion.
-- **R4 RF-035 CLAUDE_A VERIFIED:** SOURCE `libs/reporting/live_execution_report_context.py::build_failure_classification` @ L19 blob `52f877f641d552e34e529c95182035a0d1c013ff`; TARGET `libs/reporting/live_report_failure_projection.py::build_failure_classification` absent both refs. BODY: `*, lifecycle: Dict[str, Any], diagnostics: Dict[str, Any],` (full original BODY confirmed, not a wrapper); facade seams none; in-memory/no IO, test empty lifecycle -> entry_failure True; closed without exit -> exit_failure True; reporter missing -> reporting_failure True. Reserve only; next C03 must revalidate source/target before promotion.
-- **R5 RF-035 CLAUDE_A VERIFIED:** SOURCE `libs/reporting/live_execution_report_context.py::to_epoch` @ L51 blob `52f877f641d552e34e529c95182035a0d1c013ff`; TARGET `libs/reporting/live_report_epoch_projection.py::to_epoch` absent both refs. BODY: `if ts is None: return None if isinstance(ts, (int, float)):` (full original BODY confirmed, not a wrapper); facade seams datetime,timezone; in-memory/no IO, test 1970-01-01T00:00:01Z -> 1; invalid -> None; naive UTC parity. Reserve only; next C03 must revalidate source/target before promotion.
-- **R6 RF-035 CLAUDE_A VERIFIED:** SOURCE `libs/reporting/live_execution_report_context.py::utc_day` @ L73 blob `52f877f641d552e34e529c95182035a0d1c013ff`; TARGET `libs/reporting/live_report_utc_day_projection.py::utc_day` absent both refs. BODY: `epoch = to_epoch(ts) if epoch is None: return ""` (full original BODY confirmed, not a wrapper); facade seams to_epoch,datetime,timezone; in-memory/no IO, test epoch 1 -> 1970-01-01; invalid -> ''. Reserve only; next C03 must revalidate source/target before promotion.
-
-**COUNTS:** A-10 REMOTE_DONE=8/8; NEW_READY=8 real SOURCE BODY MOVEs; FUTURE_RESERVE_VERIFIED=6/6; actor implementation/testing NOT_RUN at issuance; C03 DOC_ONLY G1/G2/G3=0, RF_DONE_DELTA=0. RunLab Exited(255), RUN_SOURCE_SHA=UNKNOWN; no runtime action.
+**COUNT/DELIVERY:** A-11 8/8 REMOTE_DONE; A-12 NEW_READY=8 real BODY MOVEs RF-014, C0 scoped test=1 non-MOVE, RESERVE_VERIFIED=6/6 design only. G1/G2/G3 new evidence NOT_RUN until A actor; C03 DOC_ONLY, RF_DONE_DELTA=0. FIRST_BLOCKER: RF-014 Scanner→RF-009 actual consumer NOOP seam not yet established; C04/C05 must judge exact new evidence. RunLab Exited(255), RUN_SOURCE_SHA UNKNOWN, operational HOLD.
