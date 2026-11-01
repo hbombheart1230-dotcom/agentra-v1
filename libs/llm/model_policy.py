@@ -9,9 +9,10 @@ from typing import Dict, Tuple
 
 STRATEGIST_PRIMARY = "openai/gpt-6-luna"
 STRATEGIST_FALLBACK = "anthropic/claude-haiku-5.5"
-OPERATOR_BRIEF_MODELS = ("nvidia/nemotron-3.5-lightning:free", "google/gemma-4-26b-a4b-it:free")
-TRADE_REPORT_MODELS = ("google/gemma-4-26b-a4b-it:free", "nvidia/nemotron-3.5-lightning:free")
-REPORTER_FINAL_MODELS = ("nvidia/nemotron-3-ultra-550b-a55b:free", "google/gemma-4-26b-a4b-it:free")
+OPERATOR_BRIEF_MODELS = ("nvidia/nemotron-3.5-lightning:free", "nvidia/nemotron-3-ultra-550b-a55b:free")
+TRADE_REPORT_MODELS = ("nvidia/nemotron-3.5-lightning:free", "nvidia/nemotron-3-ultra-550b-a55b:free")
+REPORTER_FINAL_MODELS = ("nvidia/nemotron-3-ultra-550b-a55b:free", "nvidia/nemotron-3.5-lightning:free")
+DAILY_REPORT_MODELS = ("anthropic/claude-haiku-5.5", "openai/gpt-6-luna")
 
 ROLE_MODELS: Dict[str, Tuple[str, ...]] = {
     "strategist": (STRATEGIST_PRIMARY, STRATEGIST_FALLBACK),
@@ -19,7 +20,7 @@ ROLE_MODELS: Dict[str, Tuple[str, ...]] = {
     "reporter_intraday": OPERATOR_BRIEF_MODELS,
     "trade_report": TRADE_REPORT_MODELS,
     "reporter_final": REPORTER_FINAL_MODELS,
-    "daily_report": REPORTER_FINAL_MODELS,
+    "daily_report": DAILY_REPORT_MODELS,
 }
 
 

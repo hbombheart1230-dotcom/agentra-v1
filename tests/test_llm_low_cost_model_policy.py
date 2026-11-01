@@ -6,6 +6,7 @@ from libs.llm.llm_router import LLMRouter
 from libs.llm.model_catalog import resolve_model_profile
 from libs.llm.model_policy import (
     OPERATOR_BRIEF_MODELS,
+    DAILY_REPORT_MODELS,
     REPORTER_FINAL_MODELS,
     STRATEGIST_FALLBACK,
     STRATEGIST_PRIMARY,
@@ -33,7 +34,8 @@ def test_primary_and_fallback_profiles_are_verified_models():
     assert resolve_model_profile("balanced")["models"] == [STRATEGIST_PRIMARY, STRATEGIST_FALLBACK]
     assert resolve_model_profile("fast_free")["models"] == list(OPERATOR_BRIEF_MODELS)
     assert resolve_model_profile("trade_report_free")["models"] == list(TRADE_REPORT_MODELS)
-    assert resolve_model_profile("strong_reasoning")["models"] == list(REPORTER_FINAL_MODELS)
+    assert resolve_model_profile("final_free")["models"] == list(REPORTER_FINAL_MODELS)
+    assert resolve_model_profile("daily_paid")["models"] == list(DAILY_REPORT_MODELS)
 
 
 def test_strategist_primary_route_is_luna():
@@ -53,6 +55,12 @@ def test_reporter_primary_failure_uses_only_free_fallback(role, primary, fallbac
     assert LLMRouter(client).chat(role, [{"role": "user", "content": "x"}], policy={"model": primary}) == "{}"
     assert [p["model"] for p in client.payloads] == [primary, fallback]
     assert all(p["model"].endswith(":free") for p in client.payloads)
+
+
+def test_daily_report_primary_failure_uses_paid_fallback():
+    client = _Client(failures=1)
+    assert LLMRouter(client).chat("daily_report", [{"role": "user", "content": "x"}]) == "{}"
+    assert [p["model"] for p in client.payloads] == list(DAILY_REPORT_MODELS)
 
 
 def test_paid_reporter_override_is_fail_closed():

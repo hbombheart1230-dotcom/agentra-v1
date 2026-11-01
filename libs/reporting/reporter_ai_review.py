@@ -348,11 +348,11 @@ def build_ai_reporter_review(
     if router.client is None:
         return _default_result(enabled=True, status="unavailable", reason="LLM client unavailable")
 
-    llm_slot = resolve_policy_llm_slot(reporter_output, "reporter", "daily", default_profile="strong_reasoning")
+    llm_slot = resolve_policy_llm_slot(reporter_output, "reporter", "final", default_profile="final_free")
     execution_slot = resolve_policy_llm_execution_slot(
         reporter_output,
         "reporter",
-        "daily",
+        "final",
         default_profile="deep_review",
         defaults={
             "profile_name": "deep_review",

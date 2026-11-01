@@ -1274,10 +1274,10 @@ def _resolve_commander_behavior_policy(
         strategy_memory_recent_runs = 12
     strategist_llm_profile = str(_existing_value("llm", "strategist", "profile") or "balanced").strip().lower() or "balanced"
     reporter_intraday_profile = str(_existing_value("llm", "reporter", "intraday", "profile") or "fast_free").strip().lower() or "fast_free"
-    reporter_daily_profile = str(_existing_value("llm", "reporter", "daily", "profile") or "strong_reasoning").strip().lower() or "strong_reasoning"
+    reporter_daily_profile = str(_existing_value("llm", "reporter", "daily", "profile") or "daily_paid").strip().lower() or "daily_paid"
     strategist_llm = resolve_model_profile(strategist_llm_profile, default_profile="balanced")
     reporter_intraday_llm = resolve_model_profile(reporter_intraday_profile, default_profile="fast_free")
-    reporter_daily_llm = resolve_model_profile(reporter_daily_profile, default_profile="strong_reasoning")
+    reporter_daily_llm = resolve_model_profile(reporter_daily_profile, default_profile="daily_paid")
     default_execution_profile_name = (
         str(
             _existing_value("llm", "execution_profile", "profile_name")
@@ -1484,7 +1484,7 @@ def _resolve_commander_behavior_policy(
                     "policy_source": "commander_applied_policy",
                 },
                 "daily": {
-                    "profile": str(reporter_daily_llm.get("profile") or "strong_reasoning"),
+                    "profile": str(reporter_daily_llm.get("profile") or "daily_paid"),
                     "primary": str(reporter_daily_llm.get("primary") or ""),
                     "fallback": str(reporter_daily_llm.get("fallback") or ""),
                     "execution_profile": {
@@ -1734,7 +1734,7 @@ def _resolve_commander_behavior_policy(
                     "fallback": str(reporter_intraday_llm.get("fallback") or ""),
                 },
                 "reporter_daily": {
-                    "profile": str(reporter_daily_llm.get("profile") or "strong_reasoning"),
+                    "profile": str(reporter_daily_llm.get("profile") or "daily_paid"),
                     "primary": str(reporter_daily_llm.get("primary") or ""),
                     "fallback": str(reporter_daily_llm.get("fallback") or ""),
                 },

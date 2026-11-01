@@ -20,14 +20,17 @@ from libs.reporting.trade_report_ai import build_separated_ai_trade_report
 def test_llm_profiles_resolve_expected_primary_and_fallback() -> None:
     fast = resolve_model_profile("fast_free")
     balanced = resolve_model_profile("balanced")
-    strong = resolve_model_profile("strong_reasoning")
+    final = resolve_model_profile("final_free")
+    daily = resolve_model_profile("daily_paid")
 
     assert fast["primary"] == "nvidia/nemotron-3.5-lightning:free"
-    assert fast["fallback"] == "google/gemma-4-26b-a4b-it:free"
+    assert fast["fallback"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
     assert balanced["primary"] == "openai/gpt-6-luna"
     assert balanced["fallback"] == "anthropic/claude-haiku-5.5"
-    assert strong["primary"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
-    assert strong["fallback"] == "google/gemma-4-26b-a4b-it:free"
+    assert final["primary"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
+    assert final["fallback"] == "nvidia/nemotron-3.5-lightning:free"
+    assert daily["primary"] == "anthropic/claude-haiku-5.5"
+    assert daily["fallback"] == "openai/gpt-6-luna"
 
 
 def test_llm_execution_profiles_resolve_expected_defaults() -> None:
@@ -126,8 +129,8 @@ def test_commander_injects_llm_profiles_into_applied_policy(monkeypatch) -> None
     intraday_exec = ((((llm_policy.get("reporter") or {}).get("intraday") or {}).get("execution_profile")) or {})
     assert intraday_exec.get("name") == "concise_review"
     assert intraday_exec.get("max_tokens") == 8192
-    assert ((((llm_policy.get("reporter") or {}).get("daily") or {}).get("profile"))) == "strong_reasoning"
-    assert ((((llm_policy.get("reporter") or {}).get("daily") or {}).get("primary"))) == "nvidia/nemotron-3-ultra-550b-a55b:free"
+    assert ((((llm_policy.get("reporter") or {}).get("daily") or {}).get("profile"))) == "daily_paid"
+    assert ((((llm_policy.get("reporter") or {}).get("daily") or {}).get("primary"))) == "anthropic/claude-haiku-5.5"
     daily_exec = ((((llm_policy.get("reporter") or {}).get("daily") or {}).get("execution_profile")) or {})
     assert daily_exec.get("name") == "deep_review"
     assert daily_exec.get("max_tokens") == 8192
@@ -266,8 +269,8 @@ def test_reporter_final_review_prefers_applied_policy_profile_model(monkeypatch)
                 "reporter": {"ai_review": {"enabled": True}},
                 "llm": {
                     "reporter": {
-                        "daily": {
-                            "primary": "moonshotai/kimi-k2.5",
+                        "final": {
+                            "primary": "nvidia/nemotron-3-ultra-550b-a55b:free",
                             "execution_profile": {
                                 "name": "deep_review",
                                 "temperature": 0.25,
@@ -281,11 +284,11 @@ def test_reporter_final_review_prefers_applied_policy_profile_model(monkeypatch)
     )
 
     assert captured["resolved_role"] == "reporter_final"
-    assert captured["policy"]["model"] == "moonshotai/kimi-k2.5"
+    assert captured["policy"]["model"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
     assert captured["policy"]["temperature"] == 0.25
     assert captured["policy"]["max_tokens"] == 4096
-    assert captured["chat_policy"]["model"] == "moonshotai/kimi-k2.5"
-    assert out["model"] == "moonshotai/kimi-k2.5"
+    assert captured["chat_policy"]["model"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
+    assert out["model"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
 
 
 def test_reporter_final_review_uses_env_execution_fallback_when_policy_missing(monkeypatch):

@@ -9,16 +9,16 @@ MODEL_CATALOG: Dict[str, Dict[str, Any]] = {
     "openai/gpt-6-luna": {"name": "openai/gpt-6-luna", "provider": "openai", "tier": "budget", "cost": "low", "latency": "fast", "supports_json": True},
     "anthropic/claude-haiku-5.5": {"name": "anthropic/claude-haiku-5.5", "provider": "anthropic", "tier": "budget", "cost": "low", "latency": "fast", "supports_json": True},
     "nvidia/nemotron-3.5-lightning:free": {"name": "nvidia/nemotron-3.5-lightning:free", "provider": "nvidia", "tier": "free", "cost": "free", "latency": "fast", "supports_json": False},
-    "google/gemma-4-26b-a4b-it:free": {"name": "google/gemma-4-26b-a4b-it:free", "provider": "google", "tier": "free", "cost": "free", "latency": "fast", "supports_json": True},
     "nvidia/nemotron-3-ultra-550b-a55b:free": {"name": "nvidia/nemotron-3-ultra-550b-a55b:free", "provider": "nvidia", "tier": "free", "cost": "free", "latency": "medium", "supports_json": False},
 }
 
 
 MODEL_PROFILES: Dict[str, List[str]] = {
-    "fast_free": ["nvidia/nemotron-3.5-lightning:free", "google/gemma-4-26b-a4b-it:free"],
+    "fast_free": ["nvidia/nemotron-3.5-lightning:free", "nvidia/nemotron-3-ultra-550b-a55b:free"],
     "balanced": ["openai/gpt-6-luna", "anthropic/claude-haiku-5.5"],
-    "strong_reasoning": ["nvidia/nemotron-3-ultra-550b-a55b:free", "google/gemma-4-26b-a4b-it:free"],
-    "trade_report_free": ["google/gemma-4-26b-a4b-it:free", "nvidia/nemotron-3.5-lightning:free"],
+    "final_free": ["nvidia/nemotron-3-ultra-550b-a55b:free", "nvidia/nemotron-3.5-lightning:free"],
+    "daily_paid": ["anthropic/claude-haiku-5.5", "openai/gpt-6-luna"],
+    "trade_report_free": ["nvidia/nemotron-3.5-lightning:free", "nvidia/nemotron-3-ultra-550b-a55b:free"],
 }
 
 

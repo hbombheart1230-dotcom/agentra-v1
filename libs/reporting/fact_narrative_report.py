@@ -79,11 +79,7 @@ def generate_narrative(
     ]
 
     primary_model = explicit_model
-    role = (
-        "operator_ui" if explicit_model == "nvidia/nemotron-3.5-lightning:free"
-        else "trade_report" if explicit_model == "google/gemma-4-26b-a4b-it:free"
-        else "reporter_final"
-    )
+    role = "trade_report" if explicit_model == "nvidia/nemotron-3.5-lightning:free" else "reporter_final"
     if not is_allowed_model(role, explicit_model):
         narrative["status"] = "unavailable"
         narrative["reason"] = "reporter_model_not_allowed"

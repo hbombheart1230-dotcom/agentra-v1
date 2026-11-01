@@ -23,7 +23,7 @@ def build_separated_daily_report(daily_model: dict, *, model: str = None) -> dic
     """Phase 6-1 Task 4: Fact/Narrative separated daily report."""
     from libs.reporting.fact_narrative_report import build_separated_report
     from libs.llm.model_names import normalize_openrouter_model_name
-    llm_slot = resolve_policy_llm_slot(daily_model if isinstance(daily_model, dict) else {}, "reporter", "daily", default_profile="strong_reasoning")
+    llm_slot = resolve_policy_llm_slot(daily_model if isinstance(daily_model, dict) else {}, "reporter", "daily", default_profile="daily_paid")
     execution_profile = resolve_policy_llm_execution_slot(
         daily_model if isinstance(daily_model, dict) else {},
         "reporter",
@@ -43,7 +43,7 @@ def build_separated_daily_report(daily_model: dict, *, model: str = None) -> dic
     chosen_model = normalize_openrouter_model_name(
         str(model or "").strip()
         or str(llm_slot.get("primary") or "").strip()
-        or "nvidia/nemotron-3-ultra-550b-a55b:free"
+        or "anthropic/claude-haiku-5.5"
     )
     return build_separated_report(
         daily_model=daily_model,

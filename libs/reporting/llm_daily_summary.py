@@ -78,7 +78,7 @@ def summarize_daily_report_with_artifact(*, state: Dict[str, Any], policy: Dict[
         },
         "reporter",
         "daily",
-        default_profile="strong_reasoning",
+        default_profile="daily_paid",
     )
     execution_slot = resolve_policy_llm_execution_slot(
         {
@@ -101,7 +101,7 @@ def summarize_daily_report_with_artifact(*, state: Dict[str, Any], policy: Dict[
     )
     env_model = normalize_openrouter_model_name(
         str(llm_slot.get("primary") or "")
-        or "nvidia/nemotron-3-ultra-550b-a55b:free"
+        or "anthropic/claude-haiku-5.5"
     )
     llm_policy.setdefault("max_tokens", int(float(execution_slot.get("max_tokens") or 8192)))
     llm_policy.setdefault("temperature", float(execution_slot.get("temperature") or 0.2))
