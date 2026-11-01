@@ -20,14 +20,13 @@ from libs.diagnostics.cli_capture import capture_cli_json
 
 
 def _write_jsonl(path: Path, rows: List[Dict[str, Any]]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8", newline="\n") as f:
-        for row in rows:
-            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    from scripts.diagnostics import m26_closeout_jsonl_projection as _b07_1_owner
+    return _b07_1_owner._write_jsonl(path, rows, facade=sys.modules[__name__])
 
 
 def _run_json(main_fn, argv: List[str]) -> Tuple[int, Dict[str, Any]]:  # type: ignore[no-untyped-def]
-    return capture_cli_json(main_fn, argv)
+    from scripts.diagnostics import m26_closeout_capture_projection as _b07_2_owner
+    return _b07_2_owner._run_json(main_fn, argv, facade=sys.modules[__name__])
 
 
 def _run_manifest_json(*, dataset_root: Path, seed_demo: bool) -> Tuple[int, Dict[str, Any]]:
@@ -41,27 +40,13 @@ def _run_replay_json(*, dataset_root: Path, day: str) -> Tuple[int, Dict[str, An
 
 
 def _run_scorecard_json(*, dataset_root: Path, day: str) -> Tuple[int, Dict[str, Any]]:
-    argv = ["--dataset-root", str(dataset_root), "--json"]
-    if day:
-        argv.extend(["--day", day])
-    return _run_json(scorecard_main, argv)
+    from scripts.diagnostics import m26_closeout_scorecard_projection as _b07_3_owner
+    return _b07_3_owner._run_scorecard_json(dataset_root=dataset_root,day=day,facade=sys.modules[__name__])
 
 
 def _run_ab_eval_json(*, base_root: Path, candidate_root: Path, day: str) -> Tuple[int, Dict[str, Any]]:
-    argv = [
-        "--a-dataset-root",
-        str(base_root),
-        "--b-dataset-root",
-        str(candidate_root),
-        "--a-label",
-        "baseline",
-        "--b-label",
-        "candidate",
-        "--json",
-    ]
-    if day:
-        argv.extend(["--day", day])
-    return _run_json(ab_eval_main, argv)
+    from scripts.diagnostics import m26_closeout_ab_projection as _b07_4_owner
+    return _b07_4_owner._run_ab_eval_json(base_root=base_root,candidate_root=candidate_root,day=day,facade=sys.modules[__name__])
 
 
 def _run_gate_json(
@@ -71,26 +56,8 @@ def _run_gate_json(
     day: str,
     min_delta_total_pnl_proxy: float,
 ) -> Tuple[int, Dict[str, Any]]:
-    argv = [
-        "--a-dataset-root",
-        str(base_root),
-        "--b-dataset-root",
-        str(candidate_root),
-        "--a-label",
-        "baseline",
-        "--b-label",
-        "candidate",
-        "--min-delta-total-pnl-proxy",
-        str(float(min_delta_total_pnl_proxy)),
-        "--min-sortino-proxy",
-        "0",
-        "--max-drawdown-ratio",
-        "1",
-        "--json",
-    ]
-    if day:
-        argv.extend(["--day", day])
-    return _run_json(gate_main, argv)
+    from scripts.diagnostics import m26_closeout_gate_projection as _b07_5_owner
+    return _b07_5_owner._run_gate_json(base_root=base_root,candidate_root=candidate_root,day=day,min_delta_total_pnl_proxy=min_delta_total_pnl_proxy,facade=sys.modules[__name__])
 
 
 def _prepare_candidate_dataset(candidate_root: Path, *, day: str) -> None:
