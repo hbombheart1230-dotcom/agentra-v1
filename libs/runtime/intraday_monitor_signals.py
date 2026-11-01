@@ -4,6 +4,8 @@ import sys
 
 import sys
 
+import sys
+
 import statistics
 from datetime import datetime, timedelta, timezone
 from dataclasses import replace
@@ -168,51 +170,8 @@ def _build_monitor_signal_evidence(
     score_breakdown: Mapping[str, Any] | None = None,
     score_threshold: float = 3.0,
 ) -> Dict[str, Any]:
-    weighted_scores = dict(score_breakdown or {})
-    total_weighted_score = round(sum(_to_float(v) for v in weighted_scores.values()), 4) if weighted_scores else 0.0
-    threshold_value = float(score_threshold if score_threshold > 0.0 else 3.0)
-    return {
-        "scores": {
-            "reclaim_score": round(_clamp_score(reclaim_score), 4),
-            "volume_score": round(_clamp_score(volume_score), 4),
-            "pullback_score": round(_clamp_score(pullback_score), 4),
-            "breakout_score": round(_clamp_score(breakout_score), 4),
-            "breakout_proximity_score": round(_clamp_score(breakout_score), 4),
-            "confidence_score": round(_clamp_score(confidence_score), 4),
-            "entry_quality_score": round(_clamp_score(entry_quality_score), 4),
-            "breakout_quality_score": round(_clamp_score(breakout_quality_score), 4),
-            "pullback_quality_score": round(_clamp_score(pullback_quality_score), 4),
-        },
-        "checks": {
-            "reclaim_ok": bool(reclaim_ok),
-            "volume_ok": bool(volume_ok),
-            "pullback_ok": bool(pullback_ok),
-            "breakout_ok": bool(breakout_ok),
-            "rebound_ok": bool(rebound_ok),
-            "reclaim_gate_ok": bool(reclaim_gate_ok),
-            "breakout_path_ok": bool(breakout_path_ok),
-            "pullback_volume_path_ok": bool(pullback_volume_path_ok),
-            "extension_ok": bool(extension_ok),
-            "confidence_ok": bool(confidence_score >= confidence_threshold),
-        },
-        "derived": {
-            "too_extended": bool(too_extended),
-            "reclaim_strength": round(_clamp_score(reclaim_strength), 4),
-            "rebound_strength": round(_clamp_score(rebound_strength), 4),
-            "transition_readiness_score": round(_clamp_score(transition_readiness_score), 4),
-            "reclaim_distance_to_ready": reclaim_distance_to_ready,
-            "volume_distance_to_ready": volume_distance_to_ready,
-            "breakout_distance_to_ready": breakout_distance_to_ready,
-            "confidence_threshold": round(float(confidence_threshold), 4),
-            "entry_quality_tier": _entry_quality_tier(entry_quality_score),
-            "entry_quality_path": str(entry_quality_path or ""),
-            "entry_quality_observability_only": True,
-            "weighted_score_total": total_weighted_score,
-            "weighted_score_threshold": threshold_value,
-            "weighted_score_passed": bool(total_weighted_score >= threshold_value),
-        },
-        "weighted_scores": weighted_scores,
-    }
+    from . import intraday_monitor_signals_build_monitor_signal_evidence as _owner
+    return _owner._build_monitor_signal_evidence(reclaim_score=reclaim_score, volume_score=volume_score, pullback_score=pullback_score, breakout_score=breakout_score, confidence_score=confidence_score, confidence_threshold=confidence_threshold, entry_quality_score=entry_quality_score, breakout_quality_score=breakout_quality_score, pullback_quality_score=pullback_quality_score, entry_quality_path=entry_quality_path, reclaim_ok=reclaim_ok, volume_ok=volume_ok, pullback_ok=pullback_ok, breakout_ok=breakout_ok, rebound_ok=rebound_ok, reclaim_gate_ok=reclaim_gate_ok, breakout_path_ok=breakout_path_ok, pullback_volume_path_ok=pullback_volume_path_ok, extension_ok=extension_ok, too_extended=too_extended, reclaim_strength=reclaim_strength, rebound_strength=rebound_strength, transition_readiness_score=transition_readiness_score, reclaim_distance_to_ready=reclaim_distance_to_ready, volume_distance_to_ready=volume_distance_to_ready, breakout_distance_to_ready=breakout_distance_to_ready, score_breakdown=score_breakdown, score_threshold=score_threshold, facade=sys.modules[__name__])
 
 
 def _empty_monitor_signal_evidence(*, score_threshold: float=3.0) -> Dict[str, Any]:
@@ -1781,92 +1740,23 @@ def _apply_monitor_scoring_fields(
 
 
 def _candles_from_rows(rows: Sequence[Mapping[str, Any]] | None) -> List[Dict[str, Any]]:
-    out: List[Dict[str, Any]] = []
-    for raw in list(rows or []):
-        if not isinstance(raw, Mapping):
-            continue
-        open_px = _to_float(raw.get("open"))
-        high_px = _to_float(raw.get("high"))
-        low_px = _to_float(raw.get("low"))
-        close_px = _to_float(raw.get("close"))
-        volume = _to_float(raw.get("volume"))
-        if high_px <= 0.0 and low_px <= 0.0 and close_px <= 0.0:
-            continue
-        out.append(
-            {
-                "ts": raw.get("ts"),
-                "open": open_px or close_px,
-                "high": max(high_px, open_px, close_px),
-                "low": min(low_px if low_px > 0.0 else close_px or open_px, open_px or close_px, close_px or open_px),
-                "close": close_px or open_px,
-                "volume": max(0.0, volume),
-                "vwap": raw.get("vwap"),
-            }
-        )
-    return out
+    from . import intraday_monitor_signals_candles_from_rows as _owner
+    return _owner._candles_from_rows(rows, facade=sys.modules[__name__])
 
 
 def _merge_candle_group(group: Sequence[Mapping[str, Any]]) -> Dict[str, Any]:
-    rows = [row for row in group if isinstance(row, Mapping)]
-    if not rows:
-        return {}
-    open_px = _to_float(rows[0].get("open"))
-    close_px = _to_float(rows[-1].get("close"))
-    high_px = max(_to_float(row.get("high"), close_px) for row in rows)
-    low_px = min(_to_float(row.get("low"), open_px if open_px > 0.0 else close_px) for row in rows)
-    volume = sum(max(0.0, _to_float(row.get("volume"))) for row in rows)
-    weighted_vwap_num = 0.0
-    weighted_vwap_den = 0.0
-    for row in rows:
-        row_volume = max(0.0, _to_float(row.get("volume")))
-        row_vwap = _to_float(row.get("vwap"))
-        if row_volume > 0.0 and row_vwap > 0.0:
-            weighted_vwap_num += row_vwap * row_volume
-            weighted_vwap_den += row_volume
-    merged: Dict[str, Any] = {
-        "ts": rows[-1].get("ts"),
-        "open": open_px or close_px,
-        "high": high_px,
-        "low": low_px,
-        "close": close_px or open_px,
-        "volume": volume,
-    }
-    if weighted_vwap_den > 0.0:
-        merged["vwap"] = weighted_vwap_num / weighted_vwap_den
-    return merged
+    from . import intraday_monitor_signals_merge_candle_group as _owner
+    return _owner._merge_candle_group(group, facade=sys.modules[__name__])
 
 
 def _compress_candles(rows: Sequence[Mapping[str, Any]], timeframe_minutes: int) -> List[Dict[str, Any]]:
-    candles = _candles_from_rows(rows)
-    bucket = max(1, int(timeframe_minutes or 1))
-    if bucket <= 1 or len(candles) <= 1:
-        return candles
-    out: List[Dict[str, Any]] = []
-    chunk: List[Mapping[str, Any]] = []
-    for row in candles:
-        chunk.append(row)
-        if len(chunk) >= bucket:
-            merged = _merge_candle_group(chunk)
-            if merged:
-                out.append(merged)
-            chunk = []
-    if chunk:
-        merged = _merge_candle_group(chunk)
-        if merged:
-            out.append(merged)
-    return out
+    from . import intraday_monitor_signals_compress_candles as _owner
+    return _owner._compress_candles(rows, timeframe_minutes, facade=sys.modules[__name__])
 
 
 def _kst_session_key_and_minute(ts_value: Any) -> tuple[Any | None, float | None]:
-    epoch = _to_int(ts_value, 0)
-    if epoch <= 0:
-        return None, None
-    try:
-        dt = datetime.fromtimestamp(epoch, tz=timezone.utc).astimezone(_KST)
-    except Exception:
-        return None, None
-    minute_of_day = float((dt.hour * 60) + dt.minute) + (float(dt.second) / 60.0)
-    return dt.date(), minute_of_day
+    from . import intraday_monitor_signals_kst_session_key_and_minute as _owner
+    return _owner._kst_session_key_and_minute(ts_value, facade=sys.modules[__name__])
 
 
 def _current_kst_session_anchor(candles: Sequence[Mapping[str, Any]]) -> tuple[Any | None, int | None, float | None]:
@@ -1883,38 +1773,13 @@ def _current_kst_session_anchor(candles: Sequence[Mapping[str, Any]]) -> tuple[A
 
 
 def _current_kst_session_rows(candles: Sequence[Mapping[str, Any]]) -> List[Mapping[str, Any]]:
-    latest_key, start_idx, _latest_minute = _current_kst_session_anchor(candles)
-    if latest_key is None or start_idx is None:
-        return []
-    out: List[Mapping[str, Any]] = []
-    for row in candles[start_idx:]:
-        row_key, row_minute = _kst_session_key_and_minute(row.get("ts"))
-        if row_key == latest_key and row_minute is not None and row_minute >= float(_MARKET_OPEN_MINUTE):
-            out.append(row)
-    return out
+    from . import intraday_monitor_signals_current_kst_session_rows as _owner
+    return _owner._current_kst_session_rows(candles, facade=sys.modules[__name__])
 
 
 def _session_vwap(candles: Sequence[Mapping[str, Any]]) -> float | None:
-    source_rows = _current_kst_session_rows(candles) or list(candles or [])
-    weighted_num = 0.0
-    weighted_den = 0.0
-    for row in source_rows:
-        volume = max(0.0, _to_float(row.get("volume")))
-        if volume <= 0.0:
-            continue
-        vwap = _to_float(row.get("vwap"))
-        if vwap <= 0.0:
-            high_px = _to_float(row.get("high"))
-            low_px = _to_float(row.get("low"))
-            close_px = _to_float(row.get("close"))
-            vwap = (high_px + low_px + close_px) / 3.0
-        if vwap <= 0.0:
-            continue
-        weighted_num += vwap * volume
-        weighted_den += volume
-    if weighted_den <= 0.0:
-        return None
-    return weighted_num / weighted_den
+    from . import intraday_monitor_signals_session_vwap as _owner
+    return _owner._session_vwap(candles, facade=sys.modules[__name__])
 
 
 def _session_gap_context(candles: Sequence[Mapping[str, Any]], current_close: float) -> Dict[str, Any]:
@@ -1923,24 +1788,8 @@ def _session_gap_context(candles: Sequence[Mapping[str, Any]], current_close: fl
 
 
 def _infer_spacing_seconds(candles: Sequence[Mapping[str, Any]]) -> float | None:
-    ts_values: List[int] = []
-    for row in candles:
-        ts = _to_int(row.get("ts"), 0)
-        if ts > 0:
-            ts_values.append(ts)
-    if len(ts_values) < 4:
-        return None
-    diffs: List[int] = []
-    for prev_ts, cur_ts in zip(ts_values, ts_values[1:]):
-        diff = int(cur_ts) - int(prev_ts)
-        if diff > 0:
-            diffs.append(diff)
-    if len(diffs) < 3:
-        return None
-    try:
-        return float(statistics.median(diffs))
-    except Exception:
-        return None
+    from . import intraday_monitor_signals_infer_spacing_seconds as _owner
+    return _owner._infer_spacing_seconds(candles, facade=sys.modules[__name__])
 
 
 def _classify_series_quality(
