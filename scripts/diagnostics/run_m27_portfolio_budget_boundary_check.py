@@ -15,96 +15,23 @@ from libs.runtime.portfolio_budget_guard import apply_portfolio_budget_guard
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M27-3 portfolio budget boundary check.")
-    p.add_argument("--json", action="store_true")
-    p.add_argument("--inject-fail", action="store_true")
-    return p
+    from scripts.diagnostics import m27_budget_parser_projection as owner
+    return owner._build_parser(facade=sys.modules[__name__])
 
 
 def _profiles() -> List[Dict[str, Any]]:
-    return [
-        {"strategy_id": "trend", "enabled": True, "weight": 0.5},
-        {"strategy_id": "mean_reversion", "enabled": True, "weight": 0.3},
-        {"strategy_id": "event_driven", "enabled": True, "weight": 0.2},
-    ]
+    from scripts.diagnostics import m27_budget_profiles_projection as owner
+    return owner._profiles(facade=sys.modules[__name__])
 
 
 def _intents(*, inject_fail: bool) -> List[Dict[str, Any]]:
-    if inject_fail:
-        return [
-            {
-                "intent_id": "i1",
-                "strategy_id": "trend",
-                "symbol": "005930",
-                "side": "BUY",
-                "requested_notional": 300,
-                "priority": 9,
-                "confidence": 0.9,
-            },
-            {
-                "intent_id": "i2",
-                "strategy_id": "mean_reversion",
-                "symbol": "000660",
-                "side": "BUY",
-                "requested_notional": 200,
-                "priority": 8,
-                "confidence": 0.8,
-            },
-        ]
-
-    return [
-        {
-            "intent_id": "i1",
-            "strategy_id": "trend",
-            "symbol": "005930",
-            "side": "BUY",
-            "requested_notional": 700,
-            "priority": 9,
-            "confidence": 0.9,
-        },
-        {
-            "intent_id": "i2",
-            "strategy_id": "trend",
-            "symbol": "005930",
-            "side": "BUY",
-            "requested_notional": 400,
-            "priority": 3,
-            "confidence": 0.3,
-        },
-        {
-            "intent_id": "i3",
-            "strategy_id": "mean_reversion",
-            "symbol": "005930",
-            "side": "SELL",
-            "requested_notional": 300,
-            "priority": 8,
-            "confidence": 0.8,
-        },
-        {
-            "intent_id": "i4",
-            "strategy_id": "event_driven",
-            "symbol": "000660",
-            "side": "BUY",
-            "requested_notional": 350,
-            "priority": 9,
-            "confidence": 0.9,
-        },
-        {
-            "intent_id": "i5",
-            "strategy_id": "mean_reversion",
-            "symbol": "000660",
-            "side": "BUY",
-            "requested_notional": 300,
-            "priority": 4,
-            "confidence": 0.4,
-        },
-    ]
+    from scripts.diagnostics import m27_budget_intents_projection as owner
+    return owner._intents(inject_fail=inject_fail, facade=sys.modules[__name__])
 
 
 def _symbol_caps(*, inject_fail: bool) -> Dict[str, float]:
-    if inject_fail:
-        return {"005930": 10_000.0, "000660": 10_000.0}
-    return {"005930": 10_000.0, "000660": 500.0}
+    from scripts.diagnostics import m27_budget_caps_projection as owner
+    return owner._symbol_caps(inject_fail=inject_fail, facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:

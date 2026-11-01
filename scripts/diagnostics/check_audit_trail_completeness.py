@@ -28,21 +28,8 @@ def _extract_ts(row: Dict[str, Any]) -> Any:
 
 
 def _iter_rows(path: Path) -> List[Dict[str, Any]]:
-    if not path.exists():
-        return []
-    out: List[Dict[str, Any]] = []
-    with path.open("r", encoding="utf-8") as f:
-        for line in f:
-            s = line.strip()
-            if not s:
-                continue
-            try:
-                obj = json.loads(s)
-            except Exception:
-                continue
-            if isinstance(obj, dict):
-                out.append(obj)
-    return out
+    from scripts.diagnostics import audit_trail_rows_projection as owner
+    return owner._iter_rows(path, facade=sys.modules[__name__])
 
 
 def _extract_decision_action(row: Dict[str, Any]) -> str:
@@ -61,124 +48,8 @@ def _latest_day(rows: List[Dict[str, Any]]) -> str:
 
 
 def analyze_day_rows(day_rows: List[Dict[str, Any]]) -> Dict[str, Any]:
-    by_run: Dict[str, List[Dict[str, Any]]] = {}
-    stage_event_total: Dict[str, int] = {
-        "start": 0,
-        "verdict": 0,
-        "execution": 0,
-        "degrade_policy_block": 0,
-        "end": 0,
-        "error": 0,
-    }
-
-    for row in day_rows:
-        run_id = str(row.get("run_id") or "").strip()
-        if run_id:
-            by_run.setdefault(run_id, []).append(row)
-
-        stage = str(row.get("stage") or "")
-        event = str(row.get("event") or "")
-        if stage == "execute_from_packet" and event in stage_event_total:
-            stage_event_total[event] = int(stage_event_total.get(event) or 0) + 1
-
-    actionable_run_total = 0
-    execution_run_total = 0
-    linked_complete_run_total = 0
-
-    missing_start: List[str] = []
-    missing_resolution: List[str] = []
-    missing_execution_payload: List[str] = []
-    missing_terminal: List[str] = []
-    orphan_execution: List[str] = []
-
-    for run_id, rows in by_run.items():
-        has_actionable = False
-        has_exec_activity = False
-        has_start = False
-        has_verdict = False
-        has_degrade_block = False
-        has_execution = False
-        has_end = False
-        has_error = False
-        has_allowed_true = False
-
-        for row in rows:
-            stage = str(row.get("stage") or "")
-            event = str(row.get("event") or "")
-
-            if stage == "decision" and event == "trace":
-                action = _extract_decision_action(row)
-                if action in ("BUY", "SELL"):
-                    has_actionable = True
-
-            if stage == "execute_from_packet":
-                has_exec_activity = True
-                if event == "start":
-                    has_start = True
-                elif event == "verdict":
-                    has_verdict = True
-                    if _extract_allowed(row) is True:
-                        has_allowed_true = True
-                elif event == "degrade_policy_block":
-                    has_degrade_block = True
-                elif event == "execution":
-                    has_execution = True
-                elif event == "end":
-                    has_end = True
-                elif event == "error":
-                    has_error = True
-
-        if has_exec_activity:
-            execution_run_total += 1
-        if has_exec_activity and not has_actionable:
-            orphan_execution.append(run_id)
-
-        if not has_actionable:
-            continue
-
-        actionable_run_total += 1
-
-        has_resolution = has_verdict or has_degrade_block or has_error
-        has_terminal = has_end or has_error
-
-        if not has_start:
-            missing_start.append(run_id)
-        if not has_resolution:
-            missing_resolution.append(run_id)
-        if has_allowed_true and not has_execution:
-            missing_execution_payload.append(run_id)
-        if not has_terminal:
-            missing_terminal.append(run_id)
-
-        if has_start and has_resolution and (not has_allowed_true or has_execution) and has_terminal:
-            linked_complete_run_total += 1
-
-    link_success_rate = (
-        float(linked_complete_run_total) / float(actionable_run_total)
-        if actionable_run_total > 0
-        else 1.0
-    )
-
-    return {
-        "run_total": int(len(by_run)),
-        "actionable_decision_run_total": int(actionable_run_total),
-        "execution_run_total": int(execution_run_total),
-        "linked_complete_run_total": int(linked_complete_run_total),
-        "link_success_rate": float(link_success_rate),
-        "missing_execution_start_total": int(len(missing_start)),
-        "missing_execution_resolution_total": int(len(missing_resolution)),
-        "missing_execution_payload_total": int(len(missing_execution_payload)),
-        "missing_terminal_event_total": int(len(missing_terminal)),
-        "orphan_execution_run_total": int(len(orphan_execution)),
-        "stage_event_total": stage_event_total,
-        "anomaly_examples": {
-            "missing_execution_start": missing_start[:10],
-            "missing_execution_resolution": missing_resolution[:10],
-            "missing_execution_payload": missing_execution_payload[:10],
-            "missing_terminal_event": missing_terminal[:10],
-            "orphan_execution": orphan_execution[:10],
-        },
-    }
+    from scripts.diagnostics import audit_trail_analysis_projection as owner
+    return owner.analyze_day_rows(day_rows, facade=sys.modules[__name__])
 
 
 def _build_markdown(*, day: str, out: Dict[str, Any]) -> str:
