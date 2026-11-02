@@ -28,33 +28,15 @@ def _utc_day(ts: Any) -> Optional[str]:
 
 
 def _iter_jsonl(path: Path) -> Iterable[Dict[str, Any]]:
-    if not path.exists():
-        return []
+    from scripts.diagnostics.run_m31_slo_incident_review_check_iter_jsonl import _iter_jsonl as owner
 
-    def _gen() -> Iterable[Dict[str, Any]]:
-        with path.open("r", encoding="utf-8") as f:
-            for raw in f:
-                line = raw.strip()
-                if not line:
-                    continue
-                try:
-                    obj = json.loads(line)
-                except Exception:
-                    continue
-                if isinstance(obj, dict):
-                    yield obj
-
-    return _gen()
+    return owner(path, facade=_migration_sys.modules[__name__])
 
 
 def _read_json(path: Path) -> Dict[str, Any]:
-    if not path.exists():
-        return {}
-    try:
-        obj = json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return {}
-    return obj if isinstance(obj, dict) else {}
+    from scripts.diagnostics.run_m31_slo_incident_review_check_read_json import _read_json as owner
+
+    return owner(path, facade=_migration_sys.modules[__name__])
 
 
 def _resolve_day_artifact(report_dir: Path, prefix: str, day: str) -> tuple[Path, Dict[str, Any], bool]:
