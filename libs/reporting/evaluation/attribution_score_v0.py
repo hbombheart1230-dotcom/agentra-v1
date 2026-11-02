@@ -14,6 +14,7 @@ from . import attribution_score_v0_entry_timing as _a34_entry_timing
 from . import attribution_score_v0_exit_horizon as _a34_exit_horizon
 from . import attribution_score_v0_evidence_quality as _a35_evidence_quality
 from . import attribution_score_v0_render_attribution_score_v0 as _a35_render_attribution_score_v0
+from . import attribution_score_v0_build_attribution_score_v0 as _a37_build_attribution_score_v0
 
 
 INSUFFICIENT = "INSUFFICIENT_EVIDENCE"
@@ -95,55 +96,7 @@ def build_attribution_score_v0(
     horizon_compliance: Mapping[str, Any],
     entry_timing: Mapping[str, Any],
 ) -> dict[str, Any]:
-    ledger_day = _ledger_day_record(Path(reports_root), day)
-    scores = {
-        "selection_integrity_score": _selection_integrity(selection_authority),
-        "scanner_alignment_score": _scanner_alignment(selection_authority, models),
-        "entry_timing_score": _entry_timing(entry_timing),
-        "exit_horizon_score": _exit_horizon(horizon_compliance),
-        "evidence_quality_score": _evidence_quality(
-            daily_scorecard=daily_scorecard,
-            selection_authority=selection_authority,
-            horizon_report=horizon_compliance,
-            entry_timing_report=entry_timing,
-            ledger_day=ledger_day,
-        ),
-    }
-    scored = {
-        key: value["score"]
-        for key, value in scores.items()
-        if value.get("status") != INSUFFICIENT and value.get("score") is not None
-    }
-    behavior_scored = {
-        key: value
-        for key, value in scored.items()
-        if key != "evidence_quality_score"
-    }
-    weakest = (
-        min(behavior_scored.items(), key=lambda item: item[1])
-        if behavior_scored
-        else ("", None)
-    )
-    return {
-        "schema_version": "attribution_score_v0.v1",
-        "evaluation_program_id": "Q13_ATTRIBUTION_SCORE_V0",
-        "behavior_effect": "observation_only",
-        "day": day,
-        "scores": scores,
-        "weakest_observed_axis": {
-            "name": weakest[0],
-            "score": weakest[1],
-        },
-        "interpretation_rule": (
-            "Lower score means the axis is a stronger diagnostic suspect. "
-            "INSUFFICIENT_EVIDENCE is excluded from weakest-axis selection."
-        ),
-        "limitations": [
-            "Scores are simple explainable diagnostics, not prediction models.",
-            "No trading behavior is changed by this report.",
-            "A low score identifies a patch candidate; it does not authorize a behavior patch by itself.",
-        ],
-    }
+    return _a37_build_attribution_score_v0.build_attribution_score_v0(day=day, reports_root=reports_root, models=models, daily_scorecard=daily_scorecard, selection_authority=selection_authority, horizon_compliance=horizon_compliance, entry_timing=entry_timing, facade=sys.modules[__name__])
 
 
 def render_attribution_score_v0(payload: Mapping[str, Any]) -> str:
