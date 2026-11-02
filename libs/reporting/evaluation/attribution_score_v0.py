@@ -17,6 +17,7 @@ from . import attribution_score_v0_render_attribution_score_v0 as _a35_render_at
 from . import attribution_score_v0_build_attribution_score_v0 as _a37_build_attribution_score_v0
 from . import attribution_score_v0_ledger_day_record as _a38_ledger_day_record
 from . import attribution_score_v0_read_json as _a38_read_json
+from . import attribution_score_v0_mapping as _a41_mapping
 
 
 INSUFFICIENT = "INSUFFICIENT_EVIDENCE"
@@ -24,7 +25,7 @@ OK = "OK"
 
 
 def _mapping(value: Any) -> Mapping[str, Any]:
-    return value if isinstance(value, Mapping) else {}
+    return _a41_mapping._mapping(value, facade=sys.modules[__name__])
 
 
 def _as_rows(value: Any) -> list[Mapping[str, Any]]:
