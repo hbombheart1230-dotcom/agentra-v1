@@ -125,21 +125,15 @@ def _item(
 
 
 def _severity_from_level(level: str) -> str:
-    lv = str(level or "").strip().lower()
-    if lv == "incident":
-        return "SEV-1"
-    if lv == "watch":
-        return "SEV-2"
-    return "SEV-3"
+    from scripts.diagnostics.run_m31_slo_incident_review_check_severity_from_level import _severity_from_level as owner
+
+    return owner(level, facade=_migration_sys.modules[__name__])
 
 
 def _ownership_from_level(level: str) -> str:
-    lv = str(level or "").strip().lower()
-    if lv == "incident":
-        return "primary_and_secondary_oncall"
-    if lv == "watch":
-        return "primary_oncall"
-    return "none"
+    from scripts.diagnostics.run_m31_slo_incident_review_check_ownership_from_level import _ownership_from_level as owner
+
+    return owner(level, facade=_migration_sys.modules[__name__])
 
 
 def _build_markdown(out: Dict[str, Any]) -> str:

@@ -139,45 +139,21 @@ def _copytree_replace(src: Path, dst: Path) -> None:
 
 
 def _replay_metrics(obj: Dict[str, Any]) -> Dict[str, Any]:
-    return {
-        "replayed_intent_total": int(obj.get("replayed_intent_total") or 0),
-        "executed_intent_total": int(obj.get("executed_intent_total") or 0),
-        "blocked_intent_total": int(obj.get("blocked_intent_total") or 0),
-        "pending_intent_total": int(obj.get("pending_intent_total") or 0),
-        "fill_qty_total": int(obj.get("fill_qty_total") or 0),
-        "fill_notional_total": float(obj.get("fill_notional_total") or 0.0),
-    }
+    from scripts.diagnostics.run_m29_disaster_recovery_drill_replay_metrics import _replay_metrics as owner
+
+    return owner(obj, facade=sys.modules[__name__])
 
 
 def _replay_parity_ok(base: Dict[str, Any], restored: Dict[str, Any]) -> Tuple[bool, List[str]]:
-    failures: List[str] = []
-    for key in (
-        "replayed_intent_total",
-        "executed_intent_total",
-        "blocked_intent_total",
-        "pending_intent_total",
-        "fill_qty_total",
-    ):
-        if int(base.get(key) or 0) != int(restored.get(key) or 0):
-            failures.append(f"parity_mismatch:{key}")
-    b_notional = float(base.get("fill_notional_total") or 0.0)
-    r_notional = float(restored.get("fill_notional_total") or 0.0)
-    if abs(b_notional - r_notional) > 1e-9:
-        failures.append("parity_mismatch:fill_notional_total")
-    return len(failures) == 0, failures
+    from scripts.diagnostics.run_m29_disaster_recovery_drill_replay_parity_ok import _replay_parity_ok as owner
+
+    return owner(base, restored, facade=sys.modules[__name__])
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M29-8 disaster recovery drill (restore + replay validation).")
-    p.add_argument("--working-dataset-root", default="data/recovery/m29_working_dataset")
-    p.add_argument("--archive-dir", default="data/logs/m29_dr_archive")
-    p.add_argument("--restored-dataset-root", default="data/recovery/m29_restored_dataset")
-    p.add_argument("--report-dir", default="reports/m29_disaster_recovery")
-    p.add_argument("--day", default="2026-02-21")
-    p.add_argument("--inject-fail", action="store_true")
-    p.add_argument("--no-clear", action="store_true")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics.run_m29_disaster_recovery_drill_build_parser import _build_parser as owner
+
+    return owner(facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:
