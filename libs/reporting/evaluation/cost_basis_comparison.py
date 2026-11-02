@@ -20,6 +20,9 @@ from .scanner_quality import (
     extract_pre_strategist_candidate_rows,
 )
 from . import cost_basis_comparison_topk_rows as _a45_topk_rows
+from . import cost_basis_comparison_pct as _a46_pct
+from . import cost_basis_comparison_build_evaluation_cost_bases as _a46_build_evaluation_cost_bases
+from . import cost_basis_comparison_render_cost_basis_comparison as _a46_render_cost_basis_comparison
 
 
 DEFAULT_EVALUATION_SLIPPAGE_PCT = 0.05
@@ -29,7 +32,7 @@ LIVE_EQUITY_SELL_TAX_RATE_2026 = 0.002
 
 
 def _pct(value: float) -> float:
-    return round(float(value) * 100.0, 6)
+    return _a46_pct._pct(value, facade=sys.modules[__name__])
 
 
 def build_evaluation_cost_bases(
@@ -37,35 +40,7 @@ def build_evaluation_cost_bases(
     *,
     slippage_pct: float = DEFAULT_EVALUATION_SLIPPAGE_PCT,
 ) -> dict[str, Any]:
-    observed = dict(profile or {})
-    mock_ratio = float(
-        observed.get("conservative_round_trip_cost_pct")
-        or observed.get("ema_round_trip_cost_pct")
-        or 0.009
-    )
-    live_ratio = LIVE_BUY_FEE_RATE + LIVE_SELL_FEE_RATE + LIVE_EQUITY_SELL_TAX_RATE_2026
-    return {
-        "schema_version": "evaluation_cost_bases.v1",
-        "primary_interpretation": "show_both_no_automatic_policy_change",
-        "slippage_pct": round(float(slippage_pct), 6),
-        "mock_observed": {
-            "purpose": "mock_broker_pnl_and_mock_cash_truth",
-            "source": str(observed.get("source") or "fallback"),
-            "sample_count": int(observed.get("sample_count") or 0),
-            "round_trip_cost_pct": _pct(mock_ratio),
-            "total_drag_with_slippage_pct": round(_pct(mock_ratio) + float(slippage_pct), 6),
-        },
-        "live_deployment_equity": {
-            "purpose": "real_account_strategy_evaluation",
-            "source": "kiwoom_openapi_standard_equity_assumption_2026",
-            "buy_fee_pct": _pct(LIVE_BUY_FEE_RATE),
-            "sell_fee_pct": _pct(LIVE_SELL_FEE_RATE),
-            "sell_tax_pct": _pct(LIVE_EQUITY_SELL_TAX_RATE_2026),
-            "round_trip_cost_pct": _pct(live_ratio),
-            "total_drag_with_slippage_pct": round(_pct(live_ratio) + float(slippage_pct), 6),
-            "scope": "KRX listed equities; ETF/ETN tax treatment must be resolved by instrument type",
-        },
-    }
+    return _a46_build_evaluation_cost_bases.build_evaluation_cost_bases(profile, slippage_pct=slippage_pct, facade=sys.modules[__name__])
 
 
 def _topk_rows(review: Mapping[str, Any]) -> dict[tuple[int, str], dict[str, Any]]:
@@ -151,55 +126,7 @@ def build_cost_basis_comparison(
 
 
 def render_cost_basis_comparison(payload: Mapping[str, Any]) -> str:
-    date_range = payload.get("range") or {}
-    bases = payload.get("cost_bases") or {}
-    mock = bases.get("mock_observed") or {}
-    live = bases.get("live_deployment_equity") or {}
-    lines = [
-        f"# Cost Basis Comparison ({date_range.get('start')} ~ {date_range.get('end')})",
-        "",
-        "Evaluation-only. Runtime entry, exit, and broker accounting are unchanged.",
-        f"Forward data source: `{payload.get('forward_data_source') or 'unknown'}`.",
-        f"Cohort scope: `{payload.get('cohort_scope') or 'unknown'}`.",
-        "",
-        "## Cost Assumptions",
-        "",
-        "| Basis | Round Trip | Slippage | Total Drag | Purpose |",
-        "|---|---:|---:|---:|---|",
-        f"| Mock observed | {float(mock.get('round_trip_cost_pct') or 0):.4f}% | "
-        f"{float(bases.get('slippage_pct') or 0):.4f}% | "
-        f"{float(mock.get('total_drag_with_slippage_pct') or 0):.4f}% | Mock PnL/cash truth |",
-        f"| Live equity assumption | {float(live.get('round_trip_cost_pct') or 0):.4f}% | "
-        f"{float(bases.get('slippage_pct') or 0):.4f}% | "
-        f"{float(live.get('total_drag_with_slippage_pct') or 0):.4f}% | Deployment evaluation |",
-        "",
-        "## Pre-Strategist Scanner Top-K",
-        "",
-        "| Top-K | Horizon | Windows/Days | Gross | Mock Net | Live Net | Live-Mock Delta |",
-        "|---:|---|---:|---:|---:|---:|---:|",
-    ]
-    for row in payload.get("rows") or []:
-        gross = row.get("gross") or {}
-        mock_net = row.get("mock_net") or {}
-        live_net = row.get("live_net") or {}
-        lines.append(
-            f"| {row.get('top_k')} | {row.get('horizon')} | "
-            f"{row.get('window_count')}/{row.get('observed_day_count')} | "
-            f"{float(gross.get('expectancy_pct') or 0):.4f}% | "
-            f"{float(mock_net.get('expectancy_pct') or 0):.4f}% | "
-            f"{float(live_net.get('expectancy_pct') or 0):.4f}% | "
-            f"{float(row.get('expectancy_delta_live_minus_mock_pct') or 0):+.4f}% |"
-        )
-    lines += [
-        "",
-        "## Interpretation",
-        "",
-        "- Mock net answers whether the signal beats the mock account's observed friction.",
-        "- Live net answers whether it beats the explicit 2026 KRX equity assumption.",
-        "- ETF/ETN tax treatment requires instrument classification and is not inferred here.",
-        "- This report does not authorize a trading-policy change.",
-    ]
-    return "\n".join(lines) + "\n"
+    return _a46_render_cost_basis_comparison.render_cost_basis_comparison(payload, facade=sys.modules[__name__])
 
 
 def write_cost_basis_comparison(
