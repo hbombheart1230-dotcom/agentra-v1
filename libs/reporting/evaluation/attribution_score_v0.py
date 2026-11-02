@@ -12,6 +12,8 @@ from . import attribution_score_v0_selection_integrity as _a34_selection_integri
 from . import attribution_score_v0_scanner_alignment as _a34_scanner_alignment
 from . import attribution_score_v0_entry_timing as _a34_entry_timing
 from . import attribution_score_v0_exit_horizon as _a34_exit_horizon
+from . import attribution_score_v0_evidence_quality as _a35_evidence_quality
+from . import attribution_score_v0_render_attribution_score_v0 as _a35_render_attribution_score_v0
 
 
 INSUFFICIENT = "INSUFFICIENT_EVIDENCE"
@@ -80,61 +82,7 @@ def _evidence_quality(
     entry_timing_report: Mapping[str, Any],
     ledger_day: Mapping[str, Any],
 ) -> dict[str, Any]:
-    integrity = _mapping(daily_scorecard.get("artifact_integrity"))
-    counts = _mapping(integrity.get("status_counts"))
-    total = sum(int(value or 0) for value in counts.values())
-    if total <= 0:
-        return _score(INSUFFICIENT, None, ["artifact_integrity_counts_missing"])
-    selection_summary = _mapping(selection_authority.get("summary"))
-    explicitly_excluded = sum(
-        int(value or 0)
-        for key, value in selection_summary.items()
-        if str(key).startswith("excluded:")
-    )
-    if explicitly_excluded >= total:
-        return _score(
-            OK,
-            100,
-            ["all_trade_rows_explicitly_excluded_from_behavior_metrics"],
-            {
-                "integrity_status_counts": dict(counts),
-                "explicitly_excluded_trade_count": explicitly_excluded,
-                "ledger_day_present": bool(ledger_day),
-                "ledger_evidence_status": ledger_day.get("evidence_status") if ledger_day else "",
-            },
-        )
-    pass_count = int(counts.get("PASS") or 0)
-    watch_count = int(counts.get("WATCH") or 0)
-    score = ((pass_count + (0.7 * watch_count)) / total) * 100.0
-    reasons: list[str] = []
-    if int(counts.get("FAIL") or 0) > 0:
-        reasons.append("fail_integrity_rows_present")
-    if int(counts.get("BLOCKER") or 0) > 0:
-        reasons.append("blocker_integrity_rows_present")
-    if not _as_rows(selection_authority.get("rows")):
-        score -= 10.0
-        reasons.append("selection_authority_rows_missing")
-    if not _as_rows(horizon_report.get("rows")):
-        score -= 10.0
-        reasons.append("horizon_rows_missing")
-    if not _as_rows(entry_timing_report.get("rows")):
-        score -= 10.0
-        reasons.append("entry_timing_rows_missing")
-    if ledger_day:
-        evidence_status = str(ledger_day.get("evidence_status") or "")
-        if evidence_status and evidence_status.upper() != "COMPLETE":
-            score -= 15.0
-            reasons.append(f"ledger_evidence_status:{evidence_status}")
-    return _score(
-        OK,
-        _clamp_score(score),
-        reasons or ["evidence_surfaces_available"],
-        {
-            "integrity_status_counts": dict(counts),
-            "ledger_day_present": bool(ledger_day),
-            "ledger_evidence_status": ledger_day.get("evidence_status") if ledger_day else "",
-        },
-    )
+    return _a35_evidence_quality._evidence_quality(daily_scorecard=daily_scorecard, selection_authority=selection_authority, horizon_report=horizon_report, entry_timing_report=entry_timing_report, ledger_day=ledger_day, facade=sys.modules[__name__])
 
 
 def build_attribution_score_v0(
@@ -199,39 +147,7 @@ def build_attribution_score_v0(
 
 
 def render_attribution_score_v0(payload: Mapping[str, Any]) -> str:
-    lines = [
-        f"# Q13 Attribution Score v0 - {payload.get('day', '')}",
-        "",
-        f"- Behavior effect: `{payload.get('behavior_effect', '')}`",
-        f"- Weakest observed axis: `{_mapping(payload.get('weakest_observed_axis')).get('name') or '-'}` "
-        f"({_mapping(payload.get('weakest_observed_axis')).get('score')})",
-        "",
-        "## Scores",
-        "",
-        "| Axis | Status | Score | Reasons |",
-        "| --- | --- | ---: | --- |",
-    ]
-    for key, item in _mapping(payload.get("scores")).items():
-        obj = _mapping(item)
-        score = obj.get("score")
-        reasons = ", ".join(str(reason) for reason in obj.get("reasons") or []) or "-"
-        lines.append(
-            f"| {key} | {obj.get('status')} | "
-            f"{'-' if score is None else int(score)} | {reasons} |"
-        )
-    lines.extend([
-        "",
-        "## Interpretation",
-        "",
-        f"- {payload.get('interpretation_rule', '')}",
-        "",
-        "## Limitations",
-        "",
-    ])
-    for item in payload.get("limitations") or []:
-        lines.append(f"- {item}")
-    lines.append("")
-    return "\n".join(lines)
+    return _a35_render_attribution_score_v0.render_attribution_score_v0(payload=payload, facade=sys.modules[__name__])
 
 
 __all__ = ["build_attribution_score_v0", "render_attribution_score_v0"]

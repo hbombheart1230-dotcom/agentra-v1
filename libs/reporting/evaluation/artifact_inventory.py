@@ -5,6 +5,10 @@ import re
 from collections import Counter
 from pathlib import Path
 from typing import Any, Iterable
+import sys
+from . import artifact_inventory_synthetic_identity as _a35_synthetic_identity
+from . import artifact_inventory_regular_session_window as _a35_regular_session_window
+from . import artifact_inventory_parse_window_kst as _a35_parse_window_kst
 
 from libs.reporting.json_array_stream import iter_json_array
 from libs.reporting.quant_shadow_forward_outcomes import attach_forward_outcomes
@@ -15,46 +19,11 @@ _KRX_SYMBOL_RE = re.compile(r"^\d{6}$")
 
 
 def _synthetic_identity(row: dict[str, Any]) -> bool:
-    identity = " ".join(
-        str(row.get(key) or "").lower()
-        for key in ("decision_id", "q9_decision_id", "run_id", "candidate_pool_id")
-    )
-    if any(marker in identity for marker in ("test", "fixture", "synthetic")):
-        return True
-    symbols: list[str] = []
-
-    def collect(value: Any, *, path: tuple[str, ...] = ()) -> None:
-        if isinstance(value, dict):
-            for key, child in value.items():
-                child_path = (*path, str(key))
-                if key in {
-                    "symbol",
-                    "ticker",
-                    "selected_symbol",
-                    "top1_symbol",
-                    "candidate_symbol",
-                } and not any(
-                    part == "layer_packet_ids" or part.endswith("_packet_ids")
-                    for part in path
-                ):
-                    text = str(child or "").strip()
-                    if text:
-                        symbols.append(text)
-                elif isinstance(child, (dict, list)):
-                    collect(child, path=child_path)
-        elif isinstance(value, list):
-            for child in value:
-                collect(child, path=path)
-
-    collect(row)
-    return any(not _KRX_SYMBOL_RE.fullmatch(symbol) for symbol in symbols)
+    return _a35_synthetic_identity._synthetic_identity(row=row, facade=sys.modules[__name__])
 
 
 def _regular_session_window(row: dict[str, Any]) -> bool:
-    parsed = _parse_window_kst(row.get("generated_at"))
-    if parsed is None:
-        return True
-    return (9, 0) <= (parsed.hour, parsed.minute) <= (15, 30)
+    return _a35_regular_session_window._regular_session_window(row=row, facade=sys.modules[__name__])
 
 
 def is_synthetic_evaluation_row(row: dict[str, Any]) -> bool:
@@ -344,19 +313,7 @@ def _q9_daily_diagnostics(reports_root: Path, day: str, record: dict[str, Any]) 
 
 
 def _parse_window_kst(value: Any):
-    from datetime import datetime
-    from zoneinfo import ZoneInfo
-
-    text = str(value or "").strip()
-    if not text:
-        return None
-    try:
-        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
-    except ValueError:
-        return None
-    if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=ZoneInfo("UTC"))
-    return parsed.astimezone(ZoneInfo("Asia/Seoul"))
+    return _a35_parse_window_kst._parse_window_kst(value=value, facade=sys.modules[__name__])
 
 
 def inventory_trade(trade_dir: Path) -> dict[str, Any]:
