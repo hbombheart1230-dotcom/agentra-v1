@@ -1,88 +1,91 @@
-# C02 — Claude A | ORDER_ID=A-20261103-02-C03 | RF-032 PEER | A49 NEW_READY=8/8 | A48 REMOTE_DONE=8/8 | RESERVE_VERIFIED=6/6
+# C02 — Claude A | ORDER_ID=A-20261103-03-C03 | RF-032 PEER | A50 NEW_READY=8/8 | A49 REMOTE_DONE=8/8 | RESERVE_VERIFIED=6/6
 
-## START / authoritative remote pins
-C03 verified A48 [#11 6582478489](https://github.com/hbombheart1230-dotcom/agentra/issues/11#issuecomment-6582478489) remote A `87548b34d58308bc3686842bdd42ec0d10f767e7`, 8/8 BODY MOVEs, normal `python -m pytest -q tests/test_p15_rf032_20261103_00h_authority_feedback_pure_owners.py` EXIT=0/PASS=147; C04 [#36 6582622282](https://github.com/hbombheart1230-dotcom/agentra/issues/36#issuecomment-6582622282) integrated exact A48 12/12 blobs at `08ecb864`. **A48 and A1-A47 must not be reimplemented/retested/recounted.** Previous C02 blob `4c7fc3eb064f84b7e848e3fd1761ca4b2b81856e`. If a starting order is genuinely underway, finish safe items before switching; this new order does not retroactively cancel.
+## START — exact remote pins and starting-order preservation
+Canonical prewrite `8fe92ce5f9dc3c9bb131a59b7b75d87150bdf59d`; A actor HEAD `74fe2120932e1dcdc367e2769558be3b1d406c77`. Previous C02 blob `a1f11a1487d4366c75e59d9ec20bdffc07bbe714`. A49 [#11 6583712787](https://github.com/hbombheart1230-dotcom/agentra/issues/11#issuecomment-6583712787) final A HEAD delivered 8/8 with normal fresh-clone EXIT=0 PASS184; C04 [#36 6584029322](https://github.com/hbombheart1230-dotcom/agentra/issues/36#issuecomment-6584029322) integrated exact **final** A49 at canonical `8fe92ce5`. Intermediate incomplete `828469ee` was not integrated. A1–A49 already delivered; no reimplementation/retest/recount. If genuinely still working on a prior starting order, finish its safe items before switching; no retroactive cancellation.
 
-First shell `python -m pytest --version`; if missing `python -m pip install --user pytest`, recheck. Fetch **latest remote** `integration/p1.5:docs/refactor/work_orders/C02_CLAUDE_CURRENT.md` by branch, not cached checkout; report exact REMOTE_CANONICAL_HEAD, C02_BLOB_SHA, ORDER_ID in #11. Read only this C02 as work instruction, not D00/RF/INDEX. All SOURCE and TARGET pins independently checked on complete nontruncated Git trees: canonical `08ecb864acce08d92aad03b31be82a1b968f3425` tree `e4f010ef9a83bede487255a913c401fa975188d0` (5754 entries), A `87548b34d58308bc3686842bdd42ec0d10f767e7` tree `7bc2d5eff1dec1bfcd01e390308d004fcf88957e` (5320), B `0ea7c49be412401ea087c031a8af9dc07d7ce654` tree `cb71b1174adacb654cc5d3561ca084c6e847f3dc` (4705). Both new targeted tests absent on respective actor and canonical. RF-032 and RF-063 FILE_COVERAGE owner paths verified against their RF implementation inventories. C03 reviewed actual bodies, no source/target cross-actor overlap. Skill `.agents/skills/agentra-contract-guard/SKILL.md@f2fe45fd856f65f5f7b5a3b710317baf1bf9ad5d` used manually as non-authoritative checklist; auto-load NOT_VERIFIED, no new gate.
+First shell `python -m pytest --version`; if unavailable run `python -m pip install --user pytest`, then recheck. Fetch latest **remote** `integration/p1.5:docs/refactor/work_orders/C02_CLAUDE_CURRENT.md` by branch (not cached checkout), log full REMOTE_CANONICAL_HEAD, C02_BLOB_SHA, ORDER_ID in #11. This C02 is the only execution entrypoint; no D00/RF/INDEX reread. Refetch A HEAD, each SOURCE/TARGET at start; if SHA drift, target exists, or ownership overlap, record exact VERIFIED_ALREADY/BLOCKED per item and continue safe items.
 
-## DONE-FIRST / whole RF gate and safe boundary
-Latest C05 [#36 6582764054](https://github.com/hbombheart1230-dotcom/agentra/issues/36#issuecomment-6582764054): PENDING38 / DEV7 / PEER2 / DONE46, unresolved47. RF-030 G1 partial/G2 pending/G3 canonical fake smoke pending; RF-063 resolver/consumer closure not met; RF-032 whole G1 **BLOCKED_POLICY** validation-id/Writer/UEF despite scoped A48 G3_REUSE. C04 owns canonical RF-030 smoke and integration, C05 alone RF DONE/STATUS. A49 is bounded in-memory RF-032 work, not whole RF DONE; do not modify frozen oracle, RF-074, protected Writer/UEF/Guard, real/paper orders, live network, OS/DB, RunLab or operational state. Other RF closeout work lacks validated A-safe actor/canonical dependency-identical assignment; C03 retains triage, A must not self-select.
+## C06 #37 6584273468 — one-time preventive fix, NOT a new A49 code defect
+Audit [#37 6584273468](https://github.com/hbombheart1230-dotcom/agentra/issues/37#issuecomment-6584273468) confirmed A49 intermediate push `828469ee` omitted two SOURCE wrappers due to stash/pop unstaging; A self-corrected in non-force final `74fe2120`, canonical exact integration `8fe92ce5` and scoped G1/G2/G3_REUSE accepted. **Do not rerun A49 or recreate it.** For A50 and future orders: immediately before commit run `git status --short` and `git diff --cached --name-only`, compare staged paths against **all SOURCE files + eight exclusive Owner files + targeted test**; after any stash/pop, explicitly re-stage missing SOURCE wrappers. If any missing, fix staging before commit/push. After commit inspect `git show --name-only --format= HEAD` manifest; if any SOURCE/Owner/test missing, correct via non-force follow-up before integration, never claim incomplete commit as G1. After final push refetch exact remote source/Owner/test blobs. In #11 report PREPUSH_STAGED_MANIFEST=COMPLETE/INCOMPLETE, missing paths if any, and FINAL_REMOTE_SHA. This is prevention only, not a new G2/G3 gate or request for repeated tests.
 
-## A49 — eight individually verified independent pure BODY MOVE items
-Before each item re-fetch exact SOURCE/TARGET Git blob on A; if changed, target already present or cross-owner overlap, report item-specific BLOCKED/VERIFIED_ALREADY and continue other safe items. Move actual complete body to one Owner, SOURCE same-signature thin wrapper; preserve call-time SOURCE helper/Mapping/Counter facade seams. Owner may accept `facade=sys.modules[__name__]` passed by wrapper but **must not import SOURCE**. Preserve source defaults/docstring, exception order, return identity, dict/Markdown byte order. No IO or external services in tests. One new fake-only targeted normal `python -m pytest -q tests/test_p15_rf032_20261103_02h_no_trade_alignment_owners.py` EXIT=0 with original-preimage AST vs new Owner/wrapper parity for **all eight**; no mandatory -O/full suite/hosted CI.
+## DONE-FIRST boundary
+Latest C05 [#36 6584047694](https://github.com/hbombheart1230-dotcom/agentra/issues/36#issuecomment-6584047694): physical DONE46/93, unresolved47; RF-030 G1 partial/G2 pending/G3 canonical fake smoke pending, C04 owns exact canonical smoke. RF-032 **whole G1 BLOCKED_POLICY** validation-id/Writer/UEF, even though A49 scoped G3_REUSE accepted. A50 is in-memory reporting only and does NOT authorize Writer/UEF, frozen RF-074 oracle, broker, Guard, Step5C, real trading or runtime changes. C05 alone can close RF. C03 will prioritize a different unfinished A-owned RF when a safe owner/consumer scope is validated; A must not self-select.
 
-### A49-1 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/no_trade_attribution.py::_mapping` | SOURCE_GIT_BLOB=`967aca16db2926cc00b0a7761d1534cf4b84540b` (canonical=actor at issuance)
-TARGET=`libs/reporting/evaluation/no_trade_attribution_mapping.py::_mapping` | TARGET=404 on canonical and actor (verified nontruncated tree)
-ACTUAL_BODY=Mapping identity-or-empty: if isinstance(value, Mapping) return same object, else {}; preserve facade.Mapping use-time.
-MOVE=Transfer entire real calculation body into this single exclusive Owner; SOURCE original signature/default/docstring becomes thin call-time facade wrapper. Owner must not import SOURCE; preserve monkeypatch, exception, formatting, ordering, identity and caller behavior. Do not modify operational call sites.
-TARGETED_NORMAL_CASES=dict/subclass identity, None/string, monkeypatch Mapping, exception/identity.
-TEST=`tests/test_p15_rf032_20261103_02h_no_trade_alignment_owners.py`; compare original preimage AST vs wrapper/Owner on fake in-memory inputs. If drift/target collision, report exact SHA/FIRST_BLOCKER and continue next assigned item.
+## A50 — eight individually verified independent pure BODY MOVE items
+All SOURCE are `libs/reporting/evaluation/scanner_alignment_root_cause.py@561fbdced4acd99e6c7acb9153e99b0280a977a4` identical on canonical and A at issuance. Eight unique TARGET Owner files are 404 on both complete nontruncated Git trees; RF-032 FILE_COVERAGE and A/B exclusivity checked. Transfer **entire actual body** to single Owner function, keep SOURCE same-signature/default/docstring thin wrapper. Call-time `facade=sys.modules[__name__]` for SOURCE helpers, Mapping and constants; Owner must not import SOURCE. Preserve output identity, exception order, rounding, Markdown strings, monkeypatch and return key ordering. No IO, network, real mode, operational file access or changes to external consumers. Use original A preimage AST and fake-only test `tests/test_p15_rf032_20261103_03h_scanner_alignment_owners.py` for all eight; normal pytest exit0 once. A49 wrappers in same SOURCE are existing and must not be rewritten or recounted.
 
-### A49-2 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/no_trade_attribution.py::_num` | SOURCE_GIT_BLOB=`967aca16db2926cc00b0a7761d1534cf4b84540b` (canonical=actor at issuance)
-TARGET=`libs/reporting/evaluation/no_trade_attribution_num.py::_num` | TARGET=404 on canonical and actor (verified nontruncated tree)
-ACTUAL_BODY=None or empty string => None; float(value), catching TypeError/ValueError only; do not catch RuntimeError.
-MOVE=Transfer entire real calculation body into this single exclusive Owner; SOURCE original signature/default/docstring becomes thin call-time facade wrapper. Owner must not import SOURCE; preserve monkeypatch, exception, formatting, ordering, identity and caller behavior. Do not modify operational call sites.
-TARGETED_NORMAL_CASES=None/empty/zero/custom float, invalid string, propagated RuntimeError.
-TEST=`tests/test_p15_rf032_20261103_02h_no_trade_alignment_owners.py`; compare original preimage AST vs wrapper/Owner on fake in-memory inputs. If drift/target collision, report exact SHA/FIRST_BLOCKER and continue next assigned item.
+### A50-1 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_symbol` | SOURCE_GIT_BLOB=`561fbdced4acd99e6c7acb9153e99b0280a977a4` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_symbol.py::_symbol` | TARGET=404 canonical+A, exclusive Owner
+ACTUAL_BODY=Mapping `.get('symbol')` or scalar; str(...).strip, preserve falsy fallback and original type errors
+MOVE=full real body → Owner; original signature thin SOURCE wrapper with dynamic facade; no consumer/effect edits.
+TARGETED_NORMAL_CASES=dict, None, empty, unicode, custom str
+TEST=`tests/test_p15_rf032_20261103_03h_scanner_alignment_owners.py` original preimage AST parity against wrapper+Owner, fake-only; on drift/collision report item-specific SHA/FIRST_BLOCKER and continue.
 
-### A49-3 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/no_trade_attribution.py::_pct` | SOURCE_GIT_BLOB=`967aca16db2926cc00b0a7761d1534cf4b84540b` (canonical=actor at issuance)
-TARGET=`libs/reporting/evaluation/no_trade_attribution_pct.py::_pct` | TARGET=404 on canonical and actor (verified nontruncated tree)
-ACTUAL_BODY=Call facade._num(value) at use time; None => '-', otherwise format 4 decimals with %.
-MOVE=Transfer entire real calculation body into this single exclusive Owner; SOURCE original signature/default/docstring becomes thin call-time facade wrapper. Owner must not import SOURCE; preserve monkeypatch, exception, formatting, ordering, identity and caller behavior. Do not modify operational call sites.
-TARGETED_NORMAL_CASES=negative/zero/invalid, patched _num, exact 4-decimal bytes.
-TEST=`tests/test_p15_rf032_20261103_02h_no_trade_alignment_owners.py`; compare original preimage AST vs wrapper/Owner on fake in-memory inputs. If drift/target collision, report exact SHA/FIRST_BLOCKER and continue next assigned item.
+### A50-2 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_selected_rank` | SOURCE_GIT_BLOB=`561fbdced4acd99e6c7acb9153e99b0280a977a4` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_selected_rank.py::_selected_rank` | TARGET=404 canonical+A, exclusive Owner
+ACTUAL_BODY=Dynamic SOURCE `_mapping`/`_num` for selected_rank and selected_candidate.rank fallback; preserve int conversion and None
+MOVE=full real body → Owner; original signature thin SOURCE wrapper with dynamic facade; no consumer/effect edits.
+TARGETED_NORMAL_CASES=nested/empty, rank=0, invalid, monkeypatch _mapping/_num
+TEST=`tests/test_p15_rf032_20261103_03h_scanner_alignment_owners.py` original preimage AST parity against wrapper+Owner, fake-only; on drift/collision report item-specific SHA/FIRST_BLOCKER and continue.
 
-### A49-4 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/no_trade_attribution.py::_top` | SOURCE_GIT_BLOB=`967aca16db2926cc00b0a7761d1534cf4b84540b` (canonical=actor at issuance)
-TARGET=`libs/reporting/evaluation/no_trade_attribution_top.py::_top` | TARGET=404 on canonical and actor (verified nontruncated tree)
-ACTUAL_BODY=Counter.most_common(limit) preserving tie order, filter falsy key, cast counts int and keys name.
-MOVE=Transfer entire real calculation body into this single exclusive Owner; SOURCE original signature/default/docstring becomes thin call-time facade wrapper. Owner must not import SOURCE; preserve monkeypatch, exception, formatting, ordering, identity and caller behavior. Do not modify operational call sites.
-TARGETED_NORMAL_CASES=tie/empty key/limit 0/negative/Counter subclass and exact row ordering.
-TEST=`tests/test_p15_rf032_20261103_02h_no_trade_alignment_owners.py`; compare original preimage AST vs wrapper/Owner on fake in-memory inputs. If drift/target collision, report exact SHA/FIRST_BLOCKER and continue next assigned item.
+### A50-3 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_score_gap` | SOURCE_GIT_BLOB=`561fbdced4acd99e6c7acb9153e99b0280a977a4` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_score_gap.py::_score_gap` | TARGET=404 canonical+A, exclusive Owner
+ACTUAL_BODY=Dynamic `_mapping`/`_num` for top1 vs selected score, return 6-decimal rounded difference or None
+MOVE=full real body → Owner; original signature thin SOURCE wrapper with dynamic facade; no consumer/effect edits.
+TARGETED_NORMAL_CASES=missing/negative/zero, rounding boundary, patched helpers
+TEST=`tests/test_p15_rf032_20261103_03h_scanner_alignment_owners.py` original preimage AST parity against wrapper+Owner, fake-only; on drift/collision report item-specific SHA/FIRST_BLOCKER and continue.
 
-### A49-5 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/no_trade_attribution.py::_q9_window_view` | SOURCE_GIT_BLOB=`967aca16db2926cc00b0a7761d1534cf4b84540b` (canonical=actor at issuance)
-TARGET=`libs/reporting/evaluation/no_trade_attribution_q9_window_view.py::_q9_window_view` | TARGET=404 on canonical and actor (verified nontruncated tree)
-ACTUAL_BODY=Read only row scanner_control.top1_symbol, strategist_selection.selected_symbol, commander_final selected_symbol/decision/monitor_intent/reason/detail/monitor_reason and nested monitor_observation.reason; omit nonmapping groups, preserve key order and docstring.
-MOVE=Transfer entire real calculation body into this single exclusive Owner; SOURCE original signature/default/docstring becomes thin call-time facade wrapper. Owner must not import SOURCE; preserve monkeypatch, exception, formatting, ordering, identity and caller behavior. Do not modify operational call sites.
-TARGETED_NORMAL_CASES=empty/nested/nonmapping/partial rows, patched Mapping, input unchanged, exact projection schema.
-TEST=`tests/test_p15_rf032_20261103_02h_no_trade_alignment_owners.py`; compare original preimage AST vs wrapper/Owner on fake in-memory inputs. If drift/target collision, report exact SHA/FIRST_BLOCKER and continue next assigned item.
+### A50-4 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_outcome_return` | SOURCE_GIT_BLOB=`561fbdced4acd99e6c7acb9153e99b0280a977a4` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_outcome_return.py::_outcome_return` | TARGET=404 canonical+A, exclusive Owner
+ACTUAL_BODY=Evaluation realized_outcome.net_return_pct, fallback model.outcome; dynamic mapping/num and missing None
+MOVE=full real body → Owner; original signature thin SOURCE wrapper with dynamic facade; no consumer/effect edits.
+TARGETED_NORMAL_CASES=nested/fallback/zero, invalid, patched facade
+TEST=`tests/test_p15_rf032_20261103_03h_scanner_alignment_owners.py` original preimage AST parity against wrapper+Owner, fake-only; on drift/collision report item-specific SHA/FIRST_BLOCKER and continue.
 
-### A49-6 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_mapping` | SOURCE_GIT_BLOB=`8774bea29dd8ebd83283b28c5109e5fc6210fd1a` (canonical=actor at issuance)
-TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_mapping.py::_mapping` | TARGET=404 on canonical and actor (verified nontruncated tree)
-ACTUAL_BODY=Mapping identity-or-empty; no copy of Mapping; dynamic facade.Mapping.
-MOVE=Transfer entire real calculation body into this single exclusive Owner; SOURCE original signature/default/docstring becomes thin call-time facade wrapper. Owner must not import SOURCE; preserve monkeypatch, exception, formatting, ordering, identity and caller behavior. Do not modify operational call sites.
-TARGETED_NORMAL_CASES=dict/subclass identity, None/scalar, patched Mapping.
-TEST=`tests/test_p15_rf032_20261103_02h_no_trade_alignment_owners.py`; compare original preimage AST vs wrapper/Owner on fake in-memory inputs. If drift/target collision, report exact SHA/FIRST_BLOCKER and continue next assigned item.
+### A50-5 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_impact_score` | SOURCE_GIT_BLOB=`561fbdced4acd99e6c7acb9153e99b0280a977a4` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_impact_score.py::_impact_score` | TARGET=404 canonical+A, exclusive Owner
+ACTUAL_BODY=Sum negative return values only and round to 4 decimals; preserve original iterable and numeric errors
+MOVE=full real body → Owner; original signature thin SOURCE wrapper with dynamic facade; no consumer/effect edits.
+TARGETED_NORMAL_CASES=empty, positive, negatives, rounding, custom numeric exceptions
+TEST=`tests/test_p15_rf032_20261103_03h_scanner_alignment_owners.py` original preimage AST parity against wrapper+Owner, fake-only; on drift/collision report item-specific SHA/FIRST_BLOCKER and continue.
 
-### A49-7 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_rows` | SOURCE_GIT_BLOB=`8774bea29dd8ebd83283b28c5109e5fc6210fd1a` (canonical=actor at issuance)
-TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_rows.py::_rows` | TARGET=404 on canonical and actor (verified nontruncated tree)
-ACTUAL_BODY=List comprehension over (value or []), retaining only Mapping rows in original order and identity; preserve single iteration and generator behavior.
-MOVE=Transfer entire real calculation body into this single exclusive Owner; SOURCE original signature/default/docstring becomes thin call-time facade wrapper. Owner must not import SOURCE; preserve monkeypatch, exception, formatting, ordering, identity and caller behavior. Do not modify operational call sites.
-TARGETED_NORMAL_CASES=None/empty/mixed/generator, Mapping subclass, input identity, exception parity.
-TEST=`tests/test_p15_rf032_20261103_02h_no_trade_alignment_owners.py`; compare original preimage AST vs wrapper/Owner on fake in-memory inputs. If drift/target collision, report exact SHA/FIRST_BLOCKER and continue next assigned item.
+### A50-6 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_diagnostic_kind` | SOURCE_GIT_BLOB=`561fbdced4acd99e6c7acb9153e99b0280a977a4` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_diagnostic_kind.py::_diagnostic_kind` | TARGET=404 canonical+A, exclusive Owner
+ACTUAL_BODY=Membership in call-time OUTCOME_CONDITIONED_CAUSES or EVIDENCE_GAP_CAUSES, else structural
+MOVE=full real body → Owner; original signature thin SOURCE wrapper with dynamic facade; no consumer/effect edits.
+TARGETED_NORMAL_CASES=known/unknown, patched constants, custom equality
+TEST=`tests/test_p15_rf032_20261103_03h_scanner_alignment_owners.py` original preimage AST parity against wrapper+Owner, fake-only; on drift/collision report item-specific SHA/FIRST_BLOCKER and continue.
 
-### A49-8 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_num` | SOURCE_GIT_BLOB=`8774bea29dd8ebd83283b28c5109e5fc6210fd1a` (canonical=actor at issuance)
-TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_num.py::_num` | TARGET=404 on canonical and actor (verified nontruncated tree)
-ACTUAL_BODY=None or '' => None; float conversion; catch TypeError/ValueError only.
-MOVE=Transfer entire real calculation body into this single exclusive Owner; SOURCE original signature/default/docstring becomes thin call-time facade wrapper. Owner must not import SOURCE; preserve monkeypatch, exception, formatting, ordering, identity and caller behavior. Do not modify operational call sites.
-TARGETED_NORMAL_CASES=0/negative/invalid/custom float, RuntimeError propagation, original AST parity.
-TEST=`tests/test_p15_rf032_20261103_02h_no_trade_alignment_owners.py`; compare original preimage AST vs wrapper/Owner on fake in-memory inputs. If drift/target collision, report exact SHA/FIRST_BLOCKER and continue next assigned item.
+### A50-7 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_largest_cause` | SOURCE_GIT_BLOB=`561fbdced4acd99e6c7acb9153e99b0280a977a4` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_largest_cause.py::_largest_cause` | TARGET=404 canonical+A, exclusive Owner
+ACTUAL_BODY=Filter trade_count >0 and excluded root_cause; max by (count, abs negative_impact_pct), return copied dict or {}
+MOVE=full real body → Owner; original signature thin SOURCE wrapper with dynamic facade; no consumer/effect edits.
+TARGETED_NORMAL_CASES=empty, ties, excluded, invalid numerics, order, input identity
+TEST=`tests/test_p15_rf032_20261103_03h_scanner_alignment_owners.py` original preimage AST parity against wrapper+Owner, fake-only; on drift/collision report item-specific SHA/FIRST_BLOCKER and continue.
 
-## VERIFIED RESERVE — A 6/6 (UNASSIGNED, not actor discretion)
-Actual bodies read; exact SOURCE blob canonical=A and unique TARGET 404 in both complete Git trees; in-memory only; not part of A49. Do not execute unless future C03 order.
-1. RF-032 `libs/reporting/evaluation/scanner_alignment_root_cause.py::_symbol@8774bea29dd8ebd83283b28c5109e5fc6210fd1a` → `libs/reporting/evaluation/scanner_alignment_root_cause_symbol.py::_symbol` (404 C+A); BODY=Mapping symbol or scalar -> str(...).strip(), preserve falsy fallback; fake-only parity; UNASSIGNED.
-2. RF-032 `libs/reporting/evaluation/scanner_alignment_root_cause.py::_selected_rank@8774bea29dd8ebd83283b28c5109e5fc6210fd1a` → `libs/reporting/evaluation/scanner_alignment_root_cause_selected_rank.py::_selected_rank` (404 C+A); BODY=nested selection selected_rank/selected_candidate.rank, _mapping/_num facade dynamic; fake-only parity; UNASSIGNED.
-3. RF-032 `libs/reporting/evaluation/scanner_alignment_root_cause.py::_score_gap@8774bea29dd8ebd83283b28c5109e5fc6210fd1a` → `libs/reporting/evaluation/scanner_alignment_root_cause_score_gap.py::_score_gap` (404 C+A); BODY=top1 vs selected score, 6-decimal rounding, missing returns None; fake-only parity; UNASSIGNED.
-4. RF-032 `libs/reporting/evaluation/scanner_alignment_root_cause.py::_outcome_return@8774bea29dd8ebd83283b28c5109e5fc6210fd1a` → `libs/reporting/evaluation/scanner_alignment_root_cause_outcome_return.py::_outcome_return` (404 C+A); BODY=evaluation.realized_outcome.net_return_pct fallback model.outcome; fake-only parity; UNASSIGNED.
-5. RF-032 `libs/reporting/evaluation/scanner_alignment_root_cause.py::_impact_score@8774bea29dd8ebd83283b28c5109e5fc6210fd1a` → `libs/reporting/evaluation/scanner_alignment_root_cause_impact_score.py::_impact_score` (404 C+A); BODY=sum negative return values and round to 4 decimals; fake-only parity; UNASSIGNED.
-6. RF-032 `libs/reporting/evaluation/scanner_alignment_root_cause.py::_diagnostic_kind@8774bea29dd8ebd83283b28c5109e5fc6210fd1a` → `libs/reporting/evaluation/scanner_alignment_root_cause_diagnostic_kind.py::_diagnostic_kind` (404 C+A); BODY=OUTCOME_CONDITIONED_CAUSES/EVIDENCE_GAP_CAUSES dynamic lookup; fake-only parity; UNASSIGNED.
+### A50-8 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_patch_candidate` | SOURCE_GIT_BLOB=`561fbdced4acd99e6c7acb9153e99b0280a977a4` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_patch_candidate.py::_patch_candidate` | TARGET=404 canonical+A, exclusive Owner
+ACTUAL_BODY=Exact seven-way root-cause string to diagnostic recommendation; no action or trading behavior patch
+MOVE=full real body → Owner; original signature thin SOURCE wrapper with dynamic facade; no consumer/effect edits.
+TARGETED_NORMAL_CASES=all branches, unknown/None, exact string/Unicode output
+TEST=`tests/test_p15_rf032_20261103_03h_scanner_alignment_owners.py` original preimage AST parity against wrapper+Owner, fake-only; on drift/collision report item-specific SHA/FIRST_BLOCKER and continue.
+
+## VERIFIED RESERVE — A 6/6 (UNASSIGNED, not Actor discretion)
+Actual bodies read, RF-032 FILE_COVERAGE and exact canonical=A SOURCE `libs/reporting/evaluation/episode_scanner_review.py@5bd42ffafd07612290dc4138e149d2e627590d60`; all six exclusive targets 404 on canonical+A full trees. In-memory only, no effect or IO; fake-only parity with patched facade helpers. Do NOT execute until next C03 order.
+1. RF-032 SOURCE=`libs/reporting/evaluation/episode_scanner_review.py::_number@5bd42ffafd07612290dc4138e149d2e627590d60` → TARGET=`libs/reporting/evaluation/episode_scanner_review_number.py::_number` (404 C+A); BODY=TypeError/ValueError only float-or-None, preserve value in (None,'') check; IO/State=none, fake normal parity hypothesis; UNASSIGNED.
+2. RF-032 SOURCE=`libs/reporting/evaluation/episode_scanner_review.py::_mapping@5bd42ffafd07612290dc4138e149d2e627590d60` → TARGET=`libs/reporting/evaluation/episode_scanner_review_mapping.py::_mapping` (404 C+A); BODY=Mapping identity-or-empty, no copy; IO/State=none, fake normal parity hypothesis; UNASSIGNED.
+3. RF-032 SOURCE=`libs/reporting/evaluation/episode_scanner_review.py::_checkpoint_return@5bd42ffafd07612290dc4138e149d2e627590d60` → TARGET=`libs/reporting/evaluation/episode_scanner_review_checkpoint_return.py::_checkpoint_return` (404 C+A); BODY=Nested shadow_forward_outcome.checkpoints status observed and dynamic `_mapping/_number`; IO/State=none, fake normal parity hypothesis; UNASSIGNED.
+4. RF-032 SOURCE=`libs/reporting/evaluation/episode_scanner_review.py::_epoch@5bd42ffafd07612290dc4138e149d2e627590d60` → TARGET=`libs/reporting/evaluation/episode_scanner_review_epoch.py::_epoch` (404 C+A); BODY=shadow_forward_base.baseline_epoch int-or-zero with dynamic helpers; IO/State=none, fake normal parity hypothesis; UNASSIGNED.
+5. RF-032 SOURCE=`libs/reporting/evaluation/episode_scanner_review.py::_setup_key@5bd42ffafd07612290dc4138e149d2e627590d60` → TARGET=`libs/reporting/evaluation/episode_scanner_review_setup_key.py::_setup_key` (404 C+A); BODY=entry_lane_observation subtype_v2/subtype/primary_lane/reason/unknown fallback; IO/State=none, fake normal parity hypothesis; UNASSIGNED.
+6. RF-032 SOURCE=`libs/reporting/evaluation/episode_scanner_review.py::_day@5bd42ffafd07612290dc4138e149d2e627590d60` → TARGET=`libs/reporting/evaluation/episode_scanner_review_day.py::_day` (404 C+A); BODY=call-time `candidate_day(row)` fallback row.day, strip hyphens and require 8 digits; IO/State=none, fake normal parity hypothesis; UNASSIGNED.
 
 ## ACCEPTANCE / #11
-Complete A49-1..8 or each exact SOURCE/TARGET/SHA FIRST_BLOCKER; do not stop after first PASS or short runtime. Report measured START_KST/END_KST/ELAPSED_MIN, remote A HEAD before/after, full-root tree, all SOURCE pre/post/Owner/test blobs, normal command EXIT/PASS, non-force push and remote refetch. KEEP/ALREADY=0 new moves. If push blocked, report PUSH_BLOCKED and keep safe code work; never force. C04 selects integration/G3, C05 RF/STATUS/DONE. No D00/C01/C03/C04/C05/RF/STATUS edits.
+Execute A50-1..8 or report exact per-item SOURCE/TARGET/current SHA/FIRST_BLOCKER. Do not stop after first PASS or early push. Normal targeted `python -m pytest -q tests/test_p15_rf032_20261103_03h_scanner_alignment_owners.py` EXIT=0, record observed PASS count and actual START_KST/END_KST/ELAPSED_MIN, A HEAD before/after, prepush staged manifest, SOURCE pre/post + eight Owner + test Git blobs, non-force remote SHA and final refetch. Git authentication failure blocks only push; continue safe items and report PUSH_BLOCKED. Do not force push/history rewrite. C04 owns selective integration/G3, C05 RF/STATUS/DONE; no C01/C03/C04/C05/D00/RF/STATUS writes.
