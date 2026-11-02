@@ -16,6 +16,11 @@ from . import no_trade_attribution_num as _a49_no__num
 from . import no_trade_attribution_pct as _a49_no__pct
 from . import no_trade_attribution_top as _a49_no__top
 from . import no_trade_attribution_q9_window_view as _a49_no__q9_window_view
+from . import no_trade_attribution_render as _a54_nt_render
+from . import no_trade_attribution_baseline_samsung as _a54_nt_baseline_samsung
+from . import no_trade_attribution_q12_btc_woori as _a54_nt_q12_btc_woori
+from . import no_trade_attribution_q9_windows as _a54_nt_q9_windows
+from . import no_trade_attribution_q11_opening as _a54_nt_q11_opening
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -48,102 +53,19 @@ def _q9_window_view(row: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _q9_windows(reports_root: Path, day: str) -> list[dict[str, Any]]:
-    # Streamed and reduced to the fields the report reads: the ~120 MB windows file is no longer parsed
-    # whole (and its regular rows are not all kept) just to count a handful of fields per window.
-    path = reports_root / "operator_summary" / "daily" / day / "q9_decision_windows.json"
-    windows: list[dict[str, Any]] = []
-    try:
-        for row in iter_json_array(path, "windows"):
-            if isinstance(row, dict) and not is_synthetic_evaluation_row(row) and is_regular_session_evaluation_row(row):
-                windows.append(_q9_window_view(row))
-    except ValueError:
-        return []  # unreadable windows file == no windows (what _read_json -> {} gave)
-    return windows
+    return _a54_nt_q9_windows._q9_windows(reports_root, day, facade=sys.modules[__name__])
 
 
 def _baseline_samsung(reports_root: Path, day: str) -> dict[str, Any]:
-    payload = _read_json(
-        reports_root
-        / "evaluation"
-        / "baseline_samsung_hynix"
-        / day
-        / "baseline_samsung_hynix_forward_returns.json"
-    )
-    summary = _mapping(payload.get("summary"))
-    rows = summary.get("horizons") if isinstance(summary.get("horizons"), list) else []
-    return {
-        "available": bool(payload),
-        "horizons": [
-            {
-                "horizon": str(row.get("horizon") or ""),
-                "trade_count": int(row.get("top1_observation_count") or row.get("trade_count") or 0),
-                "win_rate": _num(_mapping(row.get("top1_net")).get("win_rate") or row.get("top1_win_rate") or row.get("win_rate")),
-                "avg_net_return_pct": _num(
-                    _mapping(row.get("top1_net")).get("average_return_pct")
-                    or row.get("top1_avg_net_return_pct")
-                    or row.get("avg_net_return_pct")
-                ),
-                "profit_factor": _num(_mapping(row.get("top1_net")).get("profit_factor") or row.get("top1_profit_factor") or row.get("profit_factor")),
-            }
-            for row in rows
-            if isinstance(row, Mapping)
-        ],
-    }
+    return _a54_nt_baseline_samsung._baseline_samsung(reports_root, day, facade=sys.modules[__name__])
 
 
 def _q11_opening(reports_root: Path, day: str) -> dict[str, Any]:
-    root = reports_root / "evaluation" / "opportunity_engine_shadow" / day
-    payload = _read_json(root / "opportunity_engine_daily_report.json")
-    signals = _read_json(root / "opportunity_engine_signals.json")
-    virtual = _read_json(root / "opportunity_engine_virtual_trades.json")
-    summary = _mapping(virtual.get("summary") or payload.get("summary"))
-    data_quality = _mapping(signals.get("data_quality"))
-    return {
-        "available": bool(payload or signals or virtual),
-        "signal_rows": int(signals.get("signal_count") or summary.get("signal_rows") or payload.get("signal_rows") or 0),
-        "probe_candidates": sum(
-            1
-            for row in signals.get("signals") or []
-            if isinstance(row, Mapping) and bool(_mapping(row.get("opportunity")).get("probe_candidate"))
-        ),
-        "probe_near_misses": int(data_quality.get("probe_near_miss_count") or 0),
-        "virtual_trades": int(virtual.get("trade_count") or summary.get("trade_count") or summary.get("virtual_trades") or 0),
-        "win_rate": _num(summary.get("win_rate") or payload.get("win_rate")),
-        "avg_net_return_pct": _num(summary.get("average_net_return_pct") or summary.get("avg_net_return") or summary.get("avg_net_return_pct") or payload.get("avg_net_return_pct")),
-        "avg_mfe_pct": _num(summary.get("average_mfe_pct") or summary.get("avg_mfe") or summary.get("avg_mfe_pct") or payload.get("avg_mfe_pct")),
-        "avg_mae_pct": _num(summary.get("average_mae_pct") or summary.get("avg_mae") or summary.get("avg_mae_pct") or payload.get("avg_mae_pct")),
-        "profit_factor": _num(summary.get("profit_factor") or payload.get("profit_factor")),
-    }
+    return _a54_nt_q11_opening._q11_opening(reports_root, day, facade=sys.modules[__name__])
 
 
 def _q12_btc_woori(reports_root: Path, day: str) -> dict[str, Any]:
-    payload = _read_json(
-        reports_root
-        / "evaluation"
-        / "baseline_btc_woori_tech"
-        / day
-        / "baseline_btc_woori_forward_returns.json"
-    )
-    summary = _mapping(payload.get("summary"))
-    horizons = summary.get("horizons") if isinstance(summary.get("horizons"), list) else []
-    return {
-        "available": bool(payload),
-        "horizons": [
-            {
-                "horizon": str(row.get("horizon") or ""),
-                "trade_count": int(row.get("trade_count") or 0),
-                "win_rate": _num(_mapping(row.get("eligible_entries_net")).get("win_rate") or _mapping(row.get("top1_net")).get("win_rate") or row.get("win_rate")),
-                "avg_net_return_pct": _num(
-                    _mapping(row.get("eligible_entries_net")).get("average_return_pct")
-                    or _mapping(row.get("top1_net")).get("average_return_pct")
-                    or row.get("avg_net_return_pct")
-                ),
-                "profit_factor": _num(_mapping(row.get("eligible_entries_net")).get("profit_factor") or _mapping(row.get("top1_net")).get("profit_factor") or row.get("profit_factor")),
-            }
-            for row in horizons
-            if isinstance(row, Mapping)
-        ],
-    }
+    return _a54_nt_q12_btc_woori._q12_btc_woori(reports_root, day, facade=sys.modules[__name__])
 
 
 def build_no_trade_attribution_report(
@@ -265,90 +187,4 @@ def build_no_trade_attribution_report(
 
 
 def render_no_trade_attribution_report(payload: Mapping[str, Any]) -> str:
-    lines = [
-        "# No-Trade Attribution Report",
-        "",
-        f"- Behavior effect: `{payload.get('behavior_effect', '')}`",
-        f"- Day: `{payload.get('day', '')}`",
-        f"- Trades: {payload.get('trade_count', 0)}",
-        f"- Q9 windows: {payload.get('q9_window_count', 0)}",
-        f"- No-trade class: `{payload.get('no_trade_class', '')}`",
-        f"- Primary issue: `{payload.get('primary_issue', '')}`",
-        f"- Commander approve + Monitor NOOP: {payload.get('commander_approve_monitor_noop_count', 0)}",
-        "",
-        "## Q9 Decision Surface",
-        "",
-    ]
-    for title, key in (
-        ("Commander Decisions", "commander_decisions"),
-        ("Commander Reasons", "commander_reasons"),
-        ("Commander Details", "commander_details"),
-        ("Monitor Intents", "monitor_intents"),
-        ("Monitor NOOP Reasons", "monitor_noop_reasons"),
-        ("Scanner Top1", "scanner_top1"),
-        ("Strategist Selected", "strategist_selected"),
-    ):
-        lines.extend([f"### {title}", ""])
-        rows = payload.get(key) if isinstance(payload.get(key), list) else []
-        if not rows:
-            lines.append("- None")
-        else:
-            for row in rows:
-                if isinstance(row, Mapping):
-                    lines.append(f"- `{row.get('name', '')}`: {row.get('count', 0)}")
-        lines.append("")
-
-    q11 = _mapping(payload.get("q11_opening_opportunity"))
-    lines.extend([
-        "## Shadow Opportunity",
-        "",
-        f"- Status: `{payload.get('shadow_opportunity_status', '')}`",
-        f"- Q11 available: {bool(q11.get('available'))}",
-        f"- Q11 signal rows: {q11.get('signal_rows', 0)}",
-        f"- Q11 probe candidates: {q11.get('probe_candidates', 0)}",
-        f"- Q11 probe near-misses: {q11.get('probe_near_misses', 0)}",
-        f"- Q11 virtual trades: {q11.get('virtual_trades', 0)}",
-        f"- Q11 win rate: {q11.get('win_rate') if q11.get('win_rate') is not None else '-'}",
-        f"- Q11 avg net: {_pct(q11.get('avg_net_return_pct'))}",
-        f"- Q11 avg MFE: {_pct(q11.get('avg_mfe_pct'))}",
-        f"- Q11 avg MAE: {_pct(q11.get('avg_mae_pct'))}",
-        "",
-        "## Baseline Summary",
-        "",
-        "| Baseline | Horizon | Trades | Win Rate | Avg Net | PF |",
-        "| --- | --- | ---: | ---: | ---: | ---: |",
-    ])
-    for baseline_key, label in (
-        ("q10_samsung_hynix", "Q10 Samsung/Hynix"),
-        ("q12_btc_woori", "Q12 BTC/Woori"),
-    ):
-        baseline = _mapping(payload.get(baseline_key))
-        rows = baseline.get("horizons") if isinstance(baseline.get("horizons"), list) else []
-        if not rows:
-            lines.append(f"| {label} | - | 0 | - | - | - |")
-            continue
-        for row in rows:
-            if not isinstance(row, Mapping):
-                continue
-            lines.append(
-                "| "
-                + " | ".join(
-                    [
-                        label,
-                        str(row.get("horizon") or "-"),
-                        str(row.get("trade_count") or 0),
-                        str(row.get("win_rate") if row.get("win_rate") is not None else "-"),
-                        _pct(row.get("avg_net_return_pct")),
-                        str(row.get("profit_factor") if row.get("profit_factor") is not None else "-"),
-                    ]
-                )
-                + " |"
-            )
-    lines.extend([
-        "",
-        "## Interpretation",
-        "",
-        "- This report does not change trading behavior.",
-        "- If trades are zero, Q13/Q14 trade attribution is insufficient; this report decides whether the absence itself is an over-filtering signal.",
-    ])
-    return "\n".join(lines) + "\n"
+    return _a54_nt_render.render_no_trade_attribution_report(payload, facade=sys.modules[__name__])
