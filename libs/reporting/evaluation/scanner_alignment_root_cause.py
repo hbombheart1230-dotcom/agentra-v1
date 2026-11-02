@@ -18,6 +18,8 @@ from . import scanner_alignment_root_cause_impact_score as _a50_impact_score
 from . import scanner_alignment_root_cause_diagnostic_kind as _a50_diagnostic_kind
 from . import scanner_alignment_root_cause_largest_cause as _a50_largest_cause
 from . import scanner_alignment_root_cause_patch_candidate as _a50_patch_candidate
+from . import scanner_alignment_root_cause_classify as _a53_classify
+from . import scanner_alignment_root_cause_render as _a53_render
 
 
 ROOT_CAUSES = (
@@ -80,88 +82,7 @@ def classify_scanner_alignment_root_cause(
     model: Mapping[str, Any],
     net_return_pct: float | None,
 ) -> dict[str, Any]:
-    raw = str(row.get("raw_scanner_top1") or "")
-    post = str(row.get("post_strategy_top1") or "")
-    selected = str(row.get("selected_symbol") or "")
-    executed = str(row.get("executed_symbol") or "")
-    rank = _selected_rank(model)
-    score_gap = _score_gap(model)
-    reasons: list[str] = []
-
-    if not raw or not post or not selected or not executed:
-        return {
-            "root_cause": "Missing Evidence",
-            "confidence": "high",
-            "reasons": ["raw/post/selected/executed symbol missing"],
-            "selected_rank": rank,
-            "score_gap": score_gap,
-        }
-
-    if (
-        row.get("final_to_executed_changed") is True
-        or row.get("monitor_to_commander_changed") is True
-        or row.get("selected_to_monitor_changed") is True
-    ):
-        return {
-            "root_cause": "Symbol Mapping",
-            "confidence": "high",
-            "reasons": ["symbol changed after selection path"],
-            "selected_rank": rank,
-            "score_gap": score_gap,
-        }
-
-    if selected != post and rank is not None and rank > 1:
-        reasons.append("selected candidate is below post-strategy top1")
-        reasons.append(f"selected_rank={rank}")
-        if score_gap is not None:
-            reasons.append(f"score_gap={score_gap}")
-        return {
-            "root_cause": "Candidate Filtering",
-            "confidence": "high",
-            "reasons": reasons,
-            "selected_rank": rank,
-            "score_gap": score_gap,
-        }
-
-    if raw != post and selected == post:
-        return {
-            "root_cause": "Strategist Override",
-            "confidence": "medium",
-            "reasons": ["post-strategy top1 differs from raw top1 and final selection followed post-strategy top1"],
-            "selected_rank": rank,
-            "score_gap": score_gap,
-        }
-
-    if raw != post or (rank is not None and rank > 1):
-        reasons.append("top candidate changed or selected rank drifted")
-        if raw != post:
-            reasons.append("raw_top1_differs_from_post_strategy_top1")
-        if rank is not None and rank > 1:
-            reasons.append(f"selected_rank={rank}")
-        return {
-            "root_cause": "Rank Drift",
-            "confidence": "medium",
-            "reasons": reasons,
-            "selected_rank": rank,
-            "score_gap": score_gap,
-        }
-
-    if net_return_pct is not None and net_return_pct < 0:
-        return {
-            "root_cause": "Scanner Ranking Failure",
-            "confidence": "medium",
-            "reasons": ["top-ranked selected candidate produced negative realized return"],
-            "selected_rank": rank,
-            "score_gap": score_gap,
-        }
-
-    return {
-        "root_cause": "Aligned / No Alignment Issue",
-        "confidence": "medium",
-        "reasons": ["raw/post/selected/executed symbols are aligned"],
-        "selected_rank": rank,
-        "score_gap": score_gap,
-    }
+    return _a53_classify.classify_scanner_alignment_root_cause(row=row, model=model, net_return_pct=net_return_pct, facade=sys.modules[__name__])
 
 
 def _impact_score(returns: list[float]) -> float:
@@ -287,56 +208,7 @@ def build_scanner_alignment_root_cause_report(
 
 
 def render_scanner_alignment_root_cause_report(payload: Mapping[str, Any]) -> str:
-    lines = [
-        f"# Q14 Scanner Alignment Root Cause - {payload.get('day', '')}",
-        "",
-        f"- Behavior effect: `{payload.get('behavior_effect', '')}`",
-        f"- Trades: {payload.get('trade_count', 0)}",
-        f"- Largest observed root cause: `{_mapping(payload.get('largest_observed_root_cause') or payload.get('largest_root_cause')).get('root_cause') or '-'}`",
-        f"- Largest behavior root cause: `{_mapping(payload.get('largest_behavior_root_cause')).get('root_cause') or '-'}`",
-        f"- Largest structural root cause: `{_mapping(payload.get('largest_structural_root_cause')).get('root_cause') or '-'}`",
-        "- Outcome-conditioned labels are descriptive and are not independent causal proof.",
-        f"- Q15 candidate: {payload.get('q15_behavior_patch_candidate') or '-'}",
-        "",
-        "## Root Cause Summary",
-        "",
-        "| Root Cause | Kind | Causal | Trades | Return Obs | Win Rate | Avg Return | Profit Factor | MDD | Negative Impact |",
-        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
-    ]
-    for row in payload.get("cause_summary") or []:
-        if not isinstance(row, Mapping):
-            continue
-        lines.append(
-            f"| {row.get('root_cause')} | {row.get('diagnostic_kind') or '-'} | "
-            f"{bool(row.get('causal_eligible'))} | {row.get('trade_count')} | "
-            f"{row.get('return_observation_count')} | {float(row.get('win_rate') or 0):.1%} | "
-            f"{float(row.get('avg_return_pct') or 0):.4f}% | {row.get('profit_factor')} | "
-            f"{float(row.get('max_drawdown_pct') or 0):.4f}% | "
-            f"{float(row.get('negative_impact_pct') or 0):.4f}% |"
-        )
-    lines.extend(
-        [
-            "",
-            "## Rows",
-            "",
-            "| Trade | Symbol | Raw Top1 | Post Top1 | Selected | Rank | Return | Root Cause | Reasons |",
-            "| --- | --- | --- | --- | --- | ---: | ---: | --- | --- |",
-        ]
-    )
-    for row in payload.get("rows") or []:
-        if not isinstance(row, Mapping):
-            continue
-        reasons = ", ".join(str(reason) for reason in row.get("reasons") or []) or "-"
-        value = row.get("net_return_pct")
-        lines.append(
-            f"| {row.get('trade_id')} | {row.get('symbol') or '-'} | "
-            f"{row.get('raw_scanner_top1') or '-'} | {row.get('post_strategy_top1') or '-'} | "
-            f"{row.get('selected_symbol') or '-'} | {row.get('selected_rank') or '-'} | "
-            f"{'-' if value is None else f'{float(value):.4f}%'} | "
-            f"{row.get('root_cause')} | {reasons} |"
-        )
-    lines.extend(["", "## Interpretation", "", f"- {payload.get('interpretation_rule', '')}", ""])
-    return "\n".join(lines)
+    return _a53_render.render_scanner_alignment_root_cause_report(payload, facade=sys.modules[__name__])
 
 
 def _load_day_models_and_evaluations(reports_root: Path, day: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
