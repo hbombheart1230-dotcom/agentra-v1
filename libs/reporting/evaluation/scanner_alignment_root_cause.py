@@ -10,6 +10,14 @@ from .metrics import performance_metrics
 from . import scanner_alignment_root_cause_mapping as _a49_sca_mapping
 from . import scanner_alignment_root_cause_rows as _a49_sca_rows
 from . import scanner_alignment_root_cause_num as _a49_sca_num
+from . import scanner_alignment_root_cause_symbol as _a50_symbol
+from . import scanner_alignment_root_cause_selected_rank as _a50_selected_rank
+from . import scanner_alignment_root_cause_score_gap as _a50_score_gap
+from . import scanner_alignment_root_cause_outcome_return as _a50_outcome_return
+from . import scanner_alignment_root_cause_impact_score as _a50_impact_score
+from . import scanner_alignment_root_cause_diagnostic_kind as _a50_diagnostic_kind
+from . import scanner_alignment_root_cause_largest_cause as _a50_largest_cause
+from . import scanner_alignment_root_cause_patch_candidate as _a50_patch_candidate
 
 
 ROOT_CAUSES = (
@@ -43,9 +51,7 @@ def _num(value: Any) -> float | None:
 
 
 def _symbol(value: Any) -> str:
-    if isinstance(value, Mapping):
-        return str(value.get("symbol") or "").strip()
-    return str(value or "").strip()
+    return _a50_symbol._symbol(value, facade=sys.modules[__name__])
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -57,28 +63,15 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _selected_rank(model: Mapping[str, Any]) -> int | None:
-    selection = _mapping(model.get("selection"))
-    selected_candidate = _mapping(selection.get("selected_candidate"))
-    value = _num(selection.get("selected_rank") or selected_candidate.get("rank"))
-    return int(value) if value is not None else None
+    return _a50_selected_rank._selected_rank(model, facade=sys.modules[__name__])
 
 
 def _score_gap(model: Mapping[str, Any]) -> float | None:
-    selection = _mapping(model.get("selection"))
-    top1 = _mapping(selection.get("scanner_top1"))
-    selected = _mapping(selection.get("selected_candidate"))
-    top_score = _num(top1.get("score_total"))
-    selected_score = _num(selected.get("score_total"))
-    if top_score is None or selected_score is None:
-        return None
-    return round(top_score - selected_score, 6)
+    return _a50_score_gap._score_gap(model, facade=sys.modules[__name__])
 
 
 def _outcome_return(evaluation: Mapping[str, Any], model: Mapping[str, Any]) -> float | None:
-    value = _num(_mapping(evaluation.get("realized_outcome")).get("net_return_pct"))
-    if value is not None:
-        return value
-    return _num(_mapping(model.get("outcome")).get("net_return_pct"))
+    return _a50_outcome_return._outcome_return(evaluation, model, facade=sys.modules[__name__])
 
 
 def classify_scanner_alignment_root_cause(
@@ -172,15 +165,11 @@ def classify_scanner_alignment_root_cause(
 
 
 def _impact_score(returns: list[float]) -> float:
-    return round(sum(value for value in returns if value < 0), 4)
+    return _a50_impact_score._impact_score(returns, facade=sys.modules[__name__])
 
 
 def _diagnostic_kind(cause: str) -> str:
-    if cause in OUTCOME_CONDITIONED_CAUSES:
-        return "outcome_conditioned"
-    if cause in EVIDENCE_GAP_CAUSES:
-        return "evidence_gap"
-    return "structural"
+    return _a50_diagnostic_kind._diagnostic_kind(cause, facade=sys.modules[__name__])
 
 
 def _largest_cause(
@@ -188,38 +177,11 @@ def _largest_cause(
     *,
     excluded: set[str] | None = None,
 ) -> dict[str, Any]:
-    excluded = excluded or set()
-    observed = [
-        row
-        for row in cause_summary
-        if int(row.get("trade_count") or 0) > 0 and str(row.get("root_cause") or "") not in excluded
-    ]
-    return dict(
-        max(
-            observed,
-            key=lambda row: (
-                int(row.get("trade_count") or 0),
-                abs(float(row.get("negative_impact_pct") or 0.0)),
-            ),
-            default={},
-        )
-    )
+    return _a50_largest_cause._largest_cause(cause_summary, excluded=excluded, facade=sys.modules[__name__])
 
 
 def _patch_candidate(cause: str) -> str:
-    if cause == "Candidate Filtering":
-        return "Tighten runner-up/candidate filtering evidence before selecting below post-strategy top1."
-    if cause == "Strategist Override":
-        return "Audit strategy-context rank adjustments before allowing post-strategy top1 to replace raw top1."
-    if cause == "Rank Drift":
-        return "Require explicit rank-drift reason and score-gap evidence when Top1 changes."
-    if cause == "Scanner Ranking Failure":
-        return "Decompose scanner raw score components for aligned losing Top1 trades."
-    if cause == "Symbol Mapping":
-        return "Fix symbol propagation before any trading behavior patch."
-    if cause == "Missing Evidence":
-        return "Fix missing selection evidence before interpreting scanner alignment."
-    return "No scanner-alignment behavior patch candidate from aligned rows."
+    return _a50_patch_candidate._patch_candidate(cause, facade=sys.modules[__name__])
 
 
 def build_scanner_alignment_root_cause_report(
