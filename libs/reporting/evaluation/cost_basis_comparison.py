@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any, Mapping
+import sys
 
 from libs.reporting.quant_shadow_candidate_evaluation import (
     Q9_ROW_KEYS_UNUSED_BY_FULL_CHAIN,
@@ -18,6 +19,7 @@ from .scanner_quality import (
     build_scanner_quality_review,
     extract_pre_strategist_candidate_rows,
 )
+from . import cost_basis_comparison_topk_rows as _a45_topk_rows
 
 
 DEFAULT_EVALUATION_SLIPPAGE_PCT = 0.05
@@ -67,13 +69,7 @@ def build_evaluation_cost_bases(
 
 
 def _topk_rows(review: Mapping[str, Any]) -> dict[tuple[int, str], dict[str, Any]]:
-    topk = review.get("topk_forward_performance")
-    topk = topk if isinstance(topk, Mapping) else {}
-    return {
-        (int(row.get("top_k") or 0), str(row.get("horizon") or "")): dict(row)
-        for row in topk.get("rows") or []
-        if isinstance(row, Mapping)
-    }
+    return _a45_topk_rows._topk_rows(review, facade=sys.modules[__name__])
 
 
 def build_cost_basis_comparison(
