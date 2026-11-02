@@ -14,6 +14,14 @@ from . import entry_timing_attribution_candidate_rank as _a39_candidate_rank
 from . import entry_timing_attribution_row_at_or_before as _a39_row_at_or_before
 from . import entry_timing_attribution_daily_windows_by_id as _a39_daily_windows_by_id
 from . import entry_timing_attribution_pre_entry_move_pct as _a39_pre_entry_move_pct
+from . import entry_timing_attribution_mapping as _a40_mapping
+from . import entry_timing_attribution_num as _a40_num
+from . import entry_timing_attribution_read_json as _a40_read_json
+from . import entry_timing_attribution_entry_forward as _a40_entry_forward
+from . import entry_timing_attribution_checkpoint as _a40_checkpoint
+from . import entry_timing_attribution_label as _a40_label
+from . import entry_timing_attribution_fmt as _a40_fmt
+from . import entry_timing_attribution_render_entry_timing_attribution_report as _a40_render_entry_timing_attribution_report
 
 from libs.reporting.quant_shadow_forward_outcomes import (
     attach_forward_outcomes,
@@ -33,16 +41,11 @@ LABELS = (
 
 
 def _mapping(value: Any) -> Mapping[str, Any]:
-    return value if isinstance(value, Mapping) else {}
+    return _a40_mapping._mapping(value=value, facade=sys.modules[__name__])
 
 
 def _num(value: Any) -> float | None:
-    try:
-        if value in (None, ""):
-            return None
-        return float(value)
-    except (TypeError, ValueError):
-        return None
+    return _a40_num._num(value=value, facade=sys.modules[__name__])
 
 
 def _epoch(value: Any) -> int:
@@ -58,11 +61,7 @@ def _stage_epoch(payload: Mapping[str, Any], *keys: str) -> int:
 
 
 def _read_json(path: Path) -> dict[str, Any]:
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-        return payload if isinstance(payload, dict) else {}
-    except Exception:
-        return {}
+    return _a40_read_json._read_json(path=path, facade=sys.modules[__name__])
 
 
 def _daily_windows_by_id(reports_root: Path, day: str) -> dict[str, dict[str, Any]]:
@@ -99,37 +98,11 @@ def _entry_forward(
     entry_price: float | None,
     minute_rows_by_symbol: Mapping[str, list[Mapping[str, Any]]],
 ) -> dict[str, Any]:
-    if not symbol or entry_epoch <= 0 or entry_price is None or entry_price <= 0:
-        return {"available": False, "reason": "entry_baseline_unavailable", "checkpoints": {}}
-    rows = attach_forward_outcomes(
-        [{
-            "symbol": symbol,
-            "trade_id": trade_id,
-            "generated_at": _iso(entry_epoch),
-            "shadow_forward_base": {
-                "available": True,
-                "baseline_epoch": entry_epoch,
-                "baseline_price": entry_price,
-                "source": "actual_entry",
-            },
-        }],
-        minute_rows_by_symbol=minute_rows_by_symbol,
-    )
-    outcome = _mapping((rows[0] if rows else {}).get("shadow_forward_outcome"))
-    checkpoints = _mapping(outcome.get("checkpoints"))
-    return {
-        "available": bool(outcome.get("available")),
-        "reason": outcome.get("reason"),
-        "observed_checkpoint_count": outcome.get("observed_checkpoint_count"),
-        "checkpoints": {
-            horizon: dict(checkpoints.get(horizon) or {"status": "pending"})
-            for horizon in HORIZONS
-        },
-    }
+    return _a40_entry_forward._entry_forward(trade_id=trade_id, symbol=symbol, entry_epoch=entry_epoch, entry_price=entry_price, minute_rows_by_symbol=minute_rows_by_symbol, facade=sys.modules[__name__])
 
 
 def _checkpoint(forward: Mapping[str, Any], horizon: str) -> Mapping[str, Any]:
-    return _mapping(_mapping(forward.get("checkpoints")).get(horizon))
+    return _a40_checkpoint._checkpoint(forward=forward, horizon=horizon, facade=sys.modules[__name__])
 
 
 def _label(
@@ -139,46 +112,7 @@ def _label(
     forward: Mapping[str, Any],
     strategy_horizon: str = "",
 ) -> tuple[str, list[str]]:
-    cp5 = _checkpoint(forward, "+5m")
-    cp15 = _checkpoint(forward, "+15m")
-    cp30 = _checkpoint(forward, "+30m")
-    ret5 = _num(cp5.get("return_pct"))
-    mfe5 = _num(cp5.get("mfe_pct"))
-    mae5 = _num(cp5.get("mae_pct"))
-    ret15 = _num(cp15.get("return_pct"))
-    normalized_horizon = str(strategy_horizon or "").strip().lower()
-    if normalized_horizon in {"swing", "overnight", "position", "1-2day", "1_2day"}:
-        return "INSUFFICIENT_EVIDENCE", ["strategy_horizon_exceeds_entry_timing_observation_window"]
-    if normalized_horizon == "intraday":
-        ret30 = _num(cp30.get("return_pct"))
-        mfe15 = _num(cp15.get("mfe_pct"))
-        mae15 = _num(cp15.get("mae_pct"))
-        if ret15 is None or ret30 is None or mfe15 is None or mae15 is None:
-            return "INSUFFICIENT_EVIDENCE", ["missing_intraday_forward_quality"]
-        reasons: list[str] = []
-        if pre_entry_move_pct is not None and pre_entry_move_pct >= 0.35 and ret15 <= 0.0 and ret30 <= 0.0:
-            return "ENTRY_TOO_LATE", ["pre_entry_move>=0.35pct_then_intraday_forward_weak"]
-        if mae15 <= -0.75 and ret15 < 0.0 and (pre_entry_move_pct is None or pre_entry_move_pct < 0.20):
-            return "ENTRY_TOO_EARLY", ["intraday_adverse_move_without_prior_alpha"]
-        if ret15 > 0.0 or ret30 > 0.0 or mfe15 >= 0.70:
-            return "ENTRY_APPROPRIATE", ["favorable_intraday_forward_response"]
-        return "INSUFFICIENT_EVIDENCE", ["intraday_forward_weak_but_not_classifiable"]
-    if ret5 is None or mfe5 is None or mae5 is None:
-        return "INSUFFICIENT_EVIDENCE", ["missing_5m_forward_quality"]
-    reasons: list[str] = []
-    if scanner_to_entry_delay_sec is not None and scanner_to_entry_delay_sec >= 180:
-        reasons.append("scanner_to_entry_delay>=180s")
-    if pre_entry_move_pct is not None and pre_entry_move_pct >= 0.35 and (ret5 <= 0.0 or (ret15 is not None and ret15 <= 0.0)):
-        reasons.append("pre_entry_move>=0.35pct_then_forward_weak")
-        return "ENTRY_TOO_LATE", reasons
-    if mae5 <= -0.55 and ret5 < 0.0 and (pre_entry_move_pct is None or pre_entry_move_pct < 0.20):
-        reasons.append("immediate_adverse_move_without_prior_alpha")
-        return "ENTRY_TOO_EARLY", reasons
-    if ret5 > 0.0 or (ret15 is not None and ret15 > 0.0) or mfe5 >= 0.50:
-        reasons.append("favorable_forward_response")
-        return "ENTRY_APPROPRIATE", reasons
-    reasons.append("forward_weak_but_not_classifiable")
-    return "INSUFFICIENT_EVIDENCE", reasons
+    return _a40_label._label(scanner_to_entry_delay_sec=scanner_to_entry_delay_sec, pre_entry_move_pct=pre_entry_move_pct, forward=forward, strategy_horizon=strategy_horizon, facade=sys.modules[__name__])
 
 
 def build_entry_timing_attribution_report(
@@ -383,68 +317,11 @@ def build_entry_timing_attribution_report(
 
 
 def _fmt(value: Any, suffix: str = "") -> str:
-    if value in (None, ""):
-        return "-"
-    try:
-        return f"{float(value):.4f}{suffix}"
-    except (TypeError, ValueError):
-        return str(value)
+    return _a40_fmt._fmt(value=value, suffix=suffix, facade=sys.modules[__name__])
 
 
 def render_entry_timing_attribution_report(payload: Mapping[str, Any]) -> str:
-    lines = [
-        f"# Q13 Entry Timing Attribution - {payload.get('day', '')}",
-        "",
-        f"- Behavior effect: `{payload.get('behavior_effect', '')}`",
-        f"- Trades: {payload.get('trade_count', 0)}",
-        "",
-        "## Label Summary",
-        "",
-        "| Label | Trades | Win Rate | Avg Return | Avg Delay Sec | Avg 5m MFE | Avg 5m MAE |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
-    ]
-    for row in payload.get("label_summary") or []:
-        if not isinstance(row, Mapping):
-            continue
-        perf = _mapping(row.get("performance"))
-        lines.append(
-            f"| {row.get('label')} | {row.get('trade_count')} | "
-            f"{_fmt(float(perf.get('win_rate') or 0.0) * 100.0, '%')} | "
-            f"{_fmt(perf.get('average_return_pct'), '%')} | "
-            f"{_fmt(row.get('avg_scanner_to_entry_delay_sec'))} | "
-            f"{_fmt(row.get('avg_5m_mfe_pct'), '%')} | "
-            f"{_fmt(row.get('avg_5m_mae_pct'), '%')} |"
-        )
-    lines.extend([
-        "",
-        "## Trade Rows",
-        "",
-        "| Trade | Symbol | Label | Delay Sec | Pre-entry Move | +5m Return | +5m MFE | +5m MAE | Realized | Reasons |",
-        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
-    ])
-    for row in payload.get("rows") or []:
-        if not isinstance(row, Mapping):
-            continue
-        quality = _mapping(row.get("entry_forward_quality"))
-        lines.append(
-            f"| {row.get('trade_id')} | {row.get('symbol')} | {row.get('label')} | "
-            f"{_fmt(row.get('scanner_to_entry_delay_sec'))} | "
-            f"{_fmt(row.get('pre_entry_move_pct'), '%')} | "
-            f"{_fmt(quality.get('+5m_return_pct'), '%')} | "
-            f"{_fmt(quality.get('+5m_mfe_pct'), '%')} | "
-            f"{_fmt(quality.get('+5m_mae_pct'), '%')} | "
-            f"{_fmt(row.get('entry_return_pct'), '%')} | "
-            f"{', '.join(row.get('label_reasons') or []) or '-'} |"
-        )
-    lines.extend([
-        "",
-        "## Limitations",
-        "",
-    ])
-    for item in payload.get("limitations") or []:
-        lines.append(f"- {item}")
-    lines.append("")
-    return "\n".join(lines)
+    return _a40_render_entry_timing_attribution_report.render_entry_timing_attribution_report(payload=payload, facade=sys.modules[__name__])
 
 
 __all__ = [
