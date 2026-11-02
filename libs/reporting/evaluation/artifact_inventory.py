@@ -17,6 +17,7 @@ from . import artifact_inventory_inventory_trade as _a37_inventory_trade
 from . import artifact_inventory_build_artifact_inventory as _a37_build_artifact_inventory
 from . import artifact_inventory__q9_daily_diagnostics as _a37_q9_daily_diagnostics
 from . import artifact_inventory_iter_trade_dirs as _a37_iter_trade_dirs
+from . import artifact_inventory_read_json as _a38_read_json
 
 from libs.reporting.json_array_stream import iter_json_array
 from libs.reporting.quant_shadow_forward_outcomes import attach_forward_outcomes
@@ -43,11 +44,7 @@ def is_regular_session_evaluation_row(row: dict[str, Any]) -> bool:
 
 
 def read_json(path: Path) -> dict[str, Any]:
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-        return payload if isinstance(payload, dict) else {}
-    except Exception:
-        return {}
+    return _a38_read_json.read_json(path=path, facade=sys.modules[__name__])
 
 
 def iter_trade_dirs(reports_root: Path, day: str) -> list[Path]:

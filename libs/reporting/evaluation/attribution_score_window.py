@@ -10,6 +10,7 @@ from . import attribution_score_window_score_value as _a33_score_value
 from . import attribution_score_window_ledger_days as _a36_ledger_days
 from . import attribution_score_window_build_attribution_score_window as _a36_build_attribution_score_window
 from . import attribution_score_window_render_attribution_score_window as _a36_render_attribution_score_window
+from . import attribution_score_window_read_json as _a38_read_json
 
 
 SCORE_KEYS = (
@@ -22,11 +23,7 @@ SCORE_KEYS = (
 
 
 def _read_json(path: Path) -> dict[str, Any]:
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-        return payload if isinstance(payload, dict) else {}
-    except Exception:
-        return {}
+    return _a38_read_json._read_json(path=path, facade=sys.modules[__name__])
 
 
 def _mapping(value: Any) -> Mapping[str, Any]:
