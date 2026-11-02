@@ -5,6 +5,15 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
+import sys
+from . import entry_timing_attribution_epoch as _a39_epoch
+from . import entry_timing_attribution_iso as _a39_iso
+from . import entry_timing_attribution_stage_epoch as _a39_stage_epoch
+from . import entry_timing_attribution_candidate_symbol as _a39_candidate_symbol
+from . import entry_timing_attribution_candidate_rank as _a39_candidate_rank
+from . import entry_timing_attribution_row_at_or_before as _a39_row_at_or_before
+from . import entry_timing_attribution_daily_windows_by_id as _a39_daily_windows_by_id
+from . import entry_timing_attribution_pre_entry_move_pct as _a39_pre_entry_move_pct
 
 from libs.reporting.quant_shadow_forward_outcomes import (
     attach_forward_outcomes,
@@ -37,35 +46,15 @@ def _num(value: Any) -> float | None:
 
 
 def _epoch(value: Any) -> int:
-    if value in (None, ""):
-        return 0
-    if isinstance(value, (int, float)):
-        return int(value)
-    text = str(value or "").strip()
-    if not text:
-        return 0
-    try:
-        return int(float(text))
-    except ValueError:
-        pass
-    try:
-        return int(datetime.fromisoformat(text.replace("Z", "+00:00")).timestamp())
-    except ValueError:
-        return 0
+    return _a39_epoch._epoch(value=value, facade=sys.modules[__name__])
 
 
 def _iso(epoch: int) -> str:
-    if epoch <= 0:
-        return ""
-    return datetime.fromtimestamp(epoch, tz=timezone.utc).isoformat()
+    return _a39_iso._iso(epoch=epoch, facade=sys.modules[__name__])
 
 
 def _stage_epoch(payload: Mapping[str, Any], *keys: str) -> int:
-    for key in keys:
-        value = _epoch(payload.get(key))
-        if value > 0:
-            return value
-    return 0
+    return _a39_stage_epoch._stage_epoch(payload, *keys, facade=sys.modules[__name__])
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -77,30 +66,19 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _daily_windows_by_id(reports_root: Path, day: str) -> dict[str, dict[str, Any]]:
-    path = reports_root / "operator_summary" / "daily" / day / "q9_decision_windows.json"
-    payload = _read_json(path)
-    out: dict[str, dict[str, Any]] = {}
-    for row in payload.get("windows") or []:
-        if not isinstance(row, dict):
-            continue
-        decision_id = str(row.get("decision_id") or "").strip()
-        if decision_id:
-            out[decision_id] = dict(row)
-    return out
+    return _a39_daily_windows_by_id._daily_windows_by_id(reports_root=reports_root, day=day, facade=sys.modules[__name__])
 
 
 def _candidate_symbol(candidate: Any) -> str:
-    return str(candidate.get("symbol") or "").strip() if isinstance(candidate, Mapping) else ""
+    return _a39_candidate_symbol._candidate_symbol(candidate=candidate, facade=sys.modules[__name__])
 
 
 def _candidate_rank(candidate: Any) -> int | None:
-    value = _num(candidate.get("rank") if isinstance(candidate, Mapping) else None)
-    return int(value) if value is not None else None
+    return _a39_candidate_rank._candidate_rank(candidate=candidate, facade=sys.modules[__name__])
 
 
 def _row_at_or_before(rows: Sequence[Mapping[str, Any]], epoch: int) -> Mapping[str, Any] | None:
-    prior = [row for row in rows if int(row.get("ts") or 0) <= epoch]
-    return prior[-1] if prior else None
+    return _a39_row_at_or_before._row_at_or_before(rows=rows, epoch=epoch, facade=sys.modules[__name__])
 
 
 def _pre_entry_move_pct(
@@ -110,20 +88,7 @@ def _pre_entry_move_pct(
     entry_price: float | None,
     minute_rows_by_symbol: Mapping[str, list[Mapping[str, Any]]],
 ) -> tuple[float | None, dict[str, Any]]:
-    if not symbol or decision_epoch <= 0 or entry_price is None or entry_price <= 0:
-        return None, {"available": False, "reason": "missing_symbol_time_or_entry_price"}
-    rows = list(minute_rows_by_symbol.get(symbol) or [])
-    base = _row_at_or_before(rows, decision_epoch)
-    if not base:
-        return None, {"available": False, "reason": "minute_row_before_decision_unavailable"}
-    base_price = _num(base.get("close") or base.get("price"))
-    if base_price is None or base_price <= 0:
-        return None, {"available": False, "reason": "decision_base_price_unavailable"}
-    return round(((entry_price / base_price) - 1.0) * 100.0, 4), {
-        "available": True,
-        "decision_base_price": base_price,
-        "decision_base_ts": base.get("raw_ts") or base.get("ts"),
-    }
+    return _a39_pre_entry_move_pct._pre_entry_move_pct(symbol=symbol, decision_epoch=decision_epoch, entry_price=entry_price, minute_rows_by_symbol=minute_rows_by_symbol, facade=sys.modules[__name__])
 
 
 def _entry_forward(
