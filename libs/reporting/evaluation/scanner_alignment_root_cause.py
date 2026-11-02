@@ -4,8 +4,12 @@ import json
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Mapping, Sequence
+import sys
 
 from .metrics import performance_metrics
+from . import scanner_alignment_root_cause_mapping as _a49_sca_mapping
+from . import scanner_alignment_root_cause_rows as _a49_sca_rows
+from . import scanner_alignment_root_cause_num as _a49_sca_num
 
 
 ROOT_CAUSES = (
@@ -27,20 +31,15 @@ EVIDENCE_GAP_CAUSES = {"Missing Evidence"}
 
 
 def _mapping(value: Any) -> Mapping[str, Any]:
-    return value if isinstance(value, Mapping) else {}
+    return _a49_sca_mapping._mapping(value, facade=sys.modules[__name__])
 
 
 def _rows(value: Any) -> list[Mapping[str, Any]]:
-    return [row for row in (value or []) if isinstance(row, Mapping)]
+    return _a49_sca_rows._rows(value, facade=sys.modules[__name__])
 
 
 def _num(value: Any) -> float | None:
-    try:
-        if value in (None, ""):
-            return None
-        return float(value)
-    except (TypeError, ValueError):
-        return None
+    return _a49_sca_num._num(value, facade=sys.modules[__name__])
 
 
 def _symbol(value: Any) -> str:

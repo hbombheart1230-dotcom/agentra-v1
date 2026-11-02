@@ -4,12 +4,18 @@ import json
 from collections import Counter
 from pathlib import Path
 from typing import Any, Mapping
+import sys
 
 from libs.reporting.json_array_stream import iter_json_array
 from libs.reporting.evaluation.artifact_inventory import (
     is_regular_session_evaluation_row,
     is_synthetic_evaluation_row,
 )
+from . import no_trade_attribution_mapping as _a49_no__mapping
+from . import no_trade_attribution_num as _a49_no__num
+from . import no_trade_attribution_pct as _a49_no__pct
+from . import no_trade_attribution_top as _a49_no__top
+from . import no_trade_attribution_q9_window_view as _a49_no__q9_window_view
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -21,52 +27,24 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _mapping(value: Any) -> Mapping[str, Any]:
-    return value if isinstance(value, Mapping) else {}
+    return _a49_no__mapping._mapping(value, facade=sys.modules[__name__])
 
 
 def _num(value: Any) -> float | None:
-    try:
-        if value in (None, ""):
-            return None
-        return float(value)
-    except (TypeError, ValueError):
-        return None
+    return _a49_no__num._num(value, facade=sys.modules[__name__])
 
 
 def _pct(value: Any) -> str:
-    number = _num(value)
-    if number is None:
-        return "-"
-    return f"{number:.4f}%"
+    return _a49_no__pct._pct(value, facade=sys.modules[__name__])
 
 
 def _top(counter: Counter[str], limit: int = 10) -> list[dict[str, Any]]:
-    return [
-        {"name": key, "count": int(value)}
-        for key, value in counter.most_common(limit)
-        if key
-    ]
+    return _a49_no__top._top(counter, limit, facade=sys.modules[__name__])
 
 
 def _q9_window_view(row: Mapping[str, Any]) -> dict[str, Any]:
     """The only parts of a q9 window `build_no_trade_attribution_report` reads (non-mappings read as {})."""
-    view: dict[str, Any] = {}
-    scanner = row.get("scanner_control")
-    if isinstance(scanner, Mapping):
-        view["scanner_control"] = {"top1_symbol": scanner.get("top1_symbol")}
-    strategist = row.get("strategist_selection")
-    if isinstance(strategist, Mapping):
-        view["strategist_selection"] = {"selected_symbol": strategist.get("selected_symbol")}
-    commander = row.get("commander_final")
-    if isinstance(commander, Mapping):
-        observation = commander.get("monitor_observation")
-        view["commander_final"] = {
-            key: commander.get(key)
-            for key in ("selected_symbol", "decision", "monitor_intent", "reason", "detail", "monitor_reason")
-        }
-        if isinstance(observation, Mapping):
-            view["commander_final"]["monitor_observation"] = {"reason": observation.get("reason")}
-    return view
+    return _a49_no__q9_window_view._q9_window_view(row, facade=sys.modules[__name__])
 
 
 def _q9_windows(reports_root: Path, day: str) -> list[dict[str, Any]]:
