@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from math import sqrt
 from typing import Any, Dict, List, Mapping, Optional
 
@@ -7,93 +8,43 @@ from libs.runtime.regime import classify_regime_v2
 
 
 def _to_float(v: Any) -> Optional[float]:
-    try:
-        if v is None:
-            return None
-        return float(v)
-    except Exception:
-        return None
+    from .feature_engine_to_float import _to_float as owner
+    return owner(v, facade=sys.modules[__name__])
 
 
 def _series(candles: List[Mapping[str, Any]], key: str) -> List[float]:
-    out: List[float] = []
-    for row in candles:
-        x = _to_float(row.get(key))
-        if x is None:
-            continue
-        out.append(float(x))
-    return out
+    from .feature_engine_series import _series as owner
+    return owner(candles, key, facade=sys.modules[__name__])
 
 
 def _sma(values: List[float], period: int) -> Optional[float]:
-    p = max(1, int(period))
-    if len(values) < p:
-        return None
-    return float(sum(values[-p:]) / float(p))
+    from .feature_engine_sma import _sma as owner
+    return owner(values, period, facade=sys.modules[__name__])
 
 
 def _std(values: List[float]) -> Optional[float]:
-    if len(values) < 2:
-        return None
-    mean = float(sum(values) / float(len(values)))
-    var = float(sum((x - mean) ** 2 for x in values) / float(len(values)))
-    return float(sqrt(var))
+    from .feature_engine_std import _std as owner
+    return owner(values, facade=sys.modules[__name__])
 
 
 def _median(values: List[float]) -> Optional[float]:
-    if not values:
-        return None
-    arr = sorted(float(x) for x in values)
-    n = len(arr)
-    mid = n // 2
-    if n % 2 == 1:
-        return float(arr[mid])
-    return float((arr[mid - 1] + arr[mid]) / 2.0)
+    from .feature_engine_median import _median as owner
+    return owner(values, facade=sys.modules[__name__])
 
 
 def _rsi(closes: List[float], period: int = 14) -> Optional[float]:
-    p = max(1, int(period))
-    if len(closes) < p + 1:
-        return None
-    diffs = [float(closes[i] - closes[i - 1]) for i in range(len(closes) - p, len(closes))]
-    gains = [d for d in diffs if d > 0.0]
-    losses = [-d for d in diffs if d < 0.0]
-    avg_gain = float(sum(gains) / float(p)) if gains else 0.0
-    avg_loss = float(sum(losses) / float(p)) if losses else 0.0
-    if avg_loss <= 0.0:
-        return 100.0
-    rs = float(avg_gain / avg_loss)
-    return float(100.0 - (100.0 / (1.0 + rs)))
+    from .feature_engine_rsi import _rsi as owner
+    return owner(closes, period, facade=sys.modules[__name__])
 
 
 def _atr(highs: List[float], lows: List[float], closes: List[float], period: int = 14) -> Optional[float]:
-    p = max(1, int(period))
-    if len(highs) < p + 1 or len(lows) < p + 1 or len(closes) < p + 1:
-        return None
-    trs: List[float] = []
-    start = len(closes) - p
-    for i in range(start, len(closes)):
-        hi = float(highs[i])
-        lo = float(lows[i])
-        prev_close = float(closes[i - 1])
-        tr = max(hi - lo, abs(hi - prev_close), abs(lo - prev_close))
-        trs.append(float(tr))
-    return float(sum(trs) / float(len(trs))) if trs else None
+    from .feature_engine_atr import _atr as owner
+    return owner(highs, lows, closes, period, facade=sys.modules[__name__])
 
 
 def _pct_returns(closes: List[float], period: int) -> List[float]:
-    p = max(1, int(period))
-    if len(closes) < p + 1:
-        return []
-    out: List[float] = []
-    base = closes[-(p + 1) :]
-    for i in range(1, len(base)):
-        prev = float(base[i - 1])
-        cur = float(base[i])
-        if prev == 0.0:
-            continue
-        out.append(float((cur / prev) - 1.0))
-    return out
+    from .feature_engine_pct_returns import _pct_returns as owner
+    return owner(closes, period, facade=sys.modules[__name__])
 
 
 def _pct_change(closes: List[float], period: int) -> Optional[float]:
