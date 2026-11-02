@@ -4,6 +4,9 @@ import json
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Mapping, Sequence
+import sys
+from . import attribution_score_window_mapping as _a33_mapping
+from . import attribution_score_window_score_value as _a33_score_value
 
 
 SCORE_KEYS = (
@@ -24,20 +27,11 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _mapping(value: Any) -> Mapping[str, Any]:
-    return value if isinstance(value, Mapping) else {}
+    return _a33_mapping._mapping(value=value, facade=sys.modules[__name__])
 
 
 def _score_value(row: Mapping[str, Any], key: str) -> int | None:
-    item = _mapping(_mapping(row.get("scores")).get(key))
-    if item.get("status") == "INSUFFICIENT_EVIDENCE":
-        return None
-    value = item.get("score")
-    if value is None:
-        return None
-    try:
-        return int(round(float(value)))
-    except (TypeError, ValueError):
-        return None
+    return _a33_score_value._score_value(row=row, key=key, facade=sys.modules[__name__])
 
 
 def _ledger_days(freeze_root: Path) -> list[dict[str, Any]]:
