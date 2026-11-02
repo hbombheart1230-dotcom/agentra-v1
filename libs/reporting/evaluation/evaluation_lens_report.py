@@ -34,6 +34,8 @@ from . import evaluation_lens_report_checkpoint as _a44_checkpoint
 from . import evaluation_lens_report_checkpoint_return as _a44_checkpoint_return
 from . import evaluation_lens_report_checkpoint_mfe as _a44_checkpoint_mfe
 from . import evaluation_lens_report_checkpoint_mae as _a44_checkpoint_mae
+from . import evaluation_lens_report_candidate_rows as _a45_candidate_rows
+from . import evaluation_lens_report_q9_candidate_rows as _a45_q9_candidate_rows
 
 
 HORIZONS = ("+5m", "+15m", "+30m", "EOD")
@@ -97,29 +99,11 @@ def _cost_floor_pct() -> float:
 
 
 def _candidate_rows(payloads: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
-    rows: list[dict[str, Any]] = []
-    for payload in payloads:
-        generated_at = payload.get("generated_at")
-        for raw in payload.get("candidates") or []:
-            if not isinstance(raw, Mapping):
-                continue
-            row = dict(raw)
-            row.setdefault("_payload_generated_at", generated_at)
-            rows.append(row)
-    return attach_forward_outcomes(rows)
+    return _a45_candidate_rows._candidate_rows(payloads, facade=sys.modules[__name__])
 
 
 def _q9_candidate_rows(payloads: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
-    rows: list[dict[str, Any]] = []
-    for payload in payloads:
-        generated_at = payload.get("generated_at")
-        for raw in payload.get("q9_decision_candidates") or []:
-            if not isinstance(raw, Mapping):
-                continue
-            row = dict(raw)
-            row.setdefault("_payload_generated_at", generated_at)
-            rows.append(row)
-    return attach_forward_outcomes(rows)
+    return _a45_q9_candidate_rows._q9_candidate_rows(payloads, facade=sys.modules[__name__])
 
 
 def _forward_group(rows: list[dict[str, Any]], group_key: str, *, cost_floor_pct: float) -> list[dict[str, Any]]:
