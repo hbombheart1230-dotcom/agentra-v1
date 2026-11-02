@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from statistics import median
 from typing import Any, Iterable, Mapping
+import sys
 
 from libs.reporting.q8_evaluation_contract import dedupe_q8_candidates
 from libs.reporting.quant_shadow_candidate_evaluation import (
@@ -17,99 +18,42 @@ from libs.reporting.quant_shadow_forward_outcomes import attach_forward_outcomes
 from .artifact_inventory import iter_trade_dirs
 from .metrics import performance_metrics
 from .trade_read_model import build_q9_trade_read_model
+from . import loss_decomposition_to_float as _a42_to_float
+from . import loss_decomposition_parse_ts as _a42_parse_ts
+from . import loss_decomposition_iter_days as _a42_iter_days
+from . import loss_decomposition_checkpoint_return as _a42_checkpoint_return
+from . import loss_decomposition_rank_bucket as _a42_rank_bucket
+from . import loss_decomposition_candidate_rows as _a42_candidate_rows
+from . import loss_decomposition_group_forward as _a42_group_forward
+from . import loss_decomposition_realized_trade_summary as _a42_realized_trade_summary
 
 
 def _to_float(value: Any) -> float | None:
-    try:
-        if value in (None, ""):
-            return None
-        return float(value)
-    except (TypeError, ValueError):
-        return None
+    return _a42_to_float._to_float(value, facade=sys.modules[__name__])
 
 
 def _parse_ts(value: Any) -> datetime | None:
-    try:
-        return datetime.fromisoformat(str(value or "").replace("Z", "+00:00"))
-    except ValueError:
-        return None
+    return _a42_parse_ts._parse_ts(value, facade=sys.modules[__name__])
 
 
 def _iter_days(start: str, end: str) -> Iterable[str]:
-    current = date.fromisoformat(start[:10])
-    final = date.fromisoformat(end[:10])
-    while current <= final:
-        yield current.isoformat()
-        current += timedelta(days=1)
+    yield from _a42_iter_days._iter_days(start, end, facade=sys.modules[__name__])
 
 
 def _checkpoint_return(row: Mapping[str, Any], label: str) -> float | None:
-    outcome = row.get("shadow_forward_outcome")
-    outcome = outcome if isinstance(outcome, Mapping) else {}
-    checkpoints = outcome.get("checkpoints")
-    checkpoints = checkpoints if isinstance(checkpoints, Mapping) else {}
-    checkpoint = checkpoints.get(label)
-    if not isinstance(checkpoint, Mapping) or checkpoint.get("status") != "observed":
-        return None
-    return _to_float(checkpoint.get("return_pct"))
+    return _a42_checkpoint_return._checkpoint_return(row, label, facade=sys.modules[__name__])
 
 
 def _rank_bucket(value: Any) -> str:
-    try:
-        rank = int(float(value))
-    except (TypeError, ValueError):
-        return "unknown"
-    if rank == 1:
-        return "rank1"
-    if rank <= 3:
-        return "rank2-3"
-    if rank <= 5:
-        return "rank4-5"
-    if rank <= 10:
-        return "rank6-10"
-    return "rank11+"
+    return _a42_rank_bucket._rank_bucket(value, facade=sys.modules[__name__])
 
 
 def _candidate_rows(payloads: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    rows: list[dict[str, Any]] = []
-    for payload in payloads:
-        generated_at = payload.get("generated_at")
-        for raw in payload.get("candidates") or []:
-            if not isinstance(raw, Mapping):
-                continue
-            row = dict(raw)
-            row.setdefault("_payload_generated_at", generated_at)
-            rows.append(row)
-    return dedupe_q8_candidates(attach_forward_outcomes(rows))
+    return _a42_candidate_rows._candidate_rows(payloads, facade=sys.modules[__name__])
 
 
 def _group_forward(rows: list[dict[str, Any]], key_fn: Any) -> list[dict[str, Any]]:
-    groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    for row in rows:
-        groups[str(key_fn(row) or "unknown")].append(row)
-    out: list[dict[str, Any]] = []
-    for name, members in groups.items():
-        result: dict[str, Any] = {
-            "name": name,
-            "candidate_count": len(members),
-        }
-        observed_any: set[int] = set()
-        for label in ("+5m", "+15m", "+30m", "+60m"):
-            values: list[float] = []
-            for index, row in enumerate(members):
-                value = _checkpoint_return(row, label)
-                if value is None:
-                    continue
-                observed_any.add(index)
-                values.append(value)
-            result[f"observed_{label[1:-1]}m"] = len(values)
-            result[f"avg_return_{label[1:-1]}m_pct"] = (
-                round(sum(values) / len(values), 4) if values else None
-            )
-        result["observed_count"] = len(observed_any)
-        result["coverage"] = round(len(observed_any) / len(members), 4) if members else 0.0
-        out.append(result)
-    return sorted(out, key=lambda row: (-int(row["observed_count"]), row["name"]))
+    return _a42_group_forward._group_forward(rows, key_fn, facade=sys.modules[__name__])
 
 
 def _load_trade_models(reports_root: Path, start: str, end: str) -> list[dict[str, Any]]:
@@ -120,29 +64,7 @@ def _load_trade_models(reports_root: Path, start: str, end: str) -> list[dict[st
 
 
 def _realized_trade_summary(models: list[dict[str, Any]]) -> dict[str, Any]:
-    returns: list[float] = []
-    by_rank: dict[str, list[float]] = defaultdict(list)
-    selection_mismatch = 0
-    for model in models:
-        value = _to_float((model.get("outcome") or {}).get("net_return_pct"))
-        if value is None:
-            continue
-        returns.append(value)
-        selection = model.get("selection") or {}
-        by_rank[_rank_bucket(selection.get("selected_rank"))].append(value)
-        scanner_top1 = selection.get("scanner_top1")
-        scanner_top1 = scanner_top1 if isinstance(scanner_top1, Mapping) else {}
-        if scanner_top1.get("symbol") and selection.get("selected_symbol") != scanner_top1.get("symbol"):
-            selection_mismatch += 1
-    return {
-        "performance": performance_metrics(returns),
-        "by_executed_rank": [
-            {"rank_bucket": name, **performance_metrics(values)}
-            for name, values in sorted(by_rank.items())
-        ],
-        "scanner_top1_execution_mismatch_count": selection_mismatch,
-        "comparable_trade_count": len(returns),
-    }
+    return _a42_realized_trade_summary._realized_trade_summary(models, facade=sys.modules[__name__])
 
 
 def _entry_timing_summary(
