@@ -70,17 +70,13 @@ import sys as _monitor_view_sys
 import libs.agents.monitor.projections.signal_evidence_defaults as _monitor_views
 
 def _to_float(value: Any, default: float = 0.0) -> float:
-    try:
-        return float(value)
-    except Exception:
-        return float(default)
+    from . import intraday_monitor_signals_to_float as _owner
+    return _owner._to_float(value, default, facade=sys.modules[__name__])
 
 
 def _to_int(value: Any, default: int = 0) -> int:
-    try:
-        return int(float(value))
-    except Exception:
-        return int(default)
+    from . import intraday_monitor_signals_to_int as _owner
+    return _owner._to_int(value, default, facade=sys.modules[__name__])
 
 
 def _to_bool(value: Any, default: bool = False) -> bool:
@@ -89,10 +85,8 @@ def _to_bool(value: Any, default: bool = False) -> bool:
 
 
 def _clamp_score(value: float) -> float:
-    try:
-        return float(max(0.0, min(1.0, float(value))))
-    except Exception:
-        return 0.0
+    from . import intraday_monitor_signals_clamp_score as _owner
+    return _owner._clamp_score(value, facade=sys.modules[__name__])
 
 
 def _min_threshold_score(actual: float, threshold: float) -> float:
