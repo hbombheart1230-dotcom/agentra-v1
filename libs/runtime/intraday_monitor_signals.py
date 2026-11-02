@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 28890)
-Total output lines: 2178
-
 from __future__ import annotations
 
 import sys
@@ -829,27 +826,563 @@ def _build_monitor_policy_interpretation(
     frame: Mapping[str, Any] | None = None,
     policy_contract: Mapping[str, Any] | None = None,
 ) -> Dict[str, Any]:
-    frame_obj = dict(frame or {}) if isinstance(frame, Mapping) else {}
-    playbook = str(frame_obj.get("playbook") or "").strip().lower()
-    explicit_fields = _extract_explicit_policy_interpretation_fields(policy_contract)
-    explicit_entry_style = str(explicit_fields.get("entry_style") or "").strip().lower()
-    source_mapping = (
-        extract_monitor_entry_policy_mapping(received_policy)
-        if isinstance(received_policy, Mapping)
-        else {}
+    from .intraday_monitor_signals_build_monitor_policy_interpretation import _build_monitor_policy_interpretation as owner
+    return owner(
+        received_policy=received_policy,
+        effective_policy=effective_policy,
+        frame=frame,
+        policy_contract=policy_contract,
+        facade=sys.modules[__name__],
     )
-    policy_obj = (
-        effective_policy
-        if isinstance(effective_policy, MonitorEntryPolicy)
-        else MonitorEntryPolicy.from_mapping(effective_policy)
-        if isinstance(effective_policy, Mapping) and effective_policy
-        else None
+
+
+_CHART_FEATURE_GROUP_PATHS: Dict[str, str] = {
+    "structure_hh_hl": "structure",
+    "structure_range_compression": "structure",
+    "structure_breakout_attempt": "structure",
+    "ma_alignment_state": "trend_alignment",
+    "ma_slope_strength": "trend_alignment",
+    "trend_regime": "trend_alignment",
+    "support_holding": "support_resistance",
+    "resistance_break_confirmed": "support_resistance",
+    "failed_breakout": "support_resistance",
+    "momentum_follow_through": "continuity_momentum",
+    "volume_sustain": "continuity_momentum",
+    "momentum_decay": "continuity_momentum",
+}
+
+
+_CHART_FEATURE_STATUS_RULES: Dict[str, Dict[str, set[str]]] = {
+    "structure_hh_hl": {
+        "pass": {"intact"},
+        "fail": {"weakening", "broken"},
+        "blocker_active": {"broken"},
+        "blocker_inactive": {"intact", "weakening"},
+    },
+    "structure_range_compression": {
+        "pass": {"moderate", "tight"},
+        "fail": {"none"},
+        "blocker_active": set(),
+        "blocker_inactive": {"none", "moderate", "tight"},
+    },
+    "structure_breakout_attempt": {
+        "pass": {"confirmed"},
+        "fail": {"rejected"},
+        "blocker_active": {"rejected"},
+        "blocker_inactive": {"forming", "attempting", "confirmed", "none"},
+    },
+    "ma_alignment_state": {
+        "pass": {"bullish"},
+        "fail": {"bearish"},
+        "blocker_active": {"bearish"},
+        "blocker_inactive": {"bullish", "neutral", "mixed"},
+    },
+    "ma_slope_strength": {
+        "pass": {"rising_strong", "rising_weak"},
+        "fail": {"falling_weak", "falling_strong"},
+        "blocker_active": {"falling_strong"},
+        "blocker_inactive": {"rising_strong", "rising_weak", "flat", "falling_weak"},
+    },
+    "trend_regime": {
+        "pass": {"trending"},
+        "fail": set(),
+        "blocker_active": set(),
+        "blocker_inactive": {"trending", "ranging", "transition"},
+    },
+    "support_holding": {
+        "pass": {"holding"},
+        "fail": {"lost"},
+        "blocker_active": {"lost"},
+        "blocker_inactive": {"holding", "testing"},
+    },
+    "resistance_break_confirmed": {
+        "pass": {"confirmed"},
+        "fail": {"failed"},
+        "blocker_active": {"failed"},
+        "blocker_inactive": {"confirmed", "attempting", "none"},
+    },
+    "failed_breakout": {
+        "pass": {"none"},
+        "fail": {"suspected", "confirmed"},
+        "blocker_active": {"confirmed"},
+        "blocker_inactive": {"none", "suspected"},
+    },
+    "momentum_follow_through": {
+        "pass": {"strong", "moderate"},
+        "fail": {"weak", "none"},
+        "blocker_active": {"none"},
+        "blocker_inactive": {"strong", "moderate", "weak"},
+    },
+    "volume_sustain": {
+        "pass": {"strong", "adequate"},
+        "fail": {"fading", "absent"},
+        "blocker_active": {"absent"},
+        "blocker_inactive": {"strong", "adequate", "fading"},
+    },
+    "momentum_decay": {
+        "pass": {"none"},
+        "fail": {"strong"},
+        "blocker_active": {"strong"},
+        "blocker_inactive": {"none", "mild"},
+    },
+}
+
+
+def _flatten_chart_structure_feature_states(
+    chart_structure_features: Mapping[str, Any] | None,
+) -> Dict[str, Dict[str, Any]]:
+    from . import intraday_monitor_signals_flatten_chart_structure_feature_states as _owner
+    return _owner._flatten_chart_structure_feature_states(chart_structure_features, facade=sys.modules[__name__])
+
+
+def _parse_policy_signal_spec(spec: Any) -> Dict[str, Any]:
+    from . import intraday_monitor_signals_parse_policy_signal_spec as _owner
+    return _owner._parse_policy_signal_spec(spec, facade=sys.modules[__name__])
+
+
+def _chart_feature_status_item(
+    *,
+    spec: Mapping[str, Any],
+    chart_states: Mapping[str, Any],
+    blocker: bool = False,
+) -> Dict[str, Any] | None:
+    from . import intraday_monitor_signals_chart_feature_status_item as _owner
+    return _owner._chart_feature_status_item(spec=spec, chart_states=chart_states, blocker=blocker, facade=sys.modules[__name__])
+
+
+def _build_monitor_policy_interpreter_trace(
+    *,
+    policy_interpretation: Mapping[str, Any] | None = None,
+    signal_evidence: Mapping[str, Any] | None = None,
+    chart_structure_features: Mapping[str, Any] | None = None,
+) -> Dict[str, Any]:
+    from .intraday_monitor_signals_build_monitor_policy_interpreter_trace import _build_monitor_policy_interpreter_trace as owner
+    return owner(
+        policy_interpretation=policy_interpretation,
+        signal_evidence=signal_evidence,
+        chart_structure_features=chart_structure_features,
+        facade=sys.modules[__name__],
     )
-    policy_available = bool(source_mapping) or bool(playbook) or bool(explicit_fields.get("selected_policy"))
-    interpretation = _empty_monitor_policy_interpretation()
-    interpretation["policy_available"] = bool(policy_available)
-    interpretation["entry_style"] = explicit_entry_style or playbook or None
-    interpretation["contract_source"] = explicit_fields.get("contract_s…8890 tokens truncated…llback", "reversal"):
+
+
+def _build_monitor_policy_alignment_summary(
+    *,
+    policy_interpreter_trace: Mapping[str, Any] | None = None,
+) -> Dict[str, Any]:
+    from .intraday_monitor_signals_build_monitor_policy_alignment_summary import _build_monitor_policy_alignment_summary as owner
+    return owner(policy_interpreter_trace=policy_interpreter_trace, facade=sys.modules[__name__])
+
+
+def _build_monitor_policy_aware_gating(
+    *,
+    policy_interpretation: Mapping[str, Any] | None = None,
+    signal_evidence: Mapping[str, Any] | None = None,
+    policy_interpreter_trace: Mapping[str, Any] | None = None,
+    policy_alignment_summary: Mapping[str, Any] | None = None,
+    legacy_triggered: bool = False,
+    legacy_reason: str | None = None,
+) -> Dict[str, Any]:
+    interpretation = dict(policy_interpretation or {}) if isinstance(policy_interpretation, Mapping) else {}
+    evidence = dict(signal_evidence or {}) if isinstance(signal_evidence, Mapping) else {}
+    trace = dict(policy_interpreter_trace or {}) if isinstance(policy_interpreter_trace, Mapping) else {}
+    summary = dict(policy_alignment_summary or {}) if isinstance(policy_alignment_summary, Mapping) else {}
+
+    out = _empty_monitor_policy_aware_gating()
+    policy_available = bool(interpretation.get("policy_available"))
+    if not policy_available:
+        return out
+
+    out["available"] = True
+    relaxable_checks = _dedupe_non_empty(interpretation.get("relaxable_checks") or [])
+    out["relaxations_considered"] = list(relaxable_checks)
+    failed_required = _dedupe_non_empty(summary.get("top_failed_required_checks") or [])
+    out["required_failures"] = list(failed_required)
+
+    checks = dict(evidence.get("checks") or {}) if isinstance(evidence.get("checks"), Mapping) else {}
+    derived = dict(evidence.get("derived") or {}) if isinstance(evidence.get("derived"), Mapping) else {}
+    entry_style = str(interpretation.get("entry_style") or "").strip().lower()
+    alignment_state = str(summary.get("alignment_state") or "").strip().lower()
+    legacy_reason_code = str(legacy_reason or "").strip()
+
+    if failed_required:
+        out["blocked_by_required"] = list(failed_required)
+        out["notes"] = _dedupe_non_empty(
+            [
+                *list(out.get("notes") or []),
+                "required_checks_failed",
+            ]
+        )
+        return out
+    if bool(legacy_triggered):
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "legacy_gate_already_triggered"])
+        return out
+
+    can_consider_reclaim_relax = (
+        entry_style == "breakout"
+        and "reclaim_gate_ok" in relaxable_checks
+    )
+    if not can_consider_reclaim_relax:
+        return out
+
+    reclaim_distance = derived.get("reclaim_distance_to_ready")
+    reclaim_distance_value: float | None = None
+    if reclaim_distance not in (None, ""):
+        try:
+            reclaim_distance_value = float(reclaim_distance)
+        except Exception:
+            reclaim_distance_value = None
+
+    standard_near_ready = (
+        reclaim_distance_value is not None
+        and _RECLAIM_NEAR_READY_DISTANCE_MIN_BASE <= reclaim_distance_value < 0.0
+    )
+    tuned_near_ready = (
+        reclaim_distance_value is not None
+        and _RECLAIM_NEAR_READY_DISTANCE_MIN_TUNED <= reclaim_distance_value < 0.0
+    )
+    tuned_only_band = (
+        legacy_reason_code == "below_vwap_reclaim_not_ready"
+        and not standard_near_ready
+        and tuned_near_ready
+    )
+    near_ready = bool(standard_near_ready or tuned_only_band)
+    safe_to_relax = (
+        bool(checks.get("breakout_path_ok"))
+        and bool(checks.get("confidence_ok"))
+        and not bool(derived.get("too_extended"))
+        and alignment_state in {"aligned", "partial"}
+    )
+    relaxable_reason = legacy_reason_code in {
+        "",
+        "below_vwap_reclaim_not_ready",
+    }
+    if not relaxable_reason:
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "legacy_reason_not_relaxable"])
+        return out
+    if bool(checks.get("reclaim_gate_ok")):
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "reclaim_gate_already_passed"])
+        return out
+    if not near_ready:
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "reclaim_not_near_ready"])
+        return out
+    if not safe_to_relax:
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "safe_relaxation_conditions_not_met"])
+        return out
+    if tuned_only_band and not bool(checks.get("volume_ok")):
+        out["notes"] = _dedupe_non_empty(
+            [*list(out.get("notes") or []), "tuned_reclaim_requires_volume_confirmation"]
+        )
+        return out
+    if not (bool(checks.get("volume_ok")) or bool(checks.get("breakout_path_ok"))):
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "supporting_path_not_ready"])
+        return out
+
+    if tuned_only_band:
+        out["entry_tuning_flags"] = ["reclaim_small_relaxation_v1"]
+        out["reclaim_readiness_tuned"] = True
+        out["reclaim_near_ready_distance_min"] = _RECLAIM_NEAR_READY_DISTANCE_MIN_TUNED
+        out["reclaim_tuning_band_used"] = "tuned"
+        out["reclaim_evidence_explanation"] = (
+            "VWAP reclaim is slightly short of the standard near-ready band, "
+            "but small_relaxation_v1 allows it when breakout path and volume confirmation remain intact."
+        )
+    elif standard_near_ready:
+        out["reclaim_tuning_band_used"] = "standard"
+        out["reclaim_evidence_explanation"] = (
+            "VWAP reclaim is already inside the standard near-ready band."
+        )
+
+    out["applied"] = True
+    out["applied_hints"] = ["reclaim_relaxed_near_ready"]
+    out["relaxations_applied"] = ["reclaim_gate_ok"]
+    out["notes"] = _dedupe_non_empty(
+        [
+            *list(out.get("notes") or []),
+            "breakout_reclaim_near_ready_relaxation_applied",
+        ]
+    )
+    return out
+
+
+def _build_chart_structure_decision_hint(
+    *,
+    policy_interpretation: Mapping[str, Any] | None = None,
+    signal_evidence: Mapping[str, Any] | None = None,
+    chart_structure_features: Mapping[str, Any] | None = None,
+    legacy_triggered: bool = False,
+    legacy_decision: str | None = None,
+    legacy_reason: str | None = None,
+    legacy_entry_condition_path: str | None = None,
+) -> Dict[str, Any]:
+    interpretation = dict(policy_interpretation or {}) if isinstance(policy_interpretation, Mapping) else {}
+    evidence = dict(signal_evidence or {}) if isinstance(signal_evidence, Mapping) else {}
+    chart_payload = dict(chart_structure_features or {}) if isinstance(chart_structure_features, Mapping) else {}
+    out = _empty_chart_structure_decision_hint()
+
+    policy_available = bool(interpretation.get("policy_available"))
+    if not policy_available:
+        return out
+
+    out["available"] = True
+    entry_style = str(interpretation.get("entry_style") or "").strip().lower() or None
+    out["entry_style"] = entry_style
+    if entry_style == "breakout":
+        out["considered_features"] = [
+            "structure_hh_hl",
+            "momentum_follow_through",
+            "failed_breakout",
+        ]
+    elif entry_style in {"pullback", "reversal"}:
+        out["considered_features"] = [
+            "support_holding",
+            "trend_regime",
+            "ma_alignment_state",
+        ]
+    else:
+        out["notes"] = ["entry_style_not_chart_structure_guard_target"]
+        return out
+
+    if not bool(chart_payload.get("available")):
+        out["notes"] = ["chart_structure_features_unavailable"]
+        return out
+
+    if not bool(legacy_triggered) or str(legacy_decision or "").strip().upper() != "BUY":
+        out["notes"] = ["legacy_decision_not_structure_guard_target_buy"]
+        return out
+
+    chart_states = _flatten_chart_structure_feature_states(chart_payload)
+    checks = dict(evidence.get("checks") or {}) if isinstance(evidence.get("checks"), Mapping) else {}
+    if entry_style == "breakout":
+        if str(legacy_entry_condition_path or "").strip() != "breakout_path":
+            out["notes"] = ["legacy_entry_path_not_breakout"]
+            return out
+
+        structure_state = str(((chart_states.get("structure_hh_hl") or {}).get("state")) or "").strip().lower()
+        follow_through_state = str(((chart_states.get("momentum_follow_through") or {}).get("state")) or "").strip().lower()
+        failed_breakout_state = str(((chart_states.get("failed_breakout") or {}).get("state")) or "").strip().lower()
+
+        if structure_state == "intact":
+            out["matched_features"].append("structure_hh_hl=intact")
+        elif structure_state:
+            out["blocking_features"].append(f"structure_hh_hl={structure_state}")
+        if follow_through_state == "strong":
+            out["matched_features"].append("momentum_follow_through=strong")
+        elif follow_through_state:
+            out["blocking_features"].append(f"momentum_follow_through={follow_through_state}")
+        if failed_breakout_state == "none":
+            out["matched_features"].append("failed_breakout=none")
+        elif failed_breakout_state:
+            out["blocking_features"].append(f"failed_breakout={failed_breakout_state}")
+
+        if not bool(checks.get("breakout_path_ok")):
+            out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "breakout_path_not_confirmed"])
+            return out
+        if not bool(checks.get("confidence_ok")):
+            out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "confidence_not_confirmed"])
+            return out
+
+        should_block = False
+        if failed_breakout_state == "confirmed":
+            should_block = True
+        elif structure_state == "weakening" and follow_through_state in {"moderate", "weak", "none"}:
+            should_block = True
+
+        if not should_block:
+            out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "continuation_quality_not_blocking"])
+            return out
+
+        out["applied"] = True
+        out["mode"] = "block"
+        out["notes"] = _dedupe_non_empty(
+            [
+                *list(out.get("notes") or []),
+                "breakout_continuation_structure_guard_applied",
+                str(legacy_reason or "").strip() or "legacy_reason_not_provided",
+            ]
+        )
+        return out
+
+    if str(legacy_entry_condition_path or "").strip() != "pullback_volume_path":
+        out["notes"] = ["legacy_entry_path_not_pullback"]
+        return out
+
+    support_state = str(((chart_states.get("support_holding") or {}).get("state")) or "").strip().lower()
+    trend_regime_state = str(((chart_states.get("trend_regime") or {}).get("state")) or "").strip().lower()
+    ma_alignment_state = str(((chart_states.get("ma_alignment_state") or {}).get("state")) or "").strip().lower()
+
+    if support_state == "holding":
+        out["matched_features"].append("support_holding=holding")
+    elif support_state:
+        out["blocking_features"].append(f"support_holding={support_state}")
+    if trend_regime_state == "trending":
+        out["matched_features"].append("trend_regime=trending")
+    elif trend_regime_state:
+        out["blocking_features"].append(f"trend_regime={trend_regime_state}")
+    if ma_alignment_state == "bullish":
+        out["matched_features"].append("ma_alignment_state=bullish")
+    elif ma_alignment_state:
+        out["blocking_features"].append(f"ma_alignment_state={ma_alignment_state}")
+
+    if not bool(checks.get("pullback_volume_path_ok")):
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "pullback_path_not_confirmed"])
+        return out
+    if not bool(checks.get("confidence_ok")):
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "confidence_not_confirmed"])
+        return out
+
+    should_block = False
+    if support_state == "lost":
+        should_block = True
+    elif ma_alignment_state == "bearish" and trend_regime_state in {"transition", "ranging"}:
+        should_block = True
+
+    if not should_block:
+        out["notes"] = _dedupe_non_empty([*list(out.get("notes") or []), "pullback_structure_not_blocking"])
+        return out
+
+    out["applied"] = True
+    out["mode"] = "block"
+    out["notes"] = _dedupe_non_empty(
+        [
+            *list(out.get("notes") or []),
+            "pullback_reversal_structure_guard_applied",
+            str(legacy_reason or "").strip() or "legacy_reason_not_provided",
+        ]
+    )
+    return out
+
+
+def _apply_monitor_scoring_fields(
+    out: Dict[str, Any],
+    *,
+    scoring_settings: Dict[str, Any],
+    hard_filter_passed: bool,
+    hard_filter_fail_reasons: Sequence[str] | None,
+    score_breakdown: Mapping[str, Any] | None = None,
+    legacy_entry_decision: str = "WAIT",
+    scoring_entry_decision: str = "WAIT",
+) -> Dict[str, Any]:
+    from . import intraday_monitor_signals_apply_monitor_scoring_fields as _owner
+    return _owner._apply_monitor_scoring_fields(
+        out, scoring_settings=scoring_settings, hard_filter_passed=hard_filter_passed,
+        hard_filter_fail_reasons=hard_filter_fail_reasons, score_breakdown=score_breakdown,
+        legacy_entry_decision=legacy_entry_decision, scoring_entry_decision=scoring_entry_decision,
+        facade=sys.modules[__name__],
+    )
+
+
+def _candles_from_rows(rows: Sequence[Mapping[str, Any]] | None) -> List[Dict[str, Any]]:
+    from . import intraday_monitor_signals_candles_from_rows as _owner
+    return _owner._candles_from_rows(rows, facade=sys.modules[__name__])
+
+
+def _merge_candle_group(group: Sequence[Mapping[str, Any]]) -> Dict[str, Any]:
+    from . import intraday_monitor_signals_merge_candle_group as _owner
+    return _owner._merge_candle_group(group, facade=sys.modules[__name__])
+
+
+def _compress_candles(rows: Sequence[Mapping[str, Any]], timeframe_minutes: int) -> List[Dict[str, Any]]:
+    from . import intraday_monitor_signals_compress_candles as _owner
+    return _owner._compress_candles(rows, timeframe_minutes, facade=sys.modules[__name__])
+
+
+def _kst_session_key_and_minute(ts_value: Any) -> tuple[Any | None, float | None]:
+    from . import intraday_monitor_signals_kst_session_key_and_minute as _owner
+    return _owner._kst_session_key_and_minute(ts_value, facade=sys.modules[__name__])
+
+
+def _current_kst_session_anchor(candles: Sequence[Mapping[str, Any]]) -> tuple[Any | None, int | None, float | None]:
+    from . import intraday_monitor_signals_current_kst_session_anchor as _owner
+    return _owner._current_kst_session_anchor(candles, facade=sys.modules[__name__])
+
+
+def _current_kst_session_rows(candles: Sequence[Mapping[str, Any]]) -> List[Mapping[str, Any]]:
+    from . import intraday_monitor_signals_current_kst_session_rows as _owner
+    return _owner._current_kst_session_rows(candles, facade=sys.modules[__name__])
+
+
+def _session_vwap(candles: Sequence[Mapping[str, Any]]) -> float | None:
+    from . import intraday_monitor_signals_session_vwap as _owner
+    return _owner._session_vwap(candles, facade=sys.modules[__name__])
+
+
+def _session_gap_context(candles: Sequence[Mapping[str, Any]], current_close: float) -> Dict[str, Any]:
+    from . import intraday_monitor_signals_session_gap_context as _owner
+    return _owner._session_gap_context(candles, current_close, facade=sys.modules[__name__])
+
+
+def _infer_spacing_seconds(candles: Sequence[Mapping[str, Any]]) -> float | None:
+    from . import intraday_monitor_signals_infer_spacing_seconds as _owner
+    return _owner._infer_spacing_seconds(candles, facade=sys.modules[__name__])
+
+
+def _classify_series_quality(
+    candles: Sequence[Mapping[str, Any]],
+    *,
+    timeframe_minutes: int,
+) -> Dict[str, Any]:
+    from . import intraday_monitor_signals_classify_series_quality as _owner
+    return _owner._classify_series_quality(candles, timeframe_minutes=timeframe_minutes, facade=sys.modules[__name__])
+
+
+def _extract_commander_entry_control(
+    policy: Mapping[str, Any] | MonitorEntryPolicy | None,
+    frame: Mapping[str, Any] | None,
+) -> Dict[str, Any]:
+    from . import intraday_monitor_signals_extract_commander_entry_control as _owner
+    return _owner._extract_commander_entry_control(policy, frame, facade=sys.modules[__name__])
+
+
+def resolve_intraday_entry_policy(
+    policy: Mapping[str, Any] | MonitorEntryPolicy | None = None,
+    *,
+    frame: Mapping[str, Any] | None = None,
+) -> MonitorEntryPolicy:
+    resolved = policy if isinstance(policy, MonitorEntryPolicy) else MonitorEntryPolicy.from_mapping(policy)
+    adjustments: List[str] = []
+    entry_control = _extract_commander_entry_control(policy, frame)
+    playbook = str((frame or {}).get("playbook") or "").strip().lower()
+    guidance = str((frame or {}).get("monitor_guidance") or "").strip().lower()
+    risk_tone = str((frame or {}).get("risk_tone") or "").strip().lower()
+    aggressiveness = str((frame or {}).get("trade_aggressiveness") or "").strip().lower()
+
+    if playbook == "breakout":
+        resolved = replace(
+            resolved,
+            volume_ratio_min=max(1.0, float(resolved.volume_ratio_min)),
+            max_extended_from_vwap_pct=min(0.03, max(float(resolved.max_extended_from_vwap_pct), 0.02)),
+            pullback_max_pct=min(0.04, max(float(resolved.pullback_max_pct), 0.03)),
+        )
+        adjustments.append("playbook:breakout")
+    elif playbook in ("pullback", "reversal"):
+        resolved = replace(
+            resolved,
+            breakout_lookback=max(3, int(resolved.breakout_lookback) - 1),
+            volume_ratio_min=max(0.68, min(float(resolved.volume_ratio_min), 0.9)),
+            min_extended_from_vwap_pct=min(float(resolved.min_extended_from_vwap_pct), -0.005),
+            max_extended_from_vwap_pct=max(float(resolved.max_extended_from_vwap_pct), 0.05),
+            pullback_min_pct=max(0.008, float(resolved.pullback_min_pct) - 0.004),
+            pullback_max_pct=max(float(resolved.pullback_max_pct), 0.06),
+        )
+        # Keep shallow pullback entries available during live pullback monitoring.
+        adjustments.append(f"playbook:{playbook}")
+    elif playbook == "defensive":
+        resolved = replace(
+            resolved,
+            volume_ratio_min=min(1.1, float(resolved.volume_ratio_min) + 0.03),
+            max_extended_from_vwap_pct=max(0.03, min(float(resolved.max_extended_from_vwap_pct), 0.05)),
+            pullback_max_pct=min(float(resolved.pullback_max_pct), 0.05),
+        )
+        adjustments.append("playbook:defensive")
+
+    if guidance == "hold_through_noise":
+        resolved = replace(
+            resolved,
+            pullback_max_pct=min(0.07, float(resolved.pullback_max_pct) + 0.005),
+        )
+        adjustments.append("guidance:hold_through_noise")
+    elif guidance == "defensive_exit":
+        if playbook in ("pullback", "reversal"):
             resolved = replace(
                 resolved,
                 volume_ratio_min=max(0.68, min(1.0, float(resolved.volume_ratio_min) - 0.04)),
