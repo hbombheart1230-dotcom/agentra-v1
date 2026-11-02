@@ -5,12 +5,14 @@ from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
+import sys
 
 from .artifact_inventory import read_json
 from .counterfactuals import build_selection_attribution
 from .metrics import performance_metrics
 from .trade_evaluator import evaluate_trade
 from .trade_read_model import build_q9_trade_read_model
+from . import historical_prior_rank_bucket as _a55_hp_rank_bucket
 
 
 DEFAULT_BEFORE_DAY = "2026-06-29"
@@ -65,17 +67,7 @@ def _net_return(evaluation: dict[str, Any]) -> float | None:
 
 
 def _rank_bucket(value: Any) -> str:
-    try:
-        rank = int(float(value))
-    except (TypeError, ValueError):
-        return "unknown"
-    if rank <= 1:
-        return "rank1"
-    if rank <= 3:
-        return "rank2-3"
-    if rank <= 10:
-        return "rank4-10"
-    return "rank11_plus"
+    return _a55_hp_rank_bucket._rank_bucket(value, facade=sys.modules[__name__])
 
 
 def _group_metrics(rows: Iterable[tuple[str, float]]) -> dict[str, Any]:

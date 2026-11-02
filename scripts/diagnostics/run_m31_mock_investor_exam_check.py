@@ -18,25 +18,9 @@ from libs.runtime.market_hours import now_kst
 
 
 def _read_env_file(path: Path) -> Dict[str, str]:
-    if not path.exists():
-        return {}
-    out: Dict[str, str] = {}
-    for raw in path.read_text(encoding="utf-8").splitlines():
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        if "=" not in line:
-            continue
-        k, v = line.split("=", 1)
-        k = k.strip()
-        v = v.strip()
-        if v and v[0] not in ("'", "\"") and "#" in v:
-            v = v.split("#", 1)[0].rstrip()
-        if (len(v) >= 2) and ((v[0] == v[-1]) and v[0] in ("'", '"')):
-            v = v[1:-1]
-        if k:
-            out[k] = v
-    return out
+    from scripts.diagnostics.run_m31_mock_investor_exam_check_read_env_file import _read_env_file as owner
+
+    return owner(path, facade=sys.modules[__name__])
 
 
 def _env_bool(env: Dict[str, str], key: str, default: bool = False) -> bool:
@@ -58,24 +42,15 @@ def _to_epoch(ts: Any) -> Optional[int]:
 
 
 def _parse_kst_datetime(value: str) -> Optional[datetime]:
-    raw = str(value or "").strip()
-    if not raw:
-        return None
-    s = raw.replace("Z", "+00:00")
-    try:
-        dt = datetime.fromisoformat(s)
-    except Exception:
-        return None
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=KST)
-    return dt.astimezone(KST)
+    from scripts.diagnostics.run_m31_mock_investor_exam_check_parse_kst_datetime import _parse_kst_datetime as owner
+
+    return owner(value, facade=sys.modules[__name__])
 
 
 def _utc_day(ts: Any) -> Optional[str]:
-    e = _to_epoch(ts)
-    if e is None:
-        return None
-    return datetime.fromtimestamp(e, tz=timezone.utc).strftime("%Y-%m-%d")
+    from scripts.diagnostics.run_m31_mock_investor_exam_check_utc_day import _utc_day as owner
+
+    return owner(ts, facade=sys.modules[__name__])
 
 
 def _iter_jsonl(path: Path) -> Iterable[Dict[str, Any]]:
@@ -106,97 +81,21 @@ def _item(
     evidence: str,
     required: bool = True,
 ) -> Dict[str, Any]:
-    return {
-        "id": item_id,
-        "title": title,
-        "required": bool(required),
-        "passed": bool(passed),
-        "evidence": str(evidence),
-    }
+    from scripts.diagnostics.run_m31_mock_investor_exam_check_item import _item as owner
+
+    return owner(item_id=item_id, title=title, passed=passed, evidence=evidence, required=required, facade=sys.modules[__name__])
 
 
 def _build_markdown(out: Dict[str, Any]) -> str:
-    mode = out.get("runtime_mode") if isinstance(out.get("runtime_mode"), dict) else {}
-    guards = out.get("guardrails") if isinstance(out.get("guardrails"), dict) else {}
-    market = out.get("market") if isinstance(out.get("market"), dict) else {}
-    events = out.get("events") if isinstance(out.get("events"), dict) else {}
-    checklist = out.get("checklist") if isinstance(out.get("checklist"), list) else []
+    from scripts.diagnostics.run_m31_mock_investor_exam_check_build_markdown import _build_markdown as owner
 
-    lines = [
-        f"# M31-2 Mock Investor Exam Check ({out.get('day')})",
-        "",
-        f"- ok: **{bool(out.get('ok'))}**",
-        f"- required_pass_total: **{int(out.get('required_pass_total') or 0)}**",
-        f"- required_fail_total: **{int(out.get('required_fail_total') or 0)}**",
-        "",
-        "## Runtime Mode",
-        "",
-        f"- RUNTIME_PROFILE: **{mode.get('RUNTIME_PROFILE')}**",
-        f"- KIWOOM_MODE: **{mode.get('KIWOOM_MODE')}**",
-        f"- APPROVAL_MODE: **{mode.get('APPROVAL_MODE')}**",
-        f"- EXECUTION_ENABLED: **{bool(mode.get('EXECUTION_ENABLED'))}**",
-        f"- ALLOW_REAL_EXECUTION: **{bool(mode.get('ALLOW_REAL_EXECUTION'))}**",
-        "",
-        "## Guardrails",
-        "",
-        f"- SYMBOL_ALLOWLIST size: **{int(guards.get('allowlist_size') or 0)}**",
-        "- SYMBOL_ALLOWLIST policy: **optional operational guard (recommended but not mandatory)**",
-        f"- max_notional_key: **{guards.get('max_notional_key')}**",
-        f"- max_notional: **{float(guards.get('max_notional') or 0.0):.2f}**",
-        f"- daily_loss_limit: **{float(guards.get('daily_loss_limit') or 0.0):.6f}**",
-        "",
-        "## Market Contract",
-        "",
-        f"- now_kst: **{market.get('now_kst')}**",
-        f"- market_open_now: **{bool(market.get('market_open_now'))}**",
-        f"- open_contract_ok: **{bool(market.get('open_contract_ok'))}**",
-        f"- closed_contract_ok: **{bool(market.get('closed_contract_ok'))}**",
-        "",
-        "## Session Evidence",
-        "",
-        f"- event_total: **{int(events.get('event_total') or 0)}**",
-        f"- verdict_total: **{int(events.get('verdict_total') or 0)}**",
-        f"- execution_total: **{int(events.get('execution_total') or 0)}**",
-        f"- error_total: **{int(events.get('error_total') or 0)}**",
-        "",
-        "## Checklist",
-        "",
-    ]
-    for item in checklist:
-        mark = "x" if bool(item.get("passed")) else " "
-        lines.append(f"- [{mark}] {item.get('title')} | evidence={item.get('evidence')}")
-
-    failures = out.get("failures") if isinstance(out.get("failures"), list) else []
-    lines += ["", "## Failures", ""]
-    if failures:
-        for msg in failures:
-            lines.append(f"- {msg}")
-    else:
-        lines.append("- (none)")
-    lines.append("")
-    return "\n".join(lines)
+    return owner(out, facade=sys.modules[__name__])
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M31-2 mock investor exam protocol gate check.")
-    p.add_argument("--env-path", default=".env")
-    p.add_argument("--event-log-path", default="data/logs/events.jsonl")
-    p.add_argument("--report-dir", default="reports/milestones/m31_mock_exam")
-    p.add_argument("--day", default="2026-02-21")
-    p.add_argument(
-        "--allow-offhours",
-        action="store_true",
-        help="Allow off-hours check pass (default is hard session gate).",
-    )
-    p.add_argument(
-        "--strict-session",
-        action="store_true",
-        help="Deprecated compatibility flag (session gate is hard by default).",
-    )
-    p.add_argument("--now-kst", default=None, help="Optional ISO datetime override for deterministic session checks.")
-    p.add_argument("--inject-fail", action="store_true")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics.run_m31_mock_investor_exam_check_build_parser import _build_parser as owner
+
+    return owner(facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:
