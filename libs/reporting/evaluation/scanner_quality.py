@@ -13,6 +13,7 @@ from . import scanner_quality_checkpoint_return as _a47_checkpoint_return
 from . import scanner_quality_extract_pre_strategist_candidate_rows as _a47_extract_pre_strategist_candidate_rows
 from . import scanner_quality_build_scanner_topk_forward_performance as _a48_build_scanner_topk_forward_performance
 from . import scanner_quality_build_scanner_source_performance as _a48_build_scanner_source_performance
+from . import scanner_quality_build_scanner_quality_review as _a54_sq_build
 
 
 TOP_K_VALUES = (1, 3, 5, 10)
@@ -72,25 +73,7 @@ def build_scanner_quality_review(
     slippage_pct: float,
     minute_rows_by_symbol: Mapping[str, list[Mapping[str, Any]]] | None = None,
 ) -> dict[str, Any]:
-    rows = pre_strategist_candidate_rows(
-        payloads,
-        minute_rows_by_symbol=minute_rows_by_symbol,
-    )
-    return {
-        "schema_version": "q9_scanner_quality_review.v1",
-        "behavior_effect": "evaluation_only",
-        "pre_strategist_universe_available": bool(rows),
-        "topk_forward_performance": build_scanner_topk_forward_performance(
-            rows,
-            cost_pct=cost_pct,
-            slippage_pct=slippage_pct,
-        ),
-        "source_performance": build_scanner_source_performance(
-            rows,
-            cost_pct=cost_pct,
-            slippage_pct=slippage_pct,
-        ),
-    }
+    return _a54_sq_build.build_scanner_quality_review(payloads, cost_pct=cost_pct, slippage_pct=slippage_pct, minute_rows_by_symbol=minute_rows_by_symbol, facade=sys.modules[__name__])
 
 
 __all__ = [
