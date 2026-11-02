@@ -9,6 +9,7 @@ import sys
 from . import artifact_inventory_synthetic_identity as _a35_synthetic_identity
 from . import artifact_inventory_regular_session_window as _a35_regular_session_window
 from . import artifact_inventory_parse_window_kst as _a35_parse_window_kst
+from . import artifact_inventory_record as _a36_record
 
 from libs.reporting.json_array_stream import iter_json_array
 from libs.reporting.quant_shadow_forward_outcomes import attach_forward_outcomes
@@ -50,19 +51,7 @@ def iter_trade_dirs(reports_root: Path, day: str) -> list[Path]:
 
 
 def _record(path: Path, *, required: bool) -> dict[str, Any]:
-    exists = path.exists()
-    payload = read_json(path) if exists and path.suffix.lower() == ".json" else {}
-    return {
-        "path": str(path),
-        "required": required,
-        "exists": exists,
-        "size_bytes": path.stat().st_size if exists else 0,
-        "modified_epoch": path.stat().st_mtime if exists else None,
-        "schema_version": str(payload.get("schema_version") or ""),
-        "evidence_status": str(payload.get("evidence_status") or ""),
-        "forward_windows_complete": bool(payload.get("forward_windows_complete")),
-        "missing_reason": "" if exists else "artifact_not_found",
-    }
+    return _a36_record._record(path=path, required=required, facade=sys.modules[__name__])
 
 
 def _iter_shadow_payloads(reports_root: Path, day: str):
