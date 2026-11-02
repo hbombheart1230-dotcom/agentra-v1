@@ -3,6 +3,15 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any, Mapping
+import sys
+from . import attribution_score_v0_as_rows as _a34_as_rows
+from . import attribution_score_v0_num as _a34_num
+from . import attribution_score_v0_clamp_score as _a34_clamp_score
+from . import attribution_score_v0_score as _a34_score
+from . import attribution_score_v0_selection_integrity as _a34_selection_integrity
+from . import attribution_score_v0_scanner_alignment as _a34_scanner_alignment
+from . import attribution_score_v0_entry_timing as _a34_entry_timing
+from . import attribution_score_v0_exit_horizon as _a34_exit_horizon
 
 
 INSUFFICIENT = "INSUFFICIENT_EVIDENCE"
@@ -14,29 +23,19 @@ def _mapping(value: Any) -> Mapping[str, Any]:
 
 
 def _as_rows(value: Any) -> list[Mapping[str, Any]]:
-    return [row for row in (value or []) if isinstance(row, Mapping)]
+    return _a34_as_rows._as_rows(value=value, facade=sys.modules[__name__])
 
 
 def _num(value: Any) -> float | None:
-    try:
-        if value in (None, ""):
-            return None
-        return float(value)
-    except (TypeError, ValueError):
-        return None
+    return _a34_num._num(value=value, facade=sys.modules[__name__])
 
 
 def _clamp_score(value: float) -> int:
-    return int(round(max(0.0, min(100.0, value))))
+    return _a34_clamp_score._clamp_score(value=value, facade=sys.modules[__name__])
 
 
 def _score(status: str, value: int | None, reasons: list[str], evidence: Mapping[str, Any] | None = None) -> dict[str, Any]:
-    return {
-        "status": status,
-        "score": value if status != INSUFFICIENT else None,
-        "reasons": reasons,
-        "evidence": dict(evidence or {}),
-    }
+    return _a34_score._score(status=status, value=value, reasons=reasons, evidence=evidence, facade=sys.modules[__name__])
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -58,129 +57,19 @@ def _ledger_day_record(reports_root: Path, day: str) -> dict[str, Any]:
 
 
 def _selection_integrity(selection_authority: Mapping[str, Any]) -> dict[str, Any]:
-    rows = _as_rows(selection_authority.get("rows"))
-    if not rows:
-        return _score(INSUFFICIENT, None, ["selection_authority_rows_missing"])
-    penalties: list[float] = []
-    reasons: list[str] = []
-    for row in rows:
-        penalty = 0.0
-        if row.get("final_to_executed_changed") is True:
-            penalty += 40.0
-            reasons.append(f"{row.get('trade_id')}:final_to_executed_changed")
-        if row.get("monitor_to_commander_changed") is True:
-            penalty += 30.0
-            reasons.append(f"{row.get('trade_id')}:monitor_to_commander_changed")
-        if row.get("post_to_selected_changed") is True:
-            penalty += 10.0
-            reasons.append(f"{row.get('trade_id')}:post_to_selected_changed")
-        mismatch = _mapping(row.get("selection_mismatch"))
-        if mismatch and row.get("post_to_selected_changed") is not True:
-            penalty += 10.0
-            reasons.append(f"{row.get('trade_id')}:selection_mismatch_present")
-        penalties.append(min(100.0, penalty))
-    score = _clamp_score(100.0 - (sum(penalties) / len(penalties)))
-    return _score(
-        OK,
-        score,
-        reasons or ["selection_chain_consistent"],
-        {"trade_count": len(rows)},
-    )
+    return _a34_selection_integrity._selection_integrity(selection_authority=selection_authority, facade=sys.modules[__name__])
 
 
 def _scanner_alignment(selection_authority: Mapping[str, Any], models: list[Mapping[str, Any]]) -> dict[str, Any]:
-    rows = _as_rows(selection_authority.get("rows"))
-    if not rows:
-        return _score(INSUFFICIENT, None, ["selection_authority_rows_missing"])
-    model_by_trade = {str(row.get("trade_id") or ""): row for row in models}
-    row_scores: list[float] = []
-    reasons: list[str] = []
-    for row in rows:
-        trade_id = str(row.get("trade_id") or "")
-        selected = str(row.get("selected_symbol") or "")
-        raw = str(row.get("raw_scanner_top1") or "")
-        post = str(row.get("post_strategy_top1") or "")
-        model = _mapping(model_by_trade.get(trade_id))
-        selection = _mapping(model.get("selection"))
-        selected_candidate = _mapping(selection.get("selected_candidate"))
-        rank = _num(selection.get("selected_rank") or selected_candidate.get("rank"))
-        penalty = 0.0
-        if selected and raw and selected != raw:
-            penalty += 20.0
-            reasons.append(f"{trade_id}:selected_not_raw_top1")
-        if selected and post and selected != post:
-            penalty += 20.0
-            reasons.append(f"{trade_id}:selected_not_post_strategy_top1")
-        if rank is not None and rank > 1:
-            rank_penalty = min(40.0, (float(rank) - 1.0) * 15.0)
-            penalty += rank_penalty
-            reasons.append(f"{trade_id}:selected_rank_{int(rank)}")
-        if row.get("raw_to_post_changed") is True:
-            penalty += 5.0
-            reasons.append(f"{trade_id}:raw_to_post_changed")
-        row_scores.append(max(0.0, 100.0 - min(100.0, penalty)))
-    if not row_scores:
-        return _score(INSUFFICIENT, None, ["scanner_alignment_rows_unavailable"])
-    return _score(
-        OK,
-        _clamp_score(sum(row_scores) / len(row_scores)),
-        reasons or ["selected_candidates_aligned_with_scanner"],
-        {"trade_count": len(row_scores)},
-    )
+    return _a34_scanner_alignment._scanner_alignment(selection_authority=selection_authority, models=models, facade=sys.modules[__name__])
 
 
 def _entry_timing(entry_timing_report: Mapping[str, Any]) -> dict[str, Any]:
-    rows = _as_rows(entry_timing_report.get("rows"))
-    sufficient = [row for row in rows if str(row.get("label") or "") != INSUFFICIENT]
-    if not sufficient:
-        return _score(INSUFFICIENT, None, ["entry_timing_rows_missing_or_insufficient"])
-    label_scores = {
-        "ENTRY_APPROPRIATE": 100.0,
-        "ENTRY_TOO_EARLY": 35.0,
-        "ENTRY_TOO_LATE": 35.0,
-    }
-    scores: list[float] = []
-    reasons: list[str] = []
-    for row in sufficient:
-        label = str(row.get("label") or "")
-        scores.append(label_scores.get(label, 50.0))
-        if label != "ENTRY_APPROPRIATE":
-            reasons.append(f"{row.get('trade_id')}:{label}")
-    return _score(
-        OK,
-        _clamp_score(sum(scores) / len(scores)),
-        reasons or ["entry_timing_not_primary_failure_in_observed_rows"],
-        {"classified_trade_count": len(sufficient), "total_trade_count": len(rows)},
-    )
+    return _a34_entry_timing._entry_timing(entry_timing_report=entry_timing_report, facade=sys.modules[__name__])
 
 
 def _exit_horizon(horizon_report: Mapping[str, Any]) -> dict[str, Any]:
-    rows = _as_rows(horizon_report.get("rows"))
-    if not rows:
-        return _score(INSUFFICIENT, None, ["horizon_rows_missing"])
-    scores: list[float] = []
-    reasons: list[str] = []
-    for row in rows:
-        penalty = 0.0
-        if row.get("horizon_violation_candidate"):
-            penalty += 20.0
-            reasons.append(f"{row.get('trade_id')}:horizon_violation_candidate")
-        if row.get("exited_before_min_hold"):
-            penalty += 20.0
-            reasons.append(f"{row.get('trade_id')}:before_min_hold")
-        if row.get("exited_before_target_hold"):
-            penalty += 10.0
-            reasons.append(f"{row.get('trade_id')}:before_target_hold")
-        if row.get("target_hold_would_improve_exit"):
-            penalty += 30.0
-            reasons.append(f"{row.get('trade_id')}:target_hold_would_improve")
-        scores.append(max(0.0, 100.0 - min(100.0, penalty)))
-    return _score(
-        OK,
-        _clamp_score(sum(scores) / len(scores)),
-        reasons or ["exit_horizon_aligned"],
-        {"trade_count": len(rows)},
-    )
+    return _a34_exit_horizon._exit_horizon(horizon_report=horizon_report, facade=sys.modules[__name__])
 
 
 def _evidence_quality(
