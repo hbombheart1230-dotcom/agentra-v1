@@ -9,36 +9,32 @@ from __future__ import annotations
 import argparse
 import ast
 import json
+import sys
 from pathlib import Path
 from typing import Any
+
+if __package__:
+    from scripts.diagnostics.audit_target_tree_compat_call_targets import _call_targets as _call_targets_owner
+    from scripts.diagnostics.audit_target_tree_compat_has_statement import _has_statement as _has_statement_owner
+    from scripts.diagnostics.audit_target_tree_compat_module_path import _module_path as _module_path_owner
+else:
+    from audit_target_tree_compat_call_targets import _call_targets as _call_targets_owner
+    from audit_target_tree_compat_has_statement import _has_statement as _has_statement_owner
+    from audit_target_tree_compat_module_path import _module_path as _module_path_owner
 
 _DEFAULT_MANIFEST = "docs/refactor/2026-10-15_scripts_bulk_manifest.json"
 
 
 def _call_targets(tree: ast.AST, owner: str, method: str) -> list[str]:
-    """Return literal module names passed to one documented wrapper API."""
-    out: list[str] = []
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
-            continue
-        if not isinstance(node.func.value, ast.Name):
-            continue
-        if node.func.value.id != owner or node.func.attr != method or not node.args:
-            continue
-        if isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
-            out.append(node.args[0].value)
-    return out
+    return _call_targets_owner(tree, owner, method, facade=sys.modules[__name__])
 
 
 def _module_path(path: str) -> str:
-    if not path.startswith("scripts/") or not path.endswith(".py"):
-        raise ValueError(f"not a Python script path: {path}")
-    return path[:-3].replace("/", ".")
+    return _module_path_owner(path, facade=sys.modules[__name__])
 
 
 def _has_statement(statements: list[ast.stmt], source: str) -> bool:
-    expected = ast.dump(ast.parse(source).body[0])
-    return any(ast.dump(statement) == expected for statement in statements)
+    return _has_statement_owner(statements, source, facade=sys.modules[__name__])
 
 
 def _dispatch_issues(tree: ast.Module, module: str, *, bulk: bool) -> list[str]:

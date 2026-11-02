@@ -13,6 +13,12 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from scripts.diagnostics.check_monitor_gate_patterns_build_stale_groups import _build_stale_groups as _build_stale_groups_owner
+from scripts.diagnostics.check_monitor_gate_patterns_estimate_reclaim_price import _estimate_reclaim_price as _estimate_reclaim_price_owner
+from scripts.diagnostics.check_monitor_gate_patterns_followup_from_rows import _followup_from_rows as _followup_from_rows_owner
+from scripts.diagnostics.check_monitor_gate_patterns_parse_iso_utc_seconds import _parse_iso_utc_seconds as _parse_iso_utc_seconds_owner
+from scripts.diagnostics.check_monitor_gate_patterns_to_float import _to_float as _to_float_owner
+
 
 def _read_json(path: Path) -> Dict[str, Any]:
     if not path.exists():
@@ -25,36 +31,17 @@ def _read_json(path: Path) -> Dict[str, Any]:
 
 
 def _parse_iso_utc_seconds(value: Any) -> Optional[int]:
-    text = str(value or "").strip()
-    if not text:
-        return None
-    try:
-        return int(datetime.fromisoformat(text).timestamp())
-    except Exception:
-        return None
+    return _parse_iso_utc_seconds_owner(value, facade=sys.modules[__name__])
 
 
 def _to_float(value: Any) -> Optional[float]:
-    try:
-        out = float(value)
-    except Exception:
-        return None
-    if out != out:
-        return None
-    return out
+    return _to_float_owner(value, facade=sys.modules[__name__])
 
 
 def _estimate_reclaim_price(current_price: Any, vwap_distance: Any, reclaim_tolerance_pct: Any) -> Optional[float]:
-    price = _to_float(current_price)
-    dist = _to_float(vwap_distance)
-    tol = _to_float(reclaim_tolerance_pct)
-    if price is None or dist is None or tol is None:
-        return None
-    denom = 1.0 + dist
-    if abs(denom) < 1e-9:
-        return None
-    est_vwap = price / denom
-    return est_vwap * (1.0 - tol)
+    return _estimate_reclaim_price_owner(
+        current_price, vwap_distance, reclaim_tolerance_pct, facade=sys.modules[__name__]
+    )
 
 
 def _iter_monitor_rows(canonical_root: Path, *, day: str) -> List[Dict[str, Any]]:
@@ -129,59 +116,11 @@ def _iter_monitor_rows(canonical_root: Path, *, day: str) -> List[Dict[str, Any]
 
 
 def _build_stale_groups(rows: Iterable[Dict[str, Any]], *, stale_age_min: float = 3.0) -> List[Dict[str, Any]]:
-    groups: Dict[tuple[str, str, Any], List[Dict[str, Any]]] = {}
-    for row in rows:
-        if not row.get("minute_source_present"):
-            continue
-        latest_candle_ts = row.get("latest_candle_ts")
-        if latest_candle_ts in (None, ""):
-            continue
-        age = _to_float(row.get("artifact_age_minutes"))
-        if age is None or age < stale_age_min:
-            continue
-        key = (str(row.get("symbol") or ""), str(row.get("evaluation_summary") or ""), latest_candle_ts)
-        groups.setdefault(key, []).append(row)
-    out: List[Dict[str, Any]] = []
-    for (symbol, reason, latest_candle_ts), cases in groups.items():
-        cases = sorted(cases, key=lambda row: str(row.get("ts") or ""))
-        out.append(
-            {
-                "symbol": symbol,
-                "evaluation_summary": reason,
-                "latest_candle_ts": latest_candle_ts,
-                "repeat_count": len(cases),
-                "first_run_id": cases[0].get("run_id"),
-                "last_run_id": cases[-1].get("run_id"),
-                "max_artifact_age_minutes": max((_to_float(row.get("artifact_age_minutes")) or 0.0) for row in cases),
-                "runs": [str(row.get("run_id") or "") for row in cases],
-            }
-        )
-    out.sort(key=lambda row: (-int(row["repeat_count"]), row["symbol"], row["evaluation_summary"]))
-    return out
+    return _build_stale_groups_owner(rows, stale_age_min=stale_age_min, facade=sys.modules[__name__])
 
 
 def _followup_from_rows(case: Dict[str, Any], rows: List[Dict[str, Any]]) -> Dict[str, Any]:
-    latest_candle_ts = int(case.get("latest_candle_ts") or 0)
-    blocked_price = _to_float(case.get("current_price"))
-    breakout_level = _to_float(case.get("breakout_level"))
-    reclaim_price = _to_float(case.get("reclaim_price"))
-    later = [row for row in rows if int(row.get("ts") or 0) > latest_candle_ts]
-    if not later or blocked_price in (None, 0.0):
-        return {"later_bars": 0}
-    max_high = max(_to_float(row.get("high")) or 0.0 for row in later)
-    min_low = min(_to_float(row.get("low")) or 0.0 for row in later)
-    last_close = _to_float(later[-1].get("close"))
-    return {
-        "later_bars": len(later),
-        "max_high_after": max_high,
-        "min_low_after": min_low,
-        "last_close_now": last_close,
-        "move_to_max_pct": ((max_high / blocked_price) - 1.0) * 100.0 if max_high > 0 else None,
-        "move_to_min_pct": ((min_low / blocked_price) - 1.0) * 100.0 if min_low > 0 else None,
-        "move_to_last_pct": ((last_close / blocked_price) - 1.0) * 100.0 if last_close else None,
-        "crossed_breakout_after": bool(breakout_level and max_high >= breakout_level),
-        "crossed_reclaim_after": bool(reclaim_price and max_high >= reclaim_price),
-    }
+    return _followup_from_rows_owner(case, rows, facade=sys.modules[__name__])
 
 
 def _load_live_minute_rows(symbol: str, *, retries: int = 3, sleep_sec: float = 0.2) -> List[Dict[str, Any]]:
