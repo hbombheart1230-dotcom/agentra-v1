@@ -5,6 +5,10 @@ from collections import Counter
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Any, Mapping
+import sys
+from . import attribution_score_range_date_range as _a35_date_range
+from . import attribution_score_range_day_trade_count as _a35_day_trade_count
+from . import attribution_score_range_render_attribution_score_range as _a35_render_attribution_score_range
 
 from .attribution_score_window import SCORE_KEYS, _mapping, _read_json, _score_value
 
@@ -14,15 +18,7 @@ def _parse_date(value: str) -> date:
 
 
 def _date_range(start: str, end: str) -> list[str]:
-    cursor = _parse_date(start)
-    final = _parse_date(end)
-    if cursor > final:
-        raise ValueError("start must be before or equal to end")
-    days: list[str] = []
-    while cursor <= final:
-        days.append(cursor.isoformat())
-        cursor += timedelta(days=1)
-    return days
+    return _a35_date_range._date_range(start=start, end=end, facade=sys.modules[__name__])
 
 
 def _trade_dir_count(reports_root: Path, day: str) -> int:
@@ -48,17 +44,7 @@ def _day_payload(reports_root: Path, day: str) -> dict[str, Any]:
 
 
 def _day_trade_count(reports_root: Path, day: str) -> int:
-    scorecard_count = (
-        _read_json(reports_root / "evaluation" / "daily" / day / "daily_scorecard.json")
-        .get("artifact_integrity", {})
-        .get("trade_count")
-    )
-    if scorecard_count is not None:
-        try:
-            return int(scorecard_count)
-        except (TypeError, ValueError):
-            pass
-    return _trade_dir_count(reports_root, day)
+    return _a35_day_trade_count._day_trade_count(reports_root=reports_root, day=day, facade=sys.modules[__name__])
 
 
 def build_attribution_score_range(
@@ -174,64 +160,7 @@ def build_attribution_score_range(
 
 
 def render_attribution_score_range(payload: Mapping[str, Any]) -> str:
-    title = f"{payload.get('start', '')} to {payload.get('end', '')}"
-    lines = [
-        f"# Q13 Attribution Score Range - {title}",
-        "",
-        f"- Behavior effect: `{payload.get('behavior_effect', '')}`",
-        f"- Days: {payload.get('day_count', 0)} total / {payload.get('available_day_count', 0)} available / {payload.get('scored_day_count', 0)} scored",
-        f"- Trade days: {payload.get('trade_day_count', 0)}",
-        f"- Total trades: {payload.get('total_trade_count', 0)}",
-        f"- Scored trades: {payload.get('scored_trade_count', 0)}",
-        f"- Weakest by average score: `{_mapping(payload.get('weakest_axis_by_average_score')).get('name') or '-'}` "
-        f"({_mapping(payload.get('weakest_axis_by_average_score')).get('average_score')})",
-        "",
-        "## Axis Summary",
-        "",
-        "| Axis | Avg Score | Min | Max | Scored Days | Missing Days | Insufficient Days | Top Reasons |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
-    ]
-    for key, item in _mapping(payload.get("axis_summary")).items():
-        obj = _mapping(item)
-        reasons = ", ".join(
-            f"{row.get('reason')} ({row.get('count')})"
-            for row in obj.get("top_reasons") or []
-        ) or "-"
-        lines.append(
-            f"| {key} | {obj.get('average_score')} | {obj.get('min_score')} | "
-            f"{obj.get('max_score')} | {obj.get('scored_day_count')} | "
-            f"{obj.get('missing_day_count')} | {obj.get('insufficient_day_count')} | {reasons} |"
-        )
-    lines.extend(["", "## Weakest Axis Distribution", ""])
-    distribution = _mapping(payload.get("weakest_axis_distribution"))
-    if distribution:
-        for key, count in sorted(distribution.items(), key=lambda item: (-int(item[1]), item[0])):
-            lines.append(f"- `{key}`: {count}")
-    else:
-        lines.append("- No scored days.")
-    lines.extend(
-        [
-            "",
-            "## Daily Rows",
-            "",
-            "| Day | Available | Scored | Trades | Weakest | Selection | Scanner | Entry | Exit/Horizon | Evidence |",
-            "| --- | --- | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: |",
-        ]
-    )
-    for row in payload.get("daily_rows") or []:
-        if not isinstance(row, Mapping):
-            continue
-        lines.append(
-            f"| {row.get('day')} | {row.get('available')} | {row.get('scored')} | "
-            f"{row.get('trade_count')} | {row.get('weakest_axis') or '-'} | "
-            f"{row.get('selection_integrity_score')} | "
-            f"{row.get('scanner_alignment_score')} | "
-            f"{row.get('entry_timing_score')} | "
-            f"{row.get('exit_horizon_score')} | "
-            f"{row.get('evidence_quality_score')} |"
-        )
-    lines.extend(["", "## Interpretation Rule", "", f"- {payload.get('interpretation_rule', '')}", ""])
-    return "\n".join(lines)
+    return _a35_render_attribution_score_range.render_attribution_score_range(payload=payload, facade=sys.modules[__name__])
 
 
 def write_attribution_score_range(
