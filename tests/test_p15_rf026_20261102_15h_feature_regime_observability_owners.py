@@ -17,3 +17,11 @@ def test_benchmark_filler_owner_is_synthetic_data_only():
     row = bench._filler_row("2026-01-02", 1)
     assert row["event"] == "ok"
     assert row["payload"]["api_id"] == "ka10080"
+
+
+def test_target_day_events_owner_is_ordered_synthetic_data():
+    from scripts.diagnostics import benchmark_operator_visibility_memory as bench
+    rows = bench._target_day_events_for_run("2026-01-02", 3, 0)
+    assert len(rows) == 7
+    assert rows[2]["payload"]["decision_packet"]["intent"]["action"] == "BUY"
+    assert rows[-1]["payload"]["allowed"] is False
