@@ -32,85 +32,21 @@ def _run_json(main_fn, argv: List[str]) -> Tuple[int, Dict[str, Any]]:  # type: 
 
 
 def _item(*, item_id: str, title: str, passed: bool, evidence: str, required: bool = True) -> Dict[str, Any]:
-    return {
-        "id": item_id,
-        "title": title,
-        "required": bool(required),
-        "passed": bool(passed),
-        "evidence": str(evidence),
-    }
+    from scripts.diagnostics.run_m31_mock_exam_readiness_check_item import _item as owner
+
+    return owner(item_id=item_id, title=title, passed=passed, evidence=evidence, required=required, facade=sys.modules[__name__])
 
 
 def _build_markdown(out: Dict[str, Any]) -> str:
-    stage = out.get("stage_checks") if isinstance(out.get("stage_checks"), dict) else {}
-    runtime = out.get("runtime_profile") if isinstance(out.get("runtime_profile"), dict) else {}
-    guard = out.get("guardrails") if isinstance(out.get("guardrails"), dict) else {}
-    checklist = out.get("checklist") if isinstance(out.get("checklist"), list) else []
-    missing = out.get("missing_prerequisites") if isinstance(out.get("missing_prerequisites"), list) else []
-    lines = [
-        f"# M31 Mock Exam Readiness Check ({out.get('day')})",
-        "",
-        f"- ok: **{bool(out.get('ok'))}**",
-        f"- required_pass_total: **{int(out.get('required_pass_total') or 0)}**",
-        f"- required_fail_total: **{int(out.get('required_fail_total') or 0)}**",
-        "",
-        "## Stage Checks",
-        "",
-        f"- m30_final_signoff: rc={int(stage.get('m30_final_signoff_rc') or 0)} ok={bool(stage.get('m30_final_signoff_ok'))}",
-        f"- m30_post_golive_policy: rc={int(stage.get('m30_post_golive_policy_rc') or 0)} ok={bool(stage.get('m30_post_golive_policy_ok'))}",
-        f"- m31_slo_incident: rc={int(stage.get('m31_slo_incident_rc') or 0)} ok={bool(stage.get('m31_slo_incident_ok'))}",
-        f"- m31_mock_exam: rc={int(stage.get('m31_mock_exam_rc') or 0)} ok={bool(stage.get('m31_mock_exam_ok'))}",
-        "",
-        "## Runtime Profile",
-        "",
-        f"- RUNTIME_PROFILE: **{runtime.get('RUNTIME_PROFILE')}**",
-        f"- KIWOOM_MODE: **{runtime.get('KIWOOM_MODE')}**",
-        f"- APPROVAL_MODE: **{runtime.get('APPROVAL_MODE')}**",
-        f"- EXECUTION_ENABLED: **{bool(runtime.get('EXECUTION_ENABLED'))}**",
-        f"- ALLOW_REAL_EXECUTION: **{bool(runtime.get('ALLOW_REAL_EXECUTION'))}**",
-        "",
-        "## Guardrails",
-        "",
-        f"- allowlist_size: **{int(guard.get('allowlist_size') or 0)}**",
-        "- SYMBOL_ALLOWLIST policy: **optional operational guard (recommended but not mandatory)**",
-        f"- max_notional_key: **{guard.get('max_notional_key')}**",
-        f"- max_notional: **{float(guard.get('max_notional') or 0.0):.2f}**",
-        f"- daily_loss_limit: **{float(guard.get('daily_loss_limit') or 0.0):.6f}**",
-        "",
-        "## Checklist",
-        "",
-    ]
-    for item in checklist:
-        mark = "x" if bool(item.get("passed")) else " "
-        lines.append(f"- [{mark}] {item.get('title')} | evidence={item.get('evidence')}")
+    from scripts.diagnostics.run_m31_mock_exam_readiness_check_build_markdown import _build_markdown as owner
 
-    lines += ["", "## Missing Prerequisites", ""]
-    if missing:
-        for row in missing:
-            lines.append(f"- {row}")
-    else:
-        lines.append("- (none)")
-    lines.append("")
-    return "\n".join(lines)
+    return owner(out, facade=sys.modules[__name__])
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Aggregate M30/M31 artifacts into one mock exam readiness checklist.")
-    p.add_argument("--day", default="2026-02-21")
-    p.add_argument("--env-path", default=".env")
-    p.add_argument("--event-log-path", default="data/logs/events.jsonl")
-    p.add_argument("--m30-event-log-dir", default="data/logs/milestones/m30/golive")
-    p.add_argument("--m30-quality-report-dir", default="reports/milestones/m30_quality_gates")
-    p.add_argument("--m30-signoff-report-dir", default="reports/milestones/m30_signoff")
-    p.add_argument("--m30-policy-report-dir", default="reports/milestones/m30_post_golive")
-    p.add_argument("--m30-golive-report-dir", default="reports/milestones/m30_golive")
-    p.add_argument("--m31-slo-report-dir", default="reports/milestones/m31_slo_incident")
-    p.add_argument("--m31-mock-exam-report-dir", default="reports/milestones/m31_mock_exam")
-    p.add_argument("--report-dir", default="reports/milestones/m31_mock_exam_readiness")
-    p.add_argument("--strict-session", action="store_true", help="Deprecated compatibility flag.")
-    p.add_argument("--allow-offhours", action="store_true", help="Allow off-hours pass for M31-2 gate.")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics.run_m31_mock_exam_readiness_check_build_parser import _build_parser as owner
+
+    return owner(facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:
