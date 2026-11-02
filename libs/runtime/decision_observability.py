@@ -26,17 +26,8 @@ def _clip(value: Any, *, max_len: int = 200) -> str:
 
 
 def _dedupe_non_empty(values: Iterable[Any], *, limit: int | None = None) -> List[str]:
-    out: List[str] = []
-    seen: set[str] = set()
-    for value in values:
-        text = str(value or "").strip()
-        if not text or text in seen:
-            continue
-        seen.add(text)
-        out.append(text)
-        if limit is not None and len(out) >= int(limit):
-            break
-    return out
+    from . import decision_observability_dedupe_non_empty as owner
+    return owner._dedupe_non_empty(values, limit=limit, facade=sys.modules[__name__])
 
 
 def _humanize_reason_code(value: Any) -> str:
@@ -76,16 +67,8 @@ def _reclaim_evidence_explanation(
 
 
 def _extract_failed_names(rows: Any, *, statuses: Sequence[str]) -> List[str]:
-    expected = {str(item or "").strip().lower() for item in list(statuses or []) if str(item or "").strip()}
-    out: List[str] = []
-    for row in list(rows or []):
-        if not isinstance(row, Mapping):
-            continue
-        status = str(row.get("status") or "").strip().lower()
-        if status not in expected:
-            continue
-        out.append(str(row.get("name") or "").strip())
-    return _dedupe_non_empty(out, limit=8)
+    from . import decision_observability_extract_failed_names as owner
+    return owner._extract_failed_names(rows, statuses=statuses, facade=sys.modules[__name__])
 
 
 def _blocker_family(

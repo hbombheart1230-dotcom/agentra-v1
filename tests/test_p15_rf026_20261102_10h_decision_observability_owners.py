@@ -7,3 +7,5 @@ def test_simple_owner_facades():
     assert d._humanize_reason_code("a_b")=="a b"
     assert d._normalize_decision_outcome(" buy ")=="BUY"
     assert d._extract_error_type("ValueError: x")=="ValueError"
+    assert d._dedupe_non_empty([" a ", "a", "", "b"], limit=1)==["a"]
+    assert d._extract_failed_names([{"name":"x","status":"FAIL"}],statuses=("fail",))==["x"]
