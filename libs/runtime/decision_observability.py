@@ -1,4 +1,5 @@
 from __future__ import annotations
+import sys
 
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Sequence
@@ -10,24 +11,18 @@ _DECISION_OUTCOMES = {"BUY", "SELL", "WAIT", "NOOP"}
 
 
 def _to_float(value: Any) -> float:
-    try:
-        return float(value)
-    except Exception:
-        return 0.0
+    from . import decision_observability_to_float as owner
+    return owner._to_float(value, facade=sys.modules[__name__])
 
 
 def _to_int(value: Any) -> int:
-    try:
-        return int(float(value))
-    except Exception:
-        return 0
+    from . import decision_observability_to_int as owner
+    return owner._to_int(value, facade=sys.modules[__name__])
 
 
 def _clip(value: Any, *, max_len: int = 200) -> str:
-    text = str(value or "").strip()
-    if len(text) <= max_len:
-        return text
-    return text[: max(0, max_len - 3)] + "..."
+    from . import decision_observability_clip as owner
+    return owner._clip(value, max_len=max_len, facade=sys.modules[__name__])
 
 
 def _dedupe_non_empty(values: Iterable[Any], *, limit: int | None = None) -> List[str]:
@@ -45,10 +40,8 @@ def _dedupe_non_empty(values: Iterable[Any], *, limit: int | None = None) -> Lis
 
 
 def _humanize_reason_code(value: Any) -> str:
-    text = str(value or "").strip()
-    if not text:
-        return ""
-    return text.replace("_", " ")
+    from . import decision_observability_humanize_reason_code as owner
+    return owner._humanize_reason_code(value, facade=sys.modules[__name__])
 
 
 def _reclaim_evidence_explanation(
@@ -134,8 +127,8 @@ def _blocker_family(
 
 
 def _normalize_decision_outcome(value: Any, *, fallback: str = "WAIT") -> str:
-    text = str(value or "").strip().upper()
-    return text if text in _DECISION_OUTCOMES else fallback
+    from . import decision_observability_normalize_decision_outcome as owner
+    return owner._normalize_decision_outcome(value, fallback=fallback, facade=sys.modules[__name__])
 
 
 def build_monitor_no_trade_surface(
@@ -659,18 +652,8 @@ def build_scanner_monitor_handoff_surface(
 
 
 def _extract_error_type(value: Any) -> str:
-    text = str(value or "").strip()
-    if not text:
-        return ""
-    known = ("TimeoutError", "ValueError", "RuntimeError", "TypeError", "ConnectionError")
-    for item in known:
-        if item in text:
-            return item
-    if ":" in text:
-        return text.split(":", 1)[0].strip()
-    if "(" in text:
-        return text.split("(", 1)[0].strip()
-    return text[:40]
+    from . import decision_observability_extract_error_type as owner
+    return owner._extract_error_type(value, facade=sys.modules[__name__])
 
 
 def build_strategist_policy_resolution_surface(
