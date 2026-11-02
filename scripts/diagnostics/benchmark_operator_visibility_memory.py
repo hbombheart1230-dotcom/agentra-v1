@@ -68,18 +68,8 @@ OTHER_DAYS = [f"2026-{m:02d}-{d:02d}" for m in range(1, 9) for d in (1, 8, 15, 2
 
 
 def _filler_row(day: str, i: int) -> Dict[str, Any]:
-    return {
-        "run_id": f"q9_comparison_forward_recovery_{day.replace('-', '')}_{i:06d}_1",
-        "ts": f"{day}T01:{(i // 3600) % 60:02d}:{i % 60:02d}+00:00",
-        "stage": "skill_execute" if i % 2 == 0 else "skill_result",
-        "event": "call" if i % 2 == 0 else "ok",
-        "event_name": "skill_execute.call" if i % 2 == 0 else "skill_result.ok",
-        "level": "info", "trade_id": "", "session_id": "", "cycle_id": "",
-        "agent": "skill_execute" if i % 2 == 0 else "skill_result",
-        "phase": "", "symbol": "",
-        "payload": {"skill": "market.minute_ohlcv", "api_id": "ka10080", "step": 0,
-                    "path": "/api/dostk/chart", "outputs": "MinuteOHLCVDTO"},
-    }
+    from scripts.diagnostics.benchmark_operator_visibility_memory__filler_row import _filler_row as owner
+    return owner(day, i, facade=sys.modules[__name__])
 
 
 def _target_day_events_for_run(day: str, run_idx: int, sec_offset: int) -> list[Dict[str, Any]]:
