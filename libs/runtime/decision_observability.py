@@ -44,26 +44,8 @@ def _reclaim_evidence_explanation(
     reclaim_distance_to_ready: Any,
     reclaim_readiness_tuned: bool,
 ) -> str:
-    if reclaim_readiness_tuned:
-        return (
-            "VWAP reclaim was slightly short of the standard near-ready band, "
-            "but small_relaxation_v1 allowed the breakout path because supporting evidence stayed intact."
-        )
-    if bool(reclaim_gate_ok):
-        if bool(vwap_reclaim_ok) and not bool(vwap_hold_ok):
-            return "VWAP reclaim confirmation is in place even though the hold check is still marginal."
-        if bool(vwap_hold_ok):
-            return "VWAP hold condition is satisfied."
-        return "VWAP reclaim gate is satisfied."
-    if reclaim_blocked:
-        distance = _to_float(reclaim_distance_to_ready)
-        if distance:
-            return (
-                "VWAP reclaim confirmation is still short of ready state "
-                f"(distance_to_ready={distance:.4f})."
-            )
-        return "VWAP reclaim confirmation is still short of ready state."
-    return ""
+    from .decision_observability_reclaim_evidence_explanation import _reclaim_evidence_explanation as owner
+    return owner(reclaim_blocked=reclaim_blocked, reclaim_gate_ok=reclaim_gate_ok, vwap_hold_ok=vwap_hold_ok, vwap_reclaim_ok=vwap_reclaim_ok, reclaim_distance_to_ready=reclaim_distance_to_ready, reclaim_readiness_tuned=reclaim_readiness_tuned, facade=sys.modules[__name__])
 
 
 def _extract_failed_names(rows: Any, *, statuses: Sequence[str]) -> List[str]:
@@ -77,36 +59,8 @@ def _blocker_family(
     primary_failure_axis: str,
     guard_blocked: bool,
 ) -> str:
-    reason = str(code or "").strip().lower()
-    axis = str(primary_failure_axis or "").strip().lower()
-    if guard_blocked:
-        return "guard_intervention"
-    if axis in {
-        "vwap_relationship",
-        "pullback_structure",
-        "volume_confirmation",
-        "breakout_readiness",
-        "entry_confirmation",
-        "overextension",
-        "chart_structure_support",
-        "chart_structure_continuation",
-    }:
-        return axis
-    if "chart_structure" in reason:
-        return "chart_structure_guard"
-    if "volume" in reason:
-        return "volume_confirmation"
-    if "reclaim" in reason or "vwap" in reason:
-        return "vwap_relationship"
-    if "pullback" in reason:
-        return "pullback_structure"
-    if "breakout" in reason:
-        return "breakout_readiness"
-    if "extend" in reason:
-        return "overextension"
-    if "confirmation" in reason:
-        return "entry_confirmation"
-    return "unknown"
+    from .decision_observability_blocker_family import _blocker_family as owner
+    return owner(code=code, primary_failure_axis=primary_failure_axis, guard_blocked=guard_blocked, facade=sys.modules[__name__])
 
 
 def _normalize_decision_outcome(value: Any, *, fallback: str = "WAIT") -> str:
