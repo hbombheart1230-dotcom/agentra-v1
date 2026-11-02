@@ -1,96 +1,80 @@
-# C01 — Codex B | ORDER_ID=B-20261103-03-C03 | RF-063 DEV | B40 NEW_READY=8/8 | B39 REMOTE_DONE=8/8 | RESERVE_VERIFIED=6/6
+# C01 — Codex B | ORDER_ID=B-20261103-08-C03 | RF-063 DEV | B41 NEW_READY=8/8 | B40 REMOTE_DONE=8/8 | RESERVE_VERIFIED=6/6
 
-## START — exact remote and starting-order protection
-Canonical prewrite `8fe92ce5f9dc3c9bb131a59b7b75d87150bdf59d`; B actor HEAD `60577211d953da14a2ed6b272582564da22a661e`. Previous C01 blob `241bd03c9993628659e96a36f1289f67e54f2103`. B39-1..8 [#12 6583531867](https://github.com/hbombheart1230-dotcom/agentra/issues/12#issuecomment-6583531867) remote DONE8/8, normal `tests/test_p15_rf063_20261103_02h_diagnostics_readiness_owners.py` EXIT=0 PASS=6; C04 [#36 6584029322](https://github.com/hbombheart1230-dotcom/agentra/issues/36#issuecomment-6584029322) integrated exact B39 at `8fe92ce5`; do not redo B1–B39 or count them again. If B39 genuinely in progress at start, finish its safe items first; no retroactive cancellation.
+## START — latest remote only; protect starting order
+C03 prewrite canonical `15207cf47e3b1b447545f5948a73eed3801f1e9d`, B remote `52a4a9b2d667b47631af0fe8ffc7d4d9534eea05`, previous C01 blob `a3c15ac68a37500ca0d0b88a614d2458fb1f38e3`. B40 [#12 6589772676](https://github.com/hbombheart1230-dotcom/agentra/issues/12#issuecomment-6589772676) all **8/8 remote DONE**, `tests/test_p15_rf063_20261103_03h_slo_mock_owners.py` normal EXIT0/6 PASS, syntax EXIT0; C04 [#36 6590341772](https://github.com/hbombheart1230-dotcom/agentra/issues/36#issuecomment-6590341772) integrated exact B40 11/11 at canonical `15207cf4`. Old malformed local `49f4c8c1` invalid, never reuse. Do not redo/recount B40 or B1-B39. Preserve any truly in-flight earlier starting order.
 
-First shell `python -m pytest --version`; if unavailable run `python -m pip install --user pytest` then recheck. Fetch latest **remote branch** `integration/p1.5:docs/refactor/work_orders/C01_CODEX_CURRENT.md`, not stale local checkout; report full REMOTE_CANONICAL_HEAD, C01_BLOB_SHA, ORDER_ID in #12. This C01 alone is the execution entrypoint; do not reread D00/RF/INDEX. At start refetch B HEAD and each SOURCE/TARGET; drift or target exists means item-specific VERIFIED_ALREADY/BLOCKED with exact SHA, continue other safe items.
+First shell `python -m pytest --version`; if missing `python -m pip install --user pytest`, recheck. Fetch **remote** `integration/p1.5:docs/refactor/work_orders/C01_CODEX_CURRENT.md`, log full canonical HEAD/C01 blob/ORDER_ID and B HEAD to #12. C01 is sole execution entrypoint; no D00/RF/INDEX/SKILL re-read or self-selection. Refetch each pinned B SOURCE/TARGET; if drift/target exists mark item-specific VERIFIED_ALREADY/BLOCKED with SHA/FIRST_BLOCKER, continue others. Only B code/test branch, non-force push.
 
-## DONE-FIRST — RF closeout blockers, do not conflate diagnostics with DONE
-Latest C05 [#36 6584047694](https://github.com/hbombheart1230-dotcom/agentra/issues/36#issuecomment-6584047694) physically verified DONE46/93, PENDING38/DEV7/PEER2, unresolved47. RF-030 exact canonical G3 fake smoke belongs C04, RF-032 Writer/UEF validation-id BLOCKED_POLICY; do not touch. RF-063 whole G1/G2 residual and G3 resolver/consumer parity BLOCKED: canonical `libs/reporting/llm_artifacts.py@27aea755e3ab9a3143affbd28294e4c8c775b8ca` vs B actor `@06dd435f68aeae0043e43f27f0b1600fa3e61b0c`; B39 [#12 6583531867] identified consumer import divergence. C04 must review complete safe resolver closure, not blindly cherry-pick a test. B40 does **not** authorize resolver/trade/LLM, broker, Guard, Step5C, UEF, real mode or operations changes. Do not treat B40 as RF-063 DONE. After B40, C03 will prioritize other unresolved B RF (e.g. RF-065) once source/owner/IO safe scope is independently validated; B must not self-select.
+## DONE-FIRST / resolver containment
+C05 07:48 physical 46/93 DONE (PENDING38/DEV7/PEER2). RF-063 whole G1 residual and G3 resolver/consumer BLOCKED: canonical `libs/reporting/llm_artifacts.py@27aea755e3ab9a3143affbd28294e4c8c775b8ca` vs B `@06dd435f68aeae0043e43f27f0b1600fa3e61b0c`. B40 scoped G3_REUSE ≠ whole RF DONE. RF-065 alternative source `scripts/research/run_phase5_validation_bundle.py` canonical `1beb655b` vs B `b44edf39`, `check_trade_report_runtime_regression.py` canonical `dc882aa5` vs B `c7113fcf`; do not issue a blind RF-065 or cross-owner resolver move on mismatched preimages. C03/C04/C05 must adjudicate exact dependency-closed resolver/consumer import parity and B-04 G3; no self-selected protected changes. B41 uses the remaining independently verified read-only/pure RF-063 functions while closeout blockers are routed separately. No LLM/resolver/trade/Guard/Step5C/UEF/broker, real .env, real logs/reports, operational state, runtime, CI/workflow or frozen oracle changes.
 
-## B40 REMOTE_MISSING / syntax-safe continuation — C03 2026-11-03 04h, preserve ALL B40-1..8
-[#12 6584755739](https://github.com/hbombheart1230-dotcom/agentra/issues/12#issuecomment-6584755739) confirms B40 local-only commit `49f4c8c1` contains a malformed multiline keyword-only `_item` wrapper: `SyntaxError: '(' was never closed` at `scripts/diagnostics/run_m31_slo_incident_review_check.py:90`. Normal targeted EXIT=1/PASS=0; **B remote HEAD remains `60577211d953da14a2ed6b272582564da22a661e`, all eight B40 remain UNDELIVERED**. This is not a C06 #37 finding and not a new B41 assignment. Keep the already-started B40 order; do not cancel, repeat B39, or count local `49f4c8c1` as G1.
-- **FIRST ACTION:** inspect local `git status --short` and preserve unrelated work; use exact remote B HEAD `60577211...` as the clean SOURCE preimage (do not force-push or blindly reset unrelated work). Discard/repair only the malformed B40 local transformation. Re-read the exact remote SOURCE `scripts/diagnostics/run_m31_slo_incident_review_check.py@7a1ad49ba5941aa661a974a4b6690bade41275eb` and `run_m31_mock_investor_exam_check.py@e4e7e5c56a044fe10ff85c9d273a9d77ff03d88f`; ensure all eight B40 targets remain absent on B before modifying.
-- **B40-3 exact repair:** SOURCE `run_m31_slo_incident_review_check.py::_item` has the **multiline keyword-only signature** `def _item(*, item_id: str, title: str, passed: bool, evidence: str, required: bool = True) -> Dict[str, Any]`. Preserve this exact callable signature, defaults, `__name__` monkeypatch seam and dict insertion order. Replace only its calculation body with an import-and-delegate wrapper using `from scripts.diagnostics.run_m31_slo_incident_review_check_item import _item as owner` and `return owner(item_id=item_id, title=title, passed=passed, evidence=evidence, required=required, facade=_migration_sys.modules[__name__])`; Owner has real original five-key dict calculation and accepts keyword-only `facade`. Do **not** regex-cut at the first newline of a function header. Use `ast.parse` or manually bounded signature/body edits for **all** B40 wrappers.
-- Before running pytest, `python -m py_compile scripts/diagnostics/run_m31_slo_incident_review_check.py scripts/diagnostics/run_m31_mock_investor_exam_check.py` EXIT0, then `python -m pytest -q tests/test_p15_rf063_20261103_03h_slo_mock_owners.py` **normal EXIT0 required** on exact B40 final tree; fake-only, no CLI main, real env, market or operational writes. Compile is an early syntax check, not an extra RF DONE gate. Test must include keyword-only required/default, missing positional argument TypeError, dict key order and source/Owner original-AST parity.
-- **All B40-1..8** remain assigned. For each record DONE with SOURCE before/after + exclusive Owner/test blobs or BLOCKED with exact SOURCE/TARGET/current SHA/FIRST_BLOCKER; continue independent safe items after a blocked one. Verify full staged SOURCE 2 + Owner 8 + targeted test 1 path manifest, `git show --name-only`, normal exit, non-force remote B push or authorized full-root expected-head route, then refetch remote B HEAD/root tree and 11 paths. Report real times and final evidence in **#12**. Do not invent PASS, G3 or RF DONE.
-- **Closeout separation:** RF-063 whole G3 remains blocked by `libs/reporting/llm_artifacts.py` canonical `27aea755` vs B `06dd435f` and resolver/consumer parity. B40 diagnostics cannot clear that. C04 alone selects safe integration, C05 alone RF DONE.
+## B41 eight independently verified SOURCE BODY MOVEs
+All real bodies canonical==B at issuance, 8 distinct exclusive TARGETs and new targeted test 404 canonical+B. Transfer entire computation to single Owner and retain same-signature/default/docstring SOURCE thin wrapper, call-time facade `sys.modules[__name__]` (SLO existing `_migration_sys.modules[__name__]`), preserve helper monkeypatches/import paths, dict order, error types, generator laziness and exact Markdown bytes. Use AST-bounded editing for multiline keyword-only `_item`, `py_compile` before tests. No Owner importing SOURCE at import-time; no double body.
 
-## B40 — eight independent real SOURCE BODY MOVEs (all assigned)
-Owner paths are unique, within RF-063 `scripts/diagnostics/`, absent on both canonical and B complete nontruncated Git trees at issuance; both SOURCE blobs canonical==B. Each item: move full original calculation body to one Owner function with same name, keep original signature/default/docstring thin wrapper in SOURCE; call-time `facade=sys.modules[__name__]` (SLO uses `_migration_sys.modules[__name__]`) for monkeypatchable helpers, constants, argparse/datetime. Owner must not import SOURCE; no double body. Preserve original return keys/order/identity/exceptions/CLI defaults. No `main`, no real env read, no runtime tick, no network/filesystem/DB/real order; only fake in-memory tests and argparse construction.
+### 1. RF-063 | NEW_BODY_MOVE
+SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_read_env_file` | SOURCE_GIT_BLOB=`2a875186f0a869966b26192e5ebd72240dde69b9` (canonical=actor verified 08h)
+TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_read_env_file.py::_read_env_file` | TARGET=404 canonical+actor verified
+BODY=read-only Path env parser: comments, quote removal, split first '=', inline # only unquoted, key order; NEVER read real .env
+TARGETED_NORMAL=tmp_path fake .env only, quoted/inline comment/empty/missing/malformed, no secrets
+MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
 
-### B40-1 | RF-063 | NEW_BODY_MOVE
-SOURCE=`scripts/diagnostics/run_m31_slo_incident_review_check.py::_to_epoch` | SOURCE_GIT_BLOB=`7a1ad49ba5941aa661a974a4b6690bade41275eb` (canonical=B at issuance)
-TARGET=`scripts/diagnostics/run_m31_slo_incident_review_check_to_epoch.py::_to_epoch` | TARGET=404 canonical+B, single exclusive Owner
-ACTUAL_BODY=Return None for missing/blank; numeric int; float-string; ISO/Z datetime UTC; same exception suppression and timezone behavior
-MOVE=transfer entire real body to Owner; SOURCE same-signature wrapper with dynamic facade; no effect/consumer edits.
-TARGETED_NORMAL_CASES=None, floats, ISO naive/aware/Z, invalid dates, custom str
-TEST=`tests/test_p15_rf063_20261103_03h_slo_mock_owners.py` original preimage AST vs final Owner/wrapper on fake inputs; verify output, exception, key/byte order and monkeypatch. If SHA drift or collision, item-specific FIRST_BLOCKER and continue.
+### 2. RF-063 | NEW_BODY_MOVE
+SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_parse_kst_datetime` | SOURCE_GIT_BLOB=`2a875186f0a869966b26192e5ebd72240dde69b9` (canonical=actor verified 08h)
+TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_parse_kst_datetime.py::_parse_kst_datetime` | TARGET=404 canonical+actor verified
+BODY=ISO Z/naive/aware conversion into KST; naive replace tzinfo KST, invalid None; preserve KST facade
+TARGETED_NORMAL=empty, malformed, Z, naive, offset, boundary date, monkeypatched KST
+MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
 
-### B40-2 | RF-063 | NEW_BODY_MOVE
-SOURCE=`scripts/diagnostics/run_m31_slo_incident_review_check.py::_utc_day` | SOURCE_GIT_BLOB=`7a1ad49ba5941aa661a974a4b6690bade41275eb` (canonical=B at issuance)
-TARGET=`scripts/diagnostics/run_m31_slo_incident_review_check_utc_day.py::_utc_day` | TARGET=404 canonical+B, single exclusive Owner
-ACTUAL_BODY=Use SOURCE facade._to_epoch dynamically, UTC date formatting; preserve None and boundary behavior
-MOVE=transfer entire real body to Owner; SOURCE same-signature wrapper with dynamic facade; no effect/consumer edits.
-TARGETED_NORMAL_CASES=epoch=0, midnight, cross-day, monkeypatched _to_epoch, invalid
-TEST=`tests/test_p15_rf063_20261103_03h_slo_mock_owners.py` original preimage AST vs final Owner/wrapper on fake inputs; verify output, exception, key/byte order and monkeypatch. If SHA drift or collision, item-specific FIRST_BLOCKER and continue.
+### 3. RF-063 | NEW_BODY_MOVE
+SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_utc_day` | SOURCE_GIT_BLOB=`2a875186f0a869966b26192e5ebd72240dde69b9` (canonical=actor verified 08h)
+TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_utc_day.py::_utc_day` | TARGET=404 canonical+actor verified
+BODY=call-time _to_epoch then UTC date via datetime.fromtimestamp; None and exception propagation preserved
+TARGETED_NORMAL=epoch 0, UTC boundary, invalid, patched _to_epoch and datetime
+MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
 
-### B40-3 | RF-063 | NEW_BODY_MOVE
-SOURCE=`scripts/diagnostics/run_m31_slo_incident_review_check.py::_item` | SOURCE_GIT_BLOB=`7a1ad49ba5941aa661a974a4b6690bade41275eb` (canonical=B at issuance)
-TARGET=`scripts/diagnostics/run_m31_slo_incident_review_check_item.py::_item` | TARGET=404 canonical+B, single exclusive Owner
-ACTUAL_BODY=Return original five-key checklist dict from keyword-only arguments with bool conversion, key order
-MOVE=transfer entire real body to Owner; SOURCE same-signature wrapper with dynamic facade; no effect/consumer edits.
-TARGETED_NORMAL_CASES=all required/default False, truthy custom objects, keyword-only TypeError
-TEST=`tests/test_p15_rf063_20261103_03h_slo_mock_owners.py` original preimage AST vs final Owner/wrapper on fake inputs; verify output, exception, key/byte order and monkeypatch. If SHA drift or collision, item-specific FIRST_BLOCKER and continue.
+### 4. RF-063 | NEW_BODY_MOVE
+SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_item` | SOURCE_GIT_BLOB=`2a875186f0a869966b26192e5ebd72240dde69b9` (canonical=actor verified 08h)
+TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_item.py::_item` | TARGET=404 canonical+actor verified
+BODY=keyword-only five-field checklist dict id,title,required,passed,evidence; preserve multiline signature/default/order/bool/str
+TARGETED_NORMAL=required omitted/default, truthy objects, positional TypeError, key order; AST-safe header
+MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
 
-### B40-4 | RF-063 | NEW_BODY_MOVE
-SOURCE=`scripts/diagnostics/run_m31_slo_incident_review_check.py::_build_markdown` | SOURCE_GIT_BLOB=`7a1ad49ba5941aa661a974a4b6690bade41275eb` (canonical=B at issuance)
-TARGET=`scripts/diagnostics/run_m31_slo_incident_review_check_build_markdown.py::_build_markdown` | TARGET=404 canonical+B, single exclusive Owner
-ACTUAL_BODY=Original in-memory SLO/incident/policy/checklist/failures Markdown; preserve exact headings, checkboxes, percentages, newline bytes
-MOVE=transfer entire real body to Owner; SOURCE same-signature wrapper with dynamic facade; no effect/consumer edits.
-TARGETED_NORMAL_CASES=empty/full nested data, failures, invalid numeric exception, UTF-8 byte equality
-TEST=`tests/test_p15_rf063_20261103_03h_slo_mock_owners.py` original preimage AST vs final Owner/wrapper on fake inputs; verify output, exception, key/byte order and monkeypatch. If SHA drift or collision, item-specific FIRST_BLOCKER and continue.
+### 5. RF-063 | NEW_BODY_MOVE
+SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_build_markdown` | SOURCE_GIT_BLOB=`2a875186f0a869966b26192e5ebd72240dde69b9` (canonical=actor verified 08h)
+TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_build_markdown.py::_build_markdown` | TARGET=404 canonical+actor verified
+BODY=full in-memory mock exam Markdown from runtime_mode/guardrails/market/events/checklist; exact headings, format, newline bytes
+TARGETED_NORMAL=empty/full/malformed nested payload, Unicode, failure rows, original byte parity
+MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
 
-### B40-5 | RF-063 | NEW_BODY_MOVE
-SOURCE=`scripts/diagnostics/run_m31_slo_incident_review_check.py::_build_parser` | SOURCE_GIT_BLOB=`7a1ad49ba5941aa661a974a4b6690bade41275eb` (canonical=B at issuance)
-TARGET=`scripts/diagnostics/run_m31_slo_incident_review_check_build_parser.py::_build_parser` | TARGET=404 canonical+B, single exclusive Owner
-ACTUAL_BODY=Original argparse builder only, no parse_args/main; retain defaults, types, flags and help text
-MOVE=transfer entire real body to Owner; SOURCE same-signature wrapper with dynamic facade; no effect/consumer edits.
-TARGETED_NORMAL_CASES=default args, --inject-fail, --json, --day, patched argparse, --help
-TEST=`tests/test_p15_rf063_20261103_03h_slo_mock_owners.py` original preimage AST vs final Owner/wrapper on fake inputs; verify output, exception, key/byte order and monkeypatch. If SHA drift or collision, item-specific FIRST_BLOCKER and continue.
+### 6. RF-063 | NEW_BODY_MOVE
+SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_build_parser` | SOURCE_GIT_BLOB=`2a875186f0a869966b26192e5ebd72240dde69b9` (canonical=actor verified 08h)
+TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_build_parser.py::_build_parser` | TARGET=404 canonical+actor verified
+BODY=argparse construction only; preserve defaults and --allow-offhours/--strict-session/--now-kst, no parse/main
+TARGETED_NORMAL=fake argv parsing defaults/flags/help, patched argparse, no CLI main
+MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
 
-### B40-6 | RF-063 | NEW_BODY_MOVE
-SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_env_bool` | SOURCE_GIT_BLOB=`e4e7e5c56a044fe10ff85c9d273a9d77ff03d88f` (canonical=B at issuance)
-TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_env_bool.py::_env_bool` | TARGET=404 canonical+B, single exclusive Owner
-ACTUAL_BODY=Read only supplied mapping key; lower/strip; true tokens 1/true/yes/y/on; preserve bool(default) for blank
-MOVE=transfer entire real body to Owner; SOURCE same-signature wrapper with dynamic facade; no effect/consumer edits.
-TARGETED_NORMAL_CASES=missing/default, whitespace/case, true/false tokens, custom mapping exception
-TEST=`tests/test_p15_rf063_20261103_03h_slo_mock_owners.py` original preimage AST vs final Owner/wrapper on fake inputs; verify output, exception, key/byte order and monkeypatch. If SHA drift or collision, item-specific FIRST_BLOCKER and continue.
+### 7. RF-063 | NEW_BODY_MOVE
+SOURCE=`scripts/diagnostics/run_m31_slo_incident_review_check.py::_iter_jsonl` | SOURCE_GIT_BLOB=`c3fbff8859a8bd34e9426f1058986ea45e973517` (canonical=actor verified 08h)
+TARGET=`scripts/diagnostics/run_m31_slo_incident_review_check_iter_jsonl.py::_iter_jsonl` | TARGET=404 canonical+actor verified
+BODY=nested lazy generator, read-only path.open UTF-8, skip blank/bad/non-dict, return [] if missing; do NOT materialize
+TARGETED_NORMAL=tmp_path only, missing/invalid/mixed JSONL, lazy iterator behavior, exact errors
+MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
 
-### B40-7 | RF-063 | NEW_BODY_MOVE
-SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_to_float` | SOURCE_GIT_BLOB=`e4e7e5c56a044fe10ff85c9d273a9d77ff03d88f` (canonical=B at issuance)
-TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_to_float.py::_to_float` | TARGET=404 canonical+B, single exclusive Owner
-ACTUAL_BODY=Try float(value); on any Exception return float(default); preserve both exception points
-MOVE=transfer entire real body to Owner; SOURCE same-signature wrapper with dynamic facade; no effect/consumer edits.
-TARGETED_NORMAL_CASES=None, invalid, zero, custom __float__, default conversion failure
-TEST=`tests/test_p15_rf063_20261103_03h_slo_mock_owners.py` original preimage AST vs final Owner/wrapper on fake inputs; verify output, exception, key/byte order and monkeypatch. If SHA drift or collision, item-specific FIRST_BLOCKER and continue.
+### 8. RF-063 | NEW_BODY_MOVE
+SOURCE=`scripts/diagnostics/run_m31_slo_incident_review_check.py::_read_json` | SOURCE_GIT_BLOB=`c3fbff8859a8bd34e9426f1058986ea45e973517` (canonical=actor verified 08h)
+TARGET=`scripts/diagnostics/run_m31_slo_incident_review_check_read_json.py::_read_json` | TARGET=404 canonical+actor verified
+BODY=read-only Path JSON parser: missing => {}, try/except Exception => {}, dict only; no writes
+TARGETED_NORMAL=tmp_path missing/invalid/list/dict, facade json, exception parity
+MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
 
-### B40-8 | RF-063 | NEW_BODY_MOVE
-SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_to_epoch` | SOURCE_GIT_BLOB=`e4e7e5c56a044fe10ff85c9d273a9d77ff03d88f` (canonical=B at issuance)
-TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_to_epoch.py::_to_epoch` | TARGET=404 canonical+B, single exclusive Owner
-ACTUAL_BODY=Numeric/string epoch or ISO datetime/Z, naive timezone UTC, invalid returns None; preserve exception handling
-MOVE=transfer entire real body to Owner; SOURCE same-signature wrapper with dynamic facade; no effect/consumer edits.
-TARGETED_NORMAL_CASES=None/blank, fractional, ISO offset, invalid, boundary UTC
-TEST=`tests/test_p15_rf063_20261103_03h_slo_mock_owners.py` original preimage AST vs final Owner/wrapper on fake inputs; verify output, exception, key/byte order and monkeypatch. If SHA drift or collision, item-specific FIRST_BLOCKER and continue.
+## VERIFIED UNASSIGNED RESERVE — B 6/6
+Each real body verified RF-063 B-exclusive FILE_COVERAGE, canonical=B SOURCE blob, six distinct TARGET 404 C+B, IO/state/fake test scope verified at 08h. UNASSIGNED, no actor discretion or G2 claim.
+1. SOURCE=`scripts/diagnostics/run_m31_slo_incident_review_check.py::_resolve_day_artifact@c3fbff8859a8bd34e9426f1058986ea45e973517` → TARGET=`scripts/diagnostics/run_m31_slo_incident_review_check_resolve_day_artifact.py::_resolve_day_artifact` (404 canonical+actor). BODY/TEST=read-only direct-day then sorted glob latest eligible prior day; tmp_path + fake _read_json; exclusive Owner; unassigned, no PASS.
+2. SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_iter_jsonl@2a875186f0a869966b26192e5ebd72240dde69b9` → TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_iter_jsonl.py::_iter_jsonl` (404 canonical+actor). BODY/TEST=lazy read-only JSONL generator; tmp_path only, malformed/blank/dict filter; exclusive Owner; unassigned, no PASS.
+3. SOURCE=`scripts/diagnostics/run_m30_quality_gates_bundle.py::_build_md@6cb8fe651fd209b5ba47d4b7861bc287be4d3724` → TARGET=`scripts/diagnostics/run_m30_quality_gates_bundle_build_md.py::_build_md` (404 canonical+actor). BODY/TEST=in-memory gate/failure Markdown exact bytes; exclusive Owner; unassigned, no PASS.
+4. SOURCE=`scripts/diagnostics/run_m30_quality_gates_bundle.py::_component_summary@6cb8fe651fd209b5ba47d4b7861bc287be4d3724` → TARGET=`scripts/diagnostics/run_m30_quality_gates_bundle_component_summary.py::_component_summary` (404 canonical+actor). BODY/TEST=pure rc/ok/failure_total dict, key order; exclusive Owner; unassigned, no PASS.
+5. SOURCE=`scripts/diagnostics/run_m30_quality_gates_bundle.py::_gate_status@6cb8fe651fd209b5ba47d4b7861bc287be4d3724` → TARGET=`scripts/diagnostics/run_m30_quality_gates_bundle_gate_status.py::_gate_status` (404 canonical+actor). BODY/TEST=pure pass/fail counts and components identity; exclusive Owner; unassigned, no PASS.
+6. SOURCE=`scripts/diagnostics/run_m30_quality_gates_bundle.py::_build_parser@6cb8fe651fd209b5ba47d4b7861bc287be4d3724` → TARGET=`scripts/diagnostics/run_m30_quality_gates_bundle_build_parser.py::_build_parser` (404 canonical+actor). BODY/TEST=argparse builder only; no main/real execution; exclusive Owner; unassigned, no PASS.
 
-## VERIFIED RESERVE — B 6/6 (UNASSIGNED; not Actor discretion)
-Verified actual bodies, canonical=B source blob `e4e7e5c56a044fe10ff85c9d273a9d77ff03d88f`, exact RF-063 FILE_COVERAGE, six distinct target 404 canonical+B at issuance. These are NOT B40; do not execute unless next C03 order. Each requires fake/temp targeted parity; no real operations.
-1. RF-063 SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_read_env_file@e4e7e5c56a044fe10ff85c9d273a9d77ff03d88f` → TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_read_env_file.py::_read_env_file` (404 C+B); BODY=Read-only local env parser, comments/quotes/first '=', **temp fake Path only**; never open real `.env` or secrets; IO/State=none except _read_env_file read-only tmp fixture; fake normal test hypothesis; UNASSIGNED.
-2. RF-063 SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_parse_kst_datetime@e4e7e5c56a044fe10ff85c9d273a9d77ff03d88f` → TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_parse_kst_datetime.py::_parse_kst_datetime` (404 C+B); BODY=ISO Z/naive/aware KST conversion, invalid None; no clock reads; IO/State=none except _read_env_file read-only tmp fixture; fake normal test hypothesis; UNASSIGNED.
-3. RF-063 SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_utc_day@e4e7e5c56a044fe10ff85c9d273a9d77ff03d88f` → TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_utc_day.py::_utc_day` (404 C+B); BODY=Call-time `_to_epoch` and UTC YYYY-MM-DD, in-memory; IO/State=none except _read_env_file read-only tmp fixture; fake normal test hypothesis; UNASSIGNED.
-4. RF-063 SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_item@e4e7e5c56a044fe10ff85c9d273a9d77ff03d88f` → TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_item.py::_item` (404 C+B); BODY=Five-key keyword-only checklist dict projection, key/exception parity; IO/State=none except _read_env_file read-only tmp fixture; fake normal test hypothesis; UNASSIGNED.
-5. RF-063 SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_build_markdown@e4e7e5c56a044fe10ff85c9d273a9d77ff03d88f` → TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_build_markdown.py::_build_markdown` (404 C+B); BODY=In-memory mock investor Markdown, exact headings/checkboxes/bytes; IO/State=none except _read_env_file read-only tmp fixture; fake normal test hypothesis; UNASSIGNED.
-6. RF-063 SOURCE=`scripts/diagnostics/run_m31_mock_investor_exam_check.py::_build_parser@e4e7e5c56a044fe10ff85c9d273a9d77ff03d88f` → TARGET=`scripts/diagnostics/run_m31_mock_investor_exam_check_build_parser.py::_build_parser` (404 C+B); BODY=Argparse builder only, no parse/main/market/graph invocation; IO/State=none except _read_env_file read-only tmp fixture; fake normal test hypothesis; UNASSIGNED.
-
-## TEST / DELIVERY / ACCEPTANCE
-Normal targeted: `python -m pytest -q tests/test_p15_rf063_20261103_03h_slo_mock_owners.py` must exit 0 on exact final B tree; test all 8 with original pinned preimage AST, including facade patched helper behavior. Record observed EXIT and PASS count separately. Before commit/push verify full staged SOURCE+8 Owner+test manifest, preserve full-root tree; no root-only-tests Git tree. Non-force B push or approved non-force expected-head full-root exact-tree fallback; re-fetch B HEAD/tree and all SOURCE/Owner/test blobs. If push blocked, report PUSH_BLOCKED, never claim remote G1. Each B40-1..8 DONE or exact SOURCE/TARGET/current SHA/FIRST_BLOCKER; continue safe items despite one failure. Report actual START_KST/END_KST/ELAPSED_MIN, HEAD before/after, normal command EXIT/PASS, changed blobs, non-force remote delivery to #12. C04 owns integration/G3; C05 alone RF/STATUS/DONE. No C02/C03/C04/C05/D00/RF/STATUS docs writes; no protected effects.
+## TEST / PUSH / ACCEPTANCE
+Implement `tests/test_p15_rf063_20261103_08h_mock_slo_owners.py` (404 C+B) pinned preimage AST→Owner/wrapper fake parity for all eight, original signatures/defaults/keyword-only/monkeypatch/identity/bytes/lazy generator and exceptions. `_read_env_file` must ONLY open tmp_path fake fixture; `_iter_jsonl`/JSON only tmp_path. `python -m py_compile` changed SOURCE+Owner EXIT0, then normal `python -m pytest -q tests/test_p15_rf063_20261103_08h_mock_slo_owners.py` **EXIT0 required**. Staged full-root manifest SOURCE 2 + Owner 8 + test 1 = **11 paths**; check status, staged names, commit names. Non-force B push or authorized non-force expected-head **full-root** exact-tree fallback (never root-only tests); re-fetch B remote HEAD/tree and 11 paths. Each B41-1..8 DONE or exact SHA/FIRST_BLOCKER; continue safe items despite failure. Report actual START_KST/END_KST/ELAPSED_MIN, normal EXIT/PASS, SOURCE before/after, Owner/test blobs, remote SHA to #12. C04 integration/G3, C05 DONE/STATUS exclusive. No docs/RF/STATUS/CI/operations writes.
