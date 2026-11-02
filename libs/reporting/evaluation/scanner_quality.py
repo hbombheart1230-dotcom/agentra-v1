@@ -14,6 +14,7 @@ from . import scanner_quality_extract_pre_strategist_candidate_rows as _a47_extr
 from . import scanner_quality_build_scanner_topk_forward_performance as _a48_build_scanner_topk_forward_performance
 from . import scanner_quality_build_scanner_source_performance as _a48_build_scanner_source_performance
 from . import scanner_quality_build_scanner_quality_review as _a54_sq_build
+from . import scanner_quality_pre_strategist_candidate_rows as _a55_sq_pre
 
 
 TOP_K_VALUES = (1, 3, 5, 10)
@@ -39,13 +40,7 @@ def pre_strategist_candidate_rows(
     *,
     minute_rows_by_symbol: Mapping[str, list[Mapping[str, Any]]] | None = None,
 ) -> list[dict[str, Any]]:
-    rows = extract_pre_strategist_candidate_rows(payloads)
-    if minute_rows_by_symbol is None:
-        return attach_forward_outcomes(rows)
-    return attach_forward_outcomes(
-        rows,
-        minute_rows_by_symbol=minute_rows_by_symbol,
-    )
+    return _a55_sq_pre.pre_strategist_candidate_rows(payloads, minute_rows_by_symbol=minute_rows_by_symbol, facade=sys.modules[__name__])
 
 
 def build_scanner_topk_forward_performance(
