@@ -16,35 +16,15 @@ from typing import Any, Dict, Iterable, List, Optional
 
 
 def _to_epoch(ts: Any) -> Optional[int]:
-    if ts is None:
-        return None
-    if isinstance(ts, (int, float)):
-        return int(ts)
+    from scripts.diagnostics.run_m31_slo_incident_review_check_to_epoch import _to_epoch as owner
 
-    s = str(ts).strip()
-    if not s:
-        return None
-    try:
-        return int(float(s))
-    except Exception:
-        pass
-
-    if s.endswith("Z"):
-        s = s[:-1] + "+00:00"
-    try:
-        dt = datetime.fromisoformat(s)
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return int(dt.timestamp())
-    except Exception:
-        return None
+    return owner(ts, facade=_migration_sys.modules[__name__])
 
 
 def _utc_day(ts: Any) -> Optional[str]:
-    e = _to_epoch(ts)
-    if e is None:
-        return None
-    return datetime.fromtimestamp(e, tz=timezone.utc).strftime("%Y-%m-%d")
+    from scripts.diagnostics.run_m31_slo_incident_review_check_utc_day import _utc_day as owner
+
+    return owner(ts, facade=_migration_sys.modules[__name__])
 
 
 def _iter_jsonl(path: Path) -> Iterable[Dict[str, Any]]:
@@ -115,13 +95,9 @@ def _item(
     evidence: str,
     required: bool = True,
 ) -> Dict[str, Any]:
-    return {
-        "id": item_id,
-        "title": title,
-        "required": bool(required),
-        "passed": bool(passed),
-        "evidence": str(evidence),
-    }
+    from scripts.diagnostics.run_m31_slo_incident_review_check_item import _item as owner
+
+    return owner(item_id=item_id, title=title, passed=passed, evidence=evidence, required=required, facade=_migration_sys.modules[__name__])
 
 
 def _severity_from_level(level: str) -> str:
@@ -137,65 +113,15 @@ def _ownership_from_level(level: str) -> str:
 
 
 def _build_markdown(out: Dict[str, Any]) -> str:
-    slo = out.get("slo") if isinstance(out.get("slo"), dict) else {}
-    inc = out.get("incident") if isinstance(out.get("incident"), dict) else {}
-    policy = out.get("policy") if isinstance(out.get("policy"), dict) else {}
-    checklist = out.get("checklist") if isinstance(out.get("checklist"), list) else []
+    from scripts.diagnostics.run_m31_slo_incident_review_check_build_markdown import _build_markdown as owner
 
-    lines = [
-        f"# M31-1 SLO and Incident Review Check ({out.get('day')})",
-        "",
-        f"- ok: **{bool(out.get('ok'))}**",
-        f"- required_pass_total: **{int(out.get('required_pass_total') or 0)}**",
-        f"- required_fail_total: **{int(out.get('required_fail_total') or 0)}**",
-        "",
-        "## SLO Snapshot",
-        "",
-        f"- run_total: **{int(slo.get('run_total') or 0)}**",
-        f"- success_run_total: **{int(slo.get('success_run_total') or 0)}**",
-        f"- availability_rate: **{float(slo.get('availability_rate') or 0.0):.2%}**",
-        f"- event_total: **{int(slo.get('event_total') or 0)}**",
-        f"- error_total: **{int(slo.get('error_total') or 0)}**",
-        f"- error_rate: **{float(slo.get('error_rate') or 0.0):.2%}**",
-        "",
-        "## Incident and Ownership",
-        "",
-        f"- escalation_level: **{policy.get('escalation_level')}**",
-        f"- severity: **{policy.get('severity')}**",
-        f"- ownership: **{policy.get('ownership')}**",
-        f"- cooldown_transition_total: **{int(inc.get('cooldown_transition_total') or 0)}**",
-        f"- intervention_total: **{int(inc.get('intervention_total') or 0)}**",
-        "",
-        "## Checklist",
-        "",
-    ]
-    for item in checklist:
-        mark = "x" if bool(item.get("passed")) else " "
-        lines.append(f"- [{mark}] {item.get('title')} | evidence={item.get('evidence')}")
-
-    failures = out.get("failures") if isinstance(out.get("failures"), list) else []
-    lines += ["", "## Failures", ""]
-    if failures:
-        for msg in failures:
-            lines.append(f"- {msg}")
-    else:
-        lines.append("- (none)")
-    lines.append("")
-    return "\n".join(lines)
+    return owner(out, facade=_migration_sys.modules[__name__])
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M31-1 daily SLO baseline + incident ownership check.")
-    p.add_argument("--event-log-path", default="data/logs/events.jsonl")
-    p.add_argument("--policy-report-dir", default="reports/milestones/m30_post_golive")
-    p.add_argument("--signoff-report-dir", default="reports/milestones/m30_golive")
-    p.add_argument("--report-dir", default="reports/milestones/m31_slo_incident")
-    p.add_argument("--day", default="2026-02-21")
-    p.add_argument("--min-availability-rate", type=float, default=0.99)
-    p.add_argument("--max-error-rate", type=float, default=0.20)
-    p.add_argument("--inject-fail", action="store_true")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics.run_m31_slo_incident_review_check_build_parser import _build_parser as owner
+
+    return owner(facade=_migration_sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:

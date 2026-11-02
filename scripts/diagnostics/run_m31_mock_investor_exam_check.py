@@ -40,40 +40,21 @@ def _read_env_file(path: Path) -> Dict[str, str]:
 
 
 def _env_bool(env: Dict[str, str], key: str, default: bool = False) -> bool:
-    raw = str(env.get(key, "")).strip().lower()
-    if not raw:
-        return bool(default)
-    return raw in ("1", "true", "yes", "y", "on")
+    from scripts.diagnostics.run_m31_mock_investor_exam_check_env_bool import _env_bool as owner
+
+    return owner(env, key, default, facade=sys.modules[__name__])
 
 
 def _to_float(value: Any, default: float = 0.0) -> float:
-    try:
-        return float(value)
-    except Exception:
-        return float(default)
+    from scripts.diagnostics.run_m31_mock_investor_exam_check_to_float import _to_float as owner
+
+    return owner(value, default, facade=sys.modules[__name__])
 
 
 def _to_epoch(ts: Any) -> Optional[int]:
-    if ts is None:
-        return None
-    if isinstance(ts, (int, float)):
-        return int(ts)
-    s = str(ts).strip()
-    if not s:
-        return None
-    try:
-        return int(float(s))
-    except Exception:
-        pass
-    if s.endswith("Z"):
-        s = s[:-1] + "+00:00"
-    try:
-        dt = datetime.fromisoformat(s)
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return int(dt.timestamp())
-    except Exception:
-        return None
+    from scripts.diagnostics.run_m31_mock_investor_exam_check_to_epoch import _to_epoch as owner
+
+    return owner(ts, facade=sys.modules[__name__])
 
 
 def _parse_kst_datetime(value: str) -> Optional[datetime]:
