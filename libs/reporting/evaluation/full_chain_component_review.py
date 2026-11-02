@@ -5,6 +5,7 @@ from collections import defaultdict
 import os
 from pathlib import Path
 from typing import Any, Mapping
+import sys
 
 from libs.reporting.q8_evaluation_contract import candidate_day
 from libs.reporting.quant_shadow_candidate_evaluation import (
@@ -30,6 +31,14 @@ from .loss_decomposition import (
 )
 from .metrics import performance_metrics
 from .scanner_quality import build_scanner_quality_review
+from . import full_chain_component_review_number as _a52_number
+from . import full_chain_component_review_behavior_metric_eligible as _a52_behavior_metric_eligible
+from . import full_chain_component_review_topk_metric as _a52_topk_metric
+from . import full_chain_component_review_classify_root_cause as _a52_classify_root_cause
+from . import full_chain_component_review_role_metrics as _a52_role_metrics
+from . import full_chain_component_review_paired_role_deltas as _a52_paired_role_deltas
+from . import full_chain_component_review_selection_availability as _a52_selection_availability
+from . import full_chain_component_review_q9_decision_candidate_rows as _a52_q9_decision_candidate_rows
 
 
 HORIZONS = ("+5m", "+15m", "+30m", "+60m")
@@ -43,18 +52,11 @@ BEHAVIOR_METRIC_EXCLUSION_DEFECTS = {
 
 
 def _number(value: Any) -> float | None:
-    try:
-        if value in (None, ""):
-            return None
-        return float(value)
-    except (TypeError, ValueError):
-        return None
+    return _a52_number._number(value, facade=sys.modules[__name__])
 
 
 def _behavior_metric_eligible(model: Mapping[str, Any]) -> bool:
-    integrity = model.get("integrity") if isinstance(model.get("integrity"), Mapping) else {}
-    defects = {str(value) for value in (integrity.get("defects") or [])}
-    return not bool(defects & BEHAVIOR_METRIC_EXCLUSION_DEFECTS)
+    return _a52_behavior_metric_eligible._behavior_metric_eligible(model, facade=sys.modules[__name__])
 
 
 def _topk_metric(
@@ -63,18 +65,7 @@ def _topk_metric(
     top_k: int,
     horizon: str,
 ) -> dict[str, Any]:
-    topk = scanner_quality.get("topk_forward_performance")
-    topk = topk if isinstance(topk, Mapping) else {}
-    return next(
-        (
-            dict(row)
-            for row in topk.get("rows") or []
-            if isinstance(row, Mapping)
-            and int(row.get("top_k") or 0) == top_k
-            and str(row.get("horizon") or "") == horizon
-        ),
-        {},
-    )
+    return _a52_topk_metric._topk_metric(scanner_quality, top_k=top_k, horizon=horizon, facade=sys.modules[__name__])
 
 
 def _classify_root_cause(
@@ -84,110 +75,7 @@ def _classify_root_cause(
     entry: Mapping[str, Any],
     exit_hold: Mapping[str, Any],
 ) -> dict[str, Any]:
-    scanner_top1 = _topk_metric(scanner_quality, top_k=1, horizon="+30m")
-    scanner_top3 = _topk_metric(scanner_quality, top_k=3, horizon="+30m")
-    scanner_enough = bool(
-        int(scanner_top1.get("window_count") or 0) >= DIRECTIONAL_MIN_OBSERVATIONS
-        and int(scanner_top1.get("observed_day_count") or 0) >= DIRECTIONAL_MIN_DAYS
-    )
-    top1_net = _number((scanner_top1.get("net") or {}).get("expectancy_pct"))
-    top3_net = _number((scanner_top3.get("net") or {}).get("expectancy_pct"))
-    scanner_fail = bool(
-        scanner_enough
-        and top1_net is not None
-        and top3_net is not None
-        and top1_net <= 0.0
-        and top3_net <= 0.0
-    )
-
-    attribution_30 = next(
-        (
-            row
-            for row in attribution.get("by_horizon") or []
-            if isinstance(row, Mapping) and row.get("horizon") == "+30m"
-        ),
-        {},
-    )
-    strategist_enough = bool(
-        int(attribution_30.get("strategist_comparison_count") or 0)
-        >= DIRECTIONAL_MIN_OBSERVATIONS
-        and int(attribution_30.get("strategist_day_count") or 0) >= DIRECTIONAL_MIN_DAYS
-    )
-    commander_enough = bool(
-        int(attribution_30.get("commander_comparison_count") or 0)
-        >= DIRECTIONAL_MIN_OBSERVATIONS
-        and int(attribution_30.get("commander_day_count") or 0) >= DIRECTIONAL_MIN_DAYS
-    )
-    strategist_delta = _number(attribution_30.get("average_strategist_delta_pct"))
-    commander_delta = _number(attribution_30.get("average_commander_delta_pct"))
-    strategist_fail = bool(
-        strategist_enough
-        and strategist_delta is not None
-        and strategist_delta <= -MIN_MATERIAL_RANKING_DELTA_PCT
-    )
-    commander_fail = bool(
-        commander_enough
-        and commander_delta is not None
-        and commander_delta <= -MIN_MATERIAL_RANKING_DELTA_PCT
-    )
-
-    entry_enough = bool(
-        int(entry.get("matched_trade_count") or 0) >= DIRECTIONAL_MIN_OBSERVATIONS
-        and int(entry.get("matched_day_count") or 0) >= DIRECTIONAL_MIN_DAYS
-    )
-    entry_delta = _number(entry.get("average_entry_price_delta_pct"))
-    entry_fail = bool(entry_enough and entry_delta is not None and entry_delta > 0.30)
-
-    exit_enough = bool(
-        int(exit_hold.get("observed_trade_count") or 0) >= DIRECTIONAL_MIN_OBSERVATIONS
-        and int(exit_hold.get("observed_day_count") or 0) >= DIRECTIONAL_MIN_DAYS
-    )
-    exit_5m = next(
-        (
-            row
-            for row in exit_hold.get("by_hold_offset") or []
-            if isinstance(row, Mapping) and row.get("offset") == "+5m"
-        ),
-        {},
-    )
-    exit_improvement = _number(exit_5m.get("average_improvement_pct"))
-    exit_fail = bool(exit_enough and exit_improvement is not None and exit_improvement >= 0.30)
-
-    statuses = {
-        "scanner_intrinsic_fail": scanner_fail,
-        "strategist_degradation": strategist_fail,
-        "commander_over_filtering": commander_fail,
-        "monitor_entry_fail": entry_fail,
-        "monitor_exit_fail": exit_fail,
-    }
-    primary = next((name for name, active in statuses.items() if active), "")
-    if not primary:
-        primary = (
-            "no_dominant_problem"
-            if all((scanner_enough, strategist_enough, commander_enough, entry_enough, exit_enough))
-            else "insufficient_sample"
-        )
-    return {
-        "schema_version": "q9_problem_segment_classification.v1",
-        "behavior_effect": "evaluation_only",
-        "primary_root_cause": primary,
-        "statuses": statuses,
-        "sample_status": {
-            "scanner": scanner_enough,
-            "strategist": strategist_enough,
-            "commander": commander_enough,
-            "monitor_entry": entry_enough,
-            "monitor_exit": exit_enough,
-        },
-        "evidence": {
-            "scanner_top1_net_expectancy_pct": top1_net,
-            "scanner_top3_net_expectancy_pct": top3_net,
-            "strategist_delta_pct": strategist_delta,
-            "commander_delta_pct": commander_delta,
-            "monitor_entry_price_delta_pct": entry_delta,
-            "monitor_exit_5m_improvement_pct": exit_improvement,
-        },
-    }
+    return _a52_classify_root_cause._classify_root_cause(scanner_quality=scanner_quality, attribution=attribution, entry=entry, exit_hold=exit_hold, facade=sys.modules[__name__])
 
 
 def _role_metrics(
@@ -197,27 +85,7 @@ def _role_metrics(
     horizon: str,
     cost_pct: float,
 ) -> dict[str, Any]:
-    values: list[float] = []
-    days: set[str] = set()
-    for row in candidates:
-        if str(row.get("shadow_role") or "") != role:
-            continue
-        value = _checkpoint_return(row, horizon)
-        if value is None:
-            continue
-        values.append(value - cost_pct)
-        day = candidate_day(row)
-        if day:
-            days.add(day)
-    return {
-        "role": role,
-        "horizon": horizon,
-        "evidence_class": "TRUSTED_SHADOW",
-        "observed_count": len(values),
-        "observed_day_count": len(days),
-        "cost_adjusted": True,
-        **performance_metrics(values),
-    }
+    return _a52_role_metrics._role_metrics(candidates, role=role, horizon=horizon, cost_pct=cost_pct, facade=sys.modules[__name__])
 
 
 def _paired_role_deltas(
@@ -225,96 +93,15 @@ def _paired_role_deltas(
     *,
     horizon: str,
 ) -> dict[str, Any]:
-    windows: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
-    window_days: dict[str, str] = {}
-    for row in candidates:
-        role = str(row.get("shadow_role") or "")
-        if role not in {"top_pick", "runner_up_evaluated"}:
-            continue
-        value = _checkpoint_return(row, horizon)
-        if value is None:
-            continue
-        window = str(row.get("_payload_generated_at") or "")
-        if not window:
-            continue
-        windows[window][role].append(value)
-        window_days[window] = candidate_day(row) or ""
-    deltas: list[float] = []
-    days: set[str] = set()
-    for window, roles in windows.items():
-        top = roles.get("top_pick") or []
-        runner = roles.get("runner_up_evaluated") or []
-        if not top or not runner:
-            continue
-        deltas.append((sum(top) / len(top)) - (sum(runner) / len(runner)))
-        if window_days.get(window):
-            days.add(window_days[window])
-    return {
-        "horizon": horizon,
-        "comparison": "top_pick_minus_runner_up_evaluated",
-        "evidence_class": "TRUSTED_SHADOW",
-        "paired_window_count": len(deltas),
-        "observed_day_count": len(days),
-        "average_delta_pct": round(sum(deltas) / len(deltas), 4) if deltas else None,
-        "positive_delta_rate": round(sum(value > 0 for value in deltas) / len(deltas), 4) if deltas else None,
-        "delta_distribution": performance_metrics(deltas),
-    }
+    return _a52_paired_role_deltas._paired_role_deltas(candidates, horizon=horizon, facade=sys.modules[__name__])
 
 
 def _selection_availability(models: list[dict[str, Any]]) -> dict[str, Any]:
-    raw_controls = 0
-    strategist_snapshots = 0
-    commander_snapshots = 0
-    comparable_strategist = 0
-    comparable_commander = 0
-    missing: dict[str, int] = defaultdict(int)
-    for model in models:
-        selection = model.get("selection") if isinstance(model.get("selection"), Mapping) else {}
-        raw_rows = selection.get("raw_scanner_top10")
-        raw_control = bool(
-            selection.get("raw_scanner_snapshot_source")
-            in {"control_snapshot", "scanner_intrinsic_control_snapshot"}
-            and isinstance(raw_rows, list)
-            and raw_rows
-        )
-        strategist = bool(
-            selection.get("strategist_run_id")
-            and isinstance(selection.get("post_strategist_top10"), list)
-            and selection.get("post_strategist_top10")
-        )
-        commander = bool(selection.get("commander_final_explicit"))
-        raw_controls += int(raw_control)
-        strategist_snapshots += int(strategist)
-        commander_snapshots += int(commander)
-        comparable_strategist += int(raw_control and strategist)
-        comparable_commander += int(strategist and commander)
-        if not raw_control:
-            missing["trusted_raw_scanner_top10"] += 1
-        if not strategist:
-            missing["strategist_run_and_post_ranking"] += 1
-        if not commander:
-            missing["explicit_commander_selection_or_veto"] += 1
-    return {
-        "trade_model_count": len(models),
-        "raw_scanner_control_count": raw_controls,
-        "strategist_snapshot_count": strategist_snapshots,
-        "commander_snapshot_count": commander_snapshots,
-        "scanner_vs_strategist_comparable_count": comparable_strategist,
-        "strategist_vs_commander_comparable_count": comparable_commander,
-        "missing_fields": dict(sorted(missing.items())),
-    }
+    return _a52_selection_availability._selection_availability(models, facade=sys.modules[__name__])
 
 
 def _q9_decision_candidate_rows(payloads: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    rows: list[dict[str, Any]] = []
-    for payload in payloads:
-        for raw in payload.get("q9_decision_candidates") or []:
-            if not isinstance(raw, Mapping):
-                continue
-            row = dict(raw)
-            row.setdefault("_payload_generated_at", payload.get("generated_at"))
-            rows.append(row)
-    return attach_forward_outcomes(rows)
+    return _a52_q9_decision_candidate_rows._q9_decision_candidate_rows(payloads, facade=sys.modules[__name__])
 
 
 def _q9_role_row(
