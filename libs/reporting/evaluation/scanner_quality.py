@@ -2,11 +2,15 @@ from __future__ import annotations
 
 from collections import defaultdict
 from typing import Any, Mapping
+import sys
 
 from libs.reporting.q8_evaluation_contract import candidate_day
 from libs.reporting.quant_shadow_forward_outcomes import attach_forward_outcomes
 
 from .metrics import performance_metrics
+from . import scanner_quality_number as _a47_number
+from . import scanner_quality_checkpoint_return as _a47_checkpoint_return
+from . import scanner_quality_extract_pre_strategist_candidate_rows as _a47_extract_pre_strategist_candidate_rows
 
 
 TOP_K_VALUES = (1, 3, 5, 10)
@@ -14,49 +18,17 @@ SCANNER_HORIZONS = ("+5m", "+15m", "+30m", "EOD")
 
 
 def _number(value: Any) -> float | None:
-    try:
-        if value in (None, ""):
-            return None
-        return float(value)
-    except (TypeError, ValueError):
-        return None
+    return _a47_number._number(value, facade=sys.modules[__name__])
 
 
 def _checkpoint_return(row: Mapping[str, Any], horizon: str) -> float | None:
-    outcome = row.get("shadow_forward_outcome")
-    outcome = outcome if isinstance(outcome, Mapping) else {}
-    checkpoints = outcome.get("checkpoints")
-    checkpoints = checkpoints if isinstance(checkpoints, Mapping) else {}
-    checkpoint = checkpoints.get(horizon)
-    checkpoint = checkpoint if isinstance(checkpoint, Mapping) else {}
-    if str(checkpoint.get("status") or "") != "observed":
-        return None
-    return _number(checkpoint.get("return_pct"))
+    return _a47_checkpoint_return._checkpoint_return(row, horizon, facade=sys.modules[__name__])
 
 
 def extract_pre_strategist_candidate_rows(
     payloads: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    rows: list[dict[str, Any]] = []
-    seen: set[tuple[str, str, int]] = set()
-    for payload in payloads:
-        generated_at = str(payload.get("generated_at") or "")
-        for raw in payload.get("q9_decision_candidates") or []:
-            if not isinstance(raw, Mapping):
-                continue
-            if str(raw.get("q9_decision_role") or "") != "P_SCANNER_PRE_STRATEGIST_UNIVERSE":
-                continue
-            row = dict(raw)
-            decision_id = str(row.get("q9_decision_id") or "")
-            symbol = str(row.get("symbol") or "")
-            rank = int(_number(row.get("rank")) or 0)
-            key = (decision_id, symbol, rank)
-            if not decision_id or not symbol or rank <= 0 or key in seen:
-                continue
-            seen.add(key)
-            row.setdefault("_payload_generated_at", generated_at)
-            rows.append(row)
-    return rows
+    return _a47_extract_pre_strategist_candidate_rows.extract_pre_strategist_candidate_rows(payloads, facade=sys.modules[__name__])
 
 
 def pre_strategist_candidate_rows(
