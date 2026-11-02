@@ -39,28 +39,8 @@ def _has_statement(statements: list[ast.stmt], source: str) -> bool:
 
 def _dispatch_issues(tree: ast.Module, module: str, *, bulk: bool) -> list[str]:
     """Check executable dispatch and ABI aliasing, not merely literal targets."""
-    condition = ast.dump(ast.parse("__name__ == '__main__'", mode="eval").body)
-    guards = [node for node in tree.body if isinstance(node, ast.If)
-              and ast.dump(node.test) == condition]
-    if len(guards) != 1:
-        return ["exactly one top-level __main__ guard required"]
-    guard = guards[0]
-    if bulk:
-        main = f"_runpy.run_module({module!r}, run_name='__main__')"
-        alias = f"_sys.modules[__name__] = _importlib.import_module({module!r})"
-    else:
-        main = "raise SystemExit(_impl.main())"
-        alias = "_sys.modules[__name__] = _impl"
-    issues = []
-    if not _has_statement(guard.body, main):
-        issues.append("executable __main__ dispatch missing or invalid")
-    if not _has_statement(guard.orelse, alias):
-        issues.append("module-object ABI alias missing or invalid")
-    if not bulk and not _has_statement(
-        tree.body, f"_impl = _importlib.import_module({module!r})"
-    ):
-        issues.append("example implementation binding missing or invalid")
-    return issues
+    from scripts.diagnostics.audit_target_tree_compat_dispatch_issues import _dispatch_issues as owner
+    return owner(tree, module, bulk=bulk, facade=sys.modules[__name__])
 
 
 def audit(root: Path, manifest_path: Path | None = None) -> dict[str, Any]:

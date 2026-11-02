@@ -128,53 +128,15 @@ def _summary(
     state_filter: str = "",
     limit: int = 20,
 ) -> Dict[str, Any]:
-    current_state_total: Dict[str, int] = {}
-    latest_rows: List[Dict[str, Any]] = []
-    stuck_rows: List[Dict[str, Any]] = []
-    active_total = 0
-    terminal_total = 0
-    selected = state_rows
-    if state_filter:
-        selected = [r for r in state_rows if str(r.get("state") or "") == state_filter]
-
-    for r in selected:
-        st = str(r.get("state") or "")
-        current_state_total[st] = int(current_state_total.get(st, 0)) + 1
-        age = max(0, int(now_epoch) - int(r.get("updated_ts") or 0))
-        row = {**r, "age_sec": age}
-        latest_rows.append(row)
-
-        if st in ("executed", "failed", "rejected"):
-            terminal_total += 1
-        else:
-            active_total += 1
-
-        if stuck_executing_sec > 0 and st == "executing" and age >= stuck_executing_sec:
-            stuck_rows.append(row)
-
-    lim = max(1, int(limit))
-    return {
-        "total": int(len(selected)),
-        "active_total": int(active_total),
-        "terminal_total": int(terminal_total),
-        "current_state_total": current_state_total,
-        "journal_transition_total": journal_transition_total,
-        "stuck_executing_total": int(len(stuck_rows)),
-        "stuck_executing": stuck_rows[:lim],
-        "latest_states": latest_rows[:lim],
-    }
+    from scripts.diagnostics.query_intent_state_store_summary import _summary as owner
+    return owner(state_rows, now_epoch=now_epoch, stuck_executing_sec=stuck_executing_sec,
+                 journal_transition_total=journal_transition_total, state_filter=state_filter,
+                 limit=limit, facade=_migration_sys.modules[__name__])
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Query SQLite intent state/journal summary for operations.")
-    p.add_argument("--state-db-path", default="")
-    p.add_argument("--intent-log-path", default="data/logs/intents.jsonl")
-    p.add_argument("--state", default="", help="Filter by current state (e.g. executing, failed, executed).")
-    p.add_argument("--limit", type=int, default=20)
-    p.add_argument("--stuck-executing-sec", type=int, default=0)
-    p.add_argument("--require-no-stuck", action="store_true")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics.query_intent_state_store_build_parser import _build_parser as owner
+    return owner(facade=_migration_sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:

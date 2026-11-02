@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import re
+import sys
 from pathlib import Path
 
 _SUFFIXES = {".bat", ".cmd", ".ps1"}
@@ -24,22 +25,13 @@ _FROZEN_UNREGISTERED = _FROZEN_REGISTERED - {
 
 
 def _resolve_task(raw: str, prefix: str | None) -> tuple[str | None, str]:
-    if re.fullmatch(r"[A-Za-z0-9_.-]+", raw):
-        return raw, "LITERAL"
-    match = re.fullmatch(r"%TASK_PREFIX%(-[A-Za-z0-9_.-]+)", raw, re.I)
-    if match and prefix is not None:
-        return prefix + match.group(1), "PREFIX_RESOLVED"
-    return None, "UNRESOLVED"
+    from scripts.diagnostics.audit_windows_launchers_resolve_task import _resolve_task as owner
+    return owner(raw, prefix, facade=sys.modules[__name__])
 
 
 def assert_mockexam_known_contract(result: dict) -> None:
-    """Assert frozen source names only; never assert live cleanup success."""
-    contract = result["mockexam_task_contract"]
-    if (contract["status"] != "PROVEN"
-            or set(contract["registered"]) != _FROZEN_REGISTERED
-            or set(contract["unregistered"]) != _FROZEN_UNREGISTERED):
-        result["issues"].append("MockExam frozen task-name contract not proven or changed")
-    result["ok"] = not result["issues"]
+    from scripts.diagnostics.audit_windows_launchers_assert_mockexam_known_contract import assert_mockexam_known_contract as owner
+    return owner(result, facade=sys.modules[__name__])
 
 
 def audit(root: Path, *, expected_count: int | None = None) -> dict:

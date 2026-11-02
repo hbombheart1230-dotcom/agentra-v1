@@ -22,10 +22,8 @@ def _to_epoch(ts: Any) -> Optional[int]:
 
 
 def _utc_day(ts: Any) -> str:
-    epoch = _to_epoch(ts)
-    if epoch is None:
-        return datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    return datetime.fromtimestamp(epoch, tz=timezone.utc).strftime("%Y-%m-%d")
+    from scripts.diagnostics.reconstruct_incident_timeline_utc_day import _utc_day as owner
+    return owner(ts, facade=_migration_sys.modules[__name__])
 
 
 def _iter_rows(path: Path) -> List[Dict[str, Any]]:

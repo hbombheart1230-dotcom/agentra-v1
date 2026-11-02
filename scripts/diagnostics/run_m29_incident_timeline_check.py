@@ -36,13 +36,8 @@ def _run_json(argv: List[str]) -> Tuple[int, Dict[str, Any]]:
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M29-7 incident timeline reconstruction closeout check.")
-    p.add_argument("--event-log-path", default="data/logs/m29_incident_timeline_events.jsonl")
-    p.add_argument("--report-dir", default="reports/m29_incident_timeline")
-    p.add_argument("--day", default="2026-02-21")
-    p.add_argument("--inject-fail", action="store_true")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics.run_m29_incident_timeline_check_build_parser import _build_parser as owner
+    return owner(facade=sys.modules[__name__])
 
 
 def _seed_events(path: Path, *, day: str, inject_fail: bool) -> None:
