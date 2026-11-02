@@ -3,68 +3,51 @@ from __future__ import annotations
 from collections import defaultdict
 from math import sqrt
 from typing import Any, Mapping, Sequence
+import sys
 
 from libs.reporting.q8_evaluation_contract import candidate_day
 
 from .metrics import performance_metrics
 from .scanner_quality import SCANNER_HORIZONS, pre_strategist_candidate_rows
+from . import episode_scanner_review_number as _a51_number
+from . import episode_scanner_review_mapping as _a51_mapping
+from . import episode_scanner_review_checkpoint_return as _a51_checkpoint_return
+from . import episode_scanner_review_epoch as _a51_epoch
+from . import episode_scanner_review_setup_key as _a51_setup_key
+from . import episode_scanner_review_day as _a51_day
+from . import episode_scanner_review_rank_bucket as _a51_rank_bucket
+from . import episode_scanner_review_episode_representatives as _a51_episode_representatives
 
 
 RANK_BUCKETS = ("rank1", "rank2_3", "rank4_plus", "unknown")
 
 
 def _number(value: Any) -> float | None:
-    try:
-        if value in (None, ""):
-            return None
-        return float(value)
-    except (TypeError, ValueError):
-        return None
+    return _a51_number._number(value, facade=sys.modules[__name__])
 
 
 def _mapping(value: Any) -> Mapping[str, Any]:
-    return value if isinstance(value, Mapping) else {}
+    return _a51_mapping._mapping(value, facade=sys.modules[__name__])
 
 
 def _checkpoint_return(row: Mapping[str, Any], horizon: str) -> float | None:
-    checkpoints = _mapping(_mapping(row.get("shadow_forward_outcome")).get("checkpoints"))
-    checkpoint = _mapping(checkpoints.get(horizon))
-    if str(checkpoint.get("status") or "") != "observed":
-        return None
-    return _number(checkpoint.get("return_pct"))
+    return _a51_checkpoint_return._checkpoint_return(row, horizon, facade=sys.modules[__name__])
 
 
 def _epoch(row: Mapping[str, Any]) -> int:
-    base = _mapping(row.get("shadow_forward_base"))
-    value = _number(base.get("baseline_epoch"))
-    return int(value or 0)
+    return _a51_epoch._epoch(row, facade=sys.modules[__name__])
 
 
 def _setup_key(row: Mapping[str, Any]) -> str:
-    lane = _mapping(row.get("entry_lane_observation"))
-    return str(
-        lane.get("subtype_v2")
-        or lane.get("subtype")
-        or lane.get("primary_lane")
-        or row.get("reason")
-        or "unknown"
-    )
+    return _a51_setup_key._setup_key(row, facade=sys.modules[__name__])
 
 
 def _day(row: Mapping[str, Any]) -> str:
-    value = candidate_day(row) or str(row.get("day") or "")
-    value = value.replace("-", "")
-    return value if len(value) == 8 and value.isdigit() else ""
+    return _a51_day._day(row, facade=sys.modules[__name__])
 
 
 def _rank_bucket(rank: int) -> str:
-    if rank == 1:
-        return "rank1"
-    if 2 <= rank <= 3:
-        return "rank2_3"
-    if rank >= 4:
-        return "rank4_plus"
-    return "unknown"
+    return _a51_rank_bucket._rank_bucket(rank, facade=sys.modules[__name__])
 
 
 def _episode_representatives(
@@ -72,55 +55,7 @@ def _episode_representatives(
     *,
     episode_gap_sec: int,
 ) -> list[dict[str, Any]]:
-    grouped: dict[tuple[str, str, str], list[Mapping[str, Any]]] = defaultdict(list)
-    for row in rows:
-        day = _day(row)
-        symbol = str(row.get("symbol") or "")
-        if not day or not symbol:
-            continue
-        grouped[(day, symbol, _setup_key(row))].append(row)
-
-    episodes: list[dict[str, Any]] = []
-    for (day, symbol, setup), candidates in sorted(grouped.items()):
-        previous_epoch: int | None = None
-        episode_index = 0
-        for row in sorted(candidates, key=lambda item: (_epoch(item), int(_number(item.get("rank")) or 999))):
-            current_epoch = _epoch(row)
-            if (
-                previous_epoch is None
-                or current_epoch <= 0
-                or previous_epoch <= 0
-                or current_epoch - previous_epoch > episode_gap_sec
-            ):
-                episode_index += 1
-                rank = int(_number(row.get("rank")) or 0)
-                episodes.append(
-                    {
-                        "episode_id": f"{day}:{symbol}:{setup}:{episode_index}",
-                        "day": day,
-                        "symbol": symbol,
-                        "setup": setup,
-                        "baseline_epoch": current_epoch or None,
-                        "rank": rank or None,
-                        "rank_bucket": _rank_bucket(rank),
-                        "score_breakdown": dict(
-                            _mapping(row.get("score_breakdown"))
-                        ),
-                        "sources": [
-                            str(value)
-                            for value in row.get("q9_candidate_sources")
-                            or row.get("sources")
-                            or []
-                            if str(value)
-                        ],
-                        "returns": {
-                            horizon: _checkpoint_return(row, horizon)
-                            for horizon in SCANNER_HORIZONS
-                        },
-                    }
-                )
-            previous_epoch = current_epoch
-    return episodes
+    return _a51_episode_representatives._episode_representatives(rows, episode_gap_sec=episode_gap_sec, facade=sys.modules[__name__])
 
 
 def build_episode_scanner_review(
