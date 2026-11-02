@@ -26,6 +26,14 @@ from . import evaluation_lens_report_best_role_by_horizon as _a43_best_role_by_h
 from . import evaluation_lens_report_strategist_delta_review as _a43_strategist_delta_review
 from . import evaluation_lens_report_exit_counterfactual_review as _a43_exit_counterfactual_review
 from . import evaluation_lens_report_render_evaluation_lens_report as _a43_render_evaluation_lens_report
+from . import evaluation_lens_report_text as _a44_text
+from . import evaluation_lens_report_num as _a44_num
+from . import evaluation_lens_report_as_dict as _a44_as_dict
+from . import evaluation_lens_report_metric_avg as _a44_metric_avg
+from . import evaluation_lens_report_checkpoint as _a44_checkpoint
+from . import evaluation_lens_report_checkpoint_return as _a44_checkpoint_return
+from . import evaluation_lens_report_checkpoint_mfe as _a44_checkpoint_mfe
+from . import evaluation_lens_report_checkpoint_mae as _a44_checkpoint_mae
 
 
 HORIZONS = ("+5m", "+15m", "+30m", "EOD")
@@ -40,54 +48,35 @@ BLOCKERS_OF_INTEREST = (
 
 
 def _text(value: Any) -> str:
-    return str(value or "").strip()
+    return _a44_text._text(value, facade=sys.modules[__name__])
 
 
 def _num(value: Any, default: float | None = None) -> float | None:
-    try:
-        if value in (None, ""):
-            return default
-        return float(value)
-    except Exception:
-        return default
+    return _a44_num._num(value, default, facade=sys.modules[__name__])
 
 
 def _as_dict(value: Any) -> dict[str, Any]:
-    return dict(value) if isinstance(value, Mapping) else {}
+    return _a44_as_dict._as_dict(value, facade=sys.modules[__name__])
 
 
 def _metric_avg(metric: Mapping[str, Any]) -> str:
-    data = _as_dict(metric)
-    if int(data.get("count") or 0) <= 0:
-        return "-"
-    return str(data.get("average_return_pct"))
+    return _a44_metric_avg._metric_avg(metric, facade=sys.modules[__name__])
 
 
 def _checkpoint(row: Mapping[str, Any], horizon: str) -> dict[str, Any]:
-    outcome = _as_dict(row.get("shadow_forward_outcome"))
-    checkpoints = _as_dict(outcome.get("checkpoints"))
-    return _as_dict(checkpoints.get(horizon))
+    return _a44_checkpoint._checkpoint(row, horizon, facade=sys.modules[__name__])
 
 
 def _checkpoint_return(row: Mapping[str, Any], horizon: str) -> float | None:
-    checkpoint = _checkpoint(row, horizon)
-    if checkpoint.get("status") != "observed":
-        return None
-    return _num(checkpoint.get("return_pct"))
+    return _a44_checkpoint_return._checkpoint_return(row, horizon, facade=sys.modules[__name__])
 
 
 def _checkpoint_mfe(row: Mapping[str, Any], horizon: str) -> float | None:
-    checkpoint = _checkpoint(row, horizon)
-    if checkpoint.get("status") != "observed":
-        return None
-    return _num(checkpoint.get("mfe_pct"))
+    return _a44_checkpoint_mfe._checkpoint_mfe(row, horizon, facade=sys.modules[__name__])
 
 
 def _checkpoint_mae(row: Mapping[str, Any], horizon: str) -> float | None:
-    checkpoint = _checkpoint(row, horizon)
-    if checkpoint.get("status") != "observed":
-        return None
-    return _num(checkpoint.get("mae_pct"))
+    return _a44_checkpoint_mae._checkpoint_mae(row, horizon, facade=sys.modules[__name__])
 
 
 def _rail(row: Mapping[str, Any]) -> str:
