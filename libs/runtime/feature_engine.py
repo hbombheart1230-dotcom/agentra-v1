@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from math import sqrt
 from typing import Any, Dict, List, Mapping, Optional
 
@@ -7,195 +8,69 @@ from libs.runtime.regime import classify_regime_v2
 
 
 def _to_float(v: Any) -> Optional[float]:
-    try:
-        if v is None:
-            return None
-        return float(v)
-    except Exception:
-        return None
+    from .feature_engine_to_float import _to_float as owner
+    return owner(v, facade=sys.modules[__name__])
 
 
 def _series(candles: List[Mapping[str, Any]], key: str) -> List[float]:
-    out: List[float] = []
-    for row in candles:
-        x = _to_float(row.get(key))
-        if x is None:
-            continue
-        out.append(float(x))
-    return out
+    from .feature_engine_series import _series as owner
+    return owner(candles, key, facade=sys.modules[__name__])
 
 
 def _sma(values: List[float], period: int) -> Optional[float]:
-    p = max(1, int(period))
-    if len(values) < p:
-        return None
-    return float(sum(values[-p:]) / float(p))
+    from .feature_engine_sma import _sma as owner
+    return owner(values, period, facade=sys.modules[__name__])
 
 
 def _std(values: List[float]) -> Optional[float]:
-    if len(values) < 2:
-        return None
-    mean = float(sum(values) / float(len(values)))
-    var = float(sum((x - mean) ** 2 for x in values) / float(len(values)))
-    return float(sqrt(var))
+    from .feature_engine_std import _std as owner
+    return owner(values, facade=sys.modules[__name__])
 
 
 def _median(values: List[float]) -> Optional[float]:
-    if not values:
-        return None
-    arr = sorted(float(x) for x in values)
-    n = len(arr)
-    mid = n // 2
-    if n % 2 == 1:
-        return float(arr[mid])
-    return float((arr[mid - 1] + arr[mid]) / 2.0)
+    from .feature_engine_median import _median as owner
+    return owner(values, facade=sys.modules[__name__])
 
 
 def _rsi(closes: List[float], period: int = 14) -> Optional[float]:
-    p = max(1, int(period))
-    if len(closes) < p + 1:
-        return None
-    diffs = [float(closes[i] - closes[i - 1]) for i in range(len(closes) - p, len(closes))]
-    gains = [d for d in diffs if d > 0.0]
-    losses = [-d for d in diffs if d < 0.0]
-    avg_gain = float(sum(gains) / float(p)) if gains else 0.0
-    avg_loss = float(sum(losses) / float(p)) if losses else 0.0
-    if avg_loss <= 0.0:
-        return 100.0
-    rs = float(avg_gain / avg_loss)
-    return float(100.0 - (100.0 / (1.0 + rs)))
+    from .feature_engine_rsi import _rsi as owner
+    return owner(closes, period, facade=sys.modules[__name__])
 
 
 def _atr(highs: List[float], lows: List[float], closes: List[float], period: int = 14) -> Optional[float]:
-    p = max(1, int(period))
-    if len(highs) < p + 1 or len(lows) < p + 1 or len(closes) < p + 1:
-        return None
-    trs: List[float] = []
-    start = len(closes) - p
-    for i in range(start, len(closes)):
-        hi = float(highs[i])
-        lo = float(lows[i])
-        prev_close = float(closes[i - 1])
-        tr = max(hi - lo, abs(hi - prev_close), abs(lo - prev_close))
-        trs.append(float(tr))
-    return float(sum(trs) / float(len(trs))) if trs else None
+    from .feature_engine_atr import _atr as owner
+    return owner(highs, lows, closes, period, facade=sys.modules[__name__])
 
 
 def _pct_returns(closes: List[float], period: int) -> List[float]:
-    p = max(1, int(period))
-    if len(closes) < p + 1:
-        return []
-    out: List[float] = []
-    base = closes[-(p + 1) :]
-    for i in range(1, len(base)):
-        prev = float(base[i - 1])
-        cur = float(base[i])
-        if prev == 0.0:
-            continue
-        out.append(float((cur / prev) - 1.0))
-    return out
+    from .feature_engine_pct_returns import _pct_returns as owner
+    return owner(closes, period, facade=sys.modules[__name__])
 
 
 def _pct_change(closes: List[float], period: int) -> Optional[float]:
-    p = max(1, int(period))
-    if len(closes) < p + 1:
-        return None
-    prev = float(closes[-(p + 1)])
-    cur = float(closes[-1])
-    if prev == 0.0:
-        return None
-    return float((cur / prev) - 1.0)
+    from .feature_engine_pct_change import _pct_change as owner
+    return owner(closes=closes, period=period, facade=sys.modules[__name__])
 
 
 def _adx(highs: List[float], lows: List[float], closes: List[float], period: int = 14) -> Optional[float]:
-    p = max(2, int(period))
-    if len(highs) < p + 1 or len(lows) < p + 1 or len(closes) < p + 1:
-        return None
-
-    trs: List[float] = []
-    plus_dm: List[float] = []
-    minus_dm: List[float] = []
-    for i in range(1, len(closes)):
-        up = float(highs[i] - highs[i - 1])
-        down = float(lows[i - 1] - lows[i])
-        pdm = up if (up > down and up > 0.0) else 0.0
-        mdm = down if (down > up and down > 0.0) else 0.0
-        tr = max(
-            float(highs[i] - lows[i]),
-            abs(float(highs[i] - closes[i - 1])),
-            abs(float(lows[i] - closes[i - 1])),
-        )
-        plus_dm.append(float(pdm))
-        minus_dm.append(float(mdm))
-        trs.append(float(tr))
-
-    # Use simple average over last period for deterministic behavior.
-    tr_n = sum(trs[-p:]) / float(p) if trs else 0.0
-    pdm_n = sum(plus_dm[-p:]) / float(p) if plus_dm else 0.0
-    mdm_n = sum(minus_dm[-p:]) / float(p) if minus_dm else 0.0
-    if tr_n <= 0.0:
-        return 0.0
-    pdi = (pdm_n / tr_n) * 100.0
-    mdi = (mdm_n / tr_n) * 100.0
-    den = pdi + mdi
-    if den <= 0.0:
-        return 0.0
-    dx = abs(pdi - mdi) / den * 100.0
-    return float(dx)
+    from .feature_engine_adx import _adx as owner
+    return owner(highs=highs, lows=lows, closes=closes, period=period, facade=sys.modules[__name__])
 
 
 def _gap_pct(candles: List[Mapping[str, Any]]) -> Optional[float]:
-    if len(candles) < 2:
-        return None
-    prev_close = _to_float(candles[-2].get("close"))
-    cur_open = _to_float(candles[-1].get("open"))
-    if prev_close is None or cur_open is None or prev_close == 0.0:
-        return None
-    return float((cur_open / prev_close) - 1.0)
+    from .feature_engine_gap_pct import _gap_pct as owner
+
+    return owner(candles=candles, facade=sys.modules[__name__])
 
 
 def _vwap_distance(candles: List[Mapping[str, Any]], closes: List[float], vols: List[float]) -> Optional[float]:
-    if not candles or not closes:
-        return None
-    last_close = float(closes[-1])
-    if last_close <= 0.0:
-        return None
-
-    # If candle has explicit vwap, use the latest value.
-    last = candles[-1]
-    vwap_raw = _to_float(last.get("vwap"))
-    if vwap_raw is not None and vwap_raw > 0.0:
-        return float((last_close / float(vwap_raw)) - 1.0)
-
-    if len(closes) != len(vols) or not vols:
-        return None
-    den = float(sum(v for v in vols if v > 0.0))
-    if den <= 0.0:
-        return None
-    num = 0.0
-    for i, c in enumerate(closes):
-        v = float(vols[i]) if i < len(vols) else 0.0
-        if v <= 0.0:
-            continue
-        num += float(c) * v
-    if num <= 0.0:
-        return None
-    vwap = num / den
-    if vwap <= 0.0:
-        return None
-    return float((last_close / vwap) - 1.0)
+    from .feature_engine_vwap_distance import _vwap_distance as owner
+    return owner(candles=candles, closes=closes, vols=vols, facade=sys.modules[__name__])
 
 
 def _rolling_drawdown(closes: List[float], lookback: int = 20) -> Optional[float]:
-    lb = max(2, int(lookback))
-    if len(closes) < lb:
-        return None
-    window = closes[-lb:]
-    peak = max(window)
-    cur = float(window[-1])
-    if peak <= 0.0:
-        return None
-    return float((cur / peak) - 1.0)
+    from .feature_engine_rolling_drawdown import _rolling_drawdown as owner
+    return owner(closes=closes, lookback=lookback, facade=sys.modules[__name__])
 
 
 def classify_regime(
@@ -205,32 +80,13 @@ def classify_regime(
     trend_gap_threshold: float = 0.01,
     high_vol_threshold: float = 0.03,
 ) -> str:
-    gap = float(ma20_gap or 0.0)
-    vol = float(volatility20 or 0.0)
-    if vol >= float(high_vol_threshold):
-        return "high_volatility"
-    if abs(gap) >= float(trend_gap_threshold):
-        return "trend"
-    return "range"
+    from .feature_engine_classify_regime import classify_regime as owner
+    return owner(ma20_gap=ma20_gap, volatility20=volatility20, trend_gap_threshold=trend_gap_threshold, high_vol_threshold=high_vol_threshold, facade=sys.modules[__name__])
 
 
 def _signal_score(*, ma20_gap: Optional[float], rsi14: Optional[float]) -> float:
-    gap = float(ma20_gap or 0.0)
-    rsi = float(rsi14 or 50.0)
-    score = 0.0
-    if gap > 0.0 and rsi >= 50.0 and rsi <= 70.0:
-        score += 0.5
-    if gap < 0.0 and rsi >= 30.0 and rsi <= 50.0:
-        score -= 0.5
-    if rsi >= 75.0:
-        score -= 0.2
-    if rsi <= 25.0:
-        score += 0.2
-    if score > 1.0:
-        score = 1.0
-    if score < -1.0:
-        score = -1.0
-    return float(score)
+    from .feature_engine_signal_score import _signal_score as owner
+    return owner(ma20_gap=ma20_gap, rsi14=rsi14, facade=sys.modules[__name__])
 
 
 def build_feature_row(

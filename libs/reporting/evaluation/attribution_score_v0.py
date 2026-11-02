@@ -15,6 +15,8 @@ from . import attribution_score_v0_exit_horizon as _a34_exit_horizon
 from . import attribution_score_v0_evidence_quality as _a35_evidence_quality
 from . import attribution_score_v0_render_attribution_score_v0 as _a35_render_attribution_score_v0
 from . import attribution_score_v0_build_attribution_score_v0 as _a37_build_attribution_score_v0
+from . import attribution_score_v0_ledger_day_record as _a38_ledger_day_record
+from . import attribution_score_v0_read_json as _a38_read_json
 
 
 INSUFFICIENT = "INSUFFICIENT_EVIDENCE"
@@ -42,21 +44,11 @@ def _score(status: str, value: int | None, reasons: list[str], evidence: Mapping
 
 
 def _read_json(path: Path) -> dict[str, Any]:
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-        return payload if isinstance(payload, dict) else {}
-    except Exception:
-        return {}
+    return _a38_read_json._read_json(path=path, facade=sys.modules[__name__])
 
 
 def _ledger_day_record(reports_root: Path, day: str) -> dict[str, Any]:
-    root = reports_root / "evaluation" / "freeze_window"
-    for path in sorted(root.glob("*/daily_ledger.json"), key=lambda item: str(item)):
-        payload = _read_json(path)
-        for row in payload.get("days") or []:
-            if isinstance(row, dict) and str(row.get("day") or "") == day:
-                return dict(row)
-    return {}
+    return _a38_ledger_day_record._ledger_day_record(reports_root=reports_root, day=day, facade=sys.modules[__name__])
 
 
 def _selection_integrity(selection_authority: Mapping[str, Any]) -> dict[str, Any]:

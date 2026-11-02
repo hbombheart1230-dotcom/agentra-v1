@@ -815,72 +815,8 @@ def _build_human_chart_entry_setup(
 def _extract_explicit_policy_interpretation_fields(
     policy_contract: Mapping[str, Any] | None,
 ) -> Dict[str, Any]:
-    contract = dict(policy_contract or {}) if isinstance(policy_contract, Mapping) else {}
-    selected_policy = (
-        dict(contract.get("selected_policy") or {})
-        if isinstance(contract.get("selected_policy"), Mapping)
-        else {}
-    )
-    schema_candidate = (
-        dict(contract.get("selected_policy_schema") or {})
-        if isinstance(contract.get("selected_policy_schema"), Mapping)
-        else normalize_monitor_entry_policy_schema(selected_policy)
-    )
-    explicit_fields_used: List[str] = list(
-        _dedupe_non_empty(schema_candidate.get("explicit_fields_used") or [])
-    )
-
-    def _optional_text(value: Any) -> str | None:
-        text = str(value or "").strip()
-        return text or None
-
-    def _optional_list(value: Any) -> List[str]:
-        if isinstance(value, str):
-            return _dedupe_non_empty([value])
-        if isinstance(value, (list, tuple, set)):
-            return _dedupe_non_empty(list(value))
-        return []
-
-    def _optional_mapping(value: Any) -> Dict[str, Any]:
-        return dict(value or {}) if isinstance(value, Mapping) else {}
-
-    entry_style = _optional_text(schema_candidate.get("entry_style"))
-    required_checks = _optional_list(schema_candidate.get("required_checks"))
-    preferred_checks = _optional_list(schema_candidate.get("preferred_checks"))
-    relaxable_checks = _optional_list(schema_candidate.get("relaxable_checks"))
-    blockers = _optional_list(schema_candidate.get("blockers"))
-    priority_hints = _optional_mapping(schema_candidate.get("priority_hints"))
-    if not any(priority_hints.values()):
-        priority_hints = {}
-    evidence_focus = _optional_mapping(schema_candidate.get("evidence_focus"))
-    notes = _optional_list(schema_candidate.get("notes"))
-    policy_adjustments = list(schema_candidate.get("policy_adjustments") or [])
-    spec_validation_notes = _optional_list(schema_candidate.get("spec_validation_notes"))
-
-    policy_source = _optional_text(selected_policy.get("policy_source"))
-
-    return {
-        "contract_source": _optional_text(contract.get("selected_source")),
-        "selected_policy": selected_policy,
-        "policy_schema_available": bool(schema_candidate.get("available")),
-        "policy_schema_version": _optional_text(schema_candidate.get("schema_version")),
-        "policy_schema_raw_keys": _optional_list(schema_candidate.get("raw_keys")),
-        "entry_style": entry_style.lower() if isinstance(entry_style, str) else None,
-        "required_checks": required_checks,
-        "preferred_checks": preferred_checks,
-        "relaxable_checks": relaxable_checks,
-        "blockers": blockers,
-        "priority_hints": priority_hints,
-        "evidence_focus": {
-            "primary": _optional_list(evidence_focus.get("primary")),
-            "secondary": _optional_list(evidence_focus.get("secondary")),
-        },
-        "notes": notes,
-        "policy_adjustments": policy_adjustments,
-        "policy_source": policy_source,
-        "explicit_fields_used": explicit_fields_used,
-        "spec_validation_notes": spec_validation_notes,
-    }
+    from .intraday_monitor_signals_extract_explicit_policy_interpretation_fields import _extract_explicit_policy_interpretation_fields as owner
+    return owner(policy_contract, facade=sys.modules[__name__])
 
 
 def _build_monitor_policy_interpretation(
@@ -890,160 +826,14 @@ def _build_monitor_policy_interpretation(
     frame: Mapping[str, Any] | None = None,
     policy_contract: Mapping[str, Any] | None = None,
 ) -> Dict[str, Any]:
-    frame_obj = dict(frame or {}) if isinstance(frame, Mapping) else {}
-    playbook = str(frame_obj.get("playbook") or "").strip().lower()
-    explicit_fields = _extract_explicit_policy_interpretation_fields(policy_contract)
-    explicit_entry_style = str(explicit_fields.get("entry_style") or "").strip().lower()
-    source_mapping = (
-        extract_monitor_entry_policy_mapping(received_policy)
-        if isinstance(received_policy, Mapping)
-        else {}
+    from .intraday_monitor_signals_build_monitor_policy_interpretation import _build_monitor_policy_interpretation as owner
+    return owner(
+        received_policy=received_policy,
+        effective_policy=effective_policy,
+        frame=frame,
+        policy_contract=policy_contract,
+        facade=sys.modules[__name__],
     )
-    policy_obj = (
-        effective_policy
-        if isinstance(effective_policy, MonitorEntryPolicy)
-        else MonitorEntryPolicy.from_mapping(effective_policy)
-        if isinstance(effective_policy, Mapping) and effective_policy
-        else None
-    )
-    policy_available = bool(source_mapping) or bool(playbook) or bool(explicit_fields.get("selected_policy"))
-    interpretation = _empty_monitor_policy_interpretation()
-    interpretation["policy_available"] = bool(policy_available)
-    interpretation["entry_style"] = explicit_entry_style or playbook or None
-    interpretation["contract_source"] = explicit_fields.get("contract_source")
-    interpretation["policy_schema_available"] = bool(explicit_fields.get("policy_schema_available"))
-    interpretation["policy_schema_version"] = explicit_fields.get("policy_schema_version")
-    interpretation["policy_schema_raw_keys"] = list(explicit_fields.get("policy_schema_raw_keys") or [])
-    interpretation["explicit_fields_used"] = list(explicit_fields.get("explicit_fields_used") or [])
-    interpretation["spec_validation_notes"] = list(explicit_fields.get("spec_validation_notes") or [])
-    if not policy_available:
-        return interpretation
-
-    required_checks: List[str] = []
-    preferred_checks: List[str] = []
-    relaxable_checks: List[str] = []
-    blockers: List[str] = []
-    primary_focus: List[str] = []
-    secondary_focus: List[str] = []
-    notes: List[str] = []
-    volume_ratio_min = 0.68
-    policy_enabled = True
-    require_vwap_reclaim = False
-    require_rebound = False
-    interpretation_style = explicit_entry_style or playbook
-
-    if policy_obj is not None:
-        volume_ratio_min = float(policy_obj.volume_ratio_min)
-        policy_enabled = bool(policy_obj.enabled)
-        require_vwap_reclaim = bool(policy_obj.require_vwap_reclaim)
-        require_rebound = bool(policy_obj.require_rebound)
-        interpretation["policy_source"] = str(policy_obj.policy_source or "") or None
-        interpretation["policy_adjustments"] = list(policy_obj.adjustments or [])
-    if explicit_fields.get("policy_source"):
-        interpretation["policy_source"] = str(explicit_fields.get("policy_source") or "")
-    if explicit_fields.get("policy_adjustments"):
-        interpretation["policy_adjustments"] = list(explicit_fields.get("policy_adjustments") or [])
-    interpretation["priority_hints"] = {
-        "volume_priority": _volume_priority_hint(volume_ratio_min),
-        "reclaim_priority": "high" if require_vwap_reclaim else "normal",
-        "breakout_priority": (
-            "high" if interpretation_style == "breakout" else "low" if interpretation_style in ("pullback", "reversal") else "normal"
-        ),
-        "pullback_priority": (
-            "high" if interpretation_style in ("pullback", "reversal") else "low" if interpretation_style == "breakout" else "normal"
-        ),
-    }
-    if not policy_enabled:
-        blockers.append("policy_disabled")
-    if require_vwap_reclaim and interpretation_style != "breakout":
-        required_checks.append("reclaim_gate_ok")
-        notes.append("vwap_reclaim_required")
-    elif require_vwap_reclaim and interpretation_style == "breakout":
-        preferred_checks.append("reclaim_gate_ok")
-        relaxable_checks.append("reclaim_gate_ok")
-        notes.append("vwap_reclaim_near_ready_relaxable_for_breakout_style")
-    if require_rebound and interpretation_style in ("pullback", "reversal"):
-        required_checks.append("rebound_ok")
-        notes.append("rebound_required_for_pullback_style")
-    if volume_ratio_min >= 1.0:
-        notes.append("volume_threshold_emphasized")
-    elif volume_ratio_min <= 0.75:
-        notes.append("volume_threshold_relatively_loose")
-        relaxable_checks.append("volume_ok")
-    if interpretation_style == "breakout":
-        preferred_checks.extend(["breakout_ok", "volume_ok", "reclaim_gate_ok"])
-        relaxable_checks.extend(["pullback_ok"])
-        primary_focus.extend(["breakout_ok", "volume_ok"])
-        secondary_focus.extend(["reclaim_gate_ok", "confidence_ok", "structure_hh_hl", "momentum_follow_through"])
-    elif interpretation_style in ("pullback", "reversal"):
-        preferred_checks.extend(["pullback_ok", "volume_ok", "vwap_reclaim_ok"])
-        relaxable_checks.extend(["breakout_ok"])
-        primary_focus.extend(["pullback_ok", "volume_ok"])
-        secondary_focus.extend(["reclaim_gate_ok", "rebound_ok", "support_holding", "trend_regime"])
-    elif interpretation_style == "defensive":
-        preferred_checks.extend(["reclaim_gate_ok", "extension_ok", "confidence_ok"])
-        relaxable_checks.extend(["breakout_ok", "pullback_ok"])
-        primary_focus.extend(["reclaim_gate_ok", "extension_ok"])
-        secondary_focus.extend(["volume_ok", "confidence_ok", "failed_breakout", "momentum_decay"])
-    else:
-        preferred_checks.extend(["reclaim_gate_ok", "confidence_ok"])
-        primary_focus.extend(["reclaim_gate_ok"])
-        secondary_focus.extend(["volume_ok", "breakout_ok", "pullback_ok", "trend_regime"])
-
-    fallback_used = False
-    if explicit_fields.get("required_checks"):
-        required_checks = list(explicit_fields.get("required_checks") or [])
-    elif required_checks:
-        fallback_used = True
-    if explicit_fields.get("preferred_checks"):
-        preferred_checks = list(explicit_fields.get("preferred_checks") or [])
-    elif preferred_checks:
-        fallback_used = True
-    if explicit_fields.get("relaxable_checks"):
-        relaxable_checks = list(explicit_fields.get("relaxable_checks") or [])
-    elif relaxable_checks:
-        fallback_used = True
-    if explicit_fields.get("blockers"):
-        blockers = list(explicit_fields.get("blockers") or [])
-    elif blockers:
-        fallback_used = True
-    if (explicit_fields.get("priority_hints") or {}):
-        merged_priority_hints = dict(interpretation.get("priority_hints") or {})
-        merged_priority_hints.update(dict(explicit_fields.get("priority_hints") or {}))
-        interpretation["priority_hints"] = merged_priority_hints
-    elif any((interpretation.get("priority_hints") or {}).values()):
-        fallback_used = True
-    explicit_focus = dict(explicit_fields.get("evidence_focus") or {})
-    if explicit_focus.get("primary") or explicit_focus.get("secondary"):
-        primary_focus = list(explicit_focus.get("primary") or primary_focus)
-        secondary_focus = list(explicit_focus.get("secondary") or secondary_focus)
-    elif primary_focus or secondary_focus:
-        fallback_used = True
-    if explicit_fields.get("notes"):
-        notes = list(explicit_fields.get("notes") or [])
-    elif notes:
-        fallback_used = True
-
-    explicit_fields_used = list(explicit_fields.get("explicit_fields_used") or [])
-    if explicit_fields_used and fallback_used:
-        interpretation["interpretation_basis"] = "mixed"
-    elif explicit_fields_used:
-        interpretation["interpretation_basis"] = "explicit_policy"
-    elif policy_available and interpretation_style:
-        interpretation["interpretation_basis"] = "fallback_playbook"
-    else:
-        interpretation["interpretation_basis"] = "none"
-
-    interpretation["required_checks"] = _dedupe_non_empty(required_checks)
-    interpretation["preferred_checks"] = _dedupe_non_empty(preferred_checks)
-    interpretation["relaxable_checks"] = _dedupe_non_empty(relaxable_checks)
-    interpretation["blockers"] = _dedupe_non_empty(blockers)
-    interpretation["evidence_focus"] = {
-        "primary": _dedupe_non_empty(primary_focus),
-        "secondary": _dedupe_non_empty(secondary_focus),
-    }
-    interpretation["notes"] = _dedupe_non_empty(notes)
-    return interpretation
 
 
 _CHART_FEATURE_GROUP_PATHS: Dict[str, str] = {
@@ -1166,185 +956,21 @@ def _build_monitor_policy_interpreter_trace(
     signal_evidence: Mapping[str, Any] | None = None,
     chart_structure_features: Mapping[str, Any] | None = None,
 ) -> Dict[str, Any]:
-    interpretation = dict(policy_interpretation or {}) if isinstance(policy_interpretation, Mapping) else {}
-    evidence = dict(signal_evidence or {}) if isinstance(signal_evidence, Mapping) else {}
-    chart_states = _flatten_chart_structure_feature_states(chart_structure_features)
-    trace = _empty_monitor_policy_interpreter_trace()
-
-    policy_available = bool(interpretation.get("policy_available"))
-    trace["policy_available"] = policy_available
-    trace["entry_style"] = interpretation.get("entry_style")
-    trace["focus_alignment"] = {
-        "primary_focus": _dedupe_non_empty(((interpretation.get("evidence_focus") or {}).get("primary")) or []),
-        "secondary_focus": _dedupe_non_empty(((interpretation.get("evidence_focus") or {}).get("secondary")) or []),
-    }
-    if not policy_available:
-        return trace
-
-    checks = dict(evidence.get("checks") or {}) if isinstance(evidence.get("checks"), Mapping) else {}
-    derived = dict(evidence.get("derived") or {}) if isinstance(evidence.get("derived"), Mapping) else {}
-    scores = dict(evidence.get("scores") or {}) if isinstance(evidence.get("scores"), Mapping) else {}
-
-    def _status_item(spec_value: Any, *, blocker: bool = False) -> Dict[str, Any]:
-        spec = _parse_policy_signal_spec(spec_value)
-        name = str(spec.get("name") or "").strip()
-        if name in checks:
-            return {
-                "name": str(name),
-                "expected_state": None,
-                "actual_state": None,
-                "status": ("active" if not bool(checks.get(name)) else "inactive") if blocker else ("pass" if bool(checks.get(name)) else "fail"),
-                "source": f"signal_evidence.checks.{name}",
-                "feature_level": "low_level_signal",
-                "spec_valid": bool(spec.get("is_valid", True)),
-                "validation_notes": list(spec.get("validation_notes") or []),
-            }
-        if name in derived:
-            value = derived.get(name)
-            if isinstance(value, bool):
-                return {
-                    "name": str(name),
-                    "expected_state": None,
-                    "actual_state": None,
-                    "status": ("active" if bool(value) else "inactive") if blocker else ("pass" if bool(value) else "fail"),
-                    "source": f"signal_evidence.derived.{name}",
-                    "feature_level": "low_level_signal",
-                    "spec_valid": bool(spec.get("is_valid", True)),
-                    "validation_notes": list(spec.get("validation_notes") or []),
-                }
-        feature_item = _chart_feature_status_item(spec=spec, chart_states=chart_states, blocker=blocker)
-        if feature_item is not None:
-            return feature_item
-        return {
-            "name": str(name),
-            "expected_state": spec.get("expected_state"),
-            "actual_state": None,
-            "status": "unknown",
-            "source": None,
-            "feature_level": spec.get("feature_level") or "unknown",
-            "spec_valid": bool(spec.get("is_valid")),
-            "validation_notes": list(spec.get("validation_notes") or []),
-        }
-
-    required_rows = [_status_item(name) for name in _dedupe_non_empty(interpretation.get("required_checks") or [])]
-    preferred_rows = [_status_item(name) for name in _dedupe_non_empty(interpretation.get("preferred_checks") or [])]
-    relaxable_rows = [_status_item(name) for name in _dedupe_non_empty(interpretation.get("relaxable_checks") or [])]
-    blocker_names = _dedupe_non_empty([
-        *(interpretation.get("blockers") or []),
-        "too_extended" if "too_extended" in derived else "",
-    ])
-    blocker_rows = [_status_item(name, blocker=True) for name in blocker_names]
-
-    trace["available"] = True
-    trace["check_status"] = {
-        "required": required_rows,
-        "preferred": preferred_rows,
-        "relaxable": relaxable_rows,
-        "blockers": blocker_rows,
-    }
-
-    failed_required = [row["name"] for row in required_rows if row.get("status") == "fail"]
-    active_blockers = [row["name"] for row in blocker_rows if row.get("status") == "active"]
-    failed_preferred = [row["name"] for row in preferred_rows if row.get("status") == "fail"]
-
-    alignment_state: str | None
-    if active_blockers or failed_required:
-        alignment_state = "misaligned"
-    elif failed_preferred:
-        alignment_state = "partial"
-    elif required_rows or preferred_rows or relaxable_rows:
-        alignment_state = "aligned"
-    else:
-        alignment_state = "unknown"
-
-    primary_blocker = None
-    secondary_blockers: List[str] = []
-    blocker_order = [*active_blockers, *failed_required, *failed_preferred]
-    if blocker_order:
-        primary_blocker = blocker_order[0]
-        secondary_blockers = blocker_order[1:]
-
-    trace["alignment_summary"] = {
-        "policy_alignment_state": alignment_state,
-        "primary_blocker": primary_blocker,
-        "secondary_blockers": _dedupe_non_empty(secondary_blockers),
-    }
-    higher_level_used = any(
-        str((row or {}).get("feature_level") or "") == "high_level_feature"
-        for row in [*required_rows, *preferred_rows, *relaxable_rows, *blocker_rows]
-        if isinstance(row, Mapping)
+    from .intraday_monitor_signals_build_monitor_policy_interpreter_trace import _build_monitor_policy_interpreter_trace as owner
+    return owner(
+        policy_interpretation=policy_interpretation,
+        signal_evidence=signal_evidence,
+        chart_structure_features=chart_structure_features,
+        facade=sys.modules[__name__],
     )
-    notes = list(interpretation.get("notes") or [])
-    if higher_level_used:
-        notes.append("chart_structure_features_consumed")
-    trace["notes"] = _dedupe_non_empty(notes)
-    return trace
 
 
 def _build_monitor_policy_alignment_summary(
     *,
     policy_interpreter_trace: Mapping[str, Any] | None = None,
 ) -> Dict[str, Any]:
-    trace = dict(policy_interpreter_trace or {}) if isinstance(policy_interpreter_trace, Mapping) else {}
-    summary = _empty_monitor_policy_alignment_summary()
-
-    available = bool(trace.get("available"))
-    policy_available = bool(trace.get("policy_available"))
-    summary["policy_available"] = policy_available
-    summary["entry_style"] = trace.get("entry_style")
-    if not available:
-        return summary
-
-    check_status = dict(trace.get("check_status") or {}) if isinstance(trace.get("check_status"), Mapping) else {}
-    alignment_summary = dict(trace.get("alignment_summary") or {}) if isinstance(trace.get("alignment_summary"), Mapping) else {}
-    focus_alignment = dict(trace.get("focus_alignment") or {}) if isinstance(trace.get("focus_alignment"), Mapping) else {}
-
-    def _failed(rows: Any, *, statuses: Sequence[str] = ("fail",)) -> List[str]:
-        out: List[str] = []
-        for row in list(rows or []):
-            if not isinstance(row, Mapping):
-                continue
-            status = str(row.get("status") or "").strip().lower()
-            if status not in {str(x).strip().lower() for x in list(statuses or [])}:
-                continue
-            out.append(str(row.get("name") or "").strip())
-        return _dedupe_non_empty(out)
-
-    primary_focus = _dedupe_non_empty(focus_alignment.get("primary_focus") or [])
-    secondary_focus = _dedupe_non_empty(focus_alignment.get("secondary_focus") or [])
-    failed_required = _failed(check_status.get("required"), statuses=("fail",))
-    failed_preferred = _failed(check_status.get("preferred"), statuses=("fail",))
-    failed_relaxable = _failed(check_status.get("relaxable"), statuses=("fail",))
-    active_blockers = _failed(check_status.get("blockers"), statuses=("active",))
-    focus_mismatch = _dedupe_non_empty(
-        [
-            *(name for name in primary_focus if name in failed_required or name in failed_preferred or name in failed_relaxable),
-            *(name for name in secondary_focus if name in failed_required or name in failed_preferred),
-        ]
-    )
-
-    summary["available"] = True
-    summary["alignment_state"] = alignment_summary.get("policy_alignment_state")
-    summary["primary_blocker"] = alignment_summary.get("primary_blocker")
-    summary["secondary_blockers"] = _dedupe_non_empty(
-        [*list(alignment_summary.get("secondary_blockers") or []), *active_blockers]
-    )
-    summary["focus_mismatch"] = focus_mismatch
-    summary["top_failed_required_checks"] = failed_required[:3]
-    summary["top_failed_preferred_checks"] = failed_preferred[:3]
-    summary["top_relaxable_gaps"] = failed_relaxable[:3]
-    summary_notes = list(trace.get("notes") or [])
-    high_level_mismatch_present = any(
-        str((row or {}).get("feature_level") or "") == "high_level_feature"
-        and str((row or {}).get("status") or "") in {"fail", "active"}
-        for section in ("required", "preferred", "relaxable", "blockers")
-        for row in list(check_status.get(section) or [])
-        if isinstance(row, Mapping)
-    )
-    if high_level_mismatch_present:
-        summary_notes.append("higher_level_feature_mismatch_present")
-    summary["summary_notes"] = _dedupe_non_empty(summary_notes)
-    return summary
+    from .intraday_monitor_signals_build_monitor_policy_alignment_summary import _build_monitor_policy_alignment_summary as owner
+    return owner(policy_interpreter_trace=policy_interpreter_trace, facade=sys.modules[__name__])
 
 
 def _build_monitor_policy_aware_gating(

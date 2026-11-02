@@ -4,6 +4,9 @@ import json
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Mapping
+import sys
+from . import horizon_alignment_group_key as _a38_group_key
+from . import horizon_alignment_profit_factor as _a38_profit_factor
 
 from libs.reporting.q8_evaluation_contract import candidate_day
 from libs.reporting.quant_shadow_candidate_evaluation import (
@@ -35,23 +38,11 @@ def _lane_observation(row: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _group_key(row: Mapping[str, Any], dimensions: tuple[str, ...]) -> tuple[str, ...]:
-    lane = _lane_observation(row)
-    values = {
-        "time_bucket": _text(lane.get("time_bucket")),
-        "tactic": _text(row.get("quant_tactic_id")),
-        "primary_lane": _text(lane.get("primary_lane")),
-        "market_regime_rail": _text(lane.get("market_regime_rail")),
-        "selection_role": _text(row.get("shadow_role")),
-    }
-    return tuple(values[name] for name in dimensions)
+    return _a38_group_key._group_key(row=row, dimensions=dimensions, facade=sys.modules[__name__])
 
 
 def _profit_factor(values: list[float]) -> float:
-    gains = sum(value for value in values if value > 0)
-    losses = -sum(value for value in values if value < 0)
-    if losses <= 0:
-        return 999.0 if gains > 0 else 0.0
-    return round(gains / losses, 4)
+    return _a38_profit_factor._profit_factor(values=values, facade=sys.modules[__name__])
 
 
 def _combo_rows(
