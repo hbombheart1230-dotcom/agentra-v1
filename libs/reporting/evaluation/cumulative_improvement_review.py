@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any, Mapping
+import sys
 
 from libs.reporting.q8_historical_review import build_q8_historical_review_payload
 from libs.reporting.quant_shadow_candidate_evaluation import (
@@ -21,6 +22,7 @@ from .scanner_quality import extract_pre_strategist_candidate_rows
 from .scanner_alignment_root_cause import (
     build_scanner_alignment_root_cause_range,
 )
+from . import cumulative_improvement_review_rank_row as _a57_rank_row
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -102,16 +104,7 @@ def _rank_row(
     bucket: str,
     horizon: str,
 ) -> Mapping[str, Any]:
-    return next(
-        (
-            row
-            for row in review.get("rank_horizon_rows") or []
-            if isinstance(row, Mapping)
-            and row.get("rank_bucket") == bucket
-            and row.get("horizon") == horizon
-        ),
-        {},
-    )
+    return _a57_rank_row._rank_row(review, bucket=bucket, horizon=horizon, facade=sys.modules[__name__])
 
 
 def _candidate_rows(
