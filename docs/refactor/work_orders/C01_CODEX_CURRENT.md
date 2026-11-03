@@ -1,3 +1,10 @@
+## ACTIVE ORDER B44 — RF-063 resolver/consumer 게이트 검증 (2026-11-04)
+이 주문은 아래 NO_READY_ORDER 및 B43 기록보다 우선한다. ORDER_ID=B44-RF063-CONSUMER-20261104. C03가 발행한 신규 테스트 주문이다.
+기존 B 브랜치 work/p15-b-operator-structure-20261022에서 수행한다. SOURCE는 읽기 전용으로 libs/reporting/llm_artifacts.py, llm_artifacts_trade_lookup.py, llm_artifacts_path_projection.py, llm_artifacts_run_paths.py 및 실제 caller single_trade_report.py, intraday_trade_reports.py를 확인한다. 정본과 B의 resolver/caller/import 의존성 blob을 비교해 차이를 기록한다.
+쓰기 허용 경로는 새 tests/test_p15_rf063_b44_resolver_consumers.py 한 파일. 이미 존재하면 그 원격 완료 여부를 확인하고 중복 생성하지 않는다. 기존 frozen 테스트 수정 금지.
+실제 resolver와 최소 한 개 실제 소비자의 정상 진입점을 tmp_path와 fake/monkeypatch로 실행한다. canonical root 존재, legacy/misplaced root만 존재, 양쪽 존재 시 우선순위, 둘 다 없음, trade-id 조회 및 facade call-time monkeypatch를 검증한다. consumer가 실제로 사용하는 함수와 반환 경로를 확인한다. 네트워크·실제 reports/logs·운영 main·실거래 호출 금지. 소스 수정이 필요하면 최소 재현 테스트와 정확한 SOURCE/function/예상행동을 제출하여 C03가 후속 범위를 확정하게 한다.
+B에서 정상 pytest exit/PASS 또는 실제 실패를 기록하고 테스트 파일을 비강제 푸시·원격 재조회한다. 정본에서 같은 테스트를 실행할 수 있도록 source/consumer/dependency manifest와 실행 명령을 #12에 남긴다. 성공 증거는 scoped G2이며 전체 RF DONE은 C05 판정이다.
+
 # C01 — Codex B | ORDER_ID=B-20261103-10-C03 | RF-063 DEV | B43 REMOTE_DONE=8/8 (HISTORICAL; NEW_READY=0/8) | RESERVE_NOT_VERIFIED=0/6
 
 ## 2026-11-04 단일 운영 지침
