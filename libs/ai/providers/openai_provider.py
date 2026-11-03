@@ -167,7 +167,7 @@ class OpenAIStrategist:
         model = normalize_openrouter_model_name(self.model)
         if _looks_like_chat_completions_endpoint(self.endpoint) and model and "/" not in model:
             model = normalize_openrouter_model_name(model)
-        return model or normalize_openrouter_model_name("deepseek/deepseek-v3.2")
+        return model or normalize_openrouter_model_name("openai/gpt-6-luna")
 
     @classmethod
     def from_env(cls, policy: Dict[str, Any] | None = None) -> "OpenAIStrategist":
@@ -176,7 +176,7 @@ class OpenAIStrategist:
         endpoint = strategist_endpoint(policy)
         model = strategist_model(policy)
         if not model:
-            model = strategist_fallback_model(policy) or normalize_openrouter_model_name("deepseek/deepseek-v3.2")
+            model = strategist_fallback_model(policy) or normalize_openrouter_model_name("anthropic/claude-haiku-5.5")
         timeout_sec = strategist_timeout_sec(policy)
         resolved_max_tokens = strategist_max_tokens(policy)
         max_tokens: Optional[int] = int(resolved_max_tokens) if int(resolved_max_tokens) > 0 else None

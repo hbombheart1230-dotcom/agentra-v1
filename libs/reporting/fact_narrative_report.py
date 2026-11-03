@@ -78,7 +78,7 @@ def generate_narrative(
     ]
 
     primary_model = explicit_model
-    fallback_model = "minimax/minimax-m2.5"
+    fallback_model = "google/gemma-4-26b-a4b-it:free"
     
     def _attempt_call(target_model: str) -> Dict[str, Any]:
         policy = {
