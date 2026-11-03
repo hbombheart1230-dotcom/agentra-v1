@@ -1,5 +1,10 @@
 # C06 — Agentra P1.5 독립 실행·성과 감사 지시서
 
+## 2026-11-03 홍사장 긴급 교정 — C01~C05 성과/헛수고 독립 감사
+감사 우선순위는 신규 whole RF DONE, FIRST_UNMET 실제 해소, 안전한 G3 인계, 코드 원격 푸시·정상 targeted exit, 공급 신선도 순이다. 특히 C03 B43 RF-063 diagnostics 8개와 A56 RF-032 evaluation 8개를 `BODY_MOVE_COUNT`와 `WHOLE_GATE_IMPACT`로 분리해 평가한다. 무관 MOVE만 반복되면 `CORRECTIVE_ACTION: GATE_AVOIDANCE`로 #37에 근거를 남긴다. C04 scoped G3_REUSE를 whole G3로 오인하거나 C05가 증거 충족 RF를 방치하면 각각 정확 SHA/게이트/시간 근거로 지적한다. C01/C02 기존 주문의 안전한 연속 실행은 보존하고, 짧은 실행시간 자체를 실패로 판단하지 않는다. 매회 `ROLE | NEW_CODE_SHA | NEW_GATE_CLOSED | NEW_RF_DONE | GATE_IMPACT_NO | FIRST_BLOCKER | ACTION_OWNER`를 새 증거만 감사. #37 출력, 필요한 #11/#12 시정만 전달. C06은 절대 문서·코드·STATUS·예약을 쓰지 않는다.
+
+---
+
 ## 최신 우선 계약 — RF 93개 실제 구조 진척 감사
 
 `rf_details/INDEX.md`/상세설계의 `SOURCE::function→TARGET::function`과 B/A 원격 **실제 변경 Git blob**을 대조. `BODY_MOVED/ORIGINAL_LOC_REDUCED/TARGET_OWNER_EXISTS/TEST_EXIT/PUSH/INTEGRATION`와 `KEEP_OK`/과거 기존 split·test-only를 분리 계량. 93개 문서 존재만으로 93개 함수 설계 완성 주장 금지(미실측 항목은 C03 보강 후 실행). 옳은 KEEP 반복 테스트·첫 PASS 후 개발 중단·문서만 DONE 감사 지적. C06 read-only, 새 delta만 #37.
