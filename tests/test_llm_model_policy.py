@@ -22,12 +22,12 @@ def test_llm_profiles_resolve_expected_primary_and_fallback() -> None:
     balanced = resolve_model_profile("balanced")
     strong = resolve_model_profile("strong_reasoning")
 
-    assert fast["primary"] == "nvidia/nemotron-3.5-lightning:free"
-    assert fast["fallback"] == "google/gemma-4-26b-a4b-it:free"
-    assert balanced["primary"] == "openai/gpt-6-luna"
-    assert balanced["fallback"] == "anthropic/claude-haiku-5.5"
-    assert strong["primary"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
-    assert strong["fallback"] == "google/gemma-4-26b-a4b-it:free"
+    assert fast["primary"] == "minimax/minimax-m2.5"
+    assert fast["fallback"] == "deepseek/deepseek-v3.2"
+    assert balanced["primary"] == "deepseek/deepseek-v3.2"
+    assert balanced["fallback"] == "minimax/minimax-m2.5"
+    assert strong["primary"] == "moonshotai/kimi-k2.5"
+    assert strong["fallback"] == "deepseek/deepseek-v3.2"
 
 
 def test_llm_execution_profiles_resolve_expected_defaults() -> None:
@@ -114,20 +114,20 @@ def test_commander_injects_llm_profiles_into_applied_policy(monkeypatch) -> None
     assert (top_level_exec.get("retry") or {}).get("max_attempts") == 2
     assert (top_level_exec.get("retry") or {}).get("backoff_sec") == 0.0
     assert ((llm_policy.get("strategist") or {}).get("profile")) == "balanced"
-    assert ((llm_policy.get("strategist") or {}).get("primary")) == "openai/gpt-6-luna"
-    assert ((llm_policy.get("strategist") or {}).get("fallback")) == "anthropic/claude-haiku-5.5"
+    assert ((llm_policy.get("strategist") or {}).get("primary")) == "deepseek/deepseek-v3.2"
+    assert ((llm_policy.get("strategist") or {}).get("fallback")) == "minimax/minimax-m2.5"
     strategist_exec = ((llm_policy.get("strategist") or {}).get("execution_profile")) or {}
     assert strategist_exec.get("name") == "balanced_reasoning"
     assert strategist_exec.get("max_tokens") == 8192
     assert strategist_exec.get("timeout_sec") == 15
     assert strategist_exec.get("retry_max") == 2
     assert ((((llm_policy.get("reporter") or {}).get("intraday") or {}).get("profile"))) == "fast_free"
-    assert ((((llm_policy.get("reporter") or {}).get("intraday") or {}).get("primary"))) == "nvidia/nemotron-3.5-lightning:free"
+    assert ((((llm_policy.get("reporter") or {}).get("intraday") or {}).get("primary"))) == "minimax/minimax-m2.5"
     intraday_exec = ((((llm_policy.get("reporter") or {}).get("intraday") or {}).get("execution_profile")) or {})
     assert intraday_exec.get("name") == "concise_review"
     assert intraday_exec.get("max_tokens") == 8192
     assert ((((llm_policy.get("reporter") or {}).get("daily") or {}).get("profile"))) == "strong_reasoning"
-    assert ((((llm_policy.get("reporter") or {}).get("daily") or {}).get("primary"))) == "nvidia/nemotron-3-ultra-550b-a55b:free"
+    assert ((((llm_policy.get("reporter") or {}).get("daily") or {}).get("primary"))) == "moonshotai/kimi-k2.5"
     daily_exec = ((((llm_policy.get("reporter") or {}).get("daily") or {}).get("execution_profile")) or {})
     assert daily_exec.get("name") == "deep_review"
     assert daily_exec.get("max_tokens") == 8192
@@ -183,44 +183,44 @@ def test_top_level_execution_profile_is_canonical_over_role_specific_slot() -> N
 def test_reporting_roles_use_applied_policy_models(monkeypatch):
     monkeypatch.setenv("DRY_RUN", "1")
 
-    with patch("libs.reporting.trade_read_model.build_trade_read_model", return_value={"applied_policy": {"llm": {"reporter": {"trade_report": {"primary": "google/gemma-4-26b-a4b-it:free"}}}}}), patch(
+    with patch("libs.reporting.trade_read_model.build_trade_read_model", return_value={"applied_policy": {"llm": {"reporter": {"intraday": {"primary": "minimax/minimax-m2.5"}}}}}), patch(
         "libs.reporting.fact_narrative_report.build_separated_report"
     ) as mock_report:
         build_separated_ai_trade_report("dummy/dir")
-        assert mock_report.call_args[1]["model"] == "google/gemma-4-26b-a4b-it:free"
+        assert mock_report.call_args[1]["model"] == "minimax/minimax-m2.5"
 
     with patch("libs.reporting.fact_narrative_report.build_separated_report") as mock_report:
         build_separated_daily_report(
             {
                 "applied_policy": {
                     "llm": {
-                        "reporter": {"daily": {"primary": "nvidia/nemotron-3-ultra-550b-a55b:free"}},
+                        "reporter": {"daily": {"primary": "moonshotai/kimi-k2.5"}},
                         "execution_profile": {"profile_name": "default_intraday", "max_tokens": 1444},
                     }
                 }
             }
         )
-        assert mock_report.call_args[1]["model"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
+        assert mock_report.call_args[1]["model"] == "moonshotai/kimi-k2.5"
         assert mock_report.call_args[1]["execution_profile"]["profile_name"] == "default_intraday"
 
-    with patch("libs.reporting.trade_read_model.build_trade_read_model", return_value={"applied_policy": {"llm": {"reporter": {"intraday": {"primary": "nvidia/nemotron-3.5-lightning:free"}}}}}), patch(
+    with patch("libs.reporting.trade_read_model.build_trade_read_model", return_value={"applied_policy": {"llm": {"reporter": {"intraday": {"primary": "minimax/minimax-m2.5"}}}}}), patch(
         "libs.reporting.symbol_read_model.build_symbol_read_model", return_value={}
     ), patch("libs.reporting.fact_narrative_report.build_separated_report") as mock_report:
         build_separated_operator_brief("dir", "SYM", "root")
-        assert mock_report.call_args[1]["model"] == "nvidia/nemotron-3.5-lightning:free"
+        assert mock_report.call_args[1]["model"] == "minimax/minimax-m2.5"
         assert mock_report.call_args[1]["execution_profile"]["profile_name"] in {"default_intraday", "concise_review"}
 
     with patch("libs.reporting.trade_read_model.build_trade_read_model", return_value={"trade_id": "TRD_1"}), patch(
-        "libs.reporting.symbol_read_model.build_symbol_read_model", return_value={"applied_policy": {"llm": {"reporter": {"intraday": {"primary": "google/gemma-4-26b-a4b-it:free"}}}}}
+        "libs.reporting.symbol_read_model.build_symbol_read_model", return_value={"applied_policy": {"llm": {"reporter": {"intraday": {"primary": "openrouter/symbol-model"}}}}}
     ), patch("libs.reporting.fact_narrative_report.build_separated_report") as mock_report:
         build_separated_operator_brief("dir", "SYM", "root")
-        assert mock_report.call_args[1]["model"] == "google/gemma-4-26b-a4b-it:free"
+        assert mock_report.call_args[1]["model"] == "openrouter/symbol-model"
 
     _summary, artifact = summarize_daily_report_with_artifact(
-        state={"eod_day": "2026-04-07", "applied_policy": {"llm": {"reporter": {"daily": {"primary": "nvidia/nemotron-3-ultra-550b-a55b:free"}}}}},
+        state={"eod_day": "2026-04-07", "applied_policy": {"llm": {"reporter": {"daily": {"primary": "moonshotai/kimi-k2.5"}}}}},
         policy={},
     )
-    assert artifact["model"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
+    assert artifact["model"] == "moonshotai/kimi-k2.5"
 
 
 def test_reporter_final_review_prefers_applied_policy_profile_model(monkeypatch):
