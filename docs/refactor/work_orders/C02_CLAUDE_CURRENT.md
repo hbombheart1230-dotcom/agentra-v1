@@ -1,4 +1,7 @@
-# C02 — Claude A | ORDER_ID=A-20261103-09-C03 | RF-032 PEER | A56 NEW_READY=8/8 | A55 REMOTE_DONE=8/8 | RESERVE_VERIFIED=6/6
+# C02 — Claude A | ORDER_ID=A-20261103-09-C03 | RF-032 PEER | A56 NEW_READY=8/8 | A55 REMOTE_DONE=8/8 | RESERVE_NOT_VERIFIED=0/6
+
+## 2026-11-03 20:00 C03 evidence correction — reserve count only (not a new order)
+A56-1..8 were completed at A remote `a0149439392300f94876e553e11d99fec053d1d5` per #11 6593666681. Preserve ORDER_ID and all existing item instructions; do not repeat them. The six `cumulative_improvement_review` reserve candidates were not independently reverified against current SOURCE blob, exclusive Owner, TARGET 404, IO/caller safety and targeted normal test, so **RESERVE_VERIFIED=0/6; RESERVE_NOT_VERIFIED** until C03 validates each. They are not assigned and Claude A must not self-select or execute them. This header correction has **GATE_IMPACT=NO**, **NEW_BODY_MOVES=0**, **RF_DONE_DELTA=0**; it is not G1/G2/G3 evidence. Future C03 must issue a separately verified next single order. Existing A49 prepush staged SOURCE+Owner+test manifest safeguard remains mandatory; no A49 re-test.
 
 ## 2026-11-03 역할별 Agentra 스킬 적용
 `agentra-rf-executor` 실행 체크리스트를 적용하고 `agentra-contract-guard`로 변경 대상의 Owner/안전 경계를 확인한다. 스킬은 본 C02 주문 밖 신규 과제를 허용하지 않으며, 자동 로딩이 확인되지 않으면 `.agents/skills/<skill-name>/SKILL.md`를 참고 자료로만 사용한다.
