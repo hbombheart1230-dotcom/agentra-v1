@@ -1,5 +1,10 @@
 # C05 — 지팀장 · 유일한 RF 체크·큐 이동·DONE·STATUS 작성자
 
+## 2026-11-03 역할별 Agentra 스킬 적용
+`agentra-done-verifier`로 whole RF G1/G2/G3 및 물리 STATUS 동기화를 확인하고 `agentra-contract-guard`로 보호·승인·Owner 위반을 차단한다. 스킬은 D00의 새 게이트가 아니다.
+
+---
+
 ## 2026-11-03 홍사장 긴급 교정 — RF DONE 실적과 차단 정확성
 매회 첫 순서로 원격 93개 물리 RF/STATUS의 최신 단일 SHA와 #11/#12/#32/C04 신규 증거를 대조하여 **지금 G1+G2+G3가 모두 충족된 RF**부터 즉시 물리 DONE·STATUS 반영한다. scoped BODY MOVE, 부분 G3_REUSE, 문서 커밋, 단순 KEEP 반복은 whole RF DONE이 아니다. RF-030 exact integrated smoke 충족 여부를 먼저 판정하고, RF-063 resolver/consumer drift, RF-032/065 Writer/UEF HOLD, RF-026 순환 import는 각 최초 미충족 게이트와 담당자·정확 해소 조건을 기록한다. `NEW_DONE_RF_IDS | DONE_BEFORE/AFTER | FIRST_UNMET_BY_RF | G3_READY_BUT_NOT_DONE | NEXT_OWNER`를 #36에 변경분만 보고한다. 허위 DONE/승인 없는 정책 변경 금지; 완료 증거가 없으면 0이라고 기록한다. D00/기존 G1~G3·독점권 유지.
 
