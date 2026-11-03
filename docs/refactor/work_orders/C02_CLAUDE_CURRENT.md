@@ -1,80 +1,64 @@
-# C02 — Claude A | ORDER_ID=A-20261103-08-C03 | RF-032 PEER | A55 NEW_READY=8/8 | A54 REMOTE_DONE=8/8 | RESERVE_VERIFIED=6/6
+# C02 — Claude A | ORDER_ID=A-20261103-09-C03 | RF-032 PEER | A56 NEW_READY=8/8 | A55 REMOTE_DONE=8/8 | RESERVE_VERIFIED=6/6
 
-## START — latest remote only; preserve already-started order
-C03 prewrite canonical `15207cf47e3b1b447545f5948a73eed3801f1e9d`, A remote `7d1dcb8b55ea98b52fc4bcbdacf4aaaa0d9eeca1`, previous C02 blob `f40ed5f2ebc9cc7e368d3fc92b263da01b2adb99`. A54 [#11 6589870708](https://github.com/hbombheart1230-dotcom/agentra/issues/11#issuecomment-6589870708) **8/8 remote DONE**, normal `tests/test_p15_rf032_20261103_07h_quality_episode_no_trade_owners.py` EXIT0/152 PASS, actor SHA above; C04 [#36 6590341772](https://github.com/hbombheart1230-dotcom/agentra/issues/36#issuecomment-6590341772) integrated 12/12 exact A54 paths at canonical `15207cf4`; C05 [#36 6590478122](https://github.com/hbombheart1230-dotcom/agentra/issues/36#issuecomment-6590478122) still 46/93 DONE, RF-032 whole G1 BLOCKED_POLICY. A54 and older A tasks MUST NOT be repeated/recounted. If an older starting order genuinely in flight, finish its safe items first; do not retroactively cancel.
+## START — protect in-flight work, remote preflight
+C03 verified canonical `3b859aa4facd4d38acdad3fc62507261bf48ae42`, A branch `2d48eb29c813353eddb8a9e47de1ae5f9787fa1b`, old C02 blob `927850ca3ef04a54f4a60c63c785eb83c879fc42`. A55 #11 6590953654 delivered 8/8 at A remote 2d48eb29, normal targeted EXIT=0 PASS=302, C04 #36 6591335590 selected exact 13/13 at integration e6319b92, C05 #36 6591430488 physical DONE 46/93; do not redo/recount A55 or older. If a prior starting order is genuinely in progress, finish its safe items first.
 
-First shell `python -m pytest --version`; if missing `python -m pip install --user pytest`, recheck. Fetch **remote** `integration/p1.5:docs/refactor/work_orders/C02_CLAUDE_CURRENT.md`, log full canonical HEAD/C02 blob/ORDER_ID and A HEAD to #11. This C02 is sole execution entrypoint: no D00/RF/INDEX/SKILL re-read and no self-selected RF. Refetch each SOURCE and TARGET on A before editing; if preimage SHA changed or target exists, record item-specific evidence and continue independent items. Code/test only on A branch, non-force push.
+First shell `python -m pytest --version`; if absent `python -m pip install --user pytest`, recheck. Fetch this exact file from remote `integration/p1.5`, report full canonical HEAD, C02 blob, ORDER_ID, A HEAD to #11. This file is sole execution entrypoint; do NOT reread D00/RF/INDEX/SKILL or self-select RF. Before edits refetch each pinned SOURCE and each TARGET on A; if SHA drift, existing TARGET, or ownership collision, item-specific VERIFIED_ALREADY/BLOCKED with exact SHA/FIRST_BLOCKER and continue the remaining safe items. Code/tests only on A branch; non-force push. C03's new order never retroactively cancels a previously started order.
 
-## DONE-FIRST / why this scope
-Physical PENDING38/DEV7/PEER2/DONE46, 47 unresolved (C05 07:48). RF-030 G1 PARTIAL RF-074 frozen owner and canonical G2/G3 fake smoke are C04/C05, and A operator_visibility.py actor `ec196b5f` differs canonical `bb6e97a7`: no safe RF-030 blind reassignment. RF-032 validation-id/Writer/UEF G1 BLOCKED_POLICY cannot be changed by A55; these read-only/in-memory BODY MOVEs are continuity supply, **NOT whole RF DONE**. No protected Writer/UEF/Guard/Step5C, broker/trade, live network, runtime state/DB, operational reports or frozen oracle/CI modifications. For existing read-only loaders, only fake patch or tmp_path tests; never production reports. Keep signatures, defaults, docstrings, imports, dict order, identity, exceptions, output bytes, monkeypatch seams.
+## DONE-FIRST boundaries
+RF-030 PENDING G1 PARTIAL (15/16 KEEP, RF-074 test/frozen Owner read-only KEEP), canonical fake smoke G2/G3 pending C04/C05. RF-032 whole G1 BLOCKED_POLICY validation-id/Writer/UEF authorization, not lifted by this read-only work. A `operator_visibility.py` preimage differs canonical; do NOT change it or RF-074 test/frozen oracle. No protected Writer/UEF/Guard/Step5C, broker/trade, real env/network, operational files/DB/state, frozen test/CI edits. All current A56 targets verified 404 on canonical+A, SOURCE canonical==A at issuance, RF-032 A-exclusive FILE_COVERAGE. These eight are real BODY MOVEs, not RF DONE.
 
-## A55 eight independently verified SOURCE::function → single TARGET Owner
-At issuance all SOURCE real bodies exist, canonical==A exact pinned blobs; all eight TARGETs and test path are 404 canonical+A. Use AST-bounded signature/body editing, not regex for multiline headers. SOURCE thin wrapper delegates to new Owner using call-time `sys.modules[__name__]` facade (Owner may take keyword-only facade); dynamically resolve helpers/globals/typing names through facade where monkeypatchable. Owner must not import SOURCE at module import. No extra G2/-O/full suite/peer/hosted CI gate.
+## A56 — eight independently verified BODY MOVEs
+For every item: move the **entire real computation body** to exactly one TARGET Owner; retain original SOURCE public/private signature, defaults, keyword-only parameters and docstring as thin wrapper delegating with call-time `sys.modules[__name__]` facade. New Owner may accept keyword-only facade; do not import SOURCE at Owner module import time. Preserve dynamic helper monkeypatch, identity, generator laziness, order, exceptions, JSON/Markdown bytes, and old callers. AST-bounded edits, no duplicate body. Each item must be DONE or evidence-backed BLOCKED; continue other safe items after a failure.
 
-### 1. RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/scanner_quality.py::pre_strategist_candidate_rows` | SOURCE_GIT_BLOB=`26a5eedd4adb46308a715256a791bd6f1a0c4d05` (canonical=actor verified 08h)
-TARGET=`libs/reporting/evaluation/scanner_quality_pre_strategist_candidate_rows.py::pre_strategist_candidate_rows` | TARGET=404 canonical+actor verified
-BODY=actual extract_pre_strategist_candidate_rows then attach_forward_outcomes; preserve optional keyword-only minute_rows_by_symbol and identity/call-time helper seam
-TARGETED_NORMAL=empty/duplicate payload, None vs supplied minute map, fake attach/extract, exceptions
-MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
+### A56-1 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/full_chain_component_review.py::build_full_chain_component_review` | SOURCE_BLOB=`7706d3567dc27286b3c63e6344193401e28a944b` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/full_chain_component_review_build_full_chain_component_review.py::build_full_chain_component_review` | TARGET=404 canonical+A
+BODY_AND_TARGETED_NORMAL=read-only evaluation aggregation; fake shadow/model/cost/profile/env/entry/exit helpers; preserve ordered component decisions, thresholds, dict keys and no real filesystem/env access. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
 
-### 2. RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::build_scanner_alignment_root_cause_report` | SOURCE_GIT_BLOB=`b46c7569ab1cd3730193642d1e93f80f9035590d` (canonical=actor verified 08h)
-TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_build_scanner_alignment_root_cause_report.py::build_scanner_alignment_root_cause_report` | TARGET=404 canonical+actor verified
-BODY=real model/evaluation trade-id join, row root-cause classification, counts, impact and output ordering; all helpers dynamically through SOURCE facade
-TARGETED_NORMAL=empty/duplicate trade IDs, missing model/evaluation, patched classify/metric, key and exception parity
-MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
+### A56-2 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/historical_prior.py::_day_from_trade_dir` | SOURCE_BLOB=`a9a223da81e5c29088004d8d5db0c391f8cf4373` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/historical_prior_day_from_trade_dir.py::_day_from_trade_dir` | TARGET=404 canonical+A
+BODY_AND_TARGETED_NORMAL=Path.parts scan for first trades/day; fake paths, empty/multiple trades segments, exact fallback. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
 
-### 3. RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_load_day_models_and_evaluations` | SOURCE_GIT_BLOB=`b46c7569ab1cd3730193642d1e93f80f9035590d` (canonical=actor verified 08h)
-TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_load_day_models_and_evaluations.py::_load_day_models_and_evaluations` | TARGET=404 canonical+actor verified
-BODY=read-only sorted trade dirs; _read_json model/evaluation, skip falsy payloads, return ordered pair; preserve Path.iterdir semantics
-TARGETED_NORMAL=tmp_path fake directories only, missing day, malformed JSON via patched _read_json, sorting, no production IO
-MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
+### A56-3 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/historical_prior.py::_net_return` | SOURCE_BLOB=`a9a223da81e5c29088004d8d5db0c391f8cf4373` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/historical_prior_net_return.py::_net_return` | TARGET=404 canonical+A
+BODY_AND_TARGETED_NORMAL=realized_outcome.net_return_pct float; only TypeError/ValueError caught; None, missing, 0, malformed, inf parity. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
 
-### 4. RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::build_scanner_alignment_root_cause_range` | SOURCE_GIT_BLOB=`b46c7569ab1cd3730193642d1e93f80f9035590d` (canonical=actor verified 08h)
-TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_build_scanner_alignment_root_cause_range.py::build_scanner_alignment_root_cause_range` | TARGET=404 canonical+actor verified
-BODY=real inclusive date iteration, daily selection/model/evaluation assembly, aggregate/root-cause summary and date error semantics
-TARGETED_NORMAL=fake _read_json/_load_day_models_and_evaluations/build_scanner_alignment_root_cause_report; empty/reversed/invalid dates, exact dict order
-MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
+### A56-4 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/historical_prior.py::_group_metrics` | SOURCE_BLOB=`a9a223da81e5c29088004d8d5db0c391f8cf4373` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/historical_prior_group_metrics.py::_group_metrics` | TARGET=404 canonical+A
+BODY_AND_TARGETED_NORMAL=defaultdict grouping, unknown fallback, sorted key iteration, call-time performance_metrics; fake iterable, key order and exception parity. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
 
-### 5. RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/no_trade_attribution.py::build_no_trade_attribution_report` | SOURCE_GIT_BLOB=`59126f3b2695c52b3b5339f4488e5946c3f278ab` (canonical=actor verified 08h)
-TARGET=`libs/reporting/evaluation/no_trade_attribution_build_no_trade_attribution_report.py::build_no_trade_attribution_report` | TARGET=404 canonical+actor verified
-BODY=real NOOP/approve/buy/commander/monitor/scanner counter aggregation with read-only q9/q11/q12/baseline helper calls; preserve Counter insertion order
-TARGETED_NORMAL=fake all report loaders; empty windows, approve+noop, buy, positive shadow, malformed row and key/exception parity
-MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
+### A56-5 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/historical_prior.py::summarize_historical_prior` | SOURCE_BLOB=`a9a223da81e5c29088004d8d5db0c391f8cf4373` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/historical_prior_summarize_historical_prior.py::summarize_historical_prior` | TARGET=404 canonical+A
+BODY_AND_TARGETED_NORMAL=in-memory eligible returns/integrity counters and 4 breakdowns, datetime.now seam, generated_at, error slice 50, Q9 frozen guardrails; fake rows only. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
 
-### 6. RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/no_trade_attribution.py::_read_json` | SOURCE_GIT_BLOB=`59126f3b2695c52b3b5339f4488e5946c3f278ab` (canonical=actor verified 08h)
-TARGET=`libs/reporting/evaluation/no_trade_attribution_read_json.py::_read_json` | TARGET=404 canonical+actor verified
-BODY=real path.read_text UTF-8 + json.loads; return dict only; catch any Exception and return {}; no writes
-TARGETED_NORMAL=tmp_path only: missing/invalid/array/object/UTF-8; facade.json monkeypatch and exception parity
-MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
+### A56-6 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/historical_prior.py::render_historical_prior_markdown` | SOURCE_BLOB=`a9a223da81e5c29088004d8d5db0c391f8cf4373` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/historical_prior_render_historical_prior_markdown.py::render_historical_prior_markdown` | TARGET=404 canonical+A
+BODY_AND_TARGETED_NORMAL=Markdown only; missing coverage/performance, nonempty breakdowns, numeric formatting, exact UTF-8/newline bytes. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
 
-### 7. RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/scanner_alignment_root_cause.py::_read_json` | SOURCE_GIT_BLOB=`b46c7569ab1cd3730193642d1e93f80f9035590d` (canonical=actor verified 08h)
-TARGET=`libs/reporting/evaluation/scanner_alignment_root_cause_read_json.py::_read_json` | TARGET=404 canonical+actor verified
-BODY=real UTF-8 json.loads read-only dict projection; any Exception => {}; separate Owner from no_trade _read_json
-TARGETED_NORMAL=tmp_path only: missing/invalid/non-dict/valid, patched json, no production paths
-MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
+### A56-7 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/historical_prior.py::iter_historical_trade_dirs` | SOURCE_BLOB=`a9a223da81e5c29088004d8d5db0c391f8cf4373` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/historical_prior_iter_historical_trade_dirs.py::iter_historical_trade_dirs` | TARGET=404 canonical+A
+BODY_AND_TARGETED_NORMAL=read-only Path rglob of lifecycle_bundle.json and date bounds; fake Path only, sorted dedup parents, no actual report IO. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
 
-### 8. RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/historical_prior.py::_rank_bucket` | SOURCE_GIT_BLOB=`6adbc1e96e1fd160c5efcd9e7e7704c300c32c20` (canonical=actor verified 08h)
-TARGET=`libs/reporting/evaluation/historical_prior_rank_bucket.py::_rank_bucket` | TARGET=404 canonical+actor verified
-BODY=real int(float(value)) conversion with only TypeError/ValueError caught; <=1, <=3, <=10, rank11_plus, unknown; do not catch OverflowError
-TARGETED_NORMAL=None/nonnumeric/negative/1/3/10/11/nan/inf, exact exception and bucket parity
-MOVE=move actual entire computation body into exactly one Owner; original same-signature/default/docstring thin wrapper with call-time facade and original import compatibility; no duplicated calculation. If drift/collision, exact item BLOCKED/VERIFIED_ALREADY and continue others.
+### A56-8 | RF-032 | NEW_BODY_MOVE
+SOURCE=`libs/reporting/evaluation/loss_decomposition.py::_load_trade_models` | SOURCE_BLOB=`09352162fa51641be30763bf9719a126da5ba3bf` (canonical=A at issuance)
+TARGET=`libs/reporting/evaluation/loss_decomposition_load_trade_models.py::_load_trade_models` | TARGET=404 canonical+A
+BODY_AND_TARGETED_NORMAL=read-only day iteration, iter_trade_dirs/build_q9_trade_read_model call-time seams; fake day/path/model objects, order and error parity. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
 
 ## VERIFIED UNASSIGNED RESERVE — A 6/6
-All six actual bodies and canonical=A SOURCE SHA, RF-032 A-exclusive FILE_COVERAGE, distinct TARGET 404 on canonical+A, fake-only IO/state/test hypothesis checked at 08h. UNASSIGNED; do not execute without next C03 order.
-1. SOURCE=`libs/reporting/evaluation/full_chain_component_review.py::build_full_chain_component_review@7706d3567dc27286b3c63e6344193401e28a944b` → TARGET=`libs/reporting/evaluation/full_chain_component_review_build_full_chain_component_review.py::build_full_chain_component_review` (404 canonical+actor). BODY/TEST=large read-only evaluation; fake all loaders/cost profile/os.getenv, no real filesystem/env, no writer; exclusive Owner; unassigned, no PASS.
-2. SOURCE=`libs/reporting/evaluation/historical_prior.py::_day_from_trade_dir@6adbc1e96e1fd160c5efcd9e7e7704c300c32c20` → TARGET=`libs/reporting/evaluation/historical_prior_day_from_trade_dir.py::_day_from_trade_dir` (404 canonical+actor). BODY/TEST=Path.parts trades/day extraction, fake Path only; exclusive Owner; unassigned, no PASS.
-3. SOURCE=`libs/reporting/evaluation/historical_prior.py::_net_return@6adbc1e96e1fd160c5efcd9e7e7704c300c32c20` → TARGET=`libs/reporting/evaluation/historical_prior_net_return.py::_net_return` (404 canonical+actor). BODY/TEST=realized_outcome.net_return_pct float; catch only TypeError/ValueError; exclusive Owner; unassigned, no PASS.
-4. SOURCE=`libs/reporting/evaluation/historical_prior.py::_group_metrics@6adbc1e96e1fd160c5efcd9e7e7704c300c32c20` → TARGET=`libs/reporting/evaluation/historical_prior_group_metrics.py::_group_metrics` (404 canonical+actor). BODY/TEST=group float tuples, sorted keys, call-time performance_metrics; pure; exclusive Owner; unassigned, no PASS.
-5. SOURCE=`libs/reporting/evaluation/historical_prior.py::summarize_historical_prior@6adbc1e96e1fd160c5efcd9e7e7704c300c32c20` → TARGET=`libs/reporting/evaluation/historical_prior_summarize_historical_prior.py::summarize_historical_prior` (404 canonical+actor). BODY/TEST=90-line in-memory eligible/returns/integrity counters; fake lists only; exclusive Owner; unassigned, no PASS.
-6. SOURCE=`libs/reporting/evaluation/historical_prior.py::render_historical_prior_markdown@6adbc1e96e1fd160c5efcd9e7e7704c300c32c20` → TARGET=`libs/reporting/evaluation/historical_prior_render_historical_prior_markdown.py::render_historical_prior_markdown` (404 canonical+actor). BODY/TEST=61-line in-memory Markdown exact UTF-8/newlines; no writes; exclusive Owner; unassigned, no PASS.
+All six distinct real SOURCE bodies canonical=A at blob `a2f64696546cb729afd7c5b89d9d1c1e06edeac7`, RF-032 exclusive file, TARGET 404 on canonical+A, read-only/fake-only tests; not authorized to execute until next C03 order. Do not count as G1/G2.
+1. SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_read_json@a2f64696546cb729afd7c5b89d9d1c1e06edeac7` → TARGET=`libs/reporting/evaluation/cumulative_improvement_review_read_json.py::_read_json` (404 C+A); TEST/SAFETY=read_text UTF-8-sig and dict-only JSON; fake Path and json; no live IO.
+2. SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_strategist_weighting_review@a2f64696546cb729afd7c5b89d9d1c1e06edeac7` → TARGET=`libs/reporting/evaluation/cumulative_improvement_review_strategist_weighting_review.py::_strategist_weighting_review` (404 C+A); TEST/SAFETY=read-only sorted baseline day dirs and horizon A/B deltas; fake dirs and _read_json; no live IO.
+3. SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_rank_row@a2f64696546cb729afd7c5b89d9d1c1e06edeac7` → TARGET=`libs/reporting/evaluation/cumulative_improvement_review_rank_row.py::_rank_row` (404 C+A); TEST/SAFETY=in-memory rank/horizon next match, first-match and Mapping identity; no live IO.
+4. SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_candidate_rows@a2f64696546cb729afd7c5b89d9d1c1e06edeac7` → TARGET=`libs/reporting/evaluation/cumulative_improvement_review_candidate_rows.py::_candidate_rows` (404 C+A); TEST/SAFETY=in-memory episode/reentry/post-reclaim/strategist aggregation; fake _rank_row; no live IO.
+5. SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::build_cumulative_improvement_review@a2f64696546cb729afd7c5b89d9d1c1e06edeac7` → TARGET=`libs/reporting/evaluation/cumulative_improvement_review_build_cumulative_improvement_review.py::build_cumulative_improvement_review` (404 C+A); TEST/SAFETY=evaluation-only aggregation; fake cost profile/loader/forward outcomes, no production IO; no live IO.
+6. SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::render_cumulative_improvement_review@a2f64696546cb729afd7c5b89d9d1c1e06edeac7` → TARGET=`libs/reporting/evaluation/cumulative_improvement_review_render_cumulative_improvement_review.py::render_cumulative_improvement_review` (404 C+A); TEST/SAFETY=in-memory Markdown exact bytes, missing fields and formatting; no live IO.
 
-## TARGETED TEST / DELIVERY / ACCEPTANCE
-Implement `tests/test_p15_rf032_20261103_08h_scanner_no_trade_historical_owners.py` (new, 404 C+A) with original pinned preimage AST→Owner/wrapper parity for **all 8**, input/return/error/monkeypatch/format/identity/IO safety, fake/tmp_path only. Before pytest `python -m py_compile` all changed SOURCE+Owner files EXIT0. Normal `python -m pytest -q tests/test_p15_rf032_20261103_08h_scanner_no_trade_historical_owners.py` **EXIT0 required**, PASS count observed, not invented. Prepush `git status --short` + staged manifest must include SOURCE 4 + Owner 8 + test 1 = **13 paths**, especially after stash/pop; verify `git diff --cached --name-only` and `git show --name-only`. Non-force A push; refetch A remote HEAD/full-root tree and all 13 blobs. Per A55-1..8 report DONE with before/after SOURCE, Owner/test blob or BLOCKED exact SHA/FIRST_BLOCKER; continue other safe items. Actual START_KST/END_KST/ELAPSED_MIN, normal EXIT/PASS, final SHA to #11. No C/RF/STATUS/docs edits. C04 alone G3 integration, C05 alone RF DONE/STATUS.
+## TEST / DELIVERY / ACCEPTANCE
+New test `tests/test_p15_rf032_20261103_09h_historical_full_chain_owners.py` was 404 canonical+A. Implement pinned preimage AST-to-Owner/wrapper fake parity for all eight, with read-only fake Paths, patched external loaders/profile/env, exact signatures/defaults/keyword-only, call-time monkeypatch, return identity, output ordering, exceptions, Markdown bytes, and no real IO. `python -m py_compile` changed SOURCE+Owner+test EXIT0, then `python -m pytest -q tests/test_p15_rf032_20261103_09h_historical_full_chain_owners.py` normal EXIT0 required; report actual PASS count, no invented tests. Prepush `git status --short`, staged manifest SOURCE 3 + Owner 8 + test 1 = **12 paths**, `git diff --cached --name-only` and commit path names; after stash/pop recheck. Non-force A push; re-fetch final remote full-root tree and all 12 blobs. Report per A56-1..8 DONE/BLOCKED, SOURCE before/after, Owner/test SHA, normal command EXIT/PASS, actual START_KST/END_KST/ELAPSED_MIN, A remote SHA to #11. C04 only integration/G3; C05 only RF/STATUS/DONE. No docs/RF/STATUS/CI/operations writes.
