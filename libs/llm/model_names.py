@@ -10,7 +10,7 @@ def normalize_openrouter_model_name(model: Any) -> str:
     - auto -> openrouter/auto
     - free -> openrouter/free
     - openrouter/free -> openrouter/free
-    - provider/model -> provider/model
+    - minimax/minimax-m2.5 -> minimax/minimax-m2.5
     """
     raw = str(model or "").strip()
     lowered = raw.lower()
