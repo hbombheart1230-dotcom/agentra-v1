@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import libs.ai.providers.openai_provider as prov
+import urllib.error
+import pytest
 
 
 def test_m20_1_from_env_reads_timeout_and_max_tokens(monkeypatch):
@@ -108,6 +110,49 @@ def test_m20_1_from_env_falls_back_to_openrouter_api_key(monkeypatch):
 
     s = prov.OpenAIStrategist.from_env()
     assert s.api_key == "or-key"
+
+
+def test_m20_1_timeout_switches_strategist_to_configured_fallback(monkeypatch):
+    models = []
+
+    def fake_post_json(url, headers, payload, timeout=15.0):  # type: ignore[no-untyped-def]
+        models.append(payload["model"])
+        if len(models) == 1:
+            raise TimeoutError("primary timeout")
+        return {"intent": {"action": "NOOP", "reason": "model_no_signal"}, "rationale": "fallback"}
+
+    monkeypatch.setattr(prov, "_post_json", fake_post_json)
+    strategist = prov.OpenAIStrategist(
+        api_key="k",
+        endpoint="https://openrouter.ai/api/v1/chat/completions",
+        model="openai/gpt-6-luna",
+        fallback_model="anthropic/claude-haiku-5.5",
+        retry_max=0,
+    )
+    decision = strategist.decide(prov.StrategyInput("005930", {}, {}, {}))
+    assert models == ["openai/gpt-6-luna", "anthropic/claude-haiku-5.5"]
+    assert decision.meta["model"] == "anthropic/claude-haiku-5.5"
+    assert decision.meta["fallback_used"] is True
+
+
+@pytest.mark.parametrize("status", [429, 500, 503])
+def test_m20_1_retryable_http_failures_switch_to_strategist_fallback(monkeypatch, status):
+    models = []
+
+    def fake_post_json(url, headers, payload, timeout=15.0):  # type: ignore[no-untyped-def]
+        models.append(payload["model"])
+        if len(models) == 1:
+            raise urllib.error.HTTPError(url, status, "retryable", {}, None)
+        return {"intent": {"action": "NOOP", "reason": "model_no_signal"}, "rationale": "fallback"}
+
+    monkeypatch.setattr(prov, "_post_json", fake_post_json)
+    strategist = prov.OpenAIStrategist(
+        api_key="k", endpoint="https://openrouter.ai/api/v1/chat/completions",
+        model="openai/gpt-6-luna", fallback_model="anthropic/claude-haiku-5.5", retry_max=0,
+    )
+    decision = strategist.decide(prov.StrategyInput("005930", {}, {}, {}))
+    assert models == ["openai/gpt-6-luna", "anthropic/claude-haiku-5.5"]
+    assert decision.meta["fallback_used"] is True
 
 
 def test_m20_1_decide_posts_payload_and_parses_response(monkeypatch):
