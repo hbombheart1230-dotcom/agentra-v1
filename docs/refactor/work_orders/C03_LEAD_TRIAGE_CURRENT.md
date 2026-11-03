@@ -1,5 +1,14 @@
 # C03 — 지팀장 | 구체 실행 설계·A/B 연속 작업 공급
 
+## 2026-11-03 홍사장 긴급 교정 — GATE-CLOSURE-FIRST 배정 (D00 하위, 즉시 적용)
+**확인된 결함:** B43 RF-063 signoff/diagnostics 8 MOVE는 이미 기록된 `llm_artifacts.py` resolver→consumer drift를 직접 닫지 못한다. A56 RF-032 evaluation 8 MOVE도 validation-id/Writer/UEF 정책 HOLD를 해소하지 못한다. 안전한 BODY MOVE 실적은 인정하되 RF DONE 가능성·GATE 해소 실적으로 계상하지 않는다. 기존 시작 주문은 소급 취소하지 않는다.
+
+매회 C01/C02 신규 발행 전 미종결 RF별 `RF | STAGE | FIRST_UNMET(G1/G2/G3) | EXACT_BLOCKER | CLOSEABLE_NOW | SAFE_OWNER | EXACT_SOURCE/TEST | NEXT_GATE_ACTION | EXPECTED_C04/C05_HANDOFF | GATE_IMPACT`를 원격 증거로 판단한다. 우선순위는 (1) 기존 G1/G2 MET인 RF의 G3 인수, (2) 정상 targeted test 한 건으로 해소 가능한 G2, (3) 승인 없이 안전하게 고칠 수 있는 실제 G1/consumer/import 결함, (4) D00 공급 의무를 위한 안전한 독립 BODY MOVE. 8~10 공급 및 예비 6/Actor 의무는 유지하되 **GATE_IMPACT=NO를 DONE-FIRST 성과로 주장하지 않는다**. 부족하면 정확한 SUPPLY_GAP을 #36에 기록한다.
+
+RF-030은 exact integrated fake G3 증거를 C04에 우선 인계; RF-063은 resolver/consumer drift의 정확 파일·SHA·최소 안전 수정/테스트를 C04와 분담하되 소유권·보호 경계를 넘지 않는다. RF-032/065의 Writer/UEF 및 RF-026의 cross-owner 순환 import는 승인 없는 우회·무관 MOVE로 종결 주장 금지. 이미 DONE RF 재배정 0. 매 회차 `NEW_RF_DONE_DELTA | GATE_CLOSED_COUNT | GATE_IMPACT_NO_COUNT | SUPPLIED_NEW_ITEMS | RESERVE_VERIFIED | BLOCKER_OWNER`를 #36에 변경분만 보고한다. A/B 작업서는 각 한 파일 완결, C03만 문서 배정, C04만 통합, C05만 RF/STATUS, C06 읽기 전용. D00 수정 금지.
+
+---
+
 ## 2026-11-03 — 홍사장 승인: P1.6 재사용성 기반 잔여 RF 우선순위 (D00 하위 운영 기준)
 
 **적용:** 다음 C03 배정부터. P1.5 미종결 47건(2026-11-03 09:45 C05 검증 DONE46/93, PENDING38/DEV7/PEER2)을 **P1.6 재사용성과 실제 RF DONE 가능성**으로 평가한다. 이 절은 **배정 우선순위만** 정하며 D00의 8~10 신규 안전 item 공급·예비 6/Actor·G1/G2/G3·Owner·보호 정책·C04/C05 독점권을 완화하지 않는다. 이미 발행된 A/B 시작 주문을 소급 취소하지 않는다.
