@@ -40,33 +40,9 @@ def _read_json(path: Path) -> Dict[str, Any]:
 
 
 def _resolve_day_artifact(report_dir: Path, prefix: str, day: str) -> tuple[Path, Dict[str, Any], bool]:
-    direct = report_dir / f"{prefix}_{day}.json"
-    direct_obj = _read_json(direct)
-    if direct_obj:
-        return direct, direct_obj, False
+    from scripts.diagnostics.run_m31_slo_incident_review_check_resolve_day_artifact import _resolve_day_artifact as owner
 
-    target_day = str(day or "").strip()
-    best_day = ""
-    best_path = direct
-    best_obj: Dict[str, Any] = {}
-    pattern = f"{prefix}_*.json"
-    for path in sorted(report_dir.glob(pattern)):
-        stem = path.stem
-        if not stem.startswith(f"{prefix}_"):
-            continue
-        candidate_day = stem[len(prefix) + 1 :].strip()
-        if not candidate_day:
-            continue
-        if target_day and candidate_day > target_day:
-            continue
-        obj = _read_json(path)
-        if not obj:
-            continue
-        if not best_day or candidate_day > best_day:
-            best_day = candidate_day
-            best_path = path
-            best_obj = obj
-    return best_path, best_obj, bool(best_obj)
+    return owner(report_dir, prefix, day, facade=_migration_sys.modules[__name__])
 
 
 def _item(

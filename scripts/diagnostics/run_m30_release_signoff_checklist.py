@@ -71,42 +71,15 @@ def _item(
 
 
 def _count_by(items: List[Dict[str, Any]], key: str) -> Dict[str, int]:
-    out: Dict[str, int] = {}
-    for it in items:
-        k = str(it.get(key) or "")
-        if not k:
-            continue
-        out[k] = int(out.get(k) or 0) + 1
-    return out
+    from scripts.diagnostics.run_m30_release_signoff_checklist_count_by import _count_by as owner
+
+    return owner(items, key, facade=sys.modules[__name__])
 
 
 def _build_markdown(out: Dict[str, Any]) -> str:
-    items = out.get("checklist") if isinstance(out.get("checklist"), list) else []
-    lines = [
-        f"# M30 Release Sign-off Checklist ({out.get('day')})",
-        "",
-        f"- release_ready: **{bool(out.get('release_ready'))}**",
-        f"- quality_gates_ok: **{bool(out.get('quality_gates_ok'))}**",
-        f"- required_pass_total: **{int(out.get('required_pass_total') or 0)}**",
-        f"- required_fail_total: **{int(out.get('required_fail_total') or 0)}**",
-        "",
-        "## Checklist",
-        "",
-    ]
-    for it in items:
-        mark = "x" if bool(it.get("passed")) else " "
-        lines.append(
-            f"- [{mark}] ({it.get('category')}) {it.get('title')} | evidence={it.get('evidence')}"
-        )
-    lines += ["", "## Failures", ""]
-    failures = out.get("failures") if isinstance(out.get("failures"), list) else []
-    if failures:
-        for msg in failures:
-            lines.append(f"- {msg}")
-    else:
-        lines.append("- (none)")
-    lines.append("")
-    return "\n".join(lines)
+    from scripts.diagnostics.run_m30_release_signoff_checklist_build_markdown import _build_markdown as owner
+
+    return owner(out, facade=sys.modules[__name__])
 
 
 def _build_parser() -> argparse.ArgumentParser:
