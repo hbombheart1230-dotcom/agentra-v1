@@ -83,11 +83,10 @@ def test_m20_3_text_router_blocks_auto_and_falls_back_to_role_defaults(monkeypat
 
     router = LLMRouter(client=None)  # type: ignore[arg-type]
 
-    import pytest
-    with pytest.raises(ValueError, match="reporter_model_not_allowed"):
-        router.resolve("operator_ui")
-    with pytest.raises(ValueError, match="reporter_model_not_allowed"):
-        router.resolve("reporter_final")
+    assert router.resolve("operator_ui").model == "openrouter/free"
+    assert router.resolve("reporter_final").model == "openrouter/free"
+    assert router.resolve("daily_report").model == "openrouter/free"
+    assert router.resolve("reporter_intraday").model == "openrouter/free"
 
 
 def test_m20_3_removed_daily_and_intraday_alias_envs_no_longer_drive_routes(monkeypatch):
@@ -99,21 +98,16 @@ def test_m20_3_removed_daily_and_intraday_alias_envs_no_longer_drive_routes(monk
 
     router = LLMRouter(client=None)  # type: ignore[arg-type]
 
-    import pytest
-    with pytest.raises(ValueError, match="reporter_model_not_allowed"):
-        router.resolve("daily_report")
-    with pytest.raises(ValueError, match="reporter_model_not_allowed"):
-        router.resolve("reporter_intraday")
+    assert router.resolve("daily_report").model == "openrouter/free"
+    assert router.resolve("reporter_intraday").model == "openrouter/free"
 
 
 def test_m20_3_text_router_rejects_policy_auto_alias_and_uses_role_default():
     from libs.llm.llm_router import LLMRouter
 
     router = LLMRouter(client=None)  # type: ignore[arg-type]
-    assert router.resolve("strategist", policy={"model": "auto"}).model == "openai/gpt-6-luna"
-    import pytest
-    with pytest.raises(ValueError, match="reporter_model_not_allowed"):
-        router.resolve("operator_ui", policy={"model": "free"})
+    assert router.resolve("strategist", policy={"model": "auto"}).model == "deepseek/deepseek-v3.2"
+    assert router.resolve("operator_ui", policy={"model": "free"}).model == "openrouter/free"
 
 
 def test_m20_3_text_router_preserves_direct_provider_model_name():
