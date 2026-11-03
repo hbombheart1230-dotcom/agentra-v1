@@ -35,69 +35,27 @@ def _run_json(main_fn, argv: List[str]) -> Tuple[int, Dict[str, Any]]:  # type: 
 
 
 def _build_md(out: Dict[str, Any]) -> str:
-    gates = out.get("gates") if isinstance(out.get("gates"), dict) else {}
-    lines = [
-        f"# M30 Quality Gates Bundle ({out.get('day')})",
-        "",
-        f"- ok: **{bool(out.get('ok'))}**",
-        f"- failure_total: **{int(out.get('failure_total') or 0)}**",
-        f"- report_json_path: `{out.get('report_json_path')}`",
-        "",
-        "## Gate Status",
-        "",
-    ]
-    for name in ("functional", "resilience", "safety", "ops"):
-        g = gates.get(name) if isinstance(gates.get(name), dict) else {}
-        lines.append(
-            f"- {name}: ok={bool(g.get('ok'))} pass_total={int(g.get('pass_total') or 0)} fail_total={int(g.get('fail_total') or 0)}"
-        )
+    from scripts.diagnostics.run_m30_quality_gates_bundle_build_md import _build_md as owner
 
-    lines += ["", "## Failures", ""]
-    failures = out.get("failures") if isinstance(out.get("failures"), list) else []
-    if failures:
-        for msg in failures:
-            lines.append(f"- {msg}")
-    else:
-        lines.append("- (none)")
-    lines.append("")
-    return "\n".join(lines)
+    return owner(out, facade=sys.modules[__name__])
 
 
 def _component_summary(rc: int, obj: Dict[str, Any]) -> Dict[str, Any]:
-    return {
-        "rc": int(rc),
-        "ok": bool(obj.get("ok")) if isinstance(obj, dict) else False,
-        "failure_total": int(len(obj.get("failures") or [])) if isinstance(obj, dict) else 0,
-    }
+    from scripts.diagnostics.run_m30_quality_gates_bundle_component_summary import _component_summary as owner
+
+    return owner(rc, obj, facade=sys.modules[__name__])
 
 
 def _gate_status(components: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
-    pass_total = 0
-    fail_total = 0
-    for c in components.values():
-        if bool(c.get("ok")) and int(c.get("rc") or 0) == 0:
-            pass_total += 1
-        else:
-            fail_total += 1
-    return {
-        "ok": fail_total == 0,
-        "pass_total": int(pass_total),
-        "fail_total": int(fail_total),
-        "components": components,
-    }
+    from scripts.diagnostics.run_m30_quality_gates_bundle_gate_status import _gate_status as owner
+
+    return owner(components, facade=sys.modules[__name__])
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M30-1 quality gates bundle (functional/resilience/safety/ops).")
-    p.add_argument("--event-log-dir", default="data/logs/milestones/m30/quality_gates")
-    p.add_argument("--report-dir", default="reports/milestones/m30_quality_gates")
-    p.add_argument("--day", default="2026-02-21")
-    p.add_argument("--m23-day", default="", help="Optional explicit day for m23 closeout; default uses script latest-day behavior.")
-    p.add_argument("--m26-day", default="2026-02-17", help="Replay evaluation day for m26 closeout (dataset-seeded default).")
-    p.add_argument("--inject-fail", action="store_true")
-    p.add_argument("--no-clear", action="store_true")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics.run_m30_quality_gates_bundle_build_parser import _build_parser as owner
+
+    return owner(facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:
