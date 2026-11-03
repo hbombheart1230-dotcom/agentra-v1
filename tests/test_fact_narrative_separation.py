@@ -37,7 +37,7 @@ def test_system_works_without_narrative_on_llm_failure(monkeypatch):
 
     monkeypatch.setattr("libs.reporting.fact_narrative_report.LLMRouter", BoomRouter)
 
-    report = build_separated_report(trade_model={"trade_id": "T1"}, model="google/gemma-4-26b-a4b-it:free")
+    report = build_separated_report(trade_model={"trade_id": "T1"}, model="primary/model")
     assert report["fact_payload"]["trade"]["trade_id"] == "T1"
     assert report["narrative"]["status"] == "error"
     assert "LLM Boom" in report["narrative"]["error"]
@@ -60,7 +60,7 @@ def test_narrative_provenance_and_no_fact_mixing(monkeypatch):
 
     monkeypatch.setattr("libs.reporting.fact_narrative_report.LLMRouter", MockRouter)
 
-    report = build_separated_report(trade_model={"trade_id": "T1"}, model="google/gemma-4-26b-a4b-it:free")
+    report = build_separated_report(trade_model={"trade_id": "T1"}, model="primary/model")
     assert report["narrative"]["summary"] == "Mock summary"
     assert report["narrative"]["source"] == "llm"
     assert report["narrative"]["based_on"] == "fact_payload"
@@ -72,7 +72,7 @@ def test_narrative_uses_fallback_on_primary_failure(monkeypatch):
     class FallbackRouter:
         client = object()
         def chat(self, route, messages, policy=None):
-            if policy and policy.get("model") == "google/gemma-4-26b-a4b-it:free":
+            if policy and policy.get("model") == "primary/model":
                 raise RuntimeError("Primary Boom")
             return json.dumps({"summary": "Fallback summary", "insight": "Fallback insight", "recommendation": "Fallback rec"})
         @classmethod
@@ -81,11 +81,11 @@ def test_narrative_uses_fallback_on_primary_failure(monkeypatch):
 
     monkeypatch.setattr("libs.reporting.fact_narrative_report.LLMRouter", FallbackRouter)
 
-    report = build_separated_report(trade_model={"trade_id": "T1"}, model="google/gemma-4-26b-a4b-it:free")
+    report = build_separated_report(trade_model={"trade_id": "T1"}, model="primary/model")
     assert report["narrative"]["status"] == "ok"
     assert report["narrative"]["summary"] == "Fallback summary"
     assert report["narrative"].get("fallback_used") is True
-    assert report["narrative"].get("fallback_model") == "nvidia/nemotron-3.5-lightning:free"
+    assert report["narrative"].get("fallback_model") == "minimax/minimax-m2.5"
 
 
 def test_narrative_records_execution_profile_observability(monkeypatch):
@@ -108,7 +108,7 @@ def test_narrative_records_execution_profile_observability(monkeypatch):
 
     report = build_separated_report(
         trade_model={"trade_id": "T1"},
-        model="google/gemma-4-26b-a4b-it:free",
+        model="minimax/minimax-m2.5",
         execution_profile={
             "profile_name": "default_intraday",
             "policy_source": "applied_policy.llm.execution_profile",
