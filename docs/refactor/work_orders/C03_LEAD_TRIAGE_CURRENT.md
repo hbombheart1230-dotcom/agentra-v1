@@ -1,5 +1,30 @@
 # C03 — 지팀장 | 구체 실행 설계·A/B 연속 작업 공급
 
+## 2026-11-03 — 홍사장 승인: P1.6 재사용성 기반 잔여 RF 우선순위 (D00 하위 운영 기준)
+
+**적용:** 다음 C03 배정부터. P1.5 미종결 47건(2026-11-03 09:45 C05 검증 DONE46/93, PENDING38/DEV7/PEER2)을 **P1.6 재사용성과 실제 RF DONE 가능성**으로 평가한다. 이 절은 **배정 우선순위만** 정하며 D00의 8~10 신규 안전 item 공급·예비 6/Actor·G1/G2/G3·Owner·보호 정책·C04/C05 독점권을 완화하지 않는다. 이미 발행된 A/B 시작 주문을 소급 취소하지 않는다.
+
+**세 그룹 (전수 증거 확보 전 임시 분류):**
+- **A / P1.5 필수 종결:** 7에이전트 경계, DTO/IO·consumer·import 계약, Supervisor/Guard/승인·멱등성·실거래 안전, pinned oracle, 회귀·통합 검증. 반드시 정상 계약에 따라 G1~G3 통과.
+- **B / 최소 수정 후 종결:** 기존 기능 유지에 필요한 Owner·facade·중복 계산 정리. 기존 KEEP_OK·thin wrapper·정확 fake targeted 테스트를 우선; P1.6에서 재변경될 파일/함수 분리를 실적 목적으로 확대하지 않는다.
+- **C / P1.6 이관 심사:** Knowledge Layer·Skills/MCP·어댑터 도입과 충돌 가능성이 큰 추가 추상화·폴더 재배치·선택적 미관 개선. **자동 이관·DONE 금지**. 개별 RF의 원래 수용 계약, 미충족 게이트, P1.6 대체 설계, 안전 영향, 담당 Owner와 승인 필요 여부를 명시하여 홍사장에게 변경 승인을 요청한다. 승인 전 기존 D00 계약 유지.
+
+**현 시점 확인된 우선 병목 (최신 원격 증거로 매회 재판정):**
+1. RF-030: RF-074 frozen test 소유권을 보존하고 canonical exact-source fake G2/G3 검증; C04→C05 종결 우선 (임시 A).
+2. RF-063: `libs/reporting/llm_artifacts.py` canonical/B drift 및 resolver→trade/LLM consumer import/dispatch closure가 whole-RF 차단. C03/B는 원인·Owner 계약 명시, C04는 안전한 의존성 폐쇄 및 smoke, C05 최종 판정. 무관한 diagnostics BODY MOVE만 반복하는 것은 종결 우선순위가 아님 (A 안전 의존성 / B 부수 구조).
+3. RF-032: validation-id/Writer/UEF 정책 HOLD. 순수 평가 BODY MOVE의 scoped G3는 whole-RF 종결이 아니며 권한 있는 safety Owner 판단이 먼저 (임시 A).
+4. RF-026: `exit_policy→monitor_exit` 순환 import/RF-021 Owner 안전 경계 해결 전 whole-RF HOLD (임시 A).
+5. RF-065: 과거 Writer/UEF HOLD, **현행 stage와 정확 FIRST_UNMET 재확인 후 분류**.
+
+**C03 실행 산출물:** 47개 미종결 RF의 실제 원본 계약/STATUS/최신 코드·G1~G3 증거를 **변경분 우선으로 순차 실사**하여 `RF | STAGE | A/B/C | P1.6 재사용 근거 | FIRST_UNMET | OWNER | NEXT SAFE ACTION | 이관 승인 필요` 표를 유지한다. 47건을 확인하지 않은 채 전수 분류 완료·이관 승인·DONE을 주장하지 않는다. 실사 미완료는 `UNREVIEWED`. RF별 분류 자체는 코드 MOVE·G3·DONE 실적 0.
+
+**우선순위 정렬:** (1) 가까운 whole-RF DONE을 막는 정확한 G1/G2/G3 결함, (2) P1.6에서도 유지될 안전/DTO/consumer 경계, (3) D00 범위 안의 필수 최소 BODY MOVE, (4) P1.6 재작업 위험이 높은 선택적 정리. 이미 DONE인 RF의 반복 TARGET_GAP 미관 개선은 신규 RF DONE보다 후순위. D00 요구 8개를 채울 안전 실제 item이 없으면 허위 공급 대신 SUPPLY_GAP+근거 보고. C03은 새 분류를 C01/C02 인라인 주문에 반영하되 기존 진행 중인 주문·A/B Owner를 침범하지 않는다.
+
+**금지:** D00·frozen oracle·실거래/Guard/UEF/RunLab·기존 RF/STATUS의 승인 없는 변경, 승인 없는 P1.6 이관, 이미 DONE인 RF 재계상. 최종 RF 단계·DONE 판정은 C05만 수행.
+
+---
+
+
 ## 2026-11-01 — 홍사장 신규 시정 지시: RF-014 A-12 / RF-009 (최우선)
 
 - RF-014 A-12 원격 `0bce5e386fa5e70e79c2d98d958d4e5d3bf2d089`의 세 SOURCE(`output_snapshots.py`, `output_payloads.py`, `selection_evidence_projection.py`) blob이 `tests/test_p171_v3055_scanner_projection_migration.py`의 역사적 고정값 및 exactly-one-body 불변식과 충돌. **기존 oracle·fixture·고정값 완화/갱신/삭제 금지**. 충돌 해결 전 G3/DONE 금지.
