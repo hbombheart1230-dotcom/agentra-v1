@@ -1,6 +1,6 @@
-# C02 — Claude A | ORDER_ID=A-20261103-21-C03 | A57 NEW_READY=1/8 (PARTIAL SUPPLY_GAP) | A56 REMOTE_DONE=8/8 | RESERVE_NOT_VERIFIED=0/6
+# C02 — Claude A | ORDER_ID=A-20261103-21-C03 | A57 NEW_READY=2/8 (PARTIAL SUPPLY_GAP) | A56 REMOTE_DONE=8/8 | RESERVE_NOT_VERIFIED=0/6
 
-## A57 — NEW ASSIGNMENT (single independently preflighted item; remaining 7/8 and reserve 6/6 NOT_VERIFIED)
+## A57 — NEW ASSIGNMENT (two independently preflighted items; remaining 6/8 and reserve 6/6 NOT_VERIFIED)
 A57-1 | RF-032 PEER | GATE_IMPACT=NO (evaluation-only; does NOT resolve validation-id/Writer/UEF policy HOLD; never claim whole G1/G3/DONE).
 SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_rank_row` | canonical SOURCE_BLOB=`a2f64696546cb729afd7c5b89d9d1c1e06edeac7` | A SOURCE_BLOB same.
 TARGET=`libs/reporting/evaluation/cumulative_improvement_review_rank_row.py::_rank_row` | 404 canonical+A at assignment; A-owned evaluation-only path. No B/Guard/Writer/UEF/Step5C/real-mode edits.
@@ -9,6 +9,11 @@ TARGETED NORMAL: add `tests/test_p15_rf032_20261103_21h_cumulative_rank_owner.py
 DELIVERY: on A branch only, preflight pinned SOURCE and TARGET 404 again before edit; if drift/ownership collision, mark A57-1 BLOCKED with actual SHA and continue any previously started safe order. Stage exactly SOURCE+TARGET+new test (3 paths), verify `git status --short` and `git diff --cached --name-only` especially after stash/pop; non-force push and refetch all 3 remote blobs and A HEAD; report to #11 exact old/new blobs, normal EXIT/PASS, PUSH_SHA, START/END/ELAPSED, GATE_IMPACT=NO. C04 owns integration/G3, C05 RF/STATUS/DONE. Do not self-select other reserve tasks. This is a partial urgent supply, NOT 8/8 SUPPLIED.
 
 ---
+A57-2 | RF-032 PEER | GATE_IMPACT=NO (evaluation-only; policy HOLD unchanged).
+SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_candidate_rows` | SOURCE_BLOB=`a2f64696546cb729afd7c5b89d9d1c1e06edeac7` canonical=A verified; TARGET=`libs/reporting/evaluation/cumulative_improvement_review_candidate_rows.py::_candidate_rows` 404 canonical+A verified.
+BODY: move the complete in-memory four-candidate priority/status/evidence list computation to this single TARGET Owner. Preserve keyword-only signature, row priority/order, fallback and float/Mapping exceptions, return dict structure and nested object identity. Keep SOURCE as thin delegating wrapper; OWNER must call the SOURCE facade's `_rank_row` at invocation time (not import SOURCE at module import), preserving monkeypatch behavior and compatibility with A57-1. No trading, Writer/UEF, real IO or operational state.
+TARGETED NORMAL: add a distinct fake-only test `tests/test_p15_rf032_20261103_21h_cumulative_candidate_owner.py` (must be absent), compare pinned preimage and wrapper+Owner for rank1/rank2_3, reentry eligible/ineligible, score READY/not READY, strategist negative/positive, missing Mapping and exception cases, identity, order, call-time `_rank_row` patch. `python -m py_compile` changed paths and `python -m pytest -q tests/test_p15_rf032_20261103_21h_cumulative_candidate_owner.py` normal EXIT0. Before push stage complete SOURCE + both A57 Owner files + both tests if A57-1 and A57-2 committed together; if separately, exact each item's changed path manifest. Non-force push A branch, refetch SHA and source/Owner/test blobs; report to #11 item status and GATE_IMPACT=NO. If A57-1 is already in flight, finish it first; this additional item does not cancel it. If drift or TARGET collision, BLOCKED with SHA and continue other assigned safe items. No autonomous selection.
+
 ## Historical A56 order (REMOTE_DONE; never re-execute)
 
 ## 2026-11-03 20:00 C03 evidence correction — reserve count only (not a new order)
