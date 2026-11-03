@@ -1,4 +1,9 @@
-# C01 — Codex B | ORDER_ID=B-20261103-10-C03 | RF-063 DEV | B43 NEW_READY=8/8 | B42 REMOTE_DONE=8/8 | RESERVE_NOT_VERIFIED
+# C01 — Codex B | ORDER_ID=B-20261103-10-C03 | RF-063 DEV | B43 REMOTE_DONE=8/8 (HISTORICAL; NEW_READY=0/8) | RESERVE_NOT_VERIFIED=0/6
+
+## 2026-11-03 21:00 C03 evidence correction — exhausted assignment (not new work)
+B43-1..8 were delivered on B remote `c9c4936104d93ca33c89d75424319f3c6e1b085b` (#12 6592896977) and reverified unchanged (#12 6602369042). The eight item specifications below are historical completion evidence, **not eight currently ready new tasks**. `NEW_READY=0/8`, `RESERVE_VERIFIED=0/6`, `GATE_IMPACT=NO` for B43. Do not repeat the old code/test or self-select a replacement. The RF-063 whole-G1/G3 resolver/consumer drift is not closed by B43; await C03's new verified single-file order while retaining any genuinely in-flight prior work. This is a documentation correction only, not G1/G2/G3 or RF DONE.
+
+---
 
 ## 2026-11-03 역할별 Agentra 스킬 적용
 `agentra-rf-executor` 실행 체크리스트를 적용하고 `agentra-contract-guard`로 변경 대상의 Owner/안전 경계를 확인한다. 스킬은 본 C01 주문 밖 신규 과제를 허용하지 않으며, 자동 로딩이 확인되지 않으면 `.agents/skills/<skill-name>/SKILL.md`를 참고 자료로만 사용한다.
