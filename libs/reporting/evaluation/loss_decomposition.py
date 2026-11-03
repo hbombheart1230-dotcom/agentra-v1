@@ -31,6 +31,7 @@ from . import loss_decomposition_exit_hold_summary as _a45_exit_hold_summary
 from . import loss_decomposition_diagnosis as _a45_diagnosis
 from . import loss_decomposition_next_action as _a45_next_action
 from . import loss_decomposition_render_loss_decomposition as _a45_render_loss_decomposition
+from . import loss_decomposition_load_trade_models as _a56_ld_load
 
 
 def _to_float(value: Any) -> float | None:
@@ -62,10 +63,7 @@ def _group_forward(rows: list[dict[str, Any]], key_fn: Any) -> list[dict[str, An
 
 
 def _load_trade_models(reports_root: Path, start: str, end: str) -> list[dict[str, Any]]:
-    models: list[dict[str, Any]] = []
-    for day in _iter_days(start, end):
-        models.extend(build_q9_trade_read_model(path) for path in iter_trade_dirs(reports_root, day))
-    return models
+    return _a56_ld_load._load_trade_models(reports_root, start, end, facade=sys.modules[__name__])
 
 
 def _realized_trade_summary(models: list[dict[str, Any]]) -> dict[str, Any]:
