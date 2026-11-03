@@ -1,5 +1,8 @@
 # C02 — Claude A
 
+## 최우선 작업 기준
+작업 범위·순서·완료 조건은 정본 `docs/refactor/plan/rf_details/RF-XXX_IMPLEMENTATION.md`와 해당 RF 원본 체크리스트를 따른다. C 작업서는 이를 실행하는 주문이며, 이슈·댓글·과거 보고로 계획을 대체하거나 범위를 늘리지 않는다. 이슈는 SHA·테스트·완료 증거 확인용이다. 현재 코드와 증거로 완료 항목을 제외하고 남은 항목을 순서대로 처리한다. D00의 Owner·안전·frozen 계약은 유지한다. 충돌은 해당 항목만 근거와 함께 C03에 넘기고 독립 항목은 계속한다.
+
 - 정본은 integration/p1.5. 이 파일을 먼저 읽는다.
 - 작업 브랜치는 work/p15-a-reporter-pure-20261021, 보고는 #11.
 - 스킬은 agentra-rf-executor 및 agentra-contract-guard. C03의 허용 범위와 D00 보호 제약을 따른다.
