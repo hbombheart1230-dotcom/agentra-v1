@@ -15,11 +15,66 @@ DEFAULT_MODEL_CARDS_PATH = DEFAULT_CATALOG_DIR / "model_cards.json"
 
 
 STATIC_MODEL_CARD_OVERRIDES: Dict[str, Dict[str, Any]] = {
-    "openai/gpt-6-luna": {"tags": ["cheap", "json_stable"], "cost_tier": "low", "latency_tier": "fast", "reliability": "high", "recommended_roles": ["strategist"], "strengths": ["Lowest-cost current GPT Luna route"], "weaknesses": [], "json_stability_note": "Supports structured output.", "latency_note": "Fast.", "cost_note": "Low paid rate.", "long_context_note": "1.05M context."},
-    "anthropic/claude-haiku-5.5": {"tags": ["cheap", "json_stable"], "cost_tier": "low", "latency_tier": "fast", "reliability": "high", "recommended_roles": ["strategist"], "strengths": ["Low-cost Haiku fallback"], "weaknesses": [], "json_stability_note": "Supports structured output.", "latency_note": "Fast.", "cost_note": "Low paid rate.", "long_context_note": "1M context."},
-    "nvidia/nemotron-3.5-lightning:free": {"tags": ["free", "fast"], "cost_tier": "free", "latency_tier": "fast", "reliability": "medium", "recommended_roles": ["operator_brief"], "strengths": ["Free primary for brief reporting"], "weaknesses": ["No native response_format"], "json_stability_note": "Prompt-only JSON; parse strictly.", "latency_note": "Fast.", "cost_note": "$0.", "long_context_note": "1M context."},
-    "google/gemma-4-26b-a4b-it:free": {"tags": ["free", "json_stable"], "cost_tier": "free", "latency_tier": "fast", "reliability": "medium", "recommended_roles": ["trade_report", "operator_brief"], "strengths": ["Free JSON-capable report route"], "weaknesses": [], "json_stability_note": "Supports response_format.", "latency_note": "Fast.", "cost_note": "$0.", "long_context_note": "262K context."},
-    "nvidia/nemotron-3-ultra-550b-a55b:free": {"tags": ["free", "reasoning"], "cost_tier": "free", "latency_tier": "medium", "reliability": "medium", "recommended_roles": ["reporter_final"], "strengths": ["Free final-report primary"], "weaknesses": ["No native response_format"], "json_stability_note": "Prompt-only JSON; parse strictly.", "latency_note": "Medium.", "cost_note": "$0.", "long_context_note": "1M context."},
+    "minimax/minimax-m2.5": {
+        "tags": ["cheap", "fast", "json_stable"],
+        "cost_tier": "free_or_low",
+        "latency_tier": "fast",
+        "reliability": "high",
+        "recommended_roles": ["reporter_intraday", "operator_brief", "lightweight_review"],
+        "strengths": [
+            "Very low-cost baseline for lightweight structured summaries",
+            "Fast enough for intraday reporting surfaces",
+            "Stable enough for short JSON-centric reporting tasks",
+        ],
+        "weaknesses": [
+            "Can be weaker on deeper reasoning and nuanced narrative synthesis",
+            "Not the best choice for high-context end-of-day analysis",
+        ],
+        "json_stability_note": "Good baseline for short structured JSON outputs when prompts stay compact.",
+        "latency_note": "Typically suitable for fast intraday review paths.",
+        "cost_note": "Use when cost pressure matters more than deep reasoning quality.",
+        "long_context_note": "Large advertised context exists, but practical use should stay compact for reporting reliability.",
+    },
+    "deepseek/deepseek-v3.2": {
+        "tags": ["cheap", "json_stable", "report_quality"],
+        "cost_tier": "low",
+        "latency_tier": "medium",
+        "reliability": "high",
+        "recommended_roles": ["strategist", "balanced_reporting", "general_reasoning"],
+        "strengths": [
+            "Balanced cost and reasoning quality for operational decision support",
+            "Good fit for structured JSON responses with moderate prompt size",
+            "Useful default when one model needs to cover both analysis and cost control",
+        ],
+        "weaknesses": [
+            "Latency is not as low as the cheapest fast-path models",
+            "May underperform stronger reasoning models on longer narrative synthesis",
+        ],
+        "json_stability_note": "Good practical default for structured response generation and schema-following.",
+        "latency_note": "Usually acceptable for strategist and balanced reporting, but not the fastest option.",
+        "cost_note": "Low-cost profile that still preserves solid reasoning utility.",
+        "long_context_note": "Context window is sufficient for most current strategist/report payloads without being the main long-context specialist.",
+    },
+    "moonshotai/kimi-k2.5": {
+        "tags": ["reasoning", "long_context", "report_quality", "json_stable"],
+        "cost_tier": "medium",
+        "latency_tier": "medium",
+        "reliability": "high",
+        "recommended_roles": ["reporter_daily", "deep_review", "high_context_analysis"],
+        "strengths": [
+            "Strong fit for longer synthesis and daily review narratives",
+            "Good long-context posture for large report payloads",
+            "Useful when higher-quality explanation matters more than minimal latency",
+        ],
+        "weaknesses": [
+            "More expensive than the cheaper balanced/fast options",
+            "Not the preferred choice for cost-sensitive intraday loops",
+        ],
+        "json_stability_note": "Generally suitable for structured outputs, especially when prompts are carefully constrained.",
+        "latency_note": "Best used on daily or off-path review surfaces rather than the lightest intraday path.",
+        "cost_note": "Medium-cost option justified when richer review quality is worth the spend.",
+        "long_context_note": "Preferred current baseline when longer evidence packs or richer report context need to be preserved.",
+    },
 }
 
 
