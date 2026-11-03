@@ -1,5 +1,10 @@
 # C01 — Codex B | ORDER_ID=B-20261103-10-C03 | RF-063 DEV | B43 NEW_READY=8/8 | B42 REMOTE_DONE=8/8 | RESERVE_NOT_VERIFIED
 
+## 2026-11-03 역할별 Agentra 스킬 적용
+`agentra-rf-executor` 실행 체크리스트를 적용하고 `agentra-contract-guard`로 변경 대상의 Owner/안전 경계를 확인한다. 스킬은 본 C01 주문 밖 신규 과제를 허용하지 않으며, 자동 로딩이 확인되지 않으면 `.agents/skills/<skill-name>/SKILL.md`를 참고 자료로만 사용한다.
+
+---
+
 ## 2026-11-03 LEAD CORRECTION — B execution accountability (D00 subordinate)
 Complete any already-started B43 safe items without retroactive cancellation. Before each item check its actual RF FIRST_UNMET and whether the item can close it; report `GATE_IMPACT=YES/NO` honestly. BODY MOVE and targeted PASS never imply whole RF G1/G3/DONE. If a pinned item is already complete, unsafe, or drifted, record precise blocker and continue other safe items; do not invent a replacement or touch protected resolver/operational code. Deliver exact source/target/test SHA and remote push to #12. C03 must provide next gate-closing work; do not self-assign. No repeated prior PASS or dummy commits.
 
