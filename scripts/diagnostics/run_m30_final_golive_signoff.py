@@ -19,60 +19,18 @@ from scripts.run_m30_release_signoff_checklist import main as m30_2_main
 
 
 def _run_json(main_fn, argv: List[str]) -> Tuple[int, Dict[str, Any]]:  # type: ignore[no-untyped-def]
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        rc = main_fn(argv)
-    out = buf.getvalue().strip()
-    if not out:
-        return int(rc), {}
-    try:
-        return int(rc), json.loads(out)
-    except Exception:
-        return int(rc), {}
+    from scripts.diagnostics.run_m30_final_golive_signoff_run_json import _run_json as owner
+    return owner(main_fn, argv, facade=sys.modules[__name__])
 
 
 def _build_markdown(out: Dict[str, Any]) -> str:
-    m30_1 = out.get("m30_1_quality_gates") if isinstance(out.get("m30_1_quality_gates"), dict) else {}
-    m30_2 = out.get("m30_2_signoff") if isinstance(out.get("m30_2_signoff"), dict) else {}
-    m30_3 = out.get("m30_3_policy") if isinstance(out.get("m30_3_policy"), dict) else {}
-    lines = [
-        f"# M30 Final Go-live Signoff ({out.get('day')})",
-        "",
-        f"- approved: **{bool(out.get('approved'))}**",
-        f"- go_live_decision: **{out.get('go_live_decision')}**",
-        f"- failure_total: **{int(out.get('failure_total') or 0)}**",
-        "",
-        "## Stage Status",
-        "",
-        f"- m30_1_quality_gates: rc={int(m30_1.get('rc') or 0)} ok={bool(m30_1.get('ok'))}",
-        f"- m30_2_release_signoff: rc={int(m30_2.get('rc') or 0)} release_ready={bool(m30_2.get('release_ready'))}",
-        f"- m30_3_post_golive_policy: rc={int(m30_3.get('rc') or 0)} escalation_level={m30_3.get('escalation_level')}",
-        "",
-        "## Failures",
-        "",
-    ]
-    failures = out.get("failures") if isinstance(out.get("failures"), list) else []
-    if failures:
-        for msg in failures:
-            lines.append(f"- {msg}")
-    else:
-        lines.append("- (none)")
-    lines.append("")
-    return "\n".join(lines)
+    from scripts.diagnostics.run_m30_final_golive_signoff_build_markdown import _build_markdown as owner
+    return owner(out, facade=sys.modules[__name__])
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M30-4 final go-live signoff aggregator.")
-    p.add_argument("--event-log-dir", default="data/logs/milestones/m30/golive")
-    p.add_argument("--quality-report-dir", default="reports/milestones/m30_quality_gates")
-    p.add_argument("--signoff-report-dir", default="reports/milestones/m30_signoff")
-    p.add_argument("--policy-report-dir", default="reports/milestones/m30_post_golive")
-    p.add_argument("--report-dir", default="reports/milestones/m30_golive")
-    p.add_argument("--day", default="2026-02-21")
-    p.add_argument("--inject-fail", action="store_true")
-    p.add_argument("--no-clear", action="store_true")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics.run_m30_final_golive_signoff_build_parser import _build_parser as owner
+    return owner(facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:

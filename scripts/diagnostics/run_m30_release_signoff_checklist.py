@@ -16,39 +16,18 @@ from scripts.run_m30_quality_gates_bundle import main as quality_bundle_main
 
 
 def _run_json(main_fn, argv: List[str]) -> Tuple[int, Dict[str, Any]]:  # type: ignore[no-untyped-def]
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        rc = main_fn(argv)
-    out = buf.getvalue().strip()
-    if not out:
-        return int(rc), {}
-    try:
-        return int(rc), json.loads(out)
-    except Exception:
-        return int(rc), {}
+    from scripts.diagnostics.run_m30_release_signoff_checklist_run_json import _run_json as owner
+    return owner(main_fn, argv, facade=sys.modules[__name__])
 
 
 def _read_json(path: Path) -> Dict[str, Any]:
-    if not path.exists():
-        return {}
-    try:
-        obj = json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return {}
-    return obj if isinstance(obj, dict) else {}
+    from scripts.diagnostics.run_m30_release_signoff_checklist_read_json import _read_json as owner
+    return owner(path, facade=sys.modules[__name__])
 
 
 def _gitignore_has_env(root: Path) -> bool:
-    p = root / ".gitignore"
-    if not p.exists():
-        return False
-    try:
-        for line in p.read_text(encoding="utf-8").splitlines():
-            if line.strip() == ".env":
-                return True
-    except Exception:
-        return False
-    return False
+    from scripts.diagnostics.run_m30_release_signoff_checklist_gitignore_has_env import _gitignore_has_env as owner
+    return owner(root, facade=sys.modules[__name__])
 
 
 def _item(
@@ -60,14 +39,8 @@ def _item(
     evidence: str,
     required: bool = True,
 ) -> Dict[str, Any]:
-    return {
-        "id": item_id,
-        "category": category,
-        "title": title,
-        "required": bool(required),
-        "passed": bool(passed),
-        "evidence": str(evidence),
-    }
+    from scripts.diagnostics.run_m30_release_signoff_checklist_item import _item as owner
+    return owner(item_id=item_id, category=category, title=title, passed=passed, evidence=evidence, required=required, facade=sys.modules[__name__])
 
 
 def _count_by(items: List[Dict[str, Any]], key: str) -> Dict[str, int]:
@@ -83,16 +56,8 @@ def _build_markdown(out: Dict[str, Any]) -> str:
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="M30-2 release sign-off checklist generator.")
-    p.add_argument("--quality-gates-json-path", default="")
-    p.add_argument("--event-log-dir", default="data/logs/milestones/m30/quality_gates")
-    p.add_argument("--quality-report-dir", default="reports/milestones/m30_quality_gates")
-    p.add_argument("--report-dir", default="reports/milestones/m30_signoff")
-    p.add_argument("--day", default="2026-02-21")
-    p.add_argument("--inject-fail", action="store_true")
-    p.add_argument("--no-run-quality-gates", action="store_true")
-    p.add_argument("--json", action="store_true")
-    return p
+    from scripts.diagnostics.run_m30_release_signoff_checklist_build_parser import _build_parser as owner
+    return owner(facade=sys.modules[__name__])
 
 
 def main(argv: Optional[List[str]] = None) -> int:
