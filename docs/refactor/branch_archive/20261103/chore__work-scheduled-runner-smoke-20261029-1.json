@@ -1,0 +1,20 @@
+{
+  "source_branch": "chore/work-scheduled-runner-smoke-20261029",
+  "source_head": "c496e4ba6d9a953e4c936a7e7dec384b7c99328c",
+  "merge_base": "afbfa33fd9b371ac21c813e65a5eeff41f303793",
+  "canonical_at_review": "e61e2663bac8a72b240d9ce6eb4bcc4300f6ffc8",
+  "part": 1,
+  "parts": 1,
+  "files": [
+    {
+      "filename": "docs/CODEX_WORK_SCHEDULED_RUNNER_SMOKE_20261029.md",
+      "status": "added",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "previous_filename": null,
+      "sha": "01d2d701df6441d04721c19781dedbe24ac1496c",
+      "content_base64": "Q29kZXggV29yayBzY2hlZHVsZWQgcnVubmVyIGVudmlyb25tZW50IHZlcmlm\naWVkLgo=\n"
+    }
+  ]
+}
