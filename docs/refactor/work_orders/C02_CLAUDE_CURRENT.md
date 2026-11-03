@@ -1,5 +1,20 @@
 # C02 — Claude A | ORDER_ID=A-20261103-21-C03 | A57 NEW_READY=2/8 (PARTIAL SUPPLY_GAP) | A56 REMOTE_DONE=8/8 | RESERVE_NOT_VERIFIED=0/6
 
+## 2026-11-04 단일 운영 지침
+이 절은 아래 과거 회차의 실행·수량·대기 지시를 대체한다. D00의 최신 DONE-FIRST 및 보호·Owner 계약을 따른다. 아래 기록의 코드 경로와 테스트 명령은 증거 조회에만 사용하며 완료 주문을 재발행하지 않는다.
+매회 integration/p1.5 최신 HEAD와 관련 작업서 blob을 고정한다. 같은 ORDER_ID+ITEM+SOURCE_BLOB에 원격 완료 증거가 있으면 VERIFIED_ALREADY로 건너뛴다. 변경 또는 증거 누락 범위만 테스트한다. 각 항목을 완료/기완료/정확한 차단으로 판정하고 실행 가능한 나머지 항목을 끝까지 처리한다.
+문서 변경, 함수 이동 수, 부분 테스트 PASS를 전체 RF DONE으로 집계하지 않는다. 8~10개 공급 및 예비 6개 강제 기준은 폐기한다. 정책 차단 한 건 때문에 독립적인 안전 작업을 중단하지 않는다.
+모델 원복·PR #40/#41 정리는 PC 담당 결과를 조회하여 중복 수행을 방지한다. 실제 원격 반영과 검증 없이 완료로 판단하지 않는다.
+
+C02 Claude A는 이 파일을 유일한 첫 진입점으로 읽는다. A57 항목은 실행 전 #11 및 A 원격 SOURCE/Owner/test를 대조해 이미 전달됐으면 VERIFIED_ALREADY로 처리한다. C03의 모든 미완료 안전 항목을 기존 A 브랜치에서 수행하고 #11에 원격 비강제 푸시·정상 테스트 증거를 남긴다. 신규 주문이 없으면 NO_READY_ORDER를 C03에 전달한다.
+
+## 스킬 적용
+실행자는 agentra-rf-executor와 agentra-contract-guard, 통합·종결·감사는 agentra-done-verifier를 역할 범위에서 적용한다. 자동 로딩을 확인할 수 없으면 정본 .agents/skills의 지침을 직접 적용한다. 스킬은 신규 권한·작업·검증 게이트를 추가하지 않는다.
+
+## 과거 주문 및 증거 — 아래 지시는 실행하지 않음
+
+# C02 — Claude A | ORDER_ID=A-20261103-21-C03 | A57 NEW_READY=2/8 (PARTIAL SUPPLY_GAP) | A56 REMOTE_DONE=8/8 | RESERVE_NOT_VERIFIED=0/6
+
 ## A57 — NEW ASSIGNMENT (two independently preflighted items; remaining 6/8 and reserve 6/6 NOT_VERIFIED)
 A57-1 | RF-032 PEER | GATE_IMPACT=NO (evaluation-only; does NOT resolve validation-id/Writer/UEF policy HOLD; never claim whole G1/G3/DONE).
 SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_rank_row` | canonical SOURCE_BLOB=`a2f64696546cb729afd7c5b89d9d1c1e06edeac7` | A SOURCE_BLOB same.
