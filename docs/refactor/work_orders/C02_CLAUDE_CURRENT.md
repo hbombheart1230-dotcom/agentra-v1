@@ -1,108 +1,15 @@
-# C02 — Claude A | ORDER_ID=A-20261103-21-C03 | A57 NEW_READY=2/8 (PARTIAL SUPPLY_GAP) | A56 REMOTE_DONE=8/8 | RESERVE_NOT_VERIFIED=0/6
+# C02 — Claude A
 
-## 2026-11-04 단일 운영 지침
-이 절은 아래 과거 회차의 실행·수량·대기 지시를 대체한다. D00의 최신 DONE-FIRST 및 보호·Owner 계약을 따른다. 아래 기록의 코드 경로와 테스트 명령은 증거 조회에만 사용하며 완료 주문을 재발행하지 않는다.
-매회 integration/p1.5 최신 HEAD와 관련 작업서 blob을 고정한다. 같은 ORDER_ID+ITEM+SOURCE_BLOB에 원격 완료 증거가 있으면 VERIFIED_ALREADY로 건너뛴다. 변경 또는 증거 누락 범위만 테스트한다. 각 항목을 완료/기완료/정확한 차단으로 판정하고 실행 가능한 나머지 항목을 끝까지 처리한다.
-문서 변경, 함수 이동 수, 부분 테스트 PASS를 전체 RF DONE으로 집계하지 않는다. 8~10개 공급 및 예비 6개 강제 기준은 폐기한다. 정책 차단 한 건 때문에 독립적인 안전 작업을 중단하지 않는다.
-모델 원복·PR #40/#41 정리는 PC 담당 결과를 조회하여 중복 수행을 방지한다. 실제 원격 반영과 검증 없이 완료로 판단하지 않는다.
+- 정본은 integration/p1.5. 이 파일을 먼저 읽는다.
+- 작업 브랜치는 work/p15-a-reporter-pure-20261021, 보고는 #11.
+- 스킬은 agentra-rf-executor 및 agentra-contract-guard. C03의 허용 범위와 D00 보호 제약을 따른다.
 
-C02 Claude A는 이 파일을 유일한 첫 진입점으로 읽는다. A57 항목은 실행 전 #11 및 A 원격 SOURCE/Owner/test를 대조해 이미 전달됐으면 VERIFIED_ALREADY로 처리한다. C03의 모든 미완료 안전 항목을 기존 A 브랜치에서 수행하고 #11에 원격 비강제 푸시·정상 테스트 증거를 남긴다. 신규 주문이 없으면 NO_READY_ORDER를 C03에 전달한다.
+## 현재 상태
+NEW_READY=0. A57-1/2는 최신 #11 및 원격 blob으로 VERIFIED_ALREADY 여부를 확인한다. 완료 증거가 있으면 재실행하지 않는다. C03는 RF-032 정책 HOLD와 독립적인 미완료 후보를 검토해 다음 구체 주문을 발행한다.
 
-## 스킬 적용
-실행자는 agentra-rf-executor와 agentra-contract-guard, 통합·종결·감사는 agentra-done-verifier를 역할 범위에서 적용한다. 자동 로딩을 확인할 수 없으면 정본 .agents/skills의 지침을 직접 적용한다. 스킬은 신규 권한·작업·검증 게이트를 추가하지 않는다.
+## 실행 규칙
+C03가 발행한 ORDER_ID, 허용 경로, source/target blob, 테스트, 완료 조건에 따라 모든 안전 항목을 수행한다. 막힌 항목은 FIRST_BLOCKER를 기록하고 다른 항목을 계속한다. 임의 작업 선택 및 다른 Owner 소스 수정은 금지한다.
+코드·테스트만 A 브랜치에 비강제 푸시하고 원격 SHA를 재조회한다. #11에 항목별 결과, 정상 테스트 명령·exit, 원격 SHA, 실제 소요 시간을 보고한다. 신규 주문이 없으면 NO_READY_ORDER를 C03에 전달한다.
 
-## 과거 주문 및 증거 — 아래 지시는 실행하지 않음
-
-# C02 — Claude A | ORDER_ID=A-20261103-21-C03 | A57 NEW_READY=2/8 (PARTIAL SUPPLY_GAP) | A56 REMOTE_DONE=8/8 | RESERVE_NOT_VERIFIED=0/6
-
-## A57 — NEW ASSIGNMENT (two independently preflighted items; remaining 6/8 and reserve 6/6 NOT_VERIFIED)
-A57-1 | RF-032 PEER | GATE_IMPACT=NO (evaluation-only; does NOT resolve validation-id/Writer/UEF policy HOLD; never claim whole G1/G3/DONE).
-SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_rank_row` | canonical SOURCE_BLOB=`a2f64696546cb729afd7c5b89d9d1c1e06edeac7` | A SOURCE_BLOB same.
-TARGET=`libs/reporting/evaluation/cumulative_improvement_review_rank_row.py::_rank_row` | 404 canonical+A at assignment; A-owned evaluation-only path. No B/Guard/Writer/UEF/Step5C/real-mode edits.
-BODY: move the actual `next(...)` in-memory Mapping row-selection calculation (first matching `rank_bucket` and `horizon`, fallback empty dict) to the single TARGET Owner. Keep SOURCE original signature and thin wrapper; preserve call-time monkeypatch/import semantics, row identity, ordering, generator short-circuit, exceptions and Mapping behavior. Avoid duplicate computation. TARGET must not import SOURCE at module import time.
-TARGETED NORMAL: add `tests/test_p15_rf032_20261103_21h_cumulative_rank_owner.py` (must be absent) with fake in-memory reviews: first-match, no-match, invalid/non-Mapping rows, generator short-circuit, identity, monkeypatch and exception parity against pinned preimage; prove SOURCE body removed and wrapper delegates. Run `python -m py_compile` changed SOURCE/TARGET/test and `python -m pytest -q tests/test_p15_rf032_20261103_21h_cumulative_rank_owner.py` normal EXIT0. No live IO.
-DELIVERY: on A branch only, preflight pinned SOURCE and TARGET 404 again before edit; if drift/ownership collision, mark A57-1 BLOCKED with actual SHA and continue any previously started safe order. Stage exactly SOURCE+TARGET+new test (3 paths), verify `git status --short` and `git diff --cached --name-only` especially after stash/pop; non-force push and refetch all 3 remote blobs and A HEAD; report to #11 exact old/new blobs, normal EXIT/PASS, PUSH_SHA, START/END/ELAPSED, GATE_IMPACT=NO. C04 owns integration/G3, C05 RF/STATUS/DONE. Do not self-select other reserve tasks. This is a partial urgent supply, NOT 8/8 SUPPLIED.
-
----
-A57-2 | RF-032 PEER | GATE_IMPACT=NO (evaluation-only; policy HOLD unchanged).
-SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_candidate_rows` | SOURCE_BLOB=`a2f64696546cb729afd7c5b89d9d1c1e06edeac7` canonical=A verified; TARGET=`libs/reporting/evaluation/cumulative_improvement_review_candidate_rows.py::_candidate_rows` 404 canonical+A verified.
-BODY: move the complete in-memory four-candidate priority/status/evidence list computation to this single TARGET Owner. Preserve keyword-only signature, row priority/order, fallback and float/Mapping exceptions, return dict structure and nested object identity. Keep SOURCE as thin delegating wrapper; OWNER must call the SOURCE facade's `_rank_row` at invocation time (not import SOURCE at module import), preserving monkeypatch behavior and compatibility with A57-1. No trading, Writer/UEF, real IO or operational state.
-TARGETED NORMAL: add a distinct fake-only test `tests/test_p15_rf032_20261103_21h_cumulative_candidate_owner.py` (must be absent), compare pinned preimage and wrapper+Owner for rank1/rank2_3, reentry eligible/ineligible, score READY/not READY, strategist negative/positive, missing Mapping and exception cases, identity, order, call-time `_rank_row` patch. `python -m py_compile` changed paths and `python -m pytest -q tests/test_p15_rf032_20261103_21h_cumulative_candidate_owner.py` normal EXIT0. Before push stage complete SOURCE + both A57 Owner files + both tests if A57-1 and A57-2 committed together; if separately, exact each item's changed path manifest. Non-force push A branch, refetch SHA and source/Owner/test blobs; report to #11 item status and GATE_IMPACT=NO. If A57-1 is already in flight, finish it first; this additional item does not cancel it. If drift or TARGET collision, BLOCKED with SHA and continue other assigned safe items. No autonomous selection.
-
-## Historical A56 order (REMOTE_DONE; never re-execute)
-
-## 2026-11-03 20:00 C03 evidence correction — reserve count only (not a new order)
-A56-1..8 were completed at A remote `a0149439392300f94876e553e11d99fec053d1d5` per #11 6593666681. Preserve ORDER_ID and all existing item instructions; do not repeat them. The six `cumulative_improvement_review` reserve candidates were not independently reverified against current SOURCE blob, exclusive Owner, TARGET 404, IO/caller safety and targeted normal test, so **RESERVE_VERIFIED=0/6; RESERVE_NOT_VERIFIED** until C03 validates each. They are not assigned and Claude A must not self-select or execute them. This header correction has **GATE_IMPACT=NO**, **NEW_BODY_MOVES=0**, **RF_DONE_DELTA=0**; it is not G1/G2/G3 evidence. Future C03 must issue a separately verified next single order. Existing A49 prepush staged SOURCE+Owner+test manifest safeguard remains mandatory; no A49 re-test.
-
-## 2026-11-03 역할별 Agentra 스킬 적용
-`agentra-rf-executor` 실행 체크리스트를 적용하고 `agentra-contract-guard`로 변경 대상의 Owner/안전 경계를 확인한다. 스킬은 본 C02 주문 밖 신규 과제를 허용하지 않으며, 자동 로딩이 확인되지 않으면 `.agents/skills/<skill-name>/SKILL.md`를 참고 자료로만 사용한다.
-
----
-
-## 2026-11-03 LEAD CORRECTION — A execution accountability (D00 subordinate)
-Complete any already-started A56 safe items without retroactive cancellation. For every item explicitly report whether it resolves the RF's whole FIRST_UNMET gate (`GATE_IMPACT=YES/NO`). RF-032 evaluation-only BODY MOVEs do not lift validation-id/Writer/UEF policy HOLD and are not whole RF DONE. Preserve frozen oracles and all safety boundaries; if an item is unsafe, already implemented, or has drift, report exact blocker and continue remaining safe items. Post verified actor remote SHA and targeted exit to #11; do not self-assign, repeat old PASS, or claim G3/DONE.
-
----
-
-## START — protect in-flight work, remote preflight
-C03 verified canonical `3b859aa4facd4d38acdad3fc62507261bf48ae42`, A branch `2d48eb29c813353eddb8a9e47de1ae5f9787fa1b`, old C02 blob `927850ca3ef04a54f4a60c63c785eb83c879fc42`. A55 #11 6590953654 delivered 8/8 at A remote 2d48eb29, normal targeted EXIT=0 PASS=302, C04 #36 6591335590 selected exact 13/13 at integration e6319b92, C05 #36 6591430488 physical DONE 46/93; do not redo/recount A55 or older. If a prior starting order is genuinely in progress, finish its safe items first.
-
-First shell `python -m pytest --version`; if absent `python -m pip install --user pytest`, recheck. Fetch this exact file from remote `integration/p1.5`, report full canonical HEAD, C02 blob, ORDER_ID, A HEAD to #11. This file is sole execution entrypoint; do NOT reread D00/RF/INDEX/SKILL or self-select RF. Before edits refetch each pinned SOURCE and each TARGET on A; if SHA drift, existing TARGET, or ownership collision, item-specific VERIFIED_ALREADY/BLOCKED with exact SHA/FIRST_BLOCKER and continue the remaining safe items. Code/tests only on A branch; non-force push. C03's new order never retroactively cancels a previously started order.
-
-## DONE-FIRST boundaries
-RF-030 PENDING G1 PARTIAL (15/16 KEEP, RF-074 test/frozen Owner read-only KEEP), canonical fake smoke G2/G3 pending C04/C05. RF-032 whole G1 BLOCKED_POLICY validation-id/Writer/UEF authorization, not lifted by this read-only work. A `operator_visibility.py` preimage differs canonical; do NOT change it or RF-074 test/frozen oracle. No protected Writer/UEF/Guard/Step5C, broker/trade, real env/network, operational files/DB/state, frozen test/CI edits. All current A56 targets verified 404 on canonical+A, SOURCE canonical==A at issuance, RF-032 A-exclusive FILE_COVERAGE. These eight are real BODY MOVEs, not RF DONE.
-
-## A56 — eight independently verified BODY MOVEs
-For every item: move the **entire real computation body** to exactly one TARGET Owner; retain original SOURCE public/private signature, defaults, keyword-only parameters and docstring as thin wrapper delegating with call-time `sys.modules[__name__]` facade. New Owner may accept keyword-only facade; do not import SOURCE at Owner module import time. Preserve dynamic helper monkeypatch, identity, generator laziness, order, exceptions, JSON/Markdown bytes, and old callers. AST-bounded edits, no duplicate body. Each item must be DONE or evidence-backed BLOCKED; continue other safe items after a failure.
-
-### A56-1 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/full_chain_component_review.py::build_full_chain_component_review` | SOURCE_BLOB=`7706d3567dc27286b3c63e6344193401e28a944b` (canonical=A at issuance)
-TARGET=`libs/reporting/evaluation/full_chain_component_review_build_full_chain_component_review.py::build_full_chain_component_review` | TARGET=404 canonical+A
-BODY_AND_TARGETED_NORMAL=read-only evaluation aggregation; fake shadow/model/cost/profile/env/entry/exit helpers; preserve ordered component decisions, thresholds, dict keys and no real filesystem/env access. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
-
-### A56-2 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/historical_prior.py::_day_from_trade_dir` | SOURCE_BLOB=`a9a223da81e5c29088004d8d5db0c391f8cf4373` (canonical=A at issuance)
-TARGET=`libs/reporting/evaluation/historical_prior_day_from_trade_dir.py::_day_from_trade_dir` | TARGET=404 canonical+A
-BODY_AND_TARGETED_NORMAL=Path.parts scan for first trades/day; fake paths, empty/multiple trades segments, exact fallback. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
-
-### A56-3 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/historical_prior.py::_net_return` | SOURCE_BLOB=`a9a223da81e5c29088004d8d5db0c391f8cf4373` (canonical=A at issuance)
-TARGET=`libs/reporting/evaluation/historical_prior_net_return.py::_net_return` | TARGET=404 canonical+A
-BODY_AND_TARGETED_NORMAL=realized_outcome.net_return_pct float; only TypeError/ValueError caught; None, missing, 0, malformed, inf parity. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
-
-### A56-4 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/historical_prior.py::_group_metrics` | SOURCE_BLOB=`a9a223da81e5c29088004d8d5db0c391f8cf4373` (canonical=A at issuance)
-TARGET=`libs/reporting/evaluation/historical_prior_group_metrics.py::_group_metrics` | TARGET=404 canonical+A
-BODY_AND_TARGETED_NORMAL=defaultdict grouping, unknown fallback, sorted key iteration, call-time performance_metrics; fake iterable, key order and exception parity. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
-
-### A56-5 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/historical_prior.py::summarize_historical_prior` | SOURCE_BLOB=`a9a223da81e5c29088004d8d5db0c391f8cf4373` (canonical=A at issuance)
-TARGET=`libs/reporting/evaluation/historical_prior_summarize_historical_prior.py::summarize_historical_prior` | TARGET=404 canonical+A
-BODY_AND_TARGETED_NORMAL=in-memory eligible returns/integrity counters and 4 breakdowns, datetime.now seam, generated_at, error slice 50, Q9 frozen guardrails; fake rows only. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
-
-### A56-6 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/historical_prior.py::render_historical_prior_markdown` | SOURCE_BLOB=`a9a223da81e5c29088004d8d5db0c391f8cf4373` (canonical=A at issuance)
-TARGET=`libs/reporting/evaluation/historical_prior_render_historical_prior_markdown.py::render_historical_prior_markdown` | TARGET=404 canonical+A
-BODY_AND_TARGETED_NORMAL=Markdown only; missing coverage/performance, nonempty breakdowns, numeric formatting, exact UTF-8/newline bytes. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
-
-### A56-7 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/historical_prior.py::iter_historical_trade_dirs` | SOURCE_BLOB=`a9a223da81e5c29088004d8d5db0c391f8cf4373` (canonical=A at issuance)
-TARGET=`libs/reporting/evaluation/historical_prior_iter_historical_trade_dirs.py::iter_historical_trade_dirs` | TARGET=404 canonical+A
-BODY_AND_TARGETED_NORMAL=read-only Path rglob of lifecycle_bundle.json and date bounds; fake Path only, sorted dedup parents, no actual report IO. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
-
-### A56-8 | RF-032 | NEW_BODY_MOVE
-SOURCE=`libs/reporting/evaluation/loss_decomposition.py::_load_trade_models` | SOURCE_BLOB=`09352162fa51641be30763bf9719a126da5ba3bf` (canonical=A at issuance)
-TARGET=`libs/reporting/evaluation/loss_decomposition_load_trade_models.py::_load_trade_models` | TARGET=404 canonical+A
-BODY_AND_TARGETED_NORMAL=read-only day iteration, iter_trade_dirs/build_q9_trade_read_model call-time seams; fake day/path/model objects, order and error parity. Verify original preimage versus wrapper+Owner using fake-only parity, including errors/monkeypatch and no protected effects.
-
-## VERIFIED UNASSIGNED RESERVE — A 6/6
-All six distinct real SOURCE bodies canonical=A at blob `a2f64696546cb729afd7c5b89d9d1c1e06edeac7`, RF-032 exclusive file, TARGET 404 on canonical+A, read-only/fake-only tests; not authorized to execute until next C03 order. Do not count as G1/G2.
-1. SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_read_json@a2f64696546cb729afd7c5b89d9d1c1e06edeac7` → TARGET=`libs/reporting/evaluation/cumulative_improvement_review_read_json.py::_read_json` (404 C+A); TEST/SAFETY=read_text UTF-8-sig and dict-only JSON; fake Path and json; no live IO.
-2. SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_strategist_weighting_review@a2f64696546cb729afd7c5b89d9d1c1e06edeac7` → TARGET=`libs/reporting/evaluation/cumulative_improvement_review_strategist_weighting_review.py::_strategist_weighting_review` (404 C+A); TEST/SAFETY=read-only sorted baseline day dirs and horizon A/B deltas; fake dirs and _read_json; no live IO.
-3. SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_rank_row@a2f64696546cb729afd7c5b89d9d1c1e06edeac7` → TARGET=`libs/reporting/evaluation/cumulative_improvement_review_rank_row.py::_rank_row` (404 C+A); TEST/SAFETY=in-memory rank/horizon next match, first-match and Mapping identity; no live IO.
-4. SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::_candidate_rows@a2f64696546cb729afd7c5b89d9d1c1e06edeac7` → TARGET=`libs/reporting/evaluation/cumulative_improvement_review_candidate_rows.py::_candidate_rows` (404 C+A); TEST/SAFETY=in-memory episode/reentry/post-reclaim/strategist aggregation; fake _rank_row; no live IO.
-5. SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::build_cumulative_improvement_review@a2f64696546cb729afd7c5b89d9d1c1e06edeac7` → TARGET=`libs/reporting/evaluation/cumulative_improvement_review_build_cumulative_improvement_review.py::build_cumulative_improvement_review` (404 C+A); TEST/SAFETY=evaluation-only aggregation; fake cost profile/loader/forward outcomes, no production IO; no live IO.
-6. SOURCE=`libs/reporting/evaluation/cumulative_improvement_review.py::render_cumulative_improvement_review@a2f64696546cb729afd7c5b89d9d1c1e06edeac7` → TARGET=`libs/reporting/evaluation/cumulative_improvement_review_render_cumulative_improvement_review.py::render_cumulative_improvement_review` (404 C+A); TEST/SAFETY=in-memory Markdown exact bytes, missing fields and formatting; no live IO.
-
-## TEST / DELIVERY / ACCEPTANCE
-New test `tests/test_p15_rf032_20261103_09h_historical_full_chain_owners.py` was 404 canonical+A. Implement pinned preimage AST-to-Owner/wrapper fake parity for all eight, with read-only fake Paths, patched external loaders/profile/env, exact signatures/defaults/keyword-only, call-time monkeypatch, return identity, output ordering, exceptions, Markdown bytes, and no real IO. `python -m py_compile` changed SOURCE+Owner+test EXIT0, then `python -m pytest -q tests/test_p15_rf032_20261103_09h_historical_full_chain_owners.py` normal EXIT0 required; report actual PASS count, no invented tests. Prepush `git status --short`, staged manifest SOURCE 3 + Owner 8 + test 1 = **12 paths**, `git diff --cached --name-only` and commit path names; after stash/pop recheck. Non-force A push; re-fetch final remote full-root tree and all 12 blobs. Report per A56-1..8 DONE/BLOCKED, SOURCE before/after, Owner/test SHA, normal command EXIT/PASS, actual START_KST/END_KST/ELAPSED_MIN, A remote SHA to #11. C04 only integration/G3; C05 only RF/STATUS/DONE. No docs/RF/STATUS/CI/operations writes.
+## 갱신 규칙
+이 파일은 현재 지시와 미완료 항목만 유지한다. 갱신 시 본문을 교체하고 완료 주문·이전 보고·교정 이력을 누적하지 않는다. 과거 증거는 Git history와 해당 Issue에서 조회한다. 진행 중인 유효 항목은 다음 갱신에 보존한다.
