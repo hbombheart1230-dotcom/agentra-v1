@@ -1,5 +1,10 @@
 # C02 — Claude A | ORDER_ID=A-20261103-09-C03 | RF-032 PEER | A56 NEW_READY=8/8 | A55 REMOTE_DONE=8/8 | RESERVE_VERIFIED=6/6
 
+## 2026-11-03 LEAD CORRECTION — A execution accountability (D00 subordinate)
+Complete any already-started A56 safe items without retroactive cancellation. For every item explicitly report whether it resolves the RF's whole FIRST_UNMET gate (`GATE_IMPACT=YES/NO`). RF-032 evaluation-only BODY MOVEs do not lift validation-id/Writer/UEF policy HOLD and are not whole RF DONE. Preserve frozen oracles and all safety boundaries; if an item is unsafe, already implemented, or has drift, report exact blocker and continue remaining safe items. Post verified actor remote SHA and targeted exit to #11; do not self-assign, repeat old PASS, or claim G3/DONE.
+
+---
+
 ## START — protect in-flight work, remote preflight
 C03 verified canonical `3b859aa4facd4d38acdad3fc62507261bf48ae42`, A branch `2d48eb29c813353eddb8a9e47de1ae5f9787fa1b`, old C02 blob `927850ca3ef04a54f4a60c63c785eb83c879fc42`. A55 #11 6590953654 delivered 8/8 at A remote 2d48eb29, normal targeted EXIT=0 PASS=302, C04 #36 6591335590 selected exact 13/13 at integration e6319b92, C05 #36 6591430488 physical DONE 46/93; do not redo/recount A55 or older. If a prior starting order is genuinely in progress, finish its safe items first.
 
