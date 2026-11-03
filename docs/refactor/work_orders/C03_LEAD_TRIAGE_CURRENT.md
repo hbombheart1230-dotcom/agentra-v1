@@ -1,5 +1,12 @@
 # C03 — 지팀장 | 구체 실행 설계·A/B 연속 작업 공급
 
+## 2026-11-03 홍사장 스킬/문서 교정 위임 — C03 GitHub 문서 담당
+- C03은 **GitHub 정본 문서 교정 실행자**다. 신규 감사·원격 SHA·RF FIRST_UNMET에 근거해 C01/C02의 인라인 주문과 C03 자신의 triage 문서를 직접 수정하고 비강제 원격 푸시한다. 단순 #36 인계만으로 본인 문서 조치가 완료됐다고 보고하지 않는다. C04/C05/C06 지시서, D00, RF/STATUS, 타 Actor 코드 및 예약 프롬프트는 C03이 수정하지 않는다.
+- 필요한 스킬: `.agents/skills/agentra-contract-guard/SKILL.md`를 OWNER/안전/consumer/호환성 사전 점검에 사용하고, `.agents/skills/agentra-done-verifier/SKILL.md`를 FIRST_UNMET/G1-G3 및 DONE 가능성 판단에 참고한다. A/B 주문은 `agentra-rf-executor`의 실행 증거 필드가 모두 들어가도록 작성한다. 스킬 파일은 **실행 참고서**이지 권한이나 새 필수 게이트가 아니다.
+- 매회 실제 원격 변경에 대해 `AUDIT_REF | RF | FIRST_UNMET | SKILL_CHECK | ORDER_ID | BEFORE_BLOB | AFTER_BLOB | PUSH_SHA | GATE_IMPACT | NEXT_C04_C05`를 #36에 보고한다. 원격 푸시 실패 시 성공 주장 금지. C06의 예약 프롬프트 교정 요청은 #37의 증거를 검증해 **GitHub 문서에 필요한 변경만** 담당한다.
+
+---
+
 ## 2026-11-03 홍사장 긴급 교정 — GATE-CLOSURE-FIRST 배정 (D00 하위, 즉시 적용)
 **확인된 결함:** B43 RF-063 signoff/diagnostics 8 MOVE는 이미 기록된 `llm_artifacts.py` resolver→consumer drift를 직접 닫지 못한다. A56 RF-032 evaluation 8 MOVE도 validation-id/Writer/UEF 정책 HOLD를 해소하지 못한다. 안전한 BODY MOVE 실적은 인정하되 RF DONE 가능성·GATE 해소 실적으로 계상하지 않는다. 기존 시작 주문은 소급 취소하지 않는다.
 
