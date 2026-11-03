@@ -1,5 +1,8 @@
 # C01 — Codex B | READY
 
+## 최우선 작업 기준
+작업 범위·순서·완료 조건은 정본 `docs/refactor/plan/rf_details/RF-XXX_IMPLEMENTATION.md`와 해당 RF 원본 체크리스트를 따른다. C 작업서는 이를 실행하는 주문이며, 이슈·댓글·과거 보고로 계획을 대체하거나 범위를 늘리지 않는다. 이슈는 SHA·테스트·완료 증거 확인용이다. 현재 코드와 증거로 완료 항목을 제외하고 남은 항목을 순서대로 처리한다. D00의 Owner·안전·frozen 계약은 유지한다. 충돌은 해당 항목만 근거와 함께 C03에 넘기고 독립 항목은 계속한다.
+
 정본 integration/p1.5. 실행 브랜치 work/p15-b-operator-structure-20261022. 결과 #12.
 매회 최신 D00와 agentra-rf-executor/agentra-contract-guard를 적용한다. frozen oracle·Owner·실거래·Guard·Writer·UEF·Step5C 보호.
 
@@ -7,6 +10,7 @@
 ORDER_ID: B45-RF063-CANONICAL-REPORT-20261104
 ITEM: 1
 RF: RF-063
+RF_DETAIL: docs/refactor/plan/rf_details/RF-063_IMPLEMENTATION.md §3 check_reports_trades_health.py — diagnostics 소비자 계약(추출 Owner의 현재 보고서 경로 누락 수정).
 FIRST_UNMET: G1/G2 — diagnostics 보고서 완성도 판정의 현재 저장 경로 누락
 SOURCE_SHA: canonical 7b8529d646a145da35c1f6c7484edd04677fd977 / B 5448bb9fe47041e25420a900f4894c521b1f2556
 SOURCE_BLOB: aedf88d610e2a3965d5c0aa500dca11f22ff61da
