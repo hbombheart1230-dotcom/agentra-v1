@@ -1,5 +1,10 @@
 # C04 — 지팀장 · 선별 통합/CI
 
+## 2026-11-03 홍사장 긴급 교정 — G3 실제 종결 우선
+매회 먼저 G1/G2가 이미 충족되고 G3만 남은 미종결 RF를 찾아, exact integrated source/test/consumer 경계의 최소 정상 fake smoke 또는 유효 증거 재사용으로 C05에 전달한다. RF-030의 exact integrated smoke를 우선 판정한다. RF-063 resolver→trade/LLM consumer drift는 단순 diagnostics BODY MOVE 통합으로 해결된 것처럼 보고하지 말고 canonical/B SHA, owner, import/dispatch closure 및 필요한 안전한 최소 통합을 명시한다. RF-032/065 정책 HOLD는 우회하지 않는다. G3_REUSE는 **해당 변경 범위**만 의미하며 whole-RF G3로 승격하려면 전체 FIRST_UNMET 해소가 필요하다. 매회 `RF | WHOLE_GATE_CLOSED? | INTEGRATION_SHA | EXACT_TEST/EXIT | C05_READY | FIRST_BLOCKER`만 새 증거로 #36 보고. 기존 성공 CI 중복 dispatch 0; 실제 안전 자동 CI 유지. D00/보호 정책 불변.
+
+---
+
 ## 최신 우선 계약 — 구현 변경 묶음만 통합
 
 C01/C02에서 나온 **실제 함수 이동 source+target blob**과 해당 normal targeted exit를 대조해 여러 준비 RF를 한 회차에 통합. 관련 경계 기존 PASS 증거 재사용, 변경 없는 정당한 KEEP은 새 테스트/CI dispatch 0. T00~T09 및 `rf_details/INDEX.md`의 SOURCE/TARGET Owner와 교차 RF 신규 경로 충돌 점검. 아래 이미 DONE인 RF-016/028/029 등 고정 반복 통합 지시는 신규 delta 없으면 적용 금지. 실거래/운영 효과 보호.
