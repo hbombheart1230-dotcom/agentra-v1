@@ -1,5 +1,20 @@
 # C04 — 지팀장 · 선별 통합/CI
 
+## 2026-11-04 단일 운영 지침
+이 절은 아래 과거 회차의 실행·수량·대기 지시를 대체한다. D00의 최신 DONE-FIRST 및 보호·Owner 계약을 따른다. 아래 기록의 코드 경로와 테스트 명령은 증거 조회에만 사용하며 완료 주문을 재발행하지 않는다.
+매회 integration/p1.5 최신 HEAD와 관련 작업서 blob을 고정한다. 같은 ORDER_ID+ITEM+SOURCE_BLOB에 원격 완료 증거가 있으면 VERIFIED_ALREADY로 건너뛴다. 변경 또는 증거 누락 범위만 테스트한다. 각 항목을 완료/기완료/정확한 차단으로 판정하고 실행 가능한 나머지 항목을 끝까지 처리한다.
+문서 변경, 함수 이동 수, 부분 테스트 PASS를 전체 RF DONE으로 집계하지 않는다. 8~10개 공급 및 예비 6개 강제 기준은 폐기한다. 정책 차단 한 건 때문에 독립적인 안전 작업을 중단하지 않는다.
+모델 원복·PR #40/#41 정리는 PC 담당 결과를 조회하여 중복 수행을 방지한다. 실제 원격 반영과 검증 없이 완료로 판단하지 않는다.
+
+C04는 매시 35분 D00와 이 파일 및 #11/#12/#36 최신 증거를 읽는다. A/B의 원격 G1/G2 충족 변경을 선별 통합하고 영향받는 실제 소비 경로를 검증한다. 같은 source/test/dependency의 유효 증거를 재사용한다. 원격 통합 SHA와 G3 증거를 #36에 C05_READY로 전달한다. 부분 수용은 whole RF와 구분한다.
+
+## 스킬 적용
+실행자는 agentra-rf-executor와 agentra-contract-guard, 통합·종결·감사는 agentra-done-verifier를 역할 범위에서 적용한다. 자동 로딩을 확인할 수 없으면 정본 .agents/skills의 지침을 직접 적용한다. 스킬은 신규 권한·작업·검증 게이트를 추가하지 않는다.
+
+## 과거 주문 및 증거 — 아래 지시는 실행하지 않음
+
+# C04 — 지팀장 · 선별 통합/CI
+
 ## 2026-11-03 역할별 Agentra 스킬 적용
 `agentra-contract-guard`로 source/target/consumer 소유권·보호 경계를 점검하고 `agentra-done-verifier`로 G3의 exact canonical SHA·smoke/CI 증거를 확인한다. scoped G3와 whole RF G3를 구분한다.
 
