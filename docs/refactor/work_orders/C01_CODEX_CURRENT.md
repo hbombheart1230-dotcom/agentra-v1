@@ -1,5 +1,10 @@
 # C01 — Codex B | ORDER_ID=B-20261103-10-C03 | RF-063 DEV | B43 NEW_READY=8/8 | B42 REMOTE_DONE=8/8 | RESERVE_NOT_VERIFIED
 
+## 2026-11-03 LEAD CORRECTION — B execution accountability (D00 subordinate)
+Complete any already-started B43 safe items without retroactive cancellation. Before each item check its actual RF FIRST_UNMET and whether the item can close it; report `GATE_IMPACT=YES/NO` honestly. BODY MOVE and targeted PASS never imply whole RF G1/G3/DONE. If a pinned item is already complete, unsafe, or drifted, record precise blocker and continue other safe items; do not invent a replacement or touch protected resolver/operational code. Deliver exact source/target/test SHA and remote push to #12. C03 must provide next gate-closing work; do not self-assign. No repeated prior PASS or dummy commits.
+
+---
+
 ## START / PROTECTION
 Fetch this file directly from `integration/p1.5`, log exact C01 blob/canonical HEAD/B branch HEAD to #12. Finish any genuinely in-progress prior starting order before this order; do not redo B42. B42 #12 6591950111 remote `abd03cbf09ed4b8e19eea53765babf4c6e7497f1`, 8/8, normal EXIT0 PASS5; C04 #36 6592259700 selected 13/13 to integration `11f8ee2d074dd21e98ea3725ce0d6cca540435f0`. First shell `python -m pytest --version`, install `python -m pip install --user pytest` only if missing, recheck. A/B never self-select RF, never reread D00/RF/INDEX/SKILL. Code/test edits only on B branch `work/p15-b-operator-structure-20261022`, non-force push. Preserve operational/Guard/Step5C/UEF/real trading and all go-live effects: **do not call main, live subprocess, real logs, reports, network or real signoff**. C03 only assigns read-only pure body extraction. RF-063 whole G3 remains blocked by `llm_artifacts.py` resolver/consumer canonical-vs-B drift; do not touch resolver; C04/C05 own closure.
 
