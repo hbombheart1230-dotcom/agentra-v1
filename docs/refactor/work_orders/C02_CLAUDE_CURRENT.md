@@ -1,5 +1,10 @@
 # C02 — Claude A | ORDER_ID=A-20261103-09-C03 | RF-032 PEER | A56 NEW_READY=8/8 | A55 REMOTE_DONE=8/8 | RESERVE_VERIFIED=6/6
 
+## 2026-11-03 역할별 Agentra 스킬 적용
+`agentra-rf-executor` 실행 체크리스트를 적용하고 `agentra-contract-guard`로 변경 대상의 Owner/안전 경계를 확인한다. 스킬은 본 C02 주문 밖 신규 과제를 허용하지 않으며, 자동 로딩이 확인되지 않으면 `.agents/skills/<skill-name>/SKILL.md`를 참고 자료로만 사용한다.
+
+---
+
 ## 2026-11-03 LEAD CORRECTION — A execution accountability (D00 subordinate)
 Complete any already-started A56 safe items without retroactive cancellation. For every item explicitly report whether it resolves the RF's whole FIRST_UNMET gate (`GATE_IMPACT=YES/NO`). RF-032 evaluation-only BODY MOVEs do not lift validation-id/Writer/UEF policy HOLD and are not whole RF DONE. Preserve frozen oracles and all safety boundaries; if an item is unsafe, already implemented, or has drift, report exact blocker and continue remaining safe items. Post verified actor remote SHA and targeted exit to #11; do not self-assign, repeat old PASS, or claim G3/DONE.
 
