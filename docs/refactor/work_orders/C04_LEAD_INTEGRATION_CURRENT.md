@@ -1,3 +1,8 @@
+## RF-030 실제 실행 증거 인계 (2026-11-04)
+이전 NOT_RUN 기록은 아래 범위에서 갱신한다. Work가 정본 891de6396afd5d116c308ee32f8b6a0b94c24df2 checkout에서 python -m pytest -q -p no:cacheprovider tests/test_p15_rf030_20261102_02h_run_contexts.py 를 직접 실행해 14 passed / exit 0을 확인했다. 얕은 checkout은 A_PRE b2e48863ae8a44d7ab41090160816d504052f2e0 및 CANON 7dd8a2ad54228ca7f9e5530f07f39b324a55fdb9를 fetch해야 한다. 테스트 자체가 고정 historical revision을 조회하므로 현재 facade/Owner/consumer를 실제로 검증하는 범위를 코드로 확인한 뒤 G3 재사용 여부를 판정한다. 14 PASS만으로 whole G3를 선언하지 않는다.
+같은 정본에서 tests/test_work_reporter_seed_migration.py::test_target_tree_discipline_and_no_forbidden_surface 는 기준 eeb742a33b16f6271ff364a904e187b470561c7e fetch 후에도 경로 범위 위반으로 FAIL이었다. 따라서 실제 FIRST_UNMET를 frozen scope/Owner와 current-consumer coverage로 분리하여 C03/C05에 전달한다. 기존 PASS를 반복하는 대신 미검증 소비 경로만 확인한다.
+B44 원격 테스트와 manifest가 전달되면 RF-063 정본 실행을 이어간다. 해당 범위별 PASS/FAIL 및 exact canonical SHA를 #36에 보고한다.
+
 # C04 — 지팀장 · 선별 통합/CI
 
 ## 2026-11-04 단일 운영 지침
