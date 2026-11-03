@@ -1,5 +1,14 @@
 # C06 — Agentra P1.5 독립 실행·성과 감사 지시서
 
+## 2026-11-03 홍사장 직접 승인 — C06 예약 프롬프트 교정·배치 권한
+- 기존 코드/RF/STATUS/CI/정본 문서 **읽기 전용 감사**는 유지한다. 다만 **예약 자동화의 실행 프롬프트에 한정하여** C01~C06의 기존 활성 작업을 수정할 수 있다. 이는 본 절에서 사용자 명시 승인한 좁은 예외이며 GitHub 문서/코드 쓰기 권한이 아니다.
+- 변경 전 대상 예약의 현재 프롬프트·작업 ID·스케줄과 최신 D00/C01~C06 GitHub 정본을 확인한다. 신규 반복 결함의 정확 `AUDIT_REF | TARGET_TASK_ID | CURRENT_PROMPT_DEFECT | GITHUB_DOC_SHA | FIRST_UNMET | PROPOSED_PROMPT_DELTA`를 증거로 확인하고, **필요할 때만** 기존 예약의 `prompt` 필드만 변경한다. 주기·분·활성화 상태·실행 환경·소유자·다른 예약은 변경하지 않는다. 예약을 새로 생성하거나 중복 배치하지 않는다.
+- GitHub 문서가 잘못된 경우 C06은 직접 문서를 고치지 말고 #37에 `C03_GITHUB_DOC_ACTION`으로 정확 경로·수정사항·증거를 기록한다. C03은 자기 허용 문서만 고치고, C04/C05 지시서 변경이 필요하면 해당 문서 Owner/홍사장에게 인계한다. 프롬프트와 GitHub 문서가 충돌하면 D00/정본 안전·Owner 권한 우선, 허위 완료 금지.
+- 스킬: `agentra-done-verifier`로 whole RF G1/G2/G3, `agentra-contract-guard`로 권한·보호 경계, `agentra-rf-executor`로 A/B 실행 증거를 점검한다. 원격 SKILL.md를 직접 읽되 자동 로딩/실행을 가정하지 않는다. 스킬은 D00에 없는 완료 게이트를 만들지 않는다.
+- 예약 변경 후 실제 자동화 도구의 update 성공과 재조회로 프롬프트 반영을 확인한다. `TASK_ID | OLD/NEW_PROMPT_FINGERPRINT | WHY | UPDATE_RESULT | VERIFIED | NEXT_RUN`을 #37에 한 번 보고한다. 자동화 수정 도구가 없거나 권한이 거부되면 `AUTOMATION_EDIT_BLOCKED`로 보고하고 수정을 했다고 주장하지 않는다. 동일 지적에 대한 반복 prompt churn 금지.
+
+---
+
 ## 2026-11-03 홍사장 긴급 교정 — C01~C05 성과/헛수고 독립 감사
 감사 우선순위는 신규 whole RF DONE, FIRST_UNMET 실제 해소, 안전한 G3 인계, 코드 원격 푸시·정상 targeted exit, 공급 신선도 순이다. 특히 C03 B43 RF-063 diagnostics 8개와 A56 RF-032 evaluation 8개를 `BODY_MOVE_COUNT`와 `WHOLE_GATE_IMPACT`로 분리해 평가한다. 무관 MOVE만 반복되면 `CORRECTIVE_ACTION: GATE_AVOIDANCE`로 #37에 근거를 남긴다. C04 scoped G3_REUSE를 whole G3로 오인하거나 C05가 증거 충족 RF를 방치하면 각각 정확 SHA/게이트/시간 근거로 지적한다. C01/C02 기존 주문의 안전한 연속 실행은 보존하고, 짧은 실행시간 자체를 실패로 판단하지 않는다. 매회 `ROLE | NEW_CODE_SHA | NEW_GATE_CLOSED | NEW_RF_DONE | GATE_IMPACT_NO | FIRST_BLOCKER | ACTION_OWNER`를 새 증거만 감사. #37 출력, 필요한 #11/#12 시정만 전달. C06은 절대 문서·코드·STATUS·예약을 쓰지 않는다.
 
