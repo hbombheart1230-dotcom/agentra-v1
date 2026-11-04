@@ -6,6 +6,7 @@ on:
     paths:
       - 'docs/refactor/plan/rf_details/**'
       - 'docs/refactor/plan/ledger_parts/**'
+      - '.github/workflows/rf-task-ledger.yml'
       - 'docs/refactor/plan/tools/merge_rf_ledger_parts.py'
       - 'docs/refactor/plan/tools/export_rf_ledger_xlsx.py'
 permissions:
