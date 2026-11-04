@@ -1,0 +1,931 @@
+{
+  "schema_version": "1.0.0",
+  "rf": [
+    {
+      "rf_id": "RF-026",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-026_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-026-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/intraday_monitor_signals.py::_status_item",
+          "target": "libs/runtime/intraday_monitor_signals.py::_status_item",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-026-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/intraday_monitor_signals.py::_session_gap_context",
+          "target": "libs/runtime/intraday_monitor_signals_session_gap_context.py::_session_gap_context",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-026-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/intraday_monitor_signals.py::_empty_human_chart_entry_setup",
+          "target": "libs/runtime/intraday_monitor_signals_empty_human_chart_entry_setup.py::_empty_human_chart_entry_setup",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-026-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/intraday_monitor_signals.py::_build_monitor_signal_evidence",
+          "target": "libs/runtime/intraday_monitor_signals_build_monitor_signal_evidence.py::_build_monitor_signal_evidence",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-026-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/intraday_monitor_signals.py::_merge_candle_group",
+          "target": "libs/runtime/intraday_monitor_signals_merge_candle_group.py::_merge_candle_group",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-026-0006",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/intraday_monitor_signals.py::_candles_from_rows",
+          "target": "libs/runtime/intraday_monitor_signals_candles_from_rows.py::_candles_from_rows",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-026-0007",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/intraday_monitor_signals.py::_session_vwap",
+          "target": "libs/runtime/intraday_monitor_signals_session_vwap.py::_session_vwap",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-027",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-027_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-027-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/strategy_horizon_feedback.py::extract_commander_horizon_policy",
+          "target": "libs/runtime/strategy_horizon_feedback_extract_commander_horizon_policy.py::extract_commander_horizon_policy",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-027-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/strategy_horizon_feedback.py::extract_strategy_horizon_feedback",
+          "target": "libs/runtime/strategy_horizon_feedback_extract_strategy_horizon_feedback.py::extract_strategy_horizon_feedback",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-027-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/strategy_horizon_feedback.py::_epoch_seconds",
+          "target": "libs/runtime/strategy_horizon_feedback_epoch_seconds.py::_epoch_seconds",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-027-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/strategy_horizon_feedback.py::extract_commander_horizon_policy_from_state",
+          "target": "libs/runtime/strategy_horizon_feedback_extract_commander_horizon_policy_fro.py::extract_commander_horizon_policy_from_state",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-027-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/strategy_horizon_feedback.py::extract_strategy_horizon_feedback_from_state",
+          "target": "libs/runtime/strategy_horizon_feedback_extract_strategy_horizon_feedback_fr.py::extract_strategy_horizon_feedback_from_state",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-028",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-028_IMPLEMENTATION.md",
+      "tasks": []
+    },
+    {
+      "rf_id": "RF-029",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-029_IMPLEMENTATION.md",
+      "tasks": []
+    },
+    {
+      "rf_id": "RF-030",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-030_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-030-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/operator_visibility.py::_build_run_contexts",
+          "target": "libs/reporting/operator_visibility_build_run_contexts.py::_build_run_contexts",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-030-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/operator_visibility.py::_build_trading_health_status",
+          "target": "libs/reporting/operator_visibility_build_trading_health_status.py::_build_trading_health_status",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-030-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/operator_visibility.py::_iter_jsonl",
+          "target": "libs/reporting/operator_visibility.py::_iter_jsonl",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-031",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-031_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-031-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/reporter_ai_review.py::_build_compact_input",
+          "target": "libs/reporting/reporter_ai_review_input.py::build_compact_input",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/reporter_ai_review.py::_build_messages",
+          "target": "libs/reporting/reporter_ai_review_input.py::build_messages",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/reporter_ai_review.py::_normalize_result",
+          "target": "libs/reporting/reporter_ai_review_result.py::normalize_result",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/reporter_ai_review.py::_normalize_evidence_link_items",
+          "target": "libs/reporting/reporter_ai_review_result.py::normalize_evidence_link_items",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0005",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/reporter_ai_review.py",
+          "target": "libs/reporting/reporter_ai_review.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0006",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/reporter_analysis.py",
+          "target": "libs/reporting/reporter_analysis.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0007",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/reporter_feedback.py",
+          "target": "libs/reporting/reporter_feedback.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0008",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_ai.py",
+          "target": "libs/reporting/trade_report_ai.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0009",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_ai_compact_helpers.py",
+          "target": "libs/reporting/trade_report_ai_compact_helpers.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0010",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_ai_compact_input.py",
+          "target": "libs/reporting/trade_report_ai_compact_input.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0011",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_ai_deterministic.py",
+          "target": "libs/reporting/trade_report_ai_deterministic.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0012",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_ai_llm.py",
+          "target": "libs/reporting/trade_report_ai_llm.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0013",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_ai_merge_policy.py",
+          "target": "libs/reporting/trade_report_ai_merge_policy.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0014",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_ai_prompting.py",
+          "target": "libs/reporting/trade_report_ai_prompting.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0015",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_ai_shared_facts.py",
+          "target": "libs/reporting/trade_report_ai_shared_facts.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0016",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_ai_summary_adapter.py",
+          "target": "libs/reporting/trade_report_ai_summary_adapter.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0017",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_common.py",
+          "target": "libs/reporting/trade_report_common.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0018",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_markdown_clean.py",
+          "target": "libs/reporting/trade_report_markdown_clean.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0019",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_markdown_monitor.py",
+          "target": "libs/reporting/trade_report_markdown_monitor.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0020",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_markdown_scanner.py",
+          "target": "libs/reporting/trade_report_markdown_scanner.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0021",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_markdown_strategy_memory.py",
+          "target": "libs/reporting/trade_report_markdown_strategy_memory.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0022",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_markdown_truth.py",
+          "target": "libs/reporting/trade_report_markdown_truth.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0023",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_post_exit_shadow.py",
+          "target": "libs/reporting/trade_report_post_exit_shadow.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0024",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_runtime_generation.py",
+          "target": "libs/reporting/trade_report_runtime_generation.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0025",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_runtime_policy.py",
+          "target": "libs/reporting/trade_report_runtime_policy.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0026",
+          "kind": "KEEP_IF",
+          "source": "libs/reporting/trade_report_symbol_metadata.py",
+          "target": "libs/reporting/trade_report_symbol_metadata.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0027",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_reporter_ai_review_caller_contract.py",
+          "target": "tests/test_rf031_reporter_ai_review_caller_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0028",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_reporter_ai_review_contract.py",
+          "target": "tests/test_rf031_reporter_ai_review_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0029",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_reporter_analysis_callers.py",
+          "target": "tests/test_rf031_reporter_analysis_callers.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0030",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_reporter_analysis_helpers_contract.py",
+          "target": "tests/test_rf031_reporter_analysis_helpers_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0031",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_reporter_analysis_optional_writers_contract.py",
+          "target": "tests/test_rf031_reporter_analysis_optional_writers_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0032",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_reporter_analysis_writers.py",
+          "target": "tests/test_rf031_reporter_analysis_writers.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0033",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_reporter_feedback_helpers_contract.py",
+          "target": "tests/test_rf031_reporter_feedback_helpers_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0034",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_trade_report_ai_helpers_contract.py",
+          "target": "tests/test_rf031_trade_report_ai_helpers_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0035",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_trade_report_alias_modules_contract.py",
+          "target": "tests/test_rf031_trade_report_alias_modules_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0036",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_trade_report_compact_input_contract.py",
+          "target": "tests/test_rf031_trade_report_compact_input_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0037",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_trade_report_deterministic_seed_contract.py",
+          "target": "tests/test_rf031_trade_report_deterministic_seed_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0038",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_trade_report_markdown_clean_wrappers_contract.py",
+          "target": "tests/test_rf031_trade_report_markdown_clean_wrappers_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0039",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_trade_report_runtime_generation_plan.py",
+          "target": "tests/test_rf031_trade_report_runtime_generation_plan.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0040",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_trade_report_runtime_policy_contract.py",
+          "target": "tests/test_rf031_trade_report_runtime_policy_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0041",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_trade_report_strategy_memory_labels_contract.py",
+          "target": "tests/test_rf031_trade_report_strategy_memory_labels_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-031-0042",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf031_trade_story_human_payloads_contract.py",
+          "target": "tests/test_rf031_trade_story_human_payloads_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-032",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-032_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-032-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/evaluation/uef5/historical_recompute.py::_prepare_secondary_and_cost",
+          "target": "libs/reporting/evaluation/uef5/historical_recompute_prepare_secondary_and_cost.py::_prepare_secondary_and_cost",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-032-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/evaluation/uef5/historical_recompute.py::_pipeline_q12_calc1",
+          "target": "libs/reporting/evaluation/uef5/historical_recompute_pipeline_q12_calc1.py::_pipeline_q12_calc1",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-032-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/evaluation/uef5/historical_recompute.py::_pipeline_q12_calc2",
+          "target": "libs/reporting/evaluation/uef5/historical_recompute_pipeline_q12_calc2.py::_pipeline_q12_calc2",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-032-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/evaluation/uef5/historical_recompute.py::_pipeline_q10_semiconductor",
+          "target": "libs/reporting/evaluation/uef5/historical_recompute_pipeline_q10_semiconductor.py::_pipeline_q10_semiconductor",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-032-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/evaluation/uef5/historical_recompute.py::_pipeline_q10_index",
+          "target": "libs/reporting/evaluation/uef5/historical_recompute_pipeline_q10_index.py::_pipeline_q10_index",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-032-0006",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/evaluation/uef5/historical_recompute.py::_q10_fg_episodes_without_cost",
+          "target": "libs/reporting/evaluation/uef5/historical_recompute_q10_fg_episodes_without_cost.py::_q10_fg_episodes_without_cost",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-032-0007",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/evaluation/uef5/historical_recompute.py::_secondary_identity",
+          "target": "libs/reporting/evaluation/uef5/historical_recompute_secondary_identity.py::_secondary_identity",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-033",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-033_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-033-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/baseline_samsung_hynix/forward_validation/reaction_reader.py::load_index_timeline",
+          "target": "libs/reporting/baseline_samsung_hynix/forward_validation/reaction_reader_load_index_timeline.py::load_index_timeline",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-034",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-034_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-034-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/alpha_research_board/builder.py::_opening_rows",
+          "target": "libs/reporting/alpha_research_board/builder_opening_rows.py::_opening_rows",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-034-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/alpha_research_board/builder.py::_broad_opening",
+          "target": "libs/reporting/alpha_research_board/builder_broad_opening.py::_broad_opening",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-034-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/alpha_research_board/builder.py::_large_cap_candidate",
+          "target": "libs/reporting/alpha_research_board/builder_large_cap_candidate.py::_large_cap_candidate",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-034-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/alpha_research_board/builder.py::_latent",
+          "target": "libs/reporting/alpha_research_board/builder_latent.py::_latent",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-034-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/alpha_research_board/builder.py::_fresh_change",
+          "target": "libs/reporting/alpha_research_board/builder_fresh_change.py::_fresh_change",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-034-0006",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/alpha_research_board/builder.py::_attention_order",
+          "target": "libs/reporting/alpha_research_board/builder_attention_order.py::_attention_order",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-035",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-035_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-035-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/live_execution_bundle_runner.py::main",
+          "target": "libs/reporting/live_execution_bundle_runner.py::main",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-035-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/live_execution_bundle_runner.py::_active_background_process",
+          "target": "libs/reporting/live_execution_bundle_runner.py::_active_background_process",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-035-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/live_execution_bundle_runner.py::_touch_background_job_lock",
+          "target": "libs/reporting/live_execution_bundle_runner.py::_touch_background_job_lock",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-035-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/live_execution_bundle_runner.py::_pid_active",
+          "target": "libs/reporting/live_execution_bundle_runner_pid_active.py::_pid_active",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-035-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/live_execution_bundle_runner.py::_existing_trade_run_ids",
+          "target": "libs/reporting/live_execution_bundle_runner_existing_trade_run_ids.py::_existing_trade_run_ids",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-035-0006",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/live_execution_bundle_runner.py::_build_parser",
+          "target": "libs/reporting/live_execution_bundle_runner_build_parser.py::_build_parser",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-035-0007",
+          "kind": "MOVE_BODY",
+          "source": "libs/reporting/live_execution_bundle_runner.py::_terminate_process_tree",
+          "target": "libs/reporting/live_execution_bundle_runner_terminate_process_tree.py::_terminate_process_tree",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    }
+  ]
+}
