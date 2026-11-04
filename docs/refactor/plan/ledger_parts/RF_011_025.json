@@ -1,0 +1,725 @@
+{
+  "schema_version": "1.0.0",
+  "rf": [
+    {
+      "rf_id": "RF-011",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-011_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-011-0001",
+          "kind": "MOVE_BODY",
+          "source": "graphs/commander_runtime.py::_attach_commander_applied_policy",
+          "target": "graphs/commander_runtime.py::_attach_commander_applied_policy",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-011-0002",
+          "kind": "MOVE_BODY",
+          "source": "graphs/commander_runtime.py::_assess_open_position_commander_override",
+          "target": "graphs/commander_runtime.py::_assess_open_position_commander_override",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-011-0003",
+          "kind": "MOVE_BODY",
+          "source": "graphs/commander_runtime.py::_intent_from_monitor_state",
+          "target": "graphs/commander_runtime_intent_from_monitor_state.py::_intent_from_monitor_state",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-011-0004",
+          "kind": "MOVE_BODY",
+          "source": "graphs/commander_runtime.py::_persist_commander",
+          "target": "graphs/commander_runtime.py::_persist_commander",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-011-0005",
+          "kind": "MOVE_BODY",
+          "source": "graphs/commander_runtime.py::_apply_portfolio_preflight_guard",
+          "target": "graphs/commander_runtime.py::_apply_portfolio_preflight_guard",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-011-0006",
+          "kind": "MOVE_BODY",
+          "source": "graphs/commander_runtime.py::_run_preopen_phase",
+          "target": "graphs/commander_runtime.py::_run_preopen_phase",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-011-0007",
+          "kind": "MOVE_BODY",
+          "source": "graphs/commander_runtime.py::_apply_commander_cooldown_guard",
+          "target": "graphs/commander_runtime.py::_apply_commander_cooldown_guard",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-011-0008",
+          "kind": "MOVE_BODY",
+          "source": "graphs/commander_runtime.py::_run_closeout_phase",
+          "target": "graphs/commander_runtime.py::_run_closeout_phase",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-012",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-012_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-012-0001",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/execute_from_packet.py::execute_from_packet",
+          "target": "graphs/nodes/execute_from_packet.py::execute_from_packet",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-012-0002",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/execute_from_packet.py::_evaluate_open_order_reconciliation_guard",
+          "target": "graphs/nodes/execute_from_packet.py::_evaluate_open_order_reconciliation_guard",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-012-0003",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/execute_from_packet.py::_prepare_request",
+          "target": "graphs/nodes/execute_from_packet.py::_prepare_request",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-012-0004",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/execute_from_packet.py::_resolve_order_price_for_notional_with_source",
+          "target": "graphs/nodes/execute_from_packet_resolve_order_price_for_notional_with_.py::_resolve_order_price_for_notional_with_source",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-012-0005",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/execute_from_packet.py::_attempt_unfilled_order_recovery",
+          "target": "graphs/nodes/execute_from_packet.py::_attempt_unfilled_order_recovery",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-012-0006",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/execute_from_packet.py::_order_entry_chart_guard_snapshot",
+          "target": "graphs/nodes/execute_from_packet_order_entry_chart_guard_snapshot.py::_order_entry_chart_guard_snapshot",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-012-0007",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/execute_from_packet.py::_update_recent_sell_order_guard",
+          "target": "graphs/nodes/execute_from_packet_update_recent_sell_order_guard.py::_update_recent_sell_order_guard",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-012-0008",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/execute_from_packet.py::_build_order_from_intent",
+          "target": "graphs/nodes/execute_from_packet.py::_build_order_from_intent",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-013",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-013_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-013-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/reporter/read_models/read_model_bodies_01.py::normalize_canonical_monitor_snapshot_r4_impl",
+          "target": "libs/agents/reporter/read_models/read_model_bodies_01_normalize_canonical_monitor_snapshot_r.py::normalize_canonical_monitor_snapshot_r4_impl",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-013-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/reporter/read_models/read_model_bodies_01.py::load_time_bucketed_trade_report_recent_feedback_pack_r4_impl",
+          "target": "libs/agents/reporter/read_models/read_model_bodies_01_load_time_bucketed_trade_report_recent.py::load_time_bucketed_trade_report_recent_feedback_pack_r4_impl",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-013-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/reporter/read_models/read_model_bodies_01.py::collect_strategist_feedback_inputs_r4_impl",
+          "target": "libs/agents/reporter/read_models/read_model_bodies_01_collect_strategist_feedback_inputs_r4_.py::collect_strategist_feedback_inputs_r4_impl",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-014",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-014_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-014-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/scanner/projections/selection_evidence_projection.py::scan_select_commander_memory_application_trace_selec",
+          "target": "libs/agents/scanner/projections/selection_evidence_projection_scan_select_commander_memory_applicati.py::scan_select_commander_memory_application_trace_selec",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-014-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/scanner/projections/selection_evidence_projection.py::scan_select_reasons_row_conf",
+          "target": "libs/agents/scanner/projections/selection_evidence_projection_scan_select_reasons_row_conf.py::scan_select_reasons_row_conf",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-015",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-015_IMPLEMENTATION.md",
+      "tasks": []
+    },
+    {
+      "rf_id": "RF-016",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-016_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-016-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/strategist/context/news_compaction.py::_compact_global_signal_for_llm_r3_impl",
+          "target": "libs/agents/strategist/context/news_compaction_compact_global_signal_for_llm_r3_impl.py::_compact_global_signal_for_llm_r3_impl",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-016-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/strategist/context/news_compaction.py::_compact_news_signal_summary_for_llm_r3_impl",
+          "target": "libs/agents/strategist/context/news_compaction_compact_news_signal_summary_for_llm_r3.py::_compact_news_signal_summary_for_llm_r3_impl",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-016-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/strategist/context/news_compaction.py::_compact_news_sample_for_llm_r3_impl",
+          "target": "libs/agents/strategist/context/news_compaction_compact_news_sample_for_llm_r3_impl.py::_compact_news_sample_for_llm_r3_impl",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-017",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-017_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-017-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/commander/projections/cache_refresh_read_model.py::compact_post_scanner_candidate_row",
+          "target": "libs/agents/commander/projections/cache_refresh_read_model_compact_post_scanner_candidate_row.py::compact_post_scanner_candidate_row",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-017-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/commander/projections/cache_refresh_read_model.py::_monitor_entry_readiness_context",
+          "target": "libs/agents/commander/projections/cache_refresh_read_model_monitor_entry_readiness_context.py::_monitor_entry_readiness_context",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-017-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/commander/projections/cache_refresh_read_model.py::candidate_edge_bucket",
+          "target": "libs/agents/commander/projections/cache_refresh_read_model_candidate_edge_bucket.py::candidate_edge_bucket",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-017-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/commander/projections/cache_refresh_read_model.py::entry_gate_bucket",
+          "target": "libs/agents/commander/projections/cache_refresh_read_model_entry_gate_bucket.py::entry_gate_bucket",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-017-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/agents/commander/projections/cache_refresh_read_model.py::candidate_theme_tokens",
+          "target": "libs/agents/commander/projections/cache_refresh_read_model_candidate_theme_tokens.py::candidate_theme_tokens",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-018",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-018_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-018-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/strategist/llm/adjustment_directives.py::_infer_policy_adjustment_direction_r3_impl",
+          "target": "libs/runtime/strategist/llm/adjustment_directives_infer_policy_adjustment_direction_r3.py::_infer_policy_adjustment_direction_r3_impl",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-018-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/strategist/llm/adjustment_directives.py::_normalize_rejected_strategy_reasons_r3_impl",
+          "target": "libs/runtime/strategist/llm/adjustment_directives_normalize_rejected_strategy_reasons_.py::_normalize_rejected_strategy_reasons_r3_impl",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-019",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-019_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-019-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/scanner/candidate_row_projection.py::score_scanner_candidate_row",
+          "target": "libs/runtime/scanner/candidate_row_projection_score_scanner_candidate_row.py::score_scanner_candidate_row",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-020",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-020_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-020-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/monitor/entry_cascade_projection.py::entry_cascade_entry_cooldown_map_runner_entry",
+          "target": "libs/runtime/monitor/entry_cascade_projection_entry_cascade_entry_cooldown_map_run.py::entry_cascade_entry_cooldown_map_runner_entry",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-020-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/monitor/entry_cascade_projection.py::entry_cascade_intent",
+          "target": "libs/runtime/monitor/entry_cascade_projection_entry_cascade_intent.py::entry_cascade_intent",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-020-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/monitor/entry_cascade_projection.py::entry_cascade_buy_blocked_closeout_window_buy_blocked",
+          "target": "libs/runtime/monitor/entry_cascade_projection_entry_cascade_buy_blocked_closeout_w.py::entry_cascade_buy_blocked_closeout_window_buy_blocked",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-020-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/monitor/entry_cascade_projection.py::entry_cascade_entry_candidate_cascade_entry_cascade_co",
+          "target": "libs/runtime/monitor/entry_cascade_projection_entry_cascade_entry_candidate_cascad.py::entry_cascade_entry_candidate_cascade_entry_cascade_co",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-020-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/monitor/entry_cascade_projection.py::entry_cascade_buy_blocked_closeout_window_buy_blocked_2",
+          "target": "libs/runtime/monitor/entry_cascade_projection_entry_cascade_buy_blocked_closeout_w.py::entry_cascade_buy_blocked_closeout_window_buy_blocked_2",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-021",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-021_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-021-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/monitor_exit/exit_policy_chart_projection.py::exit_chart_out",
+          "target": "libs/runtime/monitor_exit/exit_policy_chart_projection_exit_chart_out.py::exit_chart_out",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-022",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-022_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-022-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/commander/fast_paths.py::run_closeout_guard_fast_path",
+          "target": "libs/runtime/commander/fast_paths_run_closeout_guard_fast_path.py::run_closeout_guard_fast_path",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-022-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/commander/fast_paths.py::_open_position_row",
+          "target": "libs/runtime/commander/fast_paths_open_position_row.py::_open_position_row",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-022-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/commander/fast_paths.py::run_monitor_only_fast_path",
+          "target": "libs/runtime/commander/fast_paths_run_monitor_only_fast_path.py::run_monitor_only_fast_path",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-023",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-023_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-023-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/entrypoints/live_session_watch.py::_run_once",
+          "target": "libs/runtime/entrypoints/live_session_watch.py::_run_once",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-023-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/entrypoints/live_session_watch.py::_build_markdown",
+          "target": "libs/runtime/entrypoints/live_session_watch_build_markdown.py::_build_markdown",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-023-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/entrypoints/live_session_watch.py::main",
+          "target": "libs/runtime/entrypoints/live_session_watch.py::main",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-023-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/entrypoints/live_session_watch.py::_parse_args",
+          "target": "libs/runtime/entrypoints/live_session_watch.py::_parse_args",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-023-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/entrypoints/live_session_watch.py::_build_console_line",
+          "target": "libs/runtime/entrypoints/live_session_watch_build_console_line.py::_build_console_line",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-024",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-024_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-024-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/quant/shadow_candidates.py::_opening_largecap_watchlist_row",
+          "target": "libs/runtime/quant/shadow_candidates_opening_largecap_watchlist_row.py::_opening_largecap_watchlist_row",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-024-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/quant/shadow_candidates.py::sync_q9_decision_candidates_for_state",
+          "target": "libs/runtime/quant/shadow_candidates.py::sync_q9_decision_candidates_for_state",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-024-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/quant/shadow_candidates.py::_opening_probe_payload",
+          "target": "libs/runtime/quant/shadow_candidates_opening_probe_payload.py::_opening_probe_payload",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-024-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/quant/shadow_candidates.py::_runner_row",
+          "target": "libs/runtime/quant/shadow_candidates_runner_row.py::_runner_row",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-024-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/quant/shadow_candidates.py::_market_context_from_state",
+          "target": "libs/runtime/quant/shadow_candidates_market_context_from_state.py::_market_context_from_state",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-024-0006",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/quant/shadow_candidates.py::_market_snapshot_for_symbol",
+          "target": "libs/runtime/quant/shadow_candidates_market_snapshot_for_symbol.py::_market_snapshot_for_symbol",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-024-0007",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/quant/shadow_candidates.py::_candidate_context",
+          "target": "libs/runtime/quant/shadow_candidates_candidate_context.py::_candidate_context",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-025",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-025_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-025-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/controlled_mock_lanes/coordinator.py::_resolve_broker_outcome",
+          "target": "libs/runtime/controlled_mock_lanes/coordinator_resolve_broker_outcome.py::_resolve_broker_outcome",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-025-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/controlled_mock_lanes/coordinator.py::_pending_buy_symbols",
+          "target": "libs/runtime/controlled_mock_lanes/coordinator_pending_buy_symbols.py::_pending_buy_symbols",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-025-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/runtime/controlled_mock_lanes/coordinator.py::_intent",
+          "target": "libs/runtime/controlled_mock_lanes/coordinator_intent.py::_intent",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    }
+  ]
+}
