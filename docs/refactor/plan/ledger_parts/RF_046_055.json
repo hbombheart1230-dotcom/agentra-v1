@@ -1,0 +1,591 @@
+{
+  "schema_version": "1.0.0",
+  "rf": [
+    {
+      "rf_id": "RF-046",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-046_IMPLEMENTATION.md",
+      "tasks": []
+    },
+    {
+      "rf_id": "RF-047",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-047_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-047-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/diagnostics/observations.py::numeric_summary",
+          "target": "libs/diagnostics/observations_numeric_summary.py::numeric_summary",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-048",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-048_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-048-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/execution/readiness_evidence.py::append_readiness_evidence",
+          "target": "libs/execution/readiness_evidence.py::append_readiness_evidence",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-048-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/execution/readiness_evidence.py::__enter__",
+          "target": "libs/execution/readiness_evidence.py::__enter__",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-048-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/execution/readiness_evidence.py::_try_create",
+          "target": "libs/execution/readiness_evidence.py::_try_create",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-048-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/execution/readiness_evidence.py::revalidate_current_safety",
+          "target": "libs/execution/readiness_evidence_revalidate_current_safety.py::revalidate_current_safety",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-048-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/execution/readiness_evidence.py::_reclaim",
+          "target": "libs/execution/readiness_evidence.py::_reclaim",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-048-0006",
+          "kind": "MOVE_BODY",
+          "source": "libs/execution/readiness_evidence.py::_current_canonical_owner",
+          "target": "libs/execution/readiness_evidence_current_canonical_owner.py::_current_canonical_owner",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-048-0007",
+          "kind": "MOVE_BODY",
+          "source": "libs/execution/readiness_evidence.py::_current_readiness",
+          "target": "libs/execution/readiness_evidence.py::_current_readiness",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-049",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-049_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-049-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/kiwoom/kiwoom_token_client.py::_refresh_token",
+          "target": "libs/kiwoom/kiwoom_token_client.py::_refresh_token",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-049-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/kiwoom/kiwoom_token_client.py::ensure_token",
+          "target": "libs/kiwoom/kiwoom_token_client.py::ensure_token",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-050",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-050_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-050-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/llm/model_catalog.py::resolve_policy_llm_slot",
+          "target": "libs/llm/model_catalog_resolve_policy_llm_slot.py::resolve_policy_llm_slot",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-051",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-051_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-051-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/market/global_sentiment.py::compute_global_sentiment_signal",
+          "target": "libs/market/global_sentiment_compute_global_sentiment_signal.py::compute_global_sentiment_signal",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-051-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/market/global_sentiment.py::_fetch_inputs",
+          "target": "libs/market/global_sentiment_fetch_inputs.py::_fetch_inputs",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-051-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/market/global_sentiment.py::_normalize_korea_index_packet",
+          "target": "libs/market/global_sentiment_normalize_korea_index_packet.py::_normalize_korea_index_packet",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-051-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/market/global_sentiment.py::_indicator_from_korea_index",
+          "target": "libs/market/global_sentiment_indicator_from_korea_index.py::_indicator_from_korea_index",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-051-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/market/global_sentiment.py::_indicator_from_override",
+          "target": "libs/market/global_sentiment_indicator_from_override.py::_indicator_from_override",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-051-0006",
+          "kind": "MOVE_BODY",
+          "source": "libs/market/global_sentiment.py::_fetch_last2_closes_yfinance",
+          "target": "libs/market/global_sentiment_fetch_last2_closes_yfinance.py::_fetch_last2_closes_yfinance",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-051-0007",
+          "kind": "MOVE_BODY",
+          "source": "libs/market/global_sentiment.py::_fetch_korea_index_inputs",
+          "target": "libs/market/global_sentiment.py::_fetch_korea_index_inputs",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-051-0008",
+          "kind": "MOVE_BODY",
+          "source": "libs/market/global_sentiment.py::_write_macro_indicator_log",
+          "target": "libs/market/global_sentiment.py::_write_macro_indicator_log",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-052",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-052_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-052-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/market_data/receipts.py::persist_raw_artifact",
+          "target": "libs/market_data/receipts.py::persist_raw_artifact",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-052-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/market_data/receipts.py::write_receipt",
+          "target": "libs/market_data/receipts.py::write_receipt",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-053",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-053_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-053-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/news/news_pipeline.py::_fetch_yfinance_news_items",
+          "target": "libs/news/news_pipeline_fetch_yfinance_news_items.py::_fetch_yfinance_news_items",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-053-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/news/news_pipeline.py::_to_news_item",
+          "target": "libs/news/news_pipeline_to_news_item.py::_to_news_item",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-053-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/news/news_pipeline.py::_news_symbol_decay_meta",
+          "target": "libs/news/news_pipeline_news_symbol_decay_meta.py::_news_symbol_decay_meta",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-053-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/news/news_pipeline.py::_parse_news_timestamp",
+          "target": "libs/news/news_pipeline_parse_news_timestamp.py::_parse_news_timestamp",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-054",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-054_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-054-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/performance/strategy_memory.py::_load_reporter_analysis_digest",
+          "target": "libs/performance/strategy_memory_load_reporter_analysis_digest.py::_load_reporter_analysis_digest",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-054-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/performance/strategy_memory.py::_build_pattern_performance_snapshot",
+          "target": "libs/performance/strategy_memory_build_pattern_performance_snapshot.py::_build_pattern_performance_snapshot",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-054-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/performance/strategy_memory.py::_pattern_stats",
+          "target": "libs/performance/strategy_memory_pattern_stats.py::_pattern_stats",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-054-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/performance/strategy_memory.py::_extract_route_mix_digest",
+          "target": "libs/performance/strategy_memory_extract_route_mix_digest.py::_extract_route_mix_digest",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-054-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/performance/strategy_memory.py::_resolve_latest_usable_day",
+          "target": "libs/performance/strategy_memory_resolve_latest_usable_day.py::_resolve_latest_usable_day",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-055",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-055_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-055-0001",
+          "kind": "KEEP_IF",
+          "source": "libs/read/__init__.py",
+          "target": "libs/read/__init__.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0002",
+          "kind": "KEEP_IF",
+          "source": "libs/read/kiwoom_account_snapshot_collector.py",
+          "target": "libs/read/kiwoom_account_snapshot_collector.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0003",
+          "kind": "KEEP_IF",
+          "source": "libs/read/kiwoom_broker_truth_common.py",
+          "target": "libs/read/kiwoom_broker_truth_common.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0004",
+          "kind": "KEEP_IF",
+          "source": "libs/read/kiwoom_condition_reader.py",
+          "target": "libs/read/kiwoom_condition_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0005",
+          "kind": "KEEP_IF",
+          "source": "libs/read/kiwoom_day_pnl_reader.py",
+          "target": "libs/read/kiwoom_day_pnl_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0006",
+          "kind": "KEEP_IF",
+          "source": "libs/read/kiwoom_market_index_reader.py",
+          "target": "libs/read/kiwoom_market_index_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0007",
+          "kind": "KEEP_IF",
+          "source": "libs/read/kiwoom_order_fill_reader.py",
+          "target": "libs/read/kiwoom_order_fill_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0008",
+          "kind": "KEEP_IF",
+          "source": "libs/read/kiwoom_orderable_cash_reader.py",
+          "target": "libs/read/kiwoom_orderable_cash_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0009",
+          "kind": "KEEP_IF",
+          "source": "libs/read/kiwoom_portfolio_reader.py",
+          "target": "libs/read/kiwoom_portfolio_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0010",
+          "kind": "KEEP_IF",
+          "source": "libs/read/kiwoom_price_reader.py",
+          "target": "libs/read/kiwoom_price_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0011",
+          "kind": "KEEP_IF",
+          "source": "libs/read/kiwoom_program_trading_reader.py",
+          "target": "libs/read/kiwoom_program_trading_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0012",
+          "kind": "KEEP_IF",
+          "source": "libs/read/kiwoom_rank_reader.py",
+          "target": "libs/read/kiwoom_rank_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0013",
+          "kind": "KEEP_IF",
+          "source": "libs/read/kiwoom_theme_reader.py",
+          "target": "libs/read/kiwoom_theme_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0014",
+          "kind": "KEEP_IF",
+          "source": "libs/read/krx_night_futures_reader.py",
+          "target": "libs/read/krx_night_futures_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0015",
+          "kind": "KEEP_IF",
+          "source": "libs/read/portfolio_reader.py",
+          "target": "libs/read/portfolio_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0016",
+          "kind": "KEEP_IF",
+          "source": "libs/read/price_reader.py",
+          "target": "libs/read/price_reader.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-055-0017",
+          "kind": "KEEP_IF",
+          "source": "libs/read/snapshot_models.py",
+          "target": "libs/read/snapshot_models.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    }
+  ]
+}
