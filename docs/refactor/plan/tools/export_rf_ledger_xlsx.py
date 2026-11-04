@@ -1,72 +1,74 @@
 #!/usr/bin/env python3
-"""Export the canonical RF JSON ledger to an Excel dashboard using artifact_tool."""
+"""Generate the Agentra RF dashboard from the canonical JSON ledger."""
 import json
+from collections import Counter
 from pathlib import Path
 from artifact_tool import Workbook, SpreadsheetFile
 
-ROOT = Path(__file__).resolve().parents[4]
-SOURCE = ROOT / "docs/refactor/plan/RF_TASK_LEDGER.json"
-TARGET = ROOT / "docs/refactor/plan/RF_TASK_LEDGER.xlsx"
-ledger = json.loads(SOURCE.read_text(encoding="utf-8"))
-rf_list = ledger["rf"]
-assert len(rf_list) == 93, "Expected 93 RF entries"
-rows = []
-for rf in rf_list:
-    for t in rf["tasks"]:
-        rows.append([
-            rf["rf_id"], t["task_id"], t["kind"], t["source"], t.get("target") or "",
-            rf.get("owner") or "", t.get("implementation") or "UNKNOWN",
-            t.get("peer_review") or "UNKNOWN",
-            t.get("integration_runtime") or "UNKNOWN",
-            t.get("blocker") or "",
-            "; ".join(str(x) for x in t.get("evidence", [])),
-            rf.get("design_document") or "",
-        ])
-assert len(rows) == len({r[1] for r in rows}), "Duplicate task IDs"
+root = Path(__file__).resolve().parents[4]
+source = root / "docs/refactor/plan/RF_TASK_LEDGER.json"
+output = root / "docs/refactor/plan/RF_TASK_LEDGER.xlsx"
+data = json.loads(source.read_text(encoding="utf-8"))
+rf_list = data["rf"]
+assert len(rf_list) == 93
 wb = Workbook.create()
 detail = wb.worksheets.add("세부 작업")
 summary = wb.worksheets.add("RF별 요약")
 guide = wb.worksheets.add("판정 기준")
-headers = ["RF 번호","작업 ID","작업 유형","원본/작업 항목","목표","담당",
-           "구현","독립 검증","통합·런 검증","차단 사유","증거","설계 문서"]
-detail.get_range(f"A1:L{len(rows)+1}").values = [headers] + rows
-detail.get_range("A1:L1").format = {"fill":"#16324F","font":{"bold":True,"color":"#FFFFFF"}}
-detail.freeze_panes.freeze_rows(1)
-for col, width in {"A":14,"B":23,"C":17,"D":70,"E":65,"F":17,
-                   "G":17,"H":17,"I":19,"J":30,"K":45,"L":68}.items():
-    detail.get_range(f"{col}:{col}").format.column_width = width
-detail.tables.add(f"A1:L{len(rows)+1}",True,"RFTaskDetails")
-sum_headers = ["RF 번호","전체 작업","완료","진행","차단","미확인","완료율","담당","설계 문서"]
-summary.get_range("A1:I1").values = [sum_headers]
-summary.get_range("A1:I1").format = {"fill":"#16324F","font":{"bold":True,"color":"#FFFFFF"}}
-summary.freeze_panes.freeze_rows(1)
-for col,width in {"A":15,"B":16,"C":15,"D":15,"E":15,"F":15,"G":16,"H":18,"I":70}.items():
-    summary.get_range(f"{col}:{col}").format.column_width = width
-last = len(rows)+1
-for i,rf in enumerate(rf_list,2):
-    summary.get_range(f"A{i}:I{i}").values = [[
-        rf["rf_id"],
-        f'=COUNTIF(\'세부 작업\'!$A$2:$A${last},A{i})'.replace("\\$","$"),
-        f'=COUNTIFS(\'세부 작업\'!$A$2:$A${last},A{i},\'세부 작업\'!$G$2:$G${last},"PASS",\'세부 작업\'!$H$2:$H${last},"PASS",\'세부 작업\'!$I$2:$I${last},"PASS",\'세부 작업\'!$J$2:$J${last},"")'.replace("\\$","$"),
-        f'=COUNTIFS(\'세부 작업\'!$A$2:$A${last},A{i},\'세부 작업\'!$G$2:$G${last},"IN_PROGRESS")+COUNTIFS(\'세부 작업\'!$A$2:$A${last},A{i},\'세부 작업\'!$H$2:$H${last},"IN_PROGRESS")+COUNTIFS(\'세부 작업\'!$A$2:$A${last},A{i},\'세부 작업\'!$I$2:$I${last},"IN_PROGRESS")'.replace("\\$","$"),
-        f'=COUNTIFS(\'세부 작업\'!$A$2:$A${last},A{i},\'세부 작업\'!$J$2:$J${last},"?*")'.replace("\\$","$"),
-        f'=B{i}-C{i}-D{i}-E{i}',
-        f'=IFERROR(C{i}/B{i},0)',
-        rf.get("owner") or "",
-        rf.get("design_document") or "",
-    ]]
-summary.tables.add("A1:I94",True,"RFTaskSummary")
+headers = ["RF 번호","작업 ID","작업 유형","원본·작업 항목","목표","담당","구현",
+           "독립 검증","통합·런 검증","차단 사유","증거","설계 문서"]
+detail_rows = [headers]
+summary_rows = [["RF 번호","전체 작업","완료","진행","차단","미확인","완료율","담당","설계 문서"]]
+ids = set()
+for rf in rf_list:
+    counts = Counter()
+    for t in rf["tasks"]:
+        tid = t["task_id"]
+        assert tid not in ids, f"duplicate task ID: {tid}"
+        ids.add(tid)
+        impl,peer,runtime = [t.get(k,"UNKNOWN") for k in ("implementation","peer_review","integration_runtime")]
+        blocker = t.get("blocker")
+        done = impl == peer == runtime == "PASS" and not blocker
+        if done:
+            counts["완료"] += 1
+        elif blocker or "BLOCKED" in (impl,peer,runtime):
+            counts["차단"] += 1
+        elif "IN_PROGRESS" in (impl,peer,runtime):
+            counts["진행"] += 1
+        else:
+            counts["미확인"] += 1
+        detail_rows.append([rf["rf_id"],tid,t["kind"],t["source"],t.get("target") or "",
+                            rf.get("owner") or "",impl,peer,runtime,str(blocker or ""),
+                            json.dumps(t.get("evidence",[]),ensure_ascii=False),
+                            rf.get("design_document") or ""])
+    total = len(rf["tasks"])
+    summary_rows.append([rf["rf_id"],total,counts["완료"],counts["진행"],counts["차단"],
+                         counts["미확인"],counts["완료"]/total if total else 0,
+                         rf.get("owner") or "",rf.get("design_document") or ""])
+detail.get_range(f"A1:L{len(detail_rows)}").values = detail_rows
+summary.get_range("A1:I94").values = summary_rows
 guide.get_range("A1:B7").values = [
-    ["항목","정의"],
+    ["항목","설명"],
     ["정본","docs/refactor/plan/RF_TASK_LEDGER.json"],
-    ["작업 수",str(len(rows))],
-    ["완료","구현·독립 검증·통합런 검증 모두 PASS, 차단 사유 없음"],
-    ["UNKNOWN","미착수나 완료가 아닌 증거 미확인"],
-    ["KEEP_IF","실제 KEEP_OK 근거와 증거 확인 전에는 완료 아님"],
-    ["주의","설계 작업 목록이며 실제 구현 완료를 의미하지 않음"],
+    ["총 RF",str(len(rf_list))],
+    ["세부 작업 수",str(len(ids))],
+    ["완료","구현·독립 검증·통합 런 검증 모두 PASS, 차단 사유 없음"],
+    ["UNKNOWN","증거가 확인되지 않은 상태이며 완료가 아님"],
+    ["KEEP_IF","파일 단위 유지/검증 항목. 실제 코드 이동 건수와 구분"],
 ]
-guide.get_range("A1:B1").format = {"fill":"#16324F","font":{"bold":True,"color":"#FFFFFF"}}
-guide.get_range("A:A").format.column_width=23
-guide.get_range("B:B").format.column_width=90
-SpreadsheetFile.export_xlsx(wb).save(str(TARGET))
-print(f"Exported {TARGET}: RF={len(rf_list)} tasks={len(rows)}")
+for sheet,range_name in ((detail,"A1:L1"),(summary,"A1:I1"),(guide,"A1:B1")):
+    sheet.get_range(range_name).format.fill = "#17324D"
+    sheet.get_range(range_name).format.font.color = "#FFFFFF"
+    sheet.get_range(range_name).format.font.bold = True
+    sheet.freeze_panes.freeze_rows(1)
+for col,width in {"A":16,"B":22,"C":18,"D":68,"E":65,"F":17,"G":18,
+                  "H":18,"I":19,"J":28,"K":42,"L":66}.items():
+    detail.get_range(f"{col}:{col}").format.column_width = width
+for col,width in {"A":16,"B":17,"C":15,"D":15,"E":15,"F":15,"G":16,"H":18,"I":70}.items():
+    summary.get_range(f"{col}:{col}").format.column_width = width
+summary.get_range("G2:G94").set_number_format("0.0%")
+guide.get_range("A:A").format.column_width = 23
+guide.get_range("B:B").format.column_width = 90
+SpreadsheetFile.export_xlsx(wb).save(str(output))
+assert output.is_file() and output.stat().st_size > 1000
+print(f"Excel generated: {output}, RF={len(rf_list)}, tasks={len(ids)}")
