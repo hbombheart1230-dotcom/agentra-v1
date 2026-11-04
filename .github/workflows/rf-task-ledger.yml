@@ -7,6 +7,7 @@ on:
       - 'docs/refactor/plan/rf_details/**'
       - 'docs/refactor/plan/ledger_parts/**'
       - 'docs/refactor/plan/tools/merge_rf_ledger_parts.py'
+      - 'docs/refactor/plan/tools/export_rf_ledger_xlsx.py'
 permissions:
   contents: write
 jobs:
@@ -22,6 +23,10 @@ jobs:
           python-version: '3.12'
       - name: Generate JSON ledger from all RF designs
         run: python docs/refactor/plan/tools/merge_rf_ledger_parts.py
+      - name: Install spreadsheet exporter
+        run: python -m pip install artifact-tool
+      - name: Export Excel dashboard
+        run: python docs/refactor/plan/tools/export_rf_ledger_xlsx.py
       - name: Check JSON schema and task IDs
         run: |
           python - <<'PY'
@@ -35,10 +40,10 @@ jobs:
           PY
       - name: Commit generated ledger
         run: |
-          if [ -n "$(git status --porcelain -- docs/refactor/plan/RF_TASK_LEDGER.json)" ]; then
+          if [ -n "$(git status --porcelain -- docs/refactor/plan/RF_TASK_LEDGER.json docs/refactor/plan/RF_TASK_LEDGER.xlsx)" ]; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add docs/refactor/plan/RF_TASK_LEDGER.json
+            git add docs/refactor/plan/RF_TASK_LEDGER.json docs/refactor/plan/RF_TASK_LEDGER.xlsx
             git commit -m 'docs(plan): refresh RF JSON task ledger [skip ci]'
             git push origin HEAD:integration/p1.5
           fi
