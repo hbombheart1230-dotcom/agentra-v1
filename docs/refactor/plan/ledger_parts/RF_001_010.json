@@ -1,0 +1,622 @@
+{
+  "schema_version": "1.0.0",
+  "rf": [
+    {
+      "rf_id": "RF-001",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-001_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-001-0001",
+          "kind": "MOVE_BODY",
+          "source": "apps/operator_ui/data_access_core.py::_load_operator_brief",
+          "target": "apps/operator_ui/data_access_brief_loader.py::load_operator_brief",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0002",
+          "kind": "MOVE_BODY",
+          "source": "apps/operator_ui/data_access_core.py::_trade_report_index",
+          "target": "apps/operator_ui/data_access_report_index.py::trade_report_index",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0003",
+          "kind": "MOVE_BODY",
+          "source": "apps/operator_ui/data_access_core.py::load_run_detail",
+          "target": "apps/operator_ui/data_access_run_detail.py::load_run_detail",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0004",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access.py",
+          "target": "apps/operator_ui/data_access.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0005",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief.py",
+          "target": "apps/operator_ui/data_access_brief.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0006",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_canonical_input.py",
+          "target": "apps/operator_ui/data_access_brief_canonical_input.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0007",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_compaction.py",
+          "target": "apps/operator_ui/data_access_brief_compaction.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0008",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_evidence_readout_p15.py",
+          "target": "apps/operator_ui/data_access_brief_evidence_readout_p15.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0009",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_facts.py",
+          "target": "apps/operator_ui/data_access_brief_facts.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0010",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_fallback.py",
+          "target": "apps/operator_ui/data_access_brief_fallback.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0011",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_input_projection.py",
+          "target": "apps/operator_ui/data_access_brief_input_projection.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0012",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_input_sections.py",
+          "target": "apps/operator_ui/data_access_brief_input_sections.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0013",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_market_sections.py",
+          "target": "apps/operator_ui/data_access_brief_market_sections.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0014",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_monitor_notes.py",
+          "target": "apps/operator_ui/data_access_brief_monitor_notes.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0015",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_monitor_sections.py",
+          "target": "apps/operator_ui/data_access_brief_monitor_sections.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0016",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_prompts.py",
+          "target": "apps/operator_ui/data_access_brief_prompts.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0017",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_render_fallback.py",
+          "target": "apps/operator_ui/data_access_brief_render_fallback.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0018",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_render_helpers.py",
+          "target": "apps/operator_ui/data_access_brief_render_helpers.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0019",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_render_narrative_helpers.py",
+          "target": "apps/operator_ui/data_access_brief_render_narrative_helpers.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0020",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_render_sections.py",
+          "target": "apps/operator_ui/data_access_brief_render_sections.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0021",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_render_summary_derivation.py",
+          "target": "apps/operator_ui/data_access_brief_render_summary_derivation.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0022",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_sanitation.py",
+          "target": "apps/operator_ui/data_access_brief_sanitation.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0023",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_sections_projection.py",
+          "target": "apps/operator_ui/data_access_brief_sections_projection.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0024",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_brief_source_truth_p15.py",
+          "target": "apps/operator_ui/data_access_brief_source_truth_p15.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0025",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_core.py",
+          "target": "apps/operator_ui/data_access_core.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0026",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_linkage.py",
+          "target": "apps/operator_ui/data_access_linkage.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0027",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_overview_projection.py",
+          "target": "apps/operator_ui/data_access_overview_projection.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0028",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_reports.py",
+          "target": "apps/operator_ui/data_access_reports.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0029",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_run_detail_projection.py",
+          "target": "apps/operator_ui/data_access_run_detail_projection.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0030",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_run_read_models.py",
+          "target": "apps/operator_ui/data_access_run_read_models.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0031",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_runs.py",
+          "target": "apps/operator_ui/data_access_runs.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0032",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_status.py",
+          "target": "apps/operator_ui/data_access_status.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0033",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_symbol_run_chain.py",
+          "target": "apps/operator_ui/data_access_symbol_run_chain.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0034",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_trade_index_projection.py",
+          "target": "apps/operator_ui/data_access_trade_index_projection.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0035",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_trade_read_models.py",
+          "target": "apps/operator_ui/data_access_trade_read_models.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-001-0036",
+          "kind": "KEEP_IF",
+          "source": "apps/operator_ui/data_access_value_formatting.py",
+          "target": "apps/operator_ui/data_access_value_formatting.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-002",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-002_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-002-0001",
+          "kind": "MOVE_BODY",
+          "source": "apps/operator_ui/main.py::create_app",
+          "target": "apps/operator_ui/main_create_app.py::create_app",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-003",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-003_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-003-0001",
+          "kind": "MOVE_BODY",
+          "source": "apps/api/services/performance.py::_points",
+          "target": "apps/api/services/performance_points.py::_points",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-004",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-004_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-004-0001",
+          "kind": "MOVE_BODY",
+          "source": "apps/api/domain/runtime_status_projection.py::_supervisor_status",
+          "target": "apps/api/domain/runtime_status_projection_supervisor_status.py::_supervisor_status",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-004-0002",
+          "kind": "MOVE_BODY",
+          "source": "apps/api/domain/runtime_status_projection.py::_market_status",
+          "target": "apps/api/domain/runtime_status_projection.py::_market_status",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-005",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-005_IMPLEMENTATION.md",
+      "tasks": []
+    },
+    {
+      "rf_id": "RF-006",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-006_IMPLEMENTATION.md",
+      "tasks": []
+    },
+    {
+      "rf_id": "RF-007",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-007_IMPLEMENTATION.md",
+      "tasks": []
+    },
+    {
+      "rf_id": "RF-008",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-008_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-008-0001",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/strategist_node.py::_stage_specific_llm_contract",
+          "target": "libs/runtime/strategist/llm/stage_contracts.py::build_stage_specific_contract",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-008-0002",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/strategist_node.py::_build_strategist_llm_messages",
+          "target": "libs/runtime/strategist/llm/frame_messages.py::build_frame_messages",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-008-0003",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/strategist_node.py::_apply_strategist_llm_token_budget",
+          "target": "libs/runtime/strategist/context/token_budget.py::apply_frame_token_budget",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-008-0004",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/strategist_node.py::_build_compact_strategist_llm_payload",
+          "target": "libs/runtime/strategist/context/compact_llm_payload.py::build_compact_llm_payload",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-008-0005",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/strategist_node.py::_build_strategist_llm_repair_messages",
+          "target": "libs/runtime/strategist/llm/repair_messages.py::build_repair_messages",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-008-0006",
+          "kind": "KEEP_IF",
+          "source": "graphs/nodes/strategist_node.py",
+          "target": "graphs/nodes/strategist_node.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-009",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-009_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-009-0001",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/scanner_node.py::scanner_node",
+          "target": "graphs/nodes/scanner_node.py::scanner_node",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-009-0002",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/scanner_node.py::_maybe_hydrate_scanner_skill_results",
+          "target": "graphs/nodes/scanner_node.py::_maybe_hydrate_scanner_skill_results",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-010",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-010_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-010-0001",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/monitor_node.py::monitor_node",
+          "target": "graphs/nodes/monitor_node.py::monitor_node",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-010-0002",
+          "kind": "MOVE_BODY",
+          "source": "graphs/nodes/monitor_node.py::_evaluate_monitor_entry_candidate",
+          "target": "graphs/nodes/monitor_node_evaluate_monitor_entry_candidate.py::_evaluate_monitor_entry_candidate",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    }
+  ]
+}
