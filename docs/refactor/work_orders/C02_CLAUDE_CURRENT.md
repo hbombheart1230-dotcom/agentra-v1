@@ -11,7 +11,12 @@ D00 Owner·안전·frozen 계약과 실제 G1/G2/G3 요건은 유지한다. 완�
 - 스킬은 agentra-rf-executor 및 agentra-contract-guard. C03의 허용 범위와 D00 보호 제약을 따른다.
 
 ## 현재 상태
-NEW_READY=0. A57-1/2는 최신 #11 및 원격 blob으로 VERIFIED_ALREADY 여부를 확인한다. 완료 증거가 있으면 재실행하지 않는다. C03는 진행 RF-032의 남은 항목부터 확인해 정책 HOLD와 독립적인 같은 RF 항목을 배정한다. 전체 잔여 차단을 확인하기 전 다른 RF로 전환하지 않는다.
+ACTIVE_RF: RF-032 (Claude A 독점; 다른 RF 전환 금지)
+READY_ORDER: 없음 — 임의 코드 변경 금지.
+FIRST_UNMET: whole G1 validation-id / Writer / UEF 정책 승인 HOLD. 해소 담당: 승인권자; C03은 승인 없이 정책 변경·whole DONE 선언 금지.
+NEXT_ITEM (후보 실사, 주문 아님): `docs/refactor/plan/rf_details/RF-032_IMPLEMENTATION.md` §1 `_secondary_identity` / `_pipeline_q12_calc1` 등 원본 함수별 MOVE_BODY 계획과 §2 미완료 SOURCE 목록을 실제 A 원격 코드·기존 #11 완료 manifest와 대조한다. `libs/reporting/evaluation/uef5/historical_recompute.py` canonical/A blob `719101c37fcac1fe83dd5461b906e42dd5cdf24e`; 목표 `historical_recompute_secondary_identity.py`, `historical_recompute_pipeline_q12_calc1.py`는 두 브랜치 모두 현재 ABSENT. 다만 UEF5 보호 경계로 인해 이 두 목표가 비어 있다는 사실만으로 구현 승인하지 않는다. C03이 보호 계약·monkeypatch seam·Owner·정상 fake 테스트를 먼저 검증한 후 정확한 ORDER_ID/ITEM/SOURCE/TARGET blob을 발행한다.
+COMPLETED_ALREADY: A57-1/2는 #11 원격 A `77bdbf6d0834c493ff884be5c260a6b8120d2037`에서 완료; 재발행·반복 테스트 금지.
+BLOCKED_SCOPE: 위 UEF5 함수 이동은 보호 경계 안전성 미확정(C03 검증 필요); validation-id/Writer/UEF 정책은 승인권자 결정 필요. 이 두 차단을 다른 독립 RF-032 항목의 자동 차단으로 확대하지 않는다.
 
 ## 실행 규칙
 C03가 발행한 ORDER_ID, 허용 경로, source/target blob, 테스트, 완료 조건에 따라 모든 안전 항목을 수행한다. 막힌 항목은 FIRST_BLOCKER를 기록하고 다른 항목을 계속한다. 임의 작업 선택 및 다른 Owner 소스 수정은 금지한다.
