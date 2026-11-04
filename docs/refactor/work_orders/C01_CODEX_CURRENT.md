@@ -1,16 +1,23 @@
-# C01 — Codex B | RF-063 ACTIVE / NEXT ITEM INVESTIGATION
+# C01 — Codex B | RF-063 ACTIVE / B46 READY (READ-ONLY CONTRACT RECONCILIATION)
 
 ## Authority
-Canonical: integration/p1.5. B branch: work/p15-b-operator-structure-20261022. Report: #12.
-Read latest docs/refactor/work_orders/D00_ENGINEERING_DELIVERY_POLICY.md and docs/refactor/work_orders/C03_LEAD_TRIAGE_CURRENT.md, docs/refactor/plan/rf_details/RF-063_IMPLEMENTATION.md and docs/refactor/plan/queue/02_DEVELOPING/CODEX_B/RF-063.md. Preserve D00 Owner, frozen oracle, Guard/Writer/UEF/Step5C and live-trading prohibitions. Continue RF-063; do not switch RF because a single item is blocked. Apply agentra-rf-executor and agentra-contract-guard without expanding permissions.
+Canonical integration/p1.5; B branch work/p15-b-operator-structure-20261022; report #12. Read D00, C03_LEAD_TRIAGE_CURRENT.md, docs/refactor/plan/rf_details/RF-063_IMPLEMENTATION.md opening “실물 함수 분석” and §2–3, and docs/refactor/plan/queue/02_DEVELOPING/CODEX_B/RF-063.md C1/76-owner checklist. ACTIVE_RF=RF-063; no RF switch. Preserve Owner, frozen oracle, Guard/Writer/UEF/Step5C and no-live-operation boundaries.
 
-## ACTIVE_RF / CURRENT STATE
-ACTIVE_RF: RF-063.
-READY_ORDER: none; do not independently change code without a new exact C03 order.
-COMPLETED_ALREADY: B45-RF063-CANONICAL-REPORT-20261104 ITEM=1, B remote c8cb00d60e398f68a78b02cc3f5221990b84f175, source blob 59d03a00dccc36226264b0edfca85ef6b31fa0b4, test blob 1dcfe8eb47f62f979f4bdc83e7f13c97e59dff67, actor normal targeted 9 PASS (#12 6618834577). C04 selected integration canonical 80c52c6cc813760c98b8b4e76a76d3336ead95f1 (#36 6619189211). Do not repeat B45 or its tests.
-FIRST_UNMET: RF-063 whole G1 Owner/import/consumer consistency; C04 canonical G3 remains NOT_VERIFIED.
-NEXT_ITEM (investigation only; not a code order): RF-063_IMPLEMENTATION.md opening "실물 함수 분석" validate_trade_artifact_chain calculation-only projection. Canonical scripts/diagnostics/check_trade_report_runtime_regression.py blob dc882aa56b5a23d9716cc8d3ec009480275cfe4d still contains calculation body; B same file blob c7113fcf6e7c3313943e484fa939c48062672141 delegates to trade_evidence. Planned target scripts/diagnostics/trade_artifact_validation_projection.py is ABSENT on canonical and B. C03 must locate existing B trade_evidence implementation, compare its owner/test contract and existing consumer imports before issuing a new code order; do not create duplicate projection or overwrite canonical facade.
-BLOCKED: exact safe source/target order pending C03 Owner/consumer comparison. C04 owns canonical normal pytest/G3; C05 owns RF DONE. Continue same RF's other independent detailed items when C03 issues verified orders.
+## Current order
+ORDER_ID: B46-RF063-VALIDATION-OWNER-RECONCILIATION-20261104
+ITEM: 1
+FIRST_UNMET: RF-063 C1/G1 PARTIAL — validate_trade_artifact_chain projection Owner/consumer contract and existing B implementation equivalence not yet established.
+RF_DETAIL: RF-063_IMPLEMENTATION.md opening “실물 함수 분석” validate_trade_artifact_chain calculation-only evidence projection; §2 check_trade_report_runtime_regression.py; §3 owner/CLI classification; original RF-063 C1/76-owner checklist.
+SOURCE_PATH=scripts/diagnostics/check_trade_report_runtime_regression.py
+SOURCE_BLOB_CANONICAL=dc882aa56b5a23d9716cc8d3ec009480275cfe4d
+SOURCE_BLOB_B=c7113fcf6e7c3313943e484fa939c48062672141
+PLANNED_TARGET=scripts/diagnostics/trade_artifact_validation_projection.py; TARGET_BLOB_BEFORE=ABSENT on canonical and B. DO NOT CREATE.
+EXISTING_B_OWNER=scripts/diagnostics/trade_artifact_validation_evidence_projection.py; BLOB=9fd7c104efc5b0497bdb7f9b0b6a4642386b3974
+DEPENDENCIES_B: trade_artifact_validation_read_projection.py blob c573e644ab9f81377ecba906ad283170807c6ee7; trade_artifact_validation_cli.py blob 1fd6fefbca7d1a04373c626f3f02ae4a4fb2d8f6.
+ALLOWED: read-only exact source/Owner/consumer/import and existing test inspection, no source/test changes or repeat pytest.
+ACTION: Trace the exact calculation-only body in canonical to B evidence projection, compare return keys, warning/error ordering, effect boundary and public facade/CLI consumer imports. Inventory the seven B-only transitive projection dependencies and whether a minimal non-overwriting selective integration is safe. Report KEEP_EXISTING_OWNER with exact blob and C04 file/test manifest if equivalent, or TARGET_GAP with exact function/line/contract mismatch and a minimal allowed source/target/test proposal for C03. Do not overwrite canonical facade or create duplicate Owner. If blocked provide per-path evidence, rule and resolution owner; continue independent RF-063 C1 candidates.
+TEST: NOT_RUN for unchanged read-only inspection; subsequent C03 code order requires one scoped normal targeted pytest. Existing B45 9 PASS and canonical 13 PASS are completed, do not repeat.
+COMPLETION: #12 evidence with B remote SHA, exact blobs, actual import/consumer paths, verdict and measured time. C04 owns selective integration/G3, C05 whole RF DONE. No code push for read-only order.
 
 ## Execution
-On next exact C03 order, verify ORDER_ID+ITEM+SOURCE_BLOB and current remote HEAD before editing. Modify only allowed source/target/test paths, preserve patch seams and effect boundary, run scoped normal pytest once, non-force push B, refetch source/target/test blobs and report exact remote SHA, exit code and measured time in #12. Do not alter this work order, protected docs, or other Owner files. No repeated PASS credit.
+On a later exact code order verify source/target blob before edit, one normal scoped test, non-force push and refetch. No edits to this work order by B. Current instructions only.
