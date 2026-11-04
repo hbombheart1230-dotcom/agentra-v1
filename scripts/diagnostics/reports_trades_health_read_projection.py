@@ -41,7 +41,12 @@ def _artifact_path(trade_dir: Path, *candidates: str, facade: Any) -> Path:
 
 
 def _ai_trade_report_is_complete(trade_dir: Path, *, facade: Any) -> bool:
-    report_path = facade._artifact_path(trade_dir, "ai_trade_report/ai_trade_report.json", "trade_report.json")
+    report_path = facade._artifact_path(
+        trade_dir,
+        "reports/ai_trade_report.json",
+        "ai_trade_report/ai_trade_report.json",
+        "trade_report.json",
+    )
     report = facade._read_json(report_path)
     if not report:
         return False
