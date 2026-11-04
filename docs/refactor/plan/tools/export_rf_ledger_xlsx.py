@@ -14,7 +14,7 @@ rf_list = data["rf"]
 status_doc = (root / "docs/refactor/plan/STATUS.md").read_text(encoding="utf-8")
 # Queue location is RF-level status, not task-level PASS evidence.
 queue_state = {}
-for state, num in re.findall(r"queue/(0[1-5]_[A-Z_]+)/(?:[A-Z_]+/)?RF-(\\d{3})\\.md", status_doc):
+for state, num in re.findall(r"queue/(0[1-5]_[A-Z_]+)/(?:[A-Z_]+/)?RF-(\d{3})\.md", status_doc):
     queue_state[f"RF-{num}"] = state
 assert len(rf_list) == 93
 wb = Workbook.create()
