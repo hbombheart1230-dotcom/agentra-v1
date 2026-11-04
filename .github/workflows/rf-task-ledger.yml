@@ -6,7 +6,7 @@ on:
     paths:
       - 'docs/refactor/plan/rf_details/**'
       - 'docs/refactor/plan/ledger_parts/**'
-      - 'docs/refactor/plan/tools/build_rf_json_ledger.py'
+      - 'docs/refactor/plan/tools/merge_rf_ledger_parts.py'
 permissions:
   contents: write
 jobs:
@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Generate JSON ledger from all RF designs
-        run: python docs/refactor/plan/tools/build_rf_json_ledger.py
+        run: python docs/refactor/plan/tools/merge_rf_ledger_parts.py
       - name: Check JSON schema and task IDs
         run: |
           python - <<'PY'
