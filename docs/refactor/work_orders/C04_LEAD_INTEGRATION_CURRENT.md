@@ -12,7 +12,7 @@ D00 Owner·안전·frozen 계약과 실제 G1/G2/G3 요건은 유지한다. 완�
 원격 G1/G2 충족 변경을 Owner·consumer·의존성 기준으로 선별 통합한다. source/test/dependency가 동일한 유효 증거는 재사용하고 미검증 범위만 정상 fake smoke로 확인한다. 각 준비 항목을 끝까지 처리하고 #36에 RF, 전체/부분 게이트, 통합 SHA, 테스트 명령·exit, C05_READY, FIRST_BLOCKER를 남긴다.
 
 ## 현재 처리 대상
-- RF-063 B44의 테스트와 manifest를 #12에서 인수해 정본 실제 소비 경로를 검증한다.
+- RF-063 B45 scoped G3: 정본 980bad1566f3b3ea8915ee49f9a83d0600a7122f에서 python -m pytest -q tests/test_p15_rf063_b45_canonical_report.py tests/test_check_reports_trades_health.py tests/test_p15_rf063_07h_b5_ai_trade_report_is_complete_owner.py tests/test_check_trade_report_runtime_regression.py → 지팀장 직접 EXIT=0, 13 PASS. 같은 source/test/dependency면 재사용한다. 전체 RF 및 CLI 동등성은 미검증. 다음은 기존 trade_evidence와 projection 5파일 의존성의 실제 비교·최소 소비 경로 검증이며 B45 재시험으로 대체하지 않는다.
 - RF-030의 테스트 tests/test_p15_rf030_20261102_02h_run_contexts.py는 정본 891de6396afd5d116c308ee32f8b6a0b94c24df2에서 14 PASS/exit 0이다. historical pin을 조회하는 테스트이므로 현재 facade/Owner/consumer를 실제로 덮는 범위를 확인한 뒤 G3 재사용을 판정한다.
 - 위 테스트의 필요한 pin은 b2e48863ae8a44d7ab41090160816d504052f2e0 및 7dd8a2ad54228ca7f9e5530f07f39b324a55fdb9다.
 - 같은 정본에서 tests/test_work_reporter_seed_migration.py::test_target_tree_discipline_and_no_forbidden_surface는 기준 eeb742a33b16f6271ff364a904e187b470561c7e 확보 후에도 경로 범위 위반으로 FAIL이다. frozen scope/Owner 차단과 current-consumer coverage를 구분해 C03/C05에 인계한다.
