@@ -5,6 +5,7 @@ on:
     branches: [integration/p1.5]
     paths:
       - 'docs/refactor/plan/rf_details/**'
+      - 'docs/refactor/plan/ledger_parts/**'
       - 'docs/refactor/plan/tools/build_rf_json_ledger.py'
 permissions:
   contents: write
@@ -34,7 +35,7 @@ jobs:
           PY
       - name: Commit generated ledger
         run: |
-          if ! git diff --quiet -- docs/refactor/plan/RF_TASK_LEDGER.json || [ ! -f docs/refactor/plan/RF_TASK_LEDGER.json ]; then
+          if [ -n "$(git status --porcelain -- docs/refactor/plan/RF_TASK_LEDGER.json)" ]; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add docs/refactor/plan/RF_TASK_LEDGER.json
