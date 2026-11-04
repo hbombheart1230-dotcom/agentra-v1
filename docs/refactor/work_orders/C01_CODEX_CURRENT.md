@@ -2,7 +2,7 @@
 
 ## Authority
 Canonical: integration/p1.5. B branch: work/p15-b-operator-structure-20261022. Report: #12.
-Read latest D00, C03, docs/refactor/plan/rf_details/RF-063_IMPLEMENTATION.md and docs/refactor/plan/queue/02_DEVELOPING/CODEX_B/RF-063.md. Preserve D00 Owner, frozen oracle, Guard/Writer/UEF/Step5C and live-trading prohibitions. Continue RF-063; do not switch RF because a single item is blocked. Apply agentra-rf-executor and agentra-contract-guard without expanding permissions.
+Read latest docs/refactor/work_orders/D00_ENGINEERING_DELIVERY_POLICY.md and docs/refactor/work_orders/C03_LEAD_TRIAGE_CURRENT.md, docs/refactor/plan/rf_details/RF-063_IMPLEMENTATION.md and docs/refactor/plan/queue/02_DEVELOPING/CODEX_B/RF-063.md. Preserve D00 Owner, frozen oracle, Guard/Writer/UEF/Step5C and live-trading prohibitions. Continue RF-063; do not switch RF because a single item is blocked. Apply agentra-rf-executor and agentra-contract-guard without expanding permissions.
 
 ## ACTIVE_RF / CURRENT STATE
 ACTIVE_RF: RF-063.
