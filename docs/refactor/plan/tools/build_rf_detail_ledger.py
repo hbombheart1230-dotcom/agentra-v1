@@ -3,7 +3,7 @@
 Never changes RF contracts or claims tests passed. Run after git fetch.
 """
 import csv, pathlib, re, subprocess, collections
-ROOT=pathlib.Path(__file__).resolve().parents[3]
+ROOT=pathlib.Path(__file__).resolve().parents[4]
 DETAILS=ROOT/'docs/refactor/plan/rf_details'
 QUEUE=ROOT/'docs/refactor/plan/queue'
 OUT=ROOT/'docs/refactor/plan/reports'
@@ -31,19 +31,19 @@ def main():
             if not line.startswith('|'): continue
             cells=[x.strip() for x in line.strip('|').split('|')]
             if len(cells)<3 or cells[0].startswith(('---','원본 함수','SOURCE_PATH')):continue
-            source=cells[0].strip('\\\x60 ')
-            target=cells[2].strip('\\\x60 ') if len(cells)>2 else ''
+            source=cells[0].strip(chr(96)+' ')
+            target=cells[2].strip(chr(96)+' ') if len(cells)>2 else ''
             if '::' in source and ('MOVE' in ' '.join(cells) or 'KEEP' in ' '.join(cells)):
                 entries.append((source,target,'MOVE' if 'MOVE' in ' '.join(cells) else 'KEEP'))
         # Include file-level KEEP/MOVE items, but don't double count a file with function items.
         for line in content.splitlines():
             if not line.startswith('|'):continue
             cells=[x.strip() for x in line.strip('|').split('|')]
-            if len(cells)<4 or not cells[0].startswith('\\x60'):continue
-            source=cells[0].strip('\\x60 ')
+            if len(cells)<4 or not cells[0].startswith(chr(96)):continue
+            source=cells[0].strip(chr(96)+' ')
             if '::' in source or not source.endswith('.py'):continue
             if any(source in x[0] for x in entries):continue
-            entries.append((source,cells[1].strip('\\x60 '),'FILE_REVIEW'))
+            entries.append((source,cells[1].strip(chr(96)+' '),'FILE_REVIEW'))
         for source,target,kind in entries:
             key=(rf,source,target)
             if key in seen:continue
