@@ -1,0 +1,811 @@
+{
+  "schema_version": "1.0.0",
+  "rf": [
+    {
+      "rf_id": "RF-036",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-036_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-036-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/rank1_feature_mart/builder.py::_market_snapshot",
+          "target": "libs/research/rank1_feature_mart/builder_market_snapshot.py::_market_snapshot",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-036-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/rank1_feature_mart/builder.py::_strategy_snapshot",
+          "target": "libs/research/rank1_feature_mart/builder_strategy_snapshot.py::_strategy_snapshot",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-037",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-037_IMPLEMENTATION.md",
+      "tasks": []
+    },
+    {
+      "rf_id": "RF-038",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-038_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-038-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/conditional_alpha_diagnosis/analysis.py::horizon_cross_sections",
+          "target": "libs/research/conditional_alpha_diagnosis/analysis_horizon_cross_sections.py::horizon_cross_sections",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-038-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/conditional_alpha_diagnosis/analysis.py::predefined_opening_screens",
+          "target": "libs/research/conditional_alpha_diagnosis/analysis_predefined_opening_screens.py::predefined_opening_screens",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-038-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/conditional_alpha_diagnosis/analysis.py::precursor_profiles",
+          "target": "libs/research/conditional_alpha_diagnosis/analysis_precursor_profiles.py::precursor_profiles",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-038-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/conditional_alpha_diagnosis/analysis.py::opening_archetype_analysis",
+          "target": "libs/research/conditional_alpha_diagnosis/analysis_opening_archetype_analysis.py::opening_archetype_analysis",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-038-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/conditional_alpha_diagnosis/analysis.py::actual_live_cost_cross_sections",
+          "target": "libs/research/conditional_alpha_diagnosis/analysis_actual_live_cost_cross_sections.py::actual_live_cost_cross_sections",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-038-0006",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/conditional_alpha_diagnosis/analysis.py::research_candidates",
+          "target": "libs/research/conditional_alpha_diagnosis/analysis_research_candidates.py::research_candidates",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-038-0007",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/conditional_alpha_diagnosis/analysis.py::_group_summary",
+          "target": "libs/research/conditional_alpha_diagnosis/analysis_group_summary.py::_group_summary",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-039",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-039_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-039-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/existing_evidence_mining/analysis.py::blocked_opportunity_analysis",
+          "target": "libs/research/existing_evidence_mining/analysis_blocked_opportunity_analysis.py::blocked_opportunity_analysis",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-039-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/existing_evidence_mining/analysis.py::actual_trade_analysis",
+          "target": "libs/research/existing_evidence_mining/analysis_actual_trade_analysis.py::actual_trade_analysis",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-039-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/existing_evidence_mining/analysis.py::classify",
+          "target": "libs/research/existing_evidence_mining/analysis.py::classify",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-039-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/existing_evidence_mining/analysis.py::summarize_rows",
+          "target": "libs/research/existing_evidence_mining/analysis_summarize_rows.py::summarize_rows",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-039-0005",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/existing_evidence_mining/analysis.py::discovery_cohorts",
+          "target": "libs/research/existing_evidence_mining/analysis_discovery_cohorts.py::discovery_cohorts",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-039-0006",
+          "kind": "MOVE_BODY",
+          "source": "libs/research/existing_evidence_mining/analysis.py::score_component_diagnostics",
+          "target": "libs/research/existing_evidence_mining/analysis_score_component_diagnostics.py::score_component_diagnostics",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-040",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-040_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-040-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/agent/reporter.py::run_reporter_agent",
+          "target": "libs/agent/reporter_run_reporter_agent.py::run_reporter_agent",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-040-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/agent/reporter.py::run",
+          "target": "libs/agent/reporter.py::run",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-041",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-041_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-041-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/ai/providers/openai_provider.py::_extract_chat_content",
+          "target": "libs/ai/providers/openai_response_projection.py::extract_chat_content",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-041-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/ai/providers/openai_provider.py::_extract_chat_structured_object",
+          "target": "libs/ai/providers/openai_response_projection.py::extract_chat_structured_object",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-041-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/ai/providers/openai_provider.py::_extract_usage",
+          "target": "libs/ai/providers/openai_response_projection.py::extract_usage",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-041-0004",
+          "kind": "KEEP_IF",
+          "source": "libs/ai/intent_schema.py",
+          "target": "libs/ai/intent_schema.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-041-0005",
+          "kind": "KEEP_IF",
+          "source": "libs/ai/providers/__init__.py",
+          "target": "libs/ai/providers/__init__.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-041-0006",
+          "kind": "KEEP_IF",
+          "source": "libs/ai/providers/openai_provider.py",
+          "target": "libs/ai/providers/openai_provider.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-041-0007",
+          "kind": "KEEP_IF",
+          "source": "libs/ai/strategist.py",
+          "target": "libs/ai/strategist.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-041-0008",
+          "kind": "KEEP_IF",
+          "source": "libs/ai/strategist_config.py",
+          "target": "libs/ai/strategist_config.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-041-0009",
+          "kind": "KEEP_IF",
+          "source": "libs/ai/strategist_factory.py",
+          "target": "libs/ai/strategist_factory.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-041-0010",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf041_openai_provider_helpers_fake_http_contract.py",
+          "target": "tests/test_rf041_openai_provider_helpers_fake_http_contract.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-042",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-042_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-042-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/approval/service.py::list_intents",
+          "target": "libs/approval/service.py::list_intents",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-042-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/approval/service.py::admit_pre_approved_intent",
+          "target": "libs/approval/service.py::admit_pre_approved_intent",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-042-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/approval/service.py::reject",
+          "target": "libs/approval/service.py::reject",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-042-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/approval/service.py::_resolve_intent",
+          "target": "libs/approval/service.py::_resolve_intent",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-043",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-043_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-043-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/catalog/api_request_builder.py::prepare",
+          "target": "libs/catalog/api_request_builder.py::prepare",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-043-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/catalog/api_request_builder.py::_normalize_params_schema",
+          "target": "libs/catalog/api_request_builder.py::_normalize_params_schema",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-044",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-044_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-044-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/contracts/agent_outputs.py::_commander_shadow_actual_runtime",
+          "target": "libs/contracts/agent_output_parts/commander_shadow_runtime.py::build_actual_runtime",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/contracts/agent_outputs.py::_commander_shadow_observations",
+          "target": "libs/contracts/agent_output_parts/commander_shadow_runtime.py::build_observations",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/contracts/agent_outputs.py::_commander_shadow_monitor_gate_details",
+          "target": "libs/contracts/agent_output_parts/commander_shadow_evidence.py::build_monitor_gate_details",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0004",
+          "kind": "MOVE_BODY",
+          "source": "libs/contracts/agent_outputs.py::_commander_shadow_context_delta_summary",
+          "target": "libs/contracts/agent_output_parts/commander_shadow_evidence.py::build_context_delta_summary",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0005",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/agent_output_parts/__init__.py",
+          "target": "libs/contracts/agent_output_parts/__init__.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0006",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/agent_output_parts/scanner_projections.py",
+          "target": "libs/contracts/agent_output_parts/scanner_projections.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0007",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/agent_output_parts/strategist_projections.py",
+          "target": "libs/contracts/agent_output_parts/strategist_projections.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0008",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/agent_output_values.py",
+          "target": "libs/contracts/agent_output_values.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0009",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/agent_outputs.py",
+          "target": "libs/contracts/agent_outputs.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0010",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/commander_output_context.py",
+          "target": "libs/contracts/commander_output_context.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0011",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/commander_output_fields.py",
+          "target": "libs/contracts/commander_output_fields.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0012",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/commander_output_policy.py",
+          "target": "libs/contracts/commander_output_policy.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0013",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/monitor_output_context.py",
+          "target": "libs/contracts/monitor_output_context.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0014",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/monitor_output_decision.py",
+          "target": "libs/contracts/monitor_output_decision.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0015",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/monitor_output_exit_fields.py",
+          "target": "libs/contracts/monitor_output_exit_fields.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0016",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/monitor_output_fields.py",
+          "target": "libs/contracts/monitor_output_fields.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0017",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/monitor_output_memory_bias.py",
+          "target": "libs/contracts/monitor_output_memory_bias.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0018",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/monitor_output_policy_fields.py",
+          "target": "libs/contracts/monitor_output_policy_fields.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0019",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/scanner_output_context.py",
+          "target": "libs/contracts/scanner_output_context.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0020",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/scanner_output_fields.py",
+          "target": "libs/contracts/scanner_output_fields.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0021",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/strategist_output_context.py",
+          "target": "libs/contracts/strategist_output_context.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0022",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/strategist_output_fields.py",
+          "target": "libs/contracts/strategist_output_fields.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0023",
+          "kind": "KEEP_IF",
+          "source": "libs/contracts/strategist_output_plan_fields.py",
+          "target": "libs/contracts/strategist_output_plan_fields.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0024",
+          "kind": "KEEP_IF",
+          "source": "tests/test_p15_scanner_projection_extraction.py",
+          "target": "tests/test_p15_scanner_projection_extraction.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0025",
+          "kind": "KEEP_IF",
+          "source": "tests/test_p15_strategist_projection_extraction.py",
+          "target": "tests/test_p15_strategist_projection_extraction.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0026",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf044_contract_facade.py",
+          "target": "tests/test_rf044_contract_facade.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0027",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf044_contract_state_serialization.py",
+          "target": "tests/test_rf044_contract_state_serialization.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0028",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf044_executor_error_serialization.py",
+          "target": "tests/test_rf044_executor_error_serialization.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0029",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf044_executor_input_immutability.py",
+          "target": "tests/test_rf044_executor_input_immutability.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0030",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf044_owner_c1_inventory.py",
+          "target": "tests/test_rf044_owner_c1_inventory.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-044-0031",
+          "kind": "KEEP_IF",
+          "source": "tests/test_rf044_supervisor_blocked_consumer.py",
+          "target": "tests/test_rf044_supervisor_blocked_consumer.py",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "rf_id": "RF-045",
+      "owner": null,
+      "design_document": "docs/refactor/plan/rf_details/RF-045_IMPLEMENTATION.md",
+      "tasks": [
+        {
+          "task_id": "RF-045-0001",
+          "kind": "MOVE_BODY",
+          "source": "libs/core/event_logger.py::_compact_event_payload",
+          "target": "libs/core/event_logger_compact_event_payload.py::_compact_event_payload",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-045-0002",
+          "kind": "MOVE_BODY",
+          "source": "libs/core/event_logger.py::_compact_candidate_ranking_table",
+          "target": "libs/core/event_logger_compact_candidate_ranking_table.py::_compact_candidate_ranking_table",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        },
+        {
+          "task_id": "RF-045-0003",
+          "kind": "MOVE_BODY",
+          "source": "libs/core/event_logger.py::_compact_value",
+          "target": "libs/core/event_logger_compact_value.py::_compact_value",
+          "implementation": "UNKNOWN",
+          "peer_review": "UNKNOWN",
+          "integration_runtime": "UNKNOWN",
+          "blocker": null,
+          "evidence": []
+        }
+      ]
+    }
+  ]
+}
