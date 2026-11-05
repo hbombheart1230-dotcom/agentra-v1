@@ -1,6 +1,8 @@
+> **현재 우선 결정:** [P1.5 중단·권한 해제·P1.6 이관](P15_STOP_AND_HANDOFF_20261105.md). 미완료 이관은 검증 PASS가 아니다.
+
 # Agentra P1.6 — Identity, Architecture and Structural Pruning Master Plan
 
-**Status: DESIGN CANDIDATE / NOT IMPLEMENTED (2026-10-30).** This plan captures the product-owner direction; all untested mechanisms are proposals, not assertions about existing functionality. Formal architecture freeze requires a separate P1.6 acceptance after P1.5 completion.
+**Status: DESIGN CANDIDATE / NOT IMPLEMENTED (2026-10-30).** This plan captures the product-owner direction; all untested mechanisms are proposals, not assertions about existing functionality. Formal architecture freeze requires a separate P1.6 acceptance after documented P1.5 stop/handoff.
 
 ## 1. Why P1.6 exists
 
@@ -84,6 +86,6 @@ Original graph-spine state patch/deletion semantics, mode split, injection seams
 
 ## 8. Scope and approval boundary
 
-During active P1.5: **documentation consolidation only**. No P1.6 runtime changes, test execution, graph dependency changes, scheduled automation edits or prod strategy modification. P1.5 C01–C06 and RunLab follow their current contracts and continue without interruption.
+P1.5 신규 개발과 C01~C06 반복 지시는 종료되었다. 잔여 작업은 P1.6으로 이관하며 지팀장 전용 쓰기·승인 제한은 폐지한다. 운영 런타임 안전 제한은 유지한다.
 
 After P1.5 freeze: conduct A→E with explicit scope approval, separate coding and independent test/review evidence, no production brokerage until all specified deployment/safety gates and owner approval. Existing D00, canonical execution owner/CAS, UEF frozen semantics, broker UNKNOWN and protected operational files retain their authority. P1.6 is complete only with verified evidence, not a signed design alone.
