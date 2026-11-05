@@ -58,6 +58,8 @@ RF-010, 011, 012, 022, 026, 030, 042, 048, 049 (모두 01_PENDING). 실제 코�
 
 **버림**: 두 브랜치의 `CURRENT.md`, patch_notes, `HANDOFF_*`, work_orders 증거 문서(정본은 integration).
 
+**오너 결정 (2026-11-05)**: RF-032의 UEF 이동 7개(RF-032-0001~0007)는 **P1.6으로 이관**한다. RF-032는 A의 분리 2건(`_rank_row`, `_candidate_rows`) 반영으로 1.5 범위를 마친 것으로 기록하고, 7개는 1.6 Gate C에서 UEF 승인과 함께 다룬다. 따라서 1.5 마무리 대상은 RF-021(KEEP_VERIFIED)과 RF-045뿐이다.
+
 ## 5. 동결 조건 (P1.6 Gate A 입력)
 
 1. FINISH 3개 RF가 `05_DONE`이 된다 (G1 BASE parity, G2 normal·`-O` 테스트, 독립 피어 `PASS`와 실제 종료 코드).
