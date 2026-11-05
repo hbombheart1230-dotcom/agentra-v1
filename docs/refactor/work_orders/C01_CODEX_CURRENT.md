@@ -1,23 +1,16 @@
-# C01 — Codex B | RF-063 ACTIVE / B46 READY (READ-ONLY CONTRACT RECONCILIATION)
+# C01 — Codex B | P1.5 컷라인 마무리 (RF-045, RF-032 피어)
 
 ## Authority
-Canonical integration/p1.5; B branch work/p15-b-operator-structure-20261022; report #12. Read D00, C03_LEAD_TRIAGE_CURRENT.md, docs/refactor/plan/rf_details/RF-063_IMPLEMENTATION.md opening “실물 함수 분석” and §2–3, and docs/refactor/plan/queue/02_DEVELOPING/CODEX_B/RF-063.md C1/76-owner checklist. ACTIVE_RF=RF-063; no RF switch. Preserve Owner, frozen oracle, Guard/Writer/UEF/Step5C and no-live-operation boundaries.
+Canonical integration/p1.5. 컷라인 정본: docs/refactor/p1_6/P15_CUTLINE_PROPOSAL_20261105.md (오너 결정 5건 확정, 2026-11-05). D00 보호 경계(Owner, frozen, UEF, Guard, Writer, Step5C, 실거래·브로커 금지) 유지. 이 지시서는 2026-11-05에 Claude가 오너 위임으로 직접 개정했다. RF-063은 컷라인에서 제외(P1.6 이관)되어 더 이상 활성이 아니다.
 
 ## Current order
-ORDER_ID: B46-RF063-VALIDATION-OWNER-RECONCILIATION-20261104
-ITEM: 1
-FIRST_UNMET: RF-063 C1/G1 PARTIAL — validate_trade_artifact_chain projection Owner/consumer contract and existing B implementation equivalence not yet established.
-RF_DETAIL: RF-063_IMPLEMENTATION.md opening “실물 함수 분석” validate_trade_artifact_chain calculation-only evidence projection; §2 check_trade_report_runtime_regression.py; §3 owner/CLI classification; original RF-063 C1/76-owner checklist.
-SOURCE_PATH=scripts/diagnostics/check_trade_report_runtime_regression.py
-SOURCE_BLOB_CANONICAL=dc882aa56b5a23d9716cc8d3ec009480275cfe4d
-SOURCE_BLOB_B=c7113fcf6e7c3313943e484fa939c48062672141
-PLANNED_TARGET=scripts/diagnostics/trade_artifact_validation_projection.py; TARGET_BLOB_BEFORE=ABSENT on canonical and B. DO NOT CREATE.
-EXISTING_B_OWNER=scripts/diagnostics/trade_artifact_validation_evidence_projection.py; BLOB=9fd7c104efc5b0497bdb7f9b0b6a4642386b3974
-DEPENDENCIES_B: trade_artifact_validation_read_projection.py blob c573e644ab9f81377ecba906ad283170807c6ee7; trade_artifact_validation_cli.py blob 1fd6fefbca7d1a04373c626f3f02ae4a4fb2d8f6.
-ALLOWED: read-only exact source/Owner/consumer/import and existing test inspection, no source/test changes or repeat pytest.
-ACTION: Trace the exact calculation-only body in canonical to B evidence projection, compare return keys, warning/error ordering, effect boundary and public facade/CLI consumer imports. Inventory the seven B-only transitive projection dependencies and whether a minimal non-overwriting selective integration is safe. Report KEEP_EXISTING_OWNER with exact blob and C04 file/test manifest if equivalent, or TARGET_GAP with exact function/line/contract mismatch and a minimal allowed source/target/test proposal for C03. Do not overwrite canonical facade or create duplicate Owner. If blocked provide per-path evidence, rule and resolution owner; continue independent RF-063 C1 candidates.
-TEST: NOT_RUN for unchanged read-only inspection; subsequent C03 code order requires one scoped normal targeted pytest. Existing B45 9 PASS and canonical 13 PASS are completed, do not repeat.
-COMPLETION: #12 evidence with B remote SHA, exact blobs, actual import/consumer paths, verdict and measured time. C04 owns selective integration/G3, C05 whole RF DONE. No code push for read-only order.
+ORDER_ID: B47-CUTLINE-FINISH-20261105
+ITEM 1: RF-045 — 남은 MOVE_BODY 3개를 원장(docs/refactor/plan/RF_TASK_LEDGER.jsonl)의 RF-045 행에서 찾아 처리. B 브랜치의 http_client·log_maintenance 수정은 이미 integration에 반영됨(d5450594).
+ITEM 2: RF-032 독립 피어 리뷰(READ-ONLY) — Claude A의 RF-032 결과를 source/target blob, 반환 키, 경고·오류 순서, effect 경계 기준으로 검토해 PASS 또는 TARGET_GAP을 판정.
+DEFERRED(하지 않는다): B의 폴더 구조(brief_parts/, read_models/, agent_output_parts/)는 채택하지 않으며 P1.6에서 가드 테스트와 함께 다룬다. commander/__init__.py, run_m30_final_golive_signoff.py, shared_role_contracts.py의 B 버전도 같은 이유로 보류. 새 RF 시작 금지.
+KNOWN_BASELINE_FAILURES: 컷라인 문서 동결 조건 2-1의 기존 실패는 책임 밖. 새 실패가 없음을 작업 전후 실패 집합 비교로 증명한다.
+TEST: 변경 경계마다 normal과 `python -O` 각 1회.
+COMPLETION: Issue #12에 실제 종료 코드와 SHA 보고.
 
 ## Execution
-On a later exact code order verify source/target blob before edit, one normal scoped test, non-force push and refetch. No edits to this work order by B. Current instructions only.
+문서/RF/STATUS 수정 금지. main, 새 브랜치/PR/worktree 금지. 예약 작업은 만들지 않는다.
