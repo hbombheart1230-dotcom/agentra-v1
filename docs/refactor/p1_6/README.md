@@ -1,7 +1,9 @@
+> **현재 우선 결정:** [P1.5 중단·권한 해제·P1.6 이관](P15_STOP_AND_HANDOFF_20261105.md). 미완료 이관은 검증 PASS가 아니다.
+
 # Agentra P1.6 — Canonical Document Home
 
 > **STATUS: DESIGN CONSOLIDATION / NOT STARTED / NO RUNTIME AUTHORIZATION (2026-10-30).**
-> **Canonical branch: integration/p1.5.** P1.6 becomes executable only after P1.5 formally closes and the owner approves its gate. This folder is the sole active home for P1.6 scope and future work orders. No P1.5 automation or trading runtime is changed by this document consolidation.
+> Canonical branch: integration/p1.5. P1.5 is stopped; unresolved work transfers to P1.6. See P15_STOP_AND_HANDOFF_20261105.md.
 
 ## Read only these three active documents
 
@@ -13,8 +15,8 @@ No implementation packet, agent, scheduler, dependency, settings file, or P1.6 r
 
 ## Current authority and execution continuity
 
-- **P1.5 is the active implementation program.** Current entry/role router: [../work_orders/CURRENT.md](../work_orders/CURRENT.md); P1.5 contract: [../work_orders/D00_ENGINEERING_DELIVERY_POLICY.md](../work_orders/D00_ENGINEERING_DELIVERY_POLICY.md). C01/C02 own A/B code/tests; C03 dispatches, C04 integrates, C05 closes RF, C06 independently audits. RunLab: [../../runtime/validation/CURRENT.md](../../runtime/validation/CURRENT.md), Issue #32. GitHub Issues #11, #12, #32, #36 and #37 retain their current evidentiary roles.
-- P1.5's running automation, scheduled development/integration/DONE/audit, CI and RunLab validation **continue under their own current contracts**. P1.6 preparation neither pauses, edits, reroutes nor supersedes these tasks. If they need changes, issue a separately authorized P1.5 instruction.
+P1.5 신규 개발과 C01~C06 반복 지시는 종료되었다. 잔여 작업은 P1.6으로 이관하며 지팀장 전용 쓰기·승인 제한은 폐지한다. 운영 런타임 안전 제한은 유지한다.
+P1.5 신규 개발과 C01~C06 반복 지시는 종료되었다. 잔여 작업은 P1.6으로 이관하며 지팀장 전용 쓰기·승인 제한은 폐지한다. 운영 런타임 안전 제한은 유지한다.
 - The older [P1.5/P1.6 master plan](../p1_5_p1_6_master_plan.md) is historical roadmap context. Its narrow P1.6 orchestration-only scope is superseded **for future design planning in this folder** by the user's 2026-10-30 direction; its frozen P1.5 execution/safety gates and later P2–P8 phase boundaries remain intact.
 - Earlier [Architecture V2](../../architecture/architecture_v2.md) and [Q100 design](../../research/q100_research_and_learning_roadmap.md) are reference designs, not deployed proof and not competing P1.6 entrypoints. Exact current implementation must be verified at P1.5 freeze.
 
@@ -38,4 +40,4 @@ The five original 2026-10-12 documents are preserved **byte-identically** under 
 
 ## Change control
 
-Scope of this consolidation: documentation only inside this P1.6 directory. No change to D00, CURRENT, C01–C06, RF/STATUS, runtime validation, code, tests, dependencies, broker credentials, operational databases or active automation. No P1.6 benchmark, code execution, model call or acceptance performed. Formal design approval and subsequent runtime authorization are separate events.
+현재 권한·이관 정책은 P15_STOP_AND_HANDOFF_20261105.md를 따른다. 과거 문서 통합 범위 제한은 현재 담당자의 쓰기를 제한하지 않는다.
