@@ -1,0 +1,1064 @@
+path,group,disposition,reason,tests_collected,seconds,failing,sha_pins,git_calls,doc_refs,bytes
+tests/test_work_monitor_m9_native.py,work_order,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,1,1573.3,1,1,0,0,3118
+tests/test_work_reporter_r4_facade_bodies.py,work_order,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,1608,1538.7,0,1,1,1,12433
+tests/test_p153_operator_ui_moved_bodies.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,706,992.3,1,0,1,2,9725
+tests/test_p161_agent_output_contract_freeze.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,16,988.3,2,2,3,0,15524
+tests/test_p152_r3_moved_bodies.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,744,886.8,0,1,1,1,12044
+tests/test_p164_strategist_contract_freeze.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,5,539.9,0,1,3,0,7782
+tests/test_work_reporter_r11_repo_hygiene.py,work_order,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,34,539.0,0,2,4,4,7145
+tests/test_p15_perf2a_variant_inventory_equivalence.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,15,492.8,0,1,1,0,7218
+tests/test_p154_wave_b_moved_bodies.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,768,421.6,2,0,1,2,15164
+tests/test_p156_parity_harness.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,108,405.4,2,1,4,0,57329
+tests/test_p155_wave_c_moved_bodies.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,267,377.0,0,0,1,2,9580
+tests/test_p163_monitor_contract_freeze.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,5,375.8,1,1,3,0,7449
+tests/test_work_reporter_r10_retained_io_contracts.py,work_order,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,54,309.3,0,1,3,1,14337
+tests/test_work_reporter_seed_migration.py,work_order,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,105,305.7,1,14,6,5,32261
+tests/test_p165_commander_ui_contract_freeze.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,5,278.4,1,1,3,0,7953
+tests/test_p162_scanner_node_contract_freeze.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,8,249.0,1,1,3,0,14055
+tests/test_p159_ownership_matrix_provenance.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,5,177.5,0,0,1,0,3443
+tests/test_p15_strategist_s5_helper_moves.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,48,167.9,15,1,2,1,18695
+tests/test_p159_current_owner_contract_gates.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,92,167.1,1,6,4,1,27901
+tests/test_p156_second_pass_extraction_gates.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,8,158.0,0,2,2,2,13634
+tests/test_p15_strategist_contract_parsing_move.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,17,139.4,1,1,1,0,13312
+tests/test_work_reporter_r10_artifact_parity.py,work_order,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,3,129.1,0,1,2,0,9705
+tests/test_p15_commander_pure_v1_admission.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,64,97.3,64,5,0,0,9612
+tests/test_work_monitor_role_contracts.py,work_order,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,148,80.1,1,1,1,1,9408
+tests/test_p172_v4056_scanner_policy_migration.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,30,53.8,0,7,3,0,9230
+tests/test_p15_rf032_20261103_08h_scanner_no_trade_historical_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,302,44.8,0,6,1,0,31187
+tests/test_p157_third_pass_t1_extraction_gates.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,9,42.2,0,2,4,2,14145
+tests/test_p171_v3055_scanner_projection_migration.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,29,34.0,1,7,3,0,9924
+tests/test_work_monitor_continuous.py,work_order,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,73,34.0,0,0,2,0,7757
+tests/test_work_reporter_renderer_bytes.py,work_order,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,54,28.1,0,1,1,1,3797
+tests/test_p167_v2053_scanner_context_migration.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,23,27.4,0,7,3,0,6726
+tests/test_p15_rf032_20261102_17h_horizon_metrics_entry_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,179,25.5,0,6,1,0,31323
+tests/test_p15_rf032_20261102_23h_scanner_pure_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,278,24.9,0,5,1,0,24398
+tests/test_p163_t4b_extraction_gates.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,10,24.0,0,3,3,1,15765
+tests/test_p152_ai_facade_market_scanner_labels.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,43,23.4,0,1,1,0,3703
+tests/test_p15_rf032_20261103_05h_full_chain_component_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,248,22.9,0,3,1,0,29019
+tests/test_p152_markdown_clean_operator_labels_owners.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,43,20.8,0,1,1,0,3665
+tests/test_p15_rf032_20261103_06h_full_chain_alignment_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,191,20.7,0,4,1,0,34814
+tests/test_p15_rf030_20261102_04h_period_readonly_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,282,19.4,4,2,1,0,13542
+tests/test_work_reporter_r8_read_via_callback_parity.py,work_order,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,25,18.9,0,1,1,1,9075
+tests/test_p15_rf032_20261103_03h_scanner_alignment_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,215,18.6,0,3,1,0,18954
+tests/test_p15_b_operator_brief_pure_parity.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,38,18.3,0,1,1,0,9732
+tests/test_p15_operator_trade_index_projection.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,13,17.8,8,1,1,0,8465
+tests/test_p15_rf030_20261102_05h_followup_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,162,17.4,11,4,2,0,18020
+tests/test_p15_rf032_20261103_04h_episode_scanner_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,215,17.1,0,3,1,0,20690
+tests/test_p15_rf032_20261103_09h_historical_full_chain_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,117,16.9,0,5,1,0,34817
+tests/test_p158_third_pass_t2_extraction_gates.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,11,16.6,0,2,4,2,15912
+tests/test_p15_rf032_20261103_07h_quality_episode_no_trade_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,152,16.3,0,5,1,0,34947
+tests/test_p15_rf032_20261102_20h_evaluation_lens_scalar_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,234,15.6,0,3,1,0,14291
+tests/test_p172_strategist_s1_057_migration.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,94,15.5,1,0,2,0,8008
+tests/test_p152_markdown_clean_news_headlines_owner.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,30,13.5,0,1,1,0,4562
+tests/test_p15_rf032_20261102_18h_loss_decomposition_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,180,13.4,0,3,1,0,22948
+tests/test_p15_rf030_20261102_03h_operator_small_projection.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,189,12.6,0,4,1,0,7918
+tests/test_p15_rf032_20261103_02h_no_trade_alignment_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,184,12.6,0,4,1,0,15382
+tests/test_p15_rf027_20261102_02h_horizon_extractors.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,72,12.5,0,2,1,0,10004
+tests/test_p15_rf039_20261102_01h_evidence_analysis_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,42,12.3,0,2,1,0,16000
+tests/test_p15_rf032_20261103_21h_cumulative_candidate_owner.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,108,11.8,0,4,1,0,14258
+tests/test_p15_rf032_20261102_16h_entry_timing_followup_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,234,11.3,0,4,2,0,19389
+tests/test_p15_rf032_20261102_14h_evaluation_pure_followup_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,134,10.9,0,8,2,0,19347
+tests/test_p152_markdown_clean_summary_language_owner.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,17,9.9,0,1,1,0,2574
+tests/test_p15_rf030_20261102_07h_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,180,9.9,0,3,2,0,11717
+tests/test_p15_b_commander_monitor_pure_parity.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,88,9.7,0,1,1,0,10997
+tests/test_p15_rf032_20261102_21h_reporting_pure_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,84,9.7,0,5,1,0,24985
+tests/test_p152_ai_duration_language_owner.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,22,9.4,0,1,1,0,3030
+tests/test_p165_t4d_extraction_gates.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,10,9.3,8,3,4,1,17615
+tests/test_p166_v1052_candidate_risk_migration.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,10,8.9,2,3,1,0,7443
+tests/test_p152_story_facade_contract_owners.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,17,8.8,0,1,1,0,2911
+tests/test_p15_rf032_20261102_11h_evaluation_pure_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,133,8.6,12,5,2,0,19214
+tests/test_p15_rf032_20261102_22h_horizon_cost_pure_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,108,8.5,0,4,1,0,21853
+tests/test_p15_overview_live_projection.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,17,8.3,0,1,1,0,10522
+tests/test_p15_rf030_20261102_06h_remaining_pure_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,105,8.3,0,3,2,0,9657
+tests/test_p15_rf032_20261103_21h_cumulative_rank_owner.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,96,8.1,0,3,1,0,9442
+tests/test_p15_rf032_20261102_19h_evaluation_lens_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,110,7.4,0,3,1,0,25243
+tests/test_p15_rf032_20261102_12h_evaluation_followup_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,109,7.3,5,5,2,0,21807
+tests/test_p152_story_facade_human_owners.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,14,7.1,0,1,1,0,3183
+tests/test_p15_rf032_20261102_09h_scorecard_window_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,133,7.1,0,4,2,0,15238
+tests/test_p15_rf032_20261102_13h_inventory_attribution_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,71,6.8,0,4,2,0,27730
+tests/test_p152_ai_facade_text_helpers.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,13,6.1,0,1,1,0,2064
+tests/test_p164_t4c_extraction_gates.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,11,6.1,2,3,3,1,16492
+tests/test_p152_story_facade_compatible_owners.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,7,6.0,0,1,1,0,4203
+tests/test_p15_rf032_20261102_15h_entry_timing_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,126,5.7,0,3,2,0,14866
+tests/test_work_monitor_scope_accounting.py,work_order,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,5,5.7,3,1,3,1,4141
+tests/test_p15_rf030_20261102_08h_followup_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,106,5.6,0,4,2,0,12789
+tests/test_p15_rf032_20261102_10h_attribution_score_v0_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,105,5.5,0,3,2,0,13241
+tests/test_p161_t35_extraction_gates.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,11,5.0,7,2,2,1,12376
+tests/test_p15_rf036_20261102_00h_feature_snapshots.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,7,4.8,0,2,2,0,5570
+tests/test_p15_rf030_20261102_02h_run_contexts.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,14,4.5,0,4,1,0,10650
+tests/test_p15_rf063_20261103_08h_mock_slo_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,5,3.9,0,2,1,0,5915
+tests/test_p15_rf063_20261103_02h_diagnostics_readiness_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,6,3.8,0,3,1,0,6311
+tests/test_p15_rf063_20261103_03h_slo_mock_owners.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,6,3.4,0,2,1,0,6860
+tests/test_p162_t4a_extraction_gates.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,8,3.4,0,2,3,1,11060
+tests/test_p15_rf037_20261102_00h_episode_projection.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,8,2.1,0,2,1,0,11653
+tests/test_p15_rf023_20261102_02h_watch_renderers.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,16,2.0,0,2,1,0,6028
+tests/test_p15_rf061_20261101_22h_tool_facade_identity_keep.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,7,1.9,0,4,1,0,3357
+tests/test_work_reporter_r8_read_contracts.py,work_order,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,3,1.8,0,1,1,0,4946
+tests/test_p15_rf025_20261102_03h_controlled_mock_projection.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,21,1.6,0,2,1,0,7229
+tests/test_p15_rf033_20261101_20h_canonical_reaction_reader.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,3,1.4,0,4,1,0,5364
+tests/test_p15_rf033_20261101_21h_original_owner_parity.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,5,1.3,5,8,1,0,6089
+tests/test_p152_facade_symbol_ledger.py,p15x-p19x,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,2,1.0,0,1,1,3,3144
+tests/test_p15_rf040_20261101_23h_reporter_owner_parity.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,8,0.9,1,2,1,0,6735
+tests/test_p15_integration_completion.py,p15,DELETE,refactor-history check (pinned SHA/git/docs); move already landed,113,0.5,113,1,6,2,25123
+tests/test_p152_r3_harness_guards.py,p15x-p19x,UPDATE,live safety/authority guard but pinned to history/docs; rewrite against current tree,61,25.3,0,0,0,2,17515
+tests/test_daily_uef_pipeline.py,general,UPDATE,behavior test that also pins history/docs; drop the pin,29,18.6,0,0,1,0,35699
+tests/test_p15_rf032_20261103_00h_authority_feedback_pure_owners.py,p15,UPDATE,live safety/authority guard but pinned to history/docs; rewrite against current tree,147,17.4,0,5,1,0,24789
+tests/test_work_monitor_retained_boundary.py,work_order,UPDATE,live safety/authority guard but pinned to history/docs; rewrite against current tree,2,13.1,1,0,0,2,1496
+tests/test_p15_b_commander_monitor_boundaries.py,p15,UPDATE,live safety/authority guard but pinned to history/docs; rewrite against current tree,25,8.9,0,0,1,0,6652
+tests/test_p155_wave_c_scope_and_authority_boundary.py,p15x-p19x,UPDATE,live safety/authority guard but pinned to history/docs; rewrite against current tree,4,6.1,0,2,3,1,6856
+tests/test_p15_b_operator_brief_boundaries.py,p15,UPDATE,live safety/authority guard but pinned to history/docs; rewrite against current tree,8,4.9,2,0,1,0,7103
+tests/test_p15_rf065_20261101_23h_research_cli_effect_boundary.py,p15,UPDATE,live safety/authority guard but pinned to history/docs; rewrite against current tree,3,3.3,0,4,1,0,3145
+tests/test_shared_stage_provenance.py,general,UPDATE,behavior test that also pins history/docs; drop the pin,2,2.9,2,0,0,2,940
+tests/test_p152_facade_abi_and_authority_boundary.py,p15x-p19x,UPDATE,live safety/authority guard but pinned to history/docs; rewrite against current tree,4,1.8,0,3,2,0,4051
+tests/test_p154_wave_b_scope_and_authority_boundary.py,p15x-p19x,UPDATE,live safety/authority guard but pinned to history/docs; rewrite against current tree,3,1.3,0,2,1,1,4234
+tests/test_patch_notes_sync.py,general,UPDATE,behavior test that also pins history/docs; drop the pin,2,0.2,0,0,0,17,3534
+tests/test_shared_strategist_contracts.py,general,UPDATE,behavior test that also pins history/docs; drop the pin,57,0.1,57,2,0,0,8218
+tests/test_scripts_target_tree_compat_audit.py,general,UPDATE,behavior test that also pins history/docs; drop the pin,,0.0,1,0,0,1,4561
+tests/test_p152_prelocal_consumer_debt.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,255.1,0,0,0,0,1718
+tests/test_work_monitor_policy_trace_views.py,work_order,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",63,97.9,0,0,0,0,7484
+tests/test_work_monitor_exit_labels.py,work_order,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",102,86.6,0,0,0,0,4493
+tests/test_diagnostic_queries_work_order01.py,work_order,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",59,77.7,8,0,0,0,8352
+tests/test_work_monitor_annotation_views.py,work_order,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",49,58.8,0,0,0,0,4839
+tests/test_work_monitor_observation_views.py,work_order,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",20,56.9,1,0,0,0,5525
+tests/test_work_monitor_body_views.py,work_order,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",52,31.6,0,0,0,0,5202
+tests/test_p15_operator_run_detail_projection.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",22,29.4,17,0,0,0,13383
+tests/test_p15_b_versioned_contract.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",19,22.2,19,0,0,0,5273
+tests/test_p155_runtime_naming_aliases.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,15.5,0,0,0,0,4133
+tests/test_work_monitor_m9_offline.py,work_order,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",17,14.7,6,0,0,0,12196
+tests/test_p15_rf035_18h_reporting_projection_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,3.8,6,0,0,0,15765
+tests/test_p168_wave_b_shim_verifier_negatives.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",48,3.5,0,0,0,0,8690
+tests/test_p159_static_purity_closure.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",24,3.4,0,0,0,0,12133
+tests/test_p15_bundle_trade_lookup_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",12,3.4,0,0,0,0,5383
+tests/test_p152_snapshot_parity.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",9,2.7,0,0,0,0,4727
+tests/test_p15_rf035_20261101_00h_quant_shadow_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,2.5,1,0,0,0,25791
+tests/test_p15_rf035_12h_a3_build_payload_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,2.4,0,0,0,0,7677
+tests/test_p15_rf035_12h_a4_render_markdown_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,2.3,0,0,0,0,6946
+tests/test_p15_rf035_05h_a2_history_index_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,2.2,1,0,0,0,3764
+tests/test_p152_integration_acceptance_inventory.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,2.1,1,0,0,0,1774
+tests/test_p15_rf035_11h_a3_extract_trade_rows_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,2.1,0,0,0,0,4973
+tests/test_p15_alpha_prospective_concentration_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,1.7,0,0,0,0,6896
+tests/test_p173_p058_integration_contracts.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,1.6,0,0,0,0,2825
+tests/test_p15_alpha_stage2_source_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,1.5,5,0,0,0,4669
+tests/test_p15_rf035_23h_quant_shadow_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,1.5,2,0,0,0,15557
+tests/test_p15_feedback_confidence_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",35,1.4,0,0,0,0,5711
+tests/test_p15_rf035_05h_a1_trade_artifact_snapshot_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,1.4,0,0,0,0,4213
+tests/test_p15_rf035_12h_a8_iter_trade_report_json_paths_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,1.4,1,0,0,0,3518
+tests/test_p15_rf014_20261101_14h_real_scanner_consumer.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,1.3,0,0,0,0,5864
+tests/test_p15_alpha_q12_metric_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",19,1.2,0,0,0,0,5910
+tests/test_p15_rf035_04h_a7_iter_trade_lifecycles_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,1.2,0,0,0,0,2205
+tests/test_p15_rf035_05h_a3_collect_symbols_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,1.2,0,0,0,0,3406
+tests/test_p15_rf035_22h_quant_shadow_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,1.2,0,0,0,0,16078
+tests/test_p15_playbook_stats_finite_contract.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",14,1.1,0,0,0,0,3622
+tests/test_p15_rf035_05h_a8_strategist_writer_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,1.1,1,0,0,0,3863
+tests/test_p15_rf035_12h_a1_aggregate_shadow_summaries_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,1.1,0,0,0,0,7645
+tests/test_p15_rf063_20261101_03h_diagnostics_remaining_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,1.1,0,0,0,0,4103
+tests/test_p15_summary_legacy_score_label_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",21,1.1,0,0,0,0,3666
+tests/test_p15_harness_performance_safety.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,1.0,0,0,0,0,4327
+tests/test_p15_rf035_07h_a3_build_bundle_argv_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,1.0,1,0,0,0,4589
+tests/test_p15_rf035_20261101_02h_reporting_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,1.0,3,0,0,0,11671
+tests/test_p15_rf035_20261101_10h_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,1.0,0,0,0,0,14322
+tests/test_p15_rf035_21h_row_closed_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,1.0,0,0,0,0,1114
+tests/test_p15_rf035_21h_tactic_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,1.0,0,0,0,0,1084
+tests/test_p15_rf063_20261101_13h_residual_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,1.0,0,0,0,0,1759
+tests/test_p15_strategist_summary_news_usage_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",15,1.0,0,0,0,0,4625
+tests/test_p15_summary_directive_line_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",14,1.0,0,0,0,0,3860
+tests/test_p15_rf035_05h_a5_commander_route_summary_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.9,1,0,0,0,4400
+tests/test_p15_rf035_06h_a2_intraday_story_input_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.9,1,0,0,0,3298
+tests/test_p15_rf035_07h_a2_load_bundle_queue_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.9,0,0,0,0,3642
+tests/test_p15_rf035_14h_a3_ledger_row_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.9,0,0,0,0,4717
+tests/test_p15_rf035_17h_projection_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.9,1,0,0,0,10863
+tests/test_p15_rf035_20h_quant_shadow_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.9,0,0,0,0,15177
+tests/test_p15_rf035_21h_bool_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",17,0.9,0,0,0,0,979
+tests/test_p15_summary_first_text_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",12,0.9,0,0,0,0,2959
+tests/test_p152_new_owner_dependency_gate.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.8,0,0,0,0,4323
+tests/test_p15_bundle_meaningful_payload_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",19,0.8,0,0,0,0,5271
+tests/test_p15_rf035_03h_a2_to_epoch_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",15,0.8,0,0,0,0,1409
+tests/test_p15_rf035_20261101_04h_quant_tactic_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.8,0,0,0,0,12876
+tests/test_p15_rf035_20261101_09h_q8_lane_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.8,0,0,0,0,12748
+tests/test_p15_rf063_20261101_14h_manifest_golden.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.8,0,0,0,0,1890
+tests/test_p15_strategist_summary_call_kind_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",19,0.8,0,0,0,0,4537
+tests/test_p15_summary_canonical_path_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",14,0.8,4,0,0,0,4119
+tests/test_p15_summary_headline_count_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.8,0,0,0,0,2795
+tests/test_p15_summary_legacy_patch_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",9,0.8,0,0,0,0,2931
+tests/test_p15_summary_legacy_score_lines_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.8,0,0,0,0,3117
+tests/test_p15_summary_legacy_watch_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",12,0.8,0,0,0,0,3134
+tests/test_p15_summary_rejected_lines_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.8,0,0,0,0,2886
+tests/test_p152_markdown_render_section_owners.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",9,0.7,0,0,0,0,8361
+tests/test_p15_feedback_analysis_recommendations_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",13,0.7,0,0,0,0,3446
+tests/test_p15_intent_nonfinite_limit_price.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",18,0.7,0,0,0,0,2333
+tests/test_p15_rf035_00h_a6_render_strategist_llm_summary_markdown_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.7,0,0,0,0,5812
+tests/test_p15_rf035_04h_a4_clean_symbol_code_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.7,0,0,0,0,638
+tests/test_p15_rf035_04h_a8_iter_trade_lifecycles_for_day_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.7,0,0,0,0,2481
+tests/test_p15_rf035_05h_a6_strategist_payload_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.7,1,0,0,0,3597
+tests/test_p15_rf035_06h_a1_intraday_read_json_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.7,0,0,0,0,2876
+tests/test_p15_rf035_08h_a5_brief_cache_dir_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.7,1,0,0,0,3707
+tests/test_p15_rf035_11h_a5_pattern_rows_from_daily_summaries_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.7,0,0,0,0,4951
+tests/test_p15_rf035_12h_a6_read_json_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.7,0,0,0,0,3325
+tests/test_p15_rf035_20261101_11h_event_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.7,0,0,0,0,16089
+tests/test_p15_rf035_eval_shape_from_reason_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.7,0,0,0,0,1277
+tests/test_p15_rf035_path_trade_artifact_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",6,0.7,0,0,0,0,2773
+tests/test_p15_rf035_trade_lookup_iter_dirs_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.7,0,0,0,0,1607
+tests/test_p15_summary_first_dict_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.7,0,0,0,0,2709
+tests/test_p152_summary_input_part_owners.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.6,0,0,0,0,3249
+tests/test_p15_bundle_run_filter_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",12,0.6,0,0,0,0,3536
+tests/test_p15_feedback_recommendations_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",12,0.6,0,0,0,0,4569
+tests/test_p15_live_bundle_existing_trade_ids_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.6,0,0,0,0,3388
+tests/test_p15_live_bundle_parser_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.6,0,0,0,0,3954
+tests/test_p15_proposal_store_append_serialization.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.6,0,0,0,0,2289
+tests/test_p15_rf035_04h_a3_contains_any_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.6,0,0,0,0,907
+tests/test_p15_rf035_06h_a7_intraday_summary_payload_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.6,1,0,0,0,4325
+tests/test_p15_rf035_07h_a1_read_lock_payload_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.6,0,0,0,0,3359
+tests/test_p15_rf035_21h_quant_shadow_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.6,0,0,0,0,15575
+tests/test_p15_rf035_23h_5_to_float_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.6,0,0,0,0,981
+tests/test_p15_rf035_eval_shape_from_tactic_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.6,0,0,0,0,1035
+tests/test_p15_rf035_llm_normalize_status_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.6,0,0,0,0,859
+tests/test_p15_rf038_20261102_01h_conditional_analysis_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.6,0,0,0,0,3678
+tests/test_p15_rf063_20261101_14h_supply_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.6,0,0,0,0,2786
+tests/test_p15_rf063_20261103_00h_diagnostics_pure_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.6,0,0,0,0,5077
+tests/test_p15_strategist_summary_operator_readout_clean_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",13,0.6,0,0,0,0,4380
+tests/test_p15_strategist_summary_operator_readout_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",12,0.6,0,0,0,0,4679
+tests/test_p15_strategist_summary_output_quality_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.6,0,0,0,0,5100
+tests/test_p15_strategist_summary_quality_lines_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.6,0,0,0,0,4739
+tests/test_p15_strategist_summary_response_parse_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",17,0.6,0,0,0,0,3732
+tests/test_p15_summary_compact_operator_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",9,0.6,0,0,0,0,3642
+tests/test_p15_summary_playbook_flow_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",12,0.6,0,0,0,0,3203
+tests/test_rf031_reporter_ai_review_result_owner.py,rfNNN,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.6,0,0,0,0,5190
+tests/test_p15_ai_review_default_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.5,0,0,0,0,4002
+tests/test_p15_alpha_feature_candidates_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.5,0,0,0,0,5176
+tests/test_p15_alpha_large_cap_candidate_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.5,0,0,0,0,5214
+tests/test_p15_alpha_question_summaries_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.5,0,0,0,0,4003
+tests/test_p15_alpha_stage2_candidate_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.5,0,0,0,0,4741
+tests/test_p15_bundle_canonical_payload_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.5,0,0,0,0,4457
+tests/test_p15_bundle_monitor_rows_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.5,0,0,0,0,3562
+tests/test_p15_feedback_analysis_blockers_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.5,0,0,0,0,3321
+tests/test_p15_feedback_blocker_ranking_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",13,0.5,0,0,0,0,4964
+tests/test_p15_feedback_blocker_totals_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",12,0.5,0,0,0,0,3612
+tests/test_p15_feedback_route_analysis_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",13,0.5,0,0,0,0,5223
+tests/test_p15_rf035_00h_a1__build_trade_report_integrity_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.5,0,0,0,0,2544
+tests/test_p15_rf035_00h_a5_load_latest_macro_snapshot_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.5,0,0,0,0,2109
+tests/test_p15_rf035_02h_a8_report_inventory_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.5,0,0,0,0,2066
+tests/test_p15_rf035_03h_a1_read_json_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.5,0,0,0,0,1534
+tests/test_p15_rf035_03h_a5_epoch_to_iso_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.5,0,0,0,0,1039
+tests/test_p15_rf035_03h_a6_iter_jsonl_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.5,0,0,0,0,1771
+tests/test_p15_rf035_04h_a1_read_json_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.5,0,0,0,0,1521
+tests/test_p15_rf035_07h_a6_apply_strategy_anchor_metadata_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.5,1,0,0,0,4276
+tests/test_p15_rf035_15h_a7_resolve_post_exit_state_path_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.5,1,0,0,0,4547
+tests/test_p15_rf035_20261101_03h_quant_tactic_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.5,0,0,0,0,12215
+tests/test_p15_rf035_20261101_06h_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.5,0,0,0,0,19004
+tests/test_p15_rf035_20261101_07h_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.5,1,0,0,0,15399
+tests/test_p15_rf035_21h_result_pct_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.5,0,0,0,0,1091
+tests/test_p15_rf035_23h_8_render_market_regime_rail_markdown_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.5,0,0,0,0,2657
+tests/test_p15_rf035_eval_text_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.5,0,0,0,0,854
+tests/test_p15_rf035_llm_canonical_status_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",9,0.5,0,0,0,0,1035
+tests/test_p15_rf035_llm_split_text_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",9,0.5,0,0,0,0,991
+tests/test_p15_rf063_20261101_05h_metrics_ab_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.5,0,0,0,0,2226
+tests/test_p15_rf063_20261101_07h_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.5,1,0,0,0,1499
+tests/test_p15_rf063_20261102_20h_diagnostics_pure_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.5,0,0,0,0,13274
+tests/test_p15_strategist_summary_memory_usage_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.5,0,0,0,0,4418
+tests/test_p15_strategist_summary_news_quality_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",13,0.5,0,0,0,0,4622
+tests/test_p15_strategist_summary_strategy_detail_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.5,0,0,0,0,4377
+tests/test_p15_summary_news_clean_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.5,0,0,0,0,3532
+tests/test_p15_summary_stage_markdown_clean_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.5,0,0,0,0,6198
+tests/test_p15_summary_strategy_score_clean_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.5,0,0,0,0,2977
+tests/test_p15_alpha_board_attention_order_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.4,0,0,0,0,3074
+tests/test_p15_alpha_btc_woori_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.4,0,0,0,0,3282
+tests/test_p15_alpha_negative_control_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.4,0,0,0,0,4059
+tests/test_p15_bundle_decision_trace_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.4,0,0,0,0,5482
+tests/test_p15_feedback_freshness_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",9,0.4,0,0,0,0,3285
+tests/test_p15_feedback_insight_summary_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",13,0.4,0,0,0,0,4994
+tests/test_p15_feedback_route_summary_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.4,0,0,0,0,4629
+tests/test_p15_live_bundle_pid_active_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.4,0,0,0,0,2949
+tests/test_p15_model_catalog_slot_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.4,5,0,0,0,3999
+tests/test_p15_rf026_20261102_05h_monitor_followup_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.4,0,0,0,0,1615
+tests/test_p15_rf026_rf063_20261102_17h_observability_benchmark_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.4,0,0,0,0,7644
+tests/test_p15_rf035_00h_a2__iter_events_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.4,0,0,0,0,1578
+tests/test_p15_rf035_00h_a8__is_dry_run_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.4,0,0,0,0,1254
+tests/test_p15_rf035_01h_a2_render_route_and_narrative_sections_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.4,0,0,0,0,4300
+tests/test_p15_rf035_01h_a3_render_trade_report_integrity_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.4,0,0,0,0,4342
+tests/test_p15_rf035_04h_a5_ratio_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.4,0,0,0,0,737
+tests/test_p15_rf035_06h_a3_intraday_linkage_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.4,1,0,0,0,3981
+tests/test_p15_rf035_07h_a5_attach_strategy_anchor_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,1,0,0,0,3780
+tests/test_p15_rf035_08h_a7_bundle_job_lock_path_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,1,0,0,0,2986
+tests/test_p15_rf035_11h_a1_read_json_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,0,0,0,0,3640
+tests/test_p15_rf035_11h_a2_iter_quant_shadow_candidate_rows_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,0,0,0,0,4977
+tests/test_p15_rf035_11h_a4_daily_summary_rows_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,0,0,0,0,5107
+tests/test_p15_rf035_12h_a5_utc_now_iso_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,0,0,0,0,3481
+tests/test_p15_rf035_12h_a7_needs_fresh_minutes_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,0,0,0,0,4534
+tests/test_p15_rf035_13h_a1_text_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,0,0,0,0,3071
+tests/test_p15_rf035_13h_a4_candidate_rows_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,0,0,0,0,3703
+tests/test_p15_rf035_14h_a4_build_surface_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,0,0,0,0,5480
+tests/test_p15_rf035_15h_a8_opening_rank1_eod_fallback_r_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,1,0,0,0,4961
+tests/test_p15_rf035_20261101_05h_quant_eval_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.4,0,0,0,0,12529
+tests/test_p15_rf035_21h_quality_label_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",9,0.4,0,0,0,0,2455
+tests/test_p15_rf035_21h_read_json_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.4,0,0,0,0,1799
+tests/test_p15_rf035_23h_1_iter_events_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.4,0,0,0,0,1742
+tests/test_p15_rf035_23h_2_find_trade_dir_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,0,0,0,0,1568
+tests/test_p15_rf035_llm_make_attempt_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.4,0,0,0,0,2300
+tests/test_p15_rf035_llm_response_artifact_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",6,0.4,0,0,0,0,3212
+tests/test_p15_rf035_llm_sha256_text_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",6,0.4,0,0,0,0,1077
+tests/test_p15_rf035_pipeline_iter_jsonl_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,0,0,0,0,1509
+tests/test_p15_rf035_pipeline_safe_int_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.4,0,0,0,0,916
+tests/test_p15_rf035_trade_lookup_iter_roots_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,0,0,0,0,1492
+tests/test_p15_rf035_trade_lookup_resolve_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.4,0,0,0,0,1327
+tests/test_p15_rf063_08h_b7_analyze_day_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.4,0,0,0,0,687
+tests/test_p15_rf063_14h_projection_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",6,0.4,0,0,0,0,3179
+tests/test_p15_rf063_20261101_06h_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.4,0,0,0,0,1396
+tests/test_p15_rf063_20261101_10h_audit_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.4,0,0,0,0,1007
+tests/test_p15_rf063_20261103_09h_m30_m31_readonly_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.4,0,0,0,0,4968
+tests/test_p15_shadow_recommendation_gap_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.4,0,0,0,0,1029
+tests/test_p15_strategist_summary_stage_decision_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.4,0,0,0,0,5110
+tests/test_p15_strategist_summary_stage_meta_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.4,0,0,0,0,4042
+tests/test_p15_summary_memory_clean_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.4,0,0,0,0,4767
+tests/test_p15_summary_memory_lines_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.4,0,0,0,0,4362
+tests/test_p15_summary_news_lines_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.4,0,0,0,0,3490
+tests/test_p15_summary_watch_scope_clean_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",12,0.4,0,0,0,0,3177
+tests/test_rf008_strategist_reporter_feedback_split.py,rfNNN,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.4,3,0,0,0,4835
+tests/test_rf031_reporter_ai_review_input_extraction.py,rfNNN,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.4,0,0,0,0,6777
+tests/test_p15_alpha_board_broad_opening_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",6,0.3,0,0,0,0,2685
+tests/test_p15_alpha_board_fresh_change_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",6,0.3,0,0,0,0,2594
+tests/test_p15_alpha_board_latent_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",6,0.3,0,0,0,0,2587
+tests/test_p15_feedback_dominant_patterns_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",11,0.3,0,0,0,0,4690
+tests/test_p15_korea_index_sanity_finite.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",9,0.3,0,0,0,0,2765
+tests/test_p15_rf015_20261101_16h_real_monitor_consumer.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,5078
+tests/test_p15_rf026_20261102_04h_monitor_pure_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.3,0,0,0,0,1566
+tests/test_p15_rf035_01h_a4_render_policy_surface_sections_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.3,0,0,0,0,4496
+tests/test_p15_rf035_01h_a5_render_top_issues_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.3,0,0,0,0,3831
+tests/test_p15_rf035_01h_a8_render_no_event_daily_markdown_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.3,0,0,0,0,5221
+tests/test_p15_rf035_02h_a2_safe_int_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.3,0,0,0,0,904
+tests/test_p15_rf035_02h_a3_safe_float_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.3,0,0,0,0,845
+tests/test_p15_rf035_02h_a4_utc_day_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,1587
+tests/test_p15_rf035_03h_a7_commander_route_from_payload_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.3,0,0,0,0,2574
+tests/test_p15_rf035_04h_a2_iter_jsonl_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.3,0,0,0,0,1524
+tests/test_p15_rf035_06h_a4_intraday_story_score_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.3,0,0,0,0,3524
+tests/test_p15_rf035_06h_a8_intraday_diagnostics_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,3799
+tests/test_p15_rf035_07h_a4_stale_process_after_sec_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,3171
+tests/test_p15_rf035_07h_a7_execution_action_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,3082
+tests/test_p15_rf035_07h_a8_execution_ok_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,3075
+tests/test_p15_rf035_08h_a1_is_trueish_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,3095
+tests/test_p15_rf035_08h_a3_stable_json_text_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,3348
+tests/test_p15_rf035_08h_a6_script_path_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,1,0,0,0,2990
+tests/test_p15_rf035_08h_a8_bundle_job_queue_path_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,1,0,0,0,3000
+tests/test_p15_rf035_09h_a1_float_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,3126
+tests/test_p15_rf035_09h_a3_pct_from_ratio_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,3351
+tests/test_p15_rf035_10h_a6_as_list_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,2892
+tests/test_p15_rf035_13h_a2_to_float_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,2995
+tests/test_p15_rf035_13h_a5_checkpoint_values_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,4101
+tests/test_p15_rf035_14h_a1_deep_first_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,4228
+tests/test_p15_rf035_14h_a2_position_strategy_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,3922
+tests/test_p15_rf035_19h_quant_shadow_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.3,0,0,0,0,12393
+tests/test_p15_rf035_20261101_01h_live_bundle_pure_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.3,1,0,0,0,11547
+tests/test_p15_rf035_20261101_08h_forward_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",8,0.3,3,0,0,0,10636
+tests/test_p15_rf035_2156_build_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.3,0,0,0,0,3993
+tests/test_p15_rf035_2156_canonical_loader_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.3,0,0,0,0,2437
+tests/test_p15_rf035_2156_market_rail_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,1915
+tests/test_p15_rf035_2156_read_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.3,0,0,0,0,1592
+tests/test_p15_rf035_eval_float_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.3,0,0,0,0,907
+tests/test_p15_rf035_llm_exception_class_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",9,0.3,0,0,0,0,881
+tests/test_p15_rf035_llm_run_paths_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.3,0,0,0,0,1391
+tests/test_p15_rf035_llm_split_messages_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.3,0,0,0,0,1456
+tests/test_p15_rf035_llm_stable_json_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.3,0,0,0,0,986
+tests/test_p15_rf035_pipeline_read_json_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.3,0,0,0,0,1370
+tests/test_p15_rf035_pipeline_safe_float_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",6,0.3,0,0,0,0,841
+tests/test_p15_rf035_trade_lookup_find_dir_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.3,0,0,0,0,1079
+tests/test_p15_rf063_b45_canonical_report.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.3,0,0,0,0,2038
+tests/test_p15_rf065_20261101_15h_fake_research_cli.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.3,0,0,0,0,3326
+tests/test_rf041_openai_response_projection.py,rfNNN,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.3,0,0,0,0,6994
+tests/test_p152_monitor_context_owner.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.2,0,0,0,0,2741
+tests/test_p152_operator_phrase_owners.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.2,0,0,0,0,1697
+tests/test_p152_r2c_helper_seams.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",7,0.2,0,0,0,0,3187
+tests/test_p152_render_diagnostics_owner.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,3074
+tests/test_p15_alpha_board_opening_rows_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",6,0.2,0,0,0,0,3072
+tests/test_p15_consumer_inventory.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.2,0,0,0,0,1154
+tests/test_p15_rf024_20261102_03h_shadow_projection.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",6,0.2,0,0,0,0,1907
+tests/test_p15_rf026_20261102_15h_feature_regime_observability_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.2,0,0,0,0,4714
+tests/test_p15_rf033_20261101_16h_baseline_pure_consumer.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.2,0,0,0,0,2648
+tests/test_p15_rf033_20261101_18h_provider_boundary.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.2,0,0,0,0,3637
+tests/test_p15_rf033_20261101_19h_pure_report_trend.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.2,0,0,0,0,2268
+tests/test_p15_rf035_00h_a3__build_messages_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,1708
+tests/test_p15_rf035_00h_a4__utc_now_iso_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,1382
+tests/test_p15_rf035_00h_a7__load_operator_summary_snapshot_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,2615
+tests/test_p15_rf035_01h_a1_render_operator_summary_snapshot_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.2,0,0,0,0,4642
+tests/test_p15_rf035_01h_a7_render_broker_alignment_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,4222
+tests/test_p15_rf035_02h_a1_render_daily_markdown_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",6,0.2,0,0,0,0,5635
+tests/test_p15_rf035_02h_a7_iter_jsonl_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.2,0,0,0,0,1270
+tests/test_p15_rf035_03h_a3_utc_day_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,1046
+tests/test_p15_rf035_03h_a8_event_route_rows_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.2,0,0,0,0,2363
+tests/test_p15_rf035_04h_a6_summary_input_path_for_report_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,1542
+tests/test_p15_rf035_06h_a6_intraday_backfill_payload_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,1,0,0,0,4379
+tests/test_p15_rf035_08h_a2_normalize_symbol_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,2865
+tests/test_p15_rf035_08h_a4_payload_fingerprint_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,3276
+tests/test_p15_rf035_09h_a2_int_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,2829
+tests/test_p15_rf035_09h_a5_iter_days_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,3704
+tests/test_p15_rf035_09h_a6_trade_id_from_path_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,2901
+tests/test_p15_rf035_09h_a7_aggregate_return_rows_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,4398
+tests/test_p15_rf035_09h_a8_md_table_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,3479
+tests/test_p15_rf035_10h_a4_decision_for_reclaim_subtype_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,4788
+tests/test_p15_rf035_10h_a5_as_dict_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,2962
+tests/test_p15_rf035_10h_a7_pct_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,3002
+tests/test_p15_rf035_11h_a6_fresh_minute_fetch_enabled_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,3469
+tests/test_p15_rf035_11h_a7_rows_reach_epoch_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,3541
+tests/test_p15_rf035_13h_a3_bool_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,3076
+tests/test_p15_rf035_13h_a6_avg_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,2910
+tests/test_p15_rf035_13h_a7_decision_for_row_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,3365
+tests/test_p15_rf035_13h_a8_summarize_group_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,5028
+tests/test_p15_rf035_14h_a5_surface_from_report_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,4589
+tests/test_p15_rf035_14h_a6_render_lines_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,4819
+tests/test_p15_rf035_14h_a7_mapping_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,3940
+tests/test_p15_rf035_15h_a2__fixed_lane_strategy_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,2957
+tests/test_p15_rf035_15h_a3_attach_controlled_lane_repor_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,3959
+tests/test_p15_rf035_15h_a4_apply_controlled_lane_story__owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,4065
+tests/test_p15_rf035_15h_a5_build_q8_shadow_blocker_revi_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,4662
+tests/test_p15_rf035_16h_reporting_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",9,0.2,0,0,0,0,10238
+tests/test_p15_rf035_2156_executor_outcome_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,2045
+tests/test_p15_rf035_2156_render_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,2047
+tests/test_p15_rf035_21h_render_strategist_llm_evaluation_lines_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.2,0,0,0,0,2512
+tests/test_p15_rf035_23h_3_broker_closed_symbols_from_alignment_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.2,0,0,0,0,2028
+tests/test_p15_rf035_23h_4_render_residual_positions_markdown_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.2,0,0,0,0,2848
+tests/test_p15_rf035_eval_closed_rows_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,1158
+tests/test_p15_rf035_eval_format_perf_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,1346
+tests/test_p15_rf035_path_operator_root_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.2,0,0,0,0,1022
+tests/test_p15_rf035_pipeline_latest_row_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.2,0,0,0,0,1326
+tests/test_p15_rf035_pipeline_utc_day_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,1136
+tests/test_p15_rf035_trade_lookup_list_misplaced_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,1265
+tests/test_p15_rf035_trade_lookup_misplaced_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,1617
+tests/test_p15_rf063_16h_weekly_health_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.2,0,0,0,0,1678
+tests/test_p15_rf063_17h_diagnostic_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.2,0,0,0,0,984
+tests/test_p15_rf063_18h_readiness_projection_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.2,0,0,0,0,443
+tests/test_p15_rf063_20261101_11h_diagnostic_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.2,0,0,0,0,612
+tests/test_p15_rf063_20h_readiness_projection_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,668
+tests/test_p15_rf063_21h_owner_smoke.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,2401
+tests/test_p15_rf063_21h_projection_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,811
+tests/test_p15_shadow_llm_call_advice_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.2,0,0,0,0,1109
+tests/test_p15_shadow_next_action_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.2,0,0,0,0,1192
+tests/test_p15_shadow_pre_strategist_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.2,0,0,0,0,1890
+tests/test_p15_shadow_reason_summary_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,1220
+tests/test_p15_shadow_suggested_action_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.2,0,0,0,0,717
+tests/test_p15_summary_directive_projection_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.2,0,0,0,0,1536
+tests/test_p15_summary_json_inline_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.2,0,0,0,0,835
+tests/test_p15_summary_patch_status_clean_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",10,0.2,0,0,0,0,3097
+tests/test_p169_broad_failure_evidence.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.2,0,0,0,0,2585
+tests/test_p152_direct_story_owner.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1085
+tests/test_p152_facade_consumer_static_index.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.1,0,0,0,0,2197
+tests/test_p152_lifecycle_evidence_owner.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,2609
+tests/test_p152_monitor_diagnostics_owner.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,1539
+tests/test_p152_monitor_entry_review_owner.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,2154
+tests/test_p152_monitor_policy_bullets_owner.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,1376
+tests/test_p152_monitor_trace_wrappers.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,2236
+tests/test_p152_operator_language_owner.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,1412
+tests/test_p152_story_reasoning_owner.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,2274
+tests/test_p152_summary_findings_owner.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,2390
+tests/test_p15_adjustment_direction_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1207
+tests/test_p15_adjustment_rejected_reasons_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1235
+tests/test_p15_agent_output_monitor_decision_summary_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,969
+tests/test_p15_commander_shadow_evidence_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,2154
+tests/test_p15_rf014_scanner_node_consumer_seam_20261101_13h.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.1,0,0,0,0,4511
+tests/test_p15_rf014_scanner_repeat_risk_noop_20261101_12h.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,1970
+tests/test_p15_rf015_20261101_15h_monitor_keep_consumer.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,2955
+tests/test_p15_rf026_20261102_03h_intraday_context.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1037
+tests/test_p15_rf026_20261102_06h_remaining_monitor_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,2731
+tests/test_p15_rf026_20261102_09h_policy_projection_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",5,0.1,0,0,0,0,3035
+tests/test_p15_rf026_20261102_13h_feature_engine_followup_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1100
+tests/test_p15_rf033_20261101_17h_input_delivery_fake.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,2551
+tests/test_p15_rf033_20261101_17h_input_worker_consumer.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,3390
+tests/test_p15_rf035_01h_a6_render_recommended_operator_actions_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,3796
+tests/test_p15_rf035_02h_a5_official_trade_explain_report_dir_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,923
+tests/test_p15_rf035_03h_a4_utc_now_iso_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,1363
+tests/test_p15_rf035_05h_a4_policy_surface_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,3425
+tests/test_p15_rf035_05h_a7_market_regime_classify_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,3761
+tests/test_p15_rf035_06h_a5_intraday_truth_diff_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,3197
+tests/test_p15_rf035_09h_a4_avg_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,2933
+tests/test_p15_rf035_10h_a1_text_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,3109
+tests/test_p15_rf035_10h_a2_weighted_avg_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,2965
+tests/test_p15_rf035_10h_a3_quant_shadow_candidate_root_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,1,0,0,0,3238
+tests/test_p15_rf035_10h_a8_price_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,3062
+tests/test_p15_rf035_11h_a8_rows_reach_regular_close_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,3746
+tests/test_p15_rf035_12h_a2_promotion_recommendations_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,4112
+tests/test_p15_rf035_14h_a8_first_mapping_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,3844
+tests/test_p15_rf035_15h_a1__text_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,2593
+tests/test_p15_rf035_15h_a6_render_q8_shadow_blocker_rev_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,3985
+tests/test_p15_rf035_2156_display_status_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.1,0,0,0,0,2509
+tests/test_p15_rf035_2156_rows_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,1182
+tests/test_p15_rf035_21h_build_strategist_llm_evaluation_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.1,0,0,0,0,2806
+tests/test_p15_rf035_23h_6_indicator_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1318
+tests/test_p15_rf035_eval_shadow_rows_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,949
+tests/test_p15_rf035_eval_top_counter_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1076
+tests/test_p15_rf035_llm_compact_input_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",4,0.1,0,0,0,0,2123
+tests/test_p15_rf035_path_monthly_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1176
+tests/test_p15_rf035_path_repo_root_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,681
+tests/test_p15_rf035_path_symbol_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1317
+tests/test_p15_rf035_path_weekly_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1167
+tests/test_p15_rf035_strategist_shadow_shape_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,1395
+tests/test_p15_rf035_strategist_tactic_performance_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,1640
+tests/test_p15_rf035_trade_lookup_day_shape_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1180
+tests/test_p15_rf044_commander_artifact_builder_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,207
+tests/test_p15_rf044_scanner_artifact_builder_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,150
+tests/test_p15_rf044_shadow_artifact_builder_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,203
+tests/test_p15_rf044_shadow_summary_builder_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,204
+tests/test_p15_rf044_strategist_artifact_builder_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,159
+tests/test_p15_rf044_supervisor_artifact_builder_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,218
+tests/test_p15_rf063_07h_b1_read_json_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,770
+tests/test_p15_rf063_07h_b2_iter_trade_dirs_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,622
+tests/test_p15_rf063_07h_b3_artifact_path_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,495
+tests/test_p15_rf063_07h_b4_issue_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,434
+tests/test_p15_rf063_07h_b5_ai_trade_report_is_complete_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,933
+tests/test_p15_rf063_07h_b6_audit_reports_trades_health_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,362
+tests/test_p15_rf063_07h_b7_build_parser_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,480
+tests/test_p15_rf063_07h_b8_section_provenance_all_fallback_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,486
+tests/test_p15_rf063_08h_b1_read_json_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,506
+tests/test_p15_rf063_08h_b2_trade_dirs_for_day_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,465
+tests/test_p15_rf063_08h_b3_is_closed_trade_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,376
+tests/test_p15_rf063_08h_b4_reporter_section_fallback_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,367
+tests/test_p15_rf063_08h_b5_missing_canonical_paths_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,349
+tests/test_p15_rf063_08h_b6_thin_trace_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,308
+tests/test_p15_rf063_08h_b8_compare_days_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,345
+tests/test_p15_rf063_09h_b1_to_epoch_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,228
+tests/test_p15_rf063_09h_b2_utc_day_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,196
+tests/test_p15_rf063_09h_b3_to_float_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,209
+tests/test_p15_rf063_09h_b4_extract_noop_reason_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,277
+tests/test_p15_rf063_09h_b5_build_summary_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,189
+tests/test_p15_rf063_09h_b6_build_markdown_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,202
+tests/test_p15_rf063_09h_b8_build_rows_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,323
+tests/test_p15_rf063_10h_b5_print_human_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,1240
+tests/test_p15_rf063_10h_b6_print_summary_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,880
+tests/test_p15_rf063_13h_b1_to_epoch_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,227
+tests/test_p15_rf063_13h_b2_utc_day_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,195
+tests/test_p15_rf063_13h_b4_build_parser_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,192
+tests/test_p15_rf063_13h_b7_is_incident_event_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,248
+tests/test_p15_rf063_13h_b8_filtered_events_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,255
+tests/test_p15_shadow_post_monitor_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1731
+tests/test_p15_shadow_post_strategist_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1623
+tests/test_p15_shadow_score_checks_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.1,0,0,0,0,553
+tests/test_p15_stage_call_kind_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,996
+tests/test_p15_stage_role_boundary_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,824
+tests/test_p15_stage_task_requirement_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,779
+tests/test_p15_stage_user_requirement_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,827
+tests/test_p15_strategist_repair_messages_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,950
+tests/test_p15_strategist_stage_contract_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1223
+tests/test_p15_strategist_token_budget_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,2019
+tests/test_p15_summary_primitive_dict_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",3,0.1,0,0,0,0,1135
+tests/test_p15_summary_primitive_list_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,801
+tests/test_p15_summary_primitive_text_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,791
+tests/test_p15_summary_score_value_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,749
+tests/test_p15_summary_trade_input_path_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,1342
+tests/test_rf044_commander_shadow_runtime_owner.py,rfNNN,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.1,0,0,0,0,2908
+tests/test_p152_lifecycle_human_owner.py,p15x-p19x,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.0,0,0,0,0,3292
+tests/test_p15_agent_output_parse_day_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,590
+tests/test_p15_agent_output_phase_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,312
+tests/test_p15_agent_output_required_agent_keys_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,602
+tests/test_p15_agent_output_required_artifact_keys_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,573
+tests/test_p15_agent_output_validate_artifact_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,622
+tests/test_p15_commander_shadow_no_trade_advice_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,1133
+tests/test_p15_commander_shadow_strategist_advice_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,913
+tests/test_p15_event_logger_copy_guard.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,1273
+tests/test_p15_rf026_20261102_10h_decision_observability_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,367
+tests/test_p15_rf026_20261102_12h_feature_engine_owners.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,784
+tests/test_p15_rf035_02h_a6_build_trade_explain_output_path_metadata_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.0,0,0,0,0,1710
+tests/test_p15_rf035_23h_7_change_pct_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.0,0,0,0,0,1313
+tests/test_p15_rf035_path_canonical_trade_day_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,753
+tests/test_p15_rf035_path_daily_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.0,0,0,0,0,1396
+tests/test_p15_rf044_executor_artifact_builder_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,251
+tests/test_p15_rf044_monitor_artifact_builder_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,150
+tests/test_p15_rf063_09h_b7_event_intent_id_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,228
+tests/test_p15_rf063_13h_b3_env_str_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,179
+tests/test_p15_shadow_end_cycle_summary_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,725
+tests/test_p15_shadow_gate_pass_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,386
+tests/test_p15_shadow_has_open_order_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,675
+tests/test_p15_summary_bullet_lines_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",2,0.0,0,0,0,0,778
+tests/test_p15_summary_monitor_adjustment_lines_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,659
+tests/test_p15_ui_trade_report_index_owner.py,p15,KEEP_MERGE,"small behavior contract from refactor; keep, merge into module tests in P1.6",1,0.0,0,0,0,0,698
+tests/test_live_execution_bundle_report.py,general,KEEP,behavior test,69,104.6,0,0,0,0,173419
+tests/test_r61_scope_fix.py,general,KEEP,behavior test,33,94.5,0,0,0,0,28284
+tests/test_uef5_2_historical_recompute.py,uef,KEEP,UEF protected; change only with owner approval,62,56.4,14,0,1,0,48661
+tests/test_paper_trading_execution_finalization.py,general,KEEP,behavior test,8,52.8,0,0,0,0,14747
+tests/test_monitor_exit_guard.py,general,KEEP,behavior test,114,52.6,0,0,0,0,213847
+tests/test_shared_role_contracts.py,general,KEEP,behavior test,40,52.3,10,0,0,0,4067
+tests/test_strategist_frame_llm_integration.py,general,KEEP,behavior test,43,47.0,0,0,0,0,97383
+tests/test_m21_commander_runtime_entry.py,milestone_mNN,KEEP,behavior test,84,37.6,0,0,0,0,188918
+tests/test_m31_agent_chain_probe.py,milestone_mNN,KEEP,behavior test,2,33.5,0,0,0,0,1060
+tests/test_operator_ui.py,general,KEEP,behavior test,53,30.0,0,0,0,0,128647
+tests/test_r6_readiness_evidence.py,general,KEEP,behavior test,30,26.3,0,0,0,0,22746
+tests/test_execute_from_packet.py,general,KEEP,behavior test,43,24.2,0,0,0,0,78014
+tests/test_step5c_fix3_authoritative_intent.py,general,KEEP,behavior test,32,23.5,0,0,0,0,31535
+tests/test_uef5_1_clean_evidence_registry.py,uef,KEEP,UEF protected; change only with owner approval,47,22.9,2,0,0,0,45576
+tests/test_scanner_fallback_policy.py,general,KEEP,behavior test,8,22.7,0,0,0,0,12846
+tests/test_m30_4_final_golive_signoff.py,milestone_mNN,KEEP,behavior test,3,20.6,0,0,0,0,3716
+tests/test_uef4b4_q10_index_adapter.py,uef,KEEP,UEF protected; change only with owner approval,35,20.5,0,0,0,0,38279
+tests/test_m30_3_post_golive_monitoring_policy.py,milestone_mNN,KEEP,behavior test,3,19.8,0,0,0,0,3145
+tests/test_pytest_artifact_hygiene.py,general,KEEP,behavior test,6,19.4,0,0,0,0,6181
+tests/test_kiwoom_candidate_provider.py,general,KEEP,behavior test,20,18.8,0,0,0,0,19891
+tests/test_m30_2_release_signoff_checklist.py,milestone_mNN,KEEP,behavior test,3,18.1,0,0,0,0,2665
+tests/test_uef9_formal_authority.py,uef,KEEP,UEF protected; change only with owner approval,32,17.9,0,0,0,0,11526
+tests/test_m30_1_quality_gates_bundle.py,milestone_mNN,KEEP,behavior test,3,15.7,1,0,0,0,2390
+tests/test_r62_attempt_and_lock.py,general,KEEP,behavior test,30,15.7,0,0,0,0,24332
+tests/test_global_sentiment_unavailable_behavior.py,general,KEEP,behavior test,7,15.2,0,0,0,0,8708
+tests/test_scanner_policy_overlay.py,general,KEEP,behavior test,11,14.9,0,0,0,0,17670
+tests/test_trade_report_ai.py,general,KEEP,behavior test,130,14.8,0,0,0,0,294281
+tests/test_uef4b3_opening_shadow_adapter.py,uef,KEEP,UEF protected; change only with owner approval,54,13.3,0,0,0,0,45091
+tests/test_q9_evaluation.py,general,KEEP,behavior test,17,12.9,0,0,0,0,28887
+tests/test_runtime_mode_gate.py,general,KEEP,behavior test,12,12.8,0,0,0,0,11254
+tests/test_m18_3_news_sentiment_pass_through.py,milestone_mNN,KEEP,behavior test,1,10.5,0,0,0,0,612
+tests/test_m31_17_theme_candidate_flow_upgrade.py,milestone_mNN,KEEP,behavior test,11,10.3,0,0,0,0,21247
+tests/test_reporter_analysis_report.py,general,KEEP,behavior test,8,9.9,0,0,0,0,26595
+tests/test_m28_9_closeout_check.py,milestone_mNN,KEEP,behavior test,3,9.7,0,0,0,0,2486
+tests/test_step5c_fix5_mutation_failclosed_and_consumer_only.py,general,KEEP,behavior test,23,9.7,0,0,0,0,23489
+tests/test_m10_live_pipeline.py,milestone_mNN,KEEP,behavior test,1,9.6,0,0,0,0,1893
+tests/test_step5c_execution_owner.py,general,KEEP,behavior test,14,9.6,0,0,0,0,12635
+tests/test_closeout_memory_bounds.py,general,KEEP,behavior test,57,9.3,0,0,0,0,52686
+tests/test_m29_3_monitor_exit_policy.py,milestone_mNN,KEEP,behavior test,17,9.3,0,0,0,0,25619
+tests/test_strategy_data_quality_signal_contract.py,general,KEEP,behavior test,6,9.3,0,0,0,0,4646
+tests/test_pre_step5c_owner_regressions.py,general,KEEP,behavior test,18,9.1,0,0,0,0,4109
+tests/test_shared_reporter_facade_guard.py,general,KEEP,behavior test,13,9.1,1,0,0,0,4477
+tests/test_scanner_strategy_frame_integration.py,general,KEEP,behavior test,14,8.9,0,0,0,0,27777
+tests/test_step5c_fix2_ownership_capability.py,general,KEEP,behavior test,18,8.8,0,0,0,0,26021
+tests/test_asset_universe_policy.py,general,KEEP,behavior test,20,8.7,0,0,0,0,12445
+tests/test_m22_skill_hydration_node.py,milestone_mNN,KEEP,behavior test,9,8.6,0,0,0,0,8961
+tests/test_strategist_reasoning_quality.py,general,KEEP,behavior test,12,8.6,0,0,0,0,23130
+tests/test_m22_skill_native_scanner_monitor.py,milestone_mNN,KEEP,behavior test,11,8.1,0,0,0,0,12968
+tests/test_q12_delivery_alignment.py,general,KEEP,behavior test,11,7.4,0,0,0,0,8271
+tests/test_data_quality_state_propagation.py,general,KEEP,behavior test,5,7.3,0,0,0,0,9249
+tests/test_m17_candidates_to_selected.py,milestone_mNN,KEEP,behavior test,1,7.3,0,0,0,0,1245
+tests/test_run_mock_exam_day.py,general,KEEP,behavior test,17,7.2,0,0,0,0,38122
+tests/test_uef3a_cost_metric_contract.py,uef,KEEP,UEF protected; change only with owner approval,104,7.0,0,0,0,0,53246
+tests/test_daily_report.py,general,KEEP,behavior test,12,6.9,0,0,0,0,29438
+tests/test_scanner_monitor_compatibility.py,general,KEEP,behavior test,11,6.9,0,0,0,0,23765
+tests/test_m22_10_closeout_check.py,milestone_mNN,KEEP,behavior test,2,6.8,0,0,0,0,1488
+tests/test_operator_summary_reports.py,general,KEEP,behavior test,26,6.8,0,0,0,0,48860
+tests/test_q10_collector_fix3.py,general,KEEP,behavior test,30,6.8,0,0,0,0,25317
+tests/test_uef1_work_package_a_canonical_contract.py,uef,KEEP,UEF protected; change only with owner approval,126,6.6,0,0,0,0,102520
+tests/test_strategy_performance_feedback.py,general,KEEP,behavior test,8,6.5,0,0,0,0,24311
+tests/test_canonical_agent_artifacts.py,general,KEEP,behavior test,10,6.3,0,0,0,0,14166
+tests/test_m25_5_ops_batch_hook.py,milestone_mNN,KEEP,behavior test,6,6.3,0,0,0,0,8330
+tests/test_scanner_practical_selection_engine.py,general,KEEP,behavior test,5,6.3,0,0,0,0,7979
+tests/test_m13_lease_heartbeat_fix.py,milestone_mNN,KEEP,behavior test,10,6.2,0,0,0,0,10280
+tests/test_opening_alpha_executable_quote_refresh.py,general,KEEP,behavior test,12,6.1,0,0,0,0,20749
+tests/test_uef5_3_dual_run.py,uef,KEEP,UEF protected; change only with owner approval,31,6.1,0,0,0,0,42174
+tests/test_scanner_rank_plumbing_fix.py,general,KEEP,behavior test,12,5.9,0,0,0,0,12482
+tests/test_m28_6_launch_hook_integration_check.py,milestone_mNN,KEEP,behavior test,3,5.7,0,0,0,0,4213
+tests/test_benchmark_operator_visibility_memory.py,general,KEEP,behavior test,4,5.5,0,0,0,0,2756
+tests/test_reporter_service.py,general,KEEP,behavior test,4,5.5,0,0,0,0,9115
+tests/test_p1_execution_readiness.py,general,KEEP,behavior test,24,5.4,0,0,0,0,16432
+tests/test_step5c_fix1_shared_ownership.py,general,KEEP,behavior test,11,5.3,0,0,0,0,18611
+tests/test_uef2b_profile_execution.py,uef,KEEP,UEF protected; change only with owner approval,40,5.0,0,0,0,0,30833
+tests/test_m23_10_closeout_check.py,milestone_mNN,KEEP,behavior test,3,4.9,0,0,0,0,2413
+tests/test_m24_8_closeout_check.py,milestone_mNN,KEEP,behavior test,4,4.8,0,0,0,0,3249
+tests/test_q12_vnext.py,general,KEEP,behavior test,14,4.8,0,0,0,0,7887
+tests/test_closeout_single_owner_guard.py,general,KEEP,behavior test,34,4.7,0,0,0,0,43809
+tests/test_alpha_research_board.py,general,KEEP,behavior test,36,4.6,0,0,0,0,38299
+tests/test_llm_model_policy.py,general,KEEP,behavior test,10,4.2,3,0,0,0,19338
+tests/test_m28_5_scheduler_worker_launch_wrapper_check.py,milestone_mNN,KEEP,behavior test,3,4.2,0,0,0,0,4253
+tests/test_p1_e2e_execution_readiness_integrated_chain.py,general,KEEP,behavior test,3,4.2,0,0,0,0,7478
+tests/test_uef4b2_q12_adapter.py,uef,KEEP,UEF protected; change only with owner approval,49,4.2,0,0,0,0,39621
+tests/test_single_trade_report.py,general,KEEP,behavior test,7,4.1,0,0,0,0,14098
+tests/test_intraday_monitor_signals.py,general,KEEP,behavior test,76,4.0,1,0,0,0,89986
+tests/test_m22_7_hydration_smoke_script.py,milestone_mNN,KEEP,behavior test,3,4.0,0,0,0,0,1162
+tests/test_start_trading_day.py,general,KEEP,behavior test,17,3.6,0,0,0,0,16336
+tests/test_step5b_safety_fix.py,general,KEEP,behavior test,36,3.6,0,0,0,0,25108
+tests/test_run_ai_trade_report_batch.py,general,KEEP,behavior test,18,3.5,0,0,0,0,28088
+tests/test_m18_market_scan_candidates.py,milestone_mNN,KEEP,behavior test,9,3.4,0,0,0,0,13106
+tests/test_operator_visibility_reports.py,general,KEEP,behavior test,11,3.4,0,0,0,0,35072
+tests/test_m27_10_closeout_check.py,milestone_mNN,KEEP,behavior test,3,3.2,1,0,0,0,2330
+tests/test_m28_4_startup_preflight_check.py,milestone_mNN,KEEP,behavior test,3,3.2,0,0,0,0,4304
+tests/test_docker_healthcheck_ownership_liveness.py,general,KEEP,behavior test,9,3.1,0,0,0,0,9046
+tests/test_scripts_issue8_followup.py,general,KEEP,behavior test,7,3.1,0,0,0,0,4242
+tests/test_uef4b5_q11_adapter.py,uef,KEEP,UEF protected; change only with owner approval,28,3.1,0,0,0,0,26454
+tests/test_m29_10_governance_closeout_check.py,milestone_mNN,KEEP,behavior test,3,3.0,1,0,0,0,2484
+tests/test_p0a_e2e_open_order_guard_integrated_chain.py,general,KEEP,behavior test,3,3.0,0,0,0,0,7335
+tests/test_q10_index_observation_collector.py,general,KEEP,behavior test,14,3.0,0,0,0,0,11648
+tests/test_yfinance_dependency_integrity.py,general,KEEP,behavior test,27,3.0,0,0,0,0,17715
+tests/test_decision_trace_ledger.py,general,KEEP,behavior test,2,2.9,0,0,0,0,3860
+tests/test_rank1_feature_mart.py,general,KEEP,behavior test,16,2.9,0,0,0,0,17822
+tests/test_evidence_ledger_trace_layer.py,general,KEEP,behavior test,5,2.8,0,0,0,0,6975
+tests/test_m20_2_decide_trade_llm_flow.py,milestone_mNN,KEEP,behavior test,21,2.8,0,0,0,0,31982
+tests/test_p0d_runtime_ownership.py,general,KEEP,behavior test,11,2.8,0,0,0,0,14427
+tests/test_stage3_horizon_lineage.py,general,KEEP,behavior test,5,2.8,0,0,0,0,12132
+tests/test_kiwoom_history_receipt_lifecycle.py,general,KEEP,behavior test,10,2.6,0,0,0,0,15632
+tests/test_m22_graph_hydration_wiring.py,milestone_mNN,KEEP,behavior test,5,2.6,0,0,0,0,3525
+tests/test_m25_3_alert_reporting_closeout.py,milestone_mNN,KEEP,behavior test,3,2.6,0,0,0,0,2297
+tests/test_m27_4_runtime_portfolio_guard_integration.py,milestone_mNN,KEEP,behavior test,5,2.6,0,0,0,0,4956
+tests/test_p0_crash_matrix.py,general,KEEP,behavior test,13,2.6,0,0,0,0,19503
+tests/test_q13_q14_validation.py,general,KEEP,behavior test,3,2.6,0,0,0,0,3478
+tests/test_m29_4_monitor_position_sizing.py,milestone_mNN,KEEP,behavior test,5,2.5,0,0,0,0,5769
+tests/test_scanner_bias_integration.py,general,KEEP,behavior test,4,2.5,0,0,0,0,3754
+tests/test_step5c_fix4_broker_semantics_authority.py,general,KEEP,behavior test,7,2.5,0,0,0,0,5197
+tests/test_uef3c_aggregation_pipeline.py,uef,KEEP,UEF protected; change only with owner approval,47,2.5,0,0,0,0,29198
+tests/test_closeout_durable_completion_authority.py,general,KEEP,behavior test,9,2.4,0,0,0,0,19708
+tests/test_execution_trace_completeness.py,general,KEEP,behavior test,5,2.4,0,0,0,0,13867
+tests/test_post_exit_shadow_recap.py,general,KEEP,behavior test,9,2.4,0,0,0,0,19766
+tests/test_report_metadata_alignment.py,general,KEEP,behavior test,3,2.4,0,0,0,0,7627
+tests/test_uef6_dedup_detection.py,uef,KEEP,UEF protected; change only with owner approval,22,2.4,0,0,0,0,21563
+tests/test_intraday_trade_reports.py,general,KEEP,behavior test,23,2.3,0,0,0,0,40160
+tests/test_p0_pytest_isolation_fix2.py,general,KEEP,behavior test,20,2.3,0,0,0,0,8048
+tests/test_p1_3_broker_read_write_gate.py,general,KEEP,behavior test,16,2.3,0,0,0,0,6777
+tests/test_symbol_trade_report.py,general,KEEP,behavior test,10,2.3,0,0,0,0,20616
+tests/test_uef4b6_q9_adapter.py,uef,KEEP,UEF protected; change only with owner approval,30,2.3,0,0,0,0,28010
+tests/test_m27_6_portfolio_guard_alert_policy.py,milestone_mNN,KEEP,behavior test,5,2.2,0,0,0,0,6275
+tests/test_m29_9_disaster_recovery_drill.py,milestone_mNN,KEEP,behavior test,3,2.2,0,0,0,0,2939
+tests/test_diagnostics_shared_owners.py,general,KEEP,behavior test,52,2.1,0,0,0,0,7288
+tests/test_opening_rank1_controlled_probe.py,general,KEEP,behavior test,23,2.1,0,0,0,0,22182
+tests/test_p0b_step5d_crash_reconciliation.py,general,KEEP,behavior test,7,2.1,0,0,0,0,6946
+tests/test_run_q10_index_observation_collector.py,general,KEEP,behavior test,5,2.1,0,0,0,0,11225
+tests/test_uef2b_engine_primitives.py,uef,KEEP,UEF protected; change only with owner approval,43,2.1,0,0,0,0,24414
+tests/test_uef4b1_q10_semiconductor_adapter.py,uef,KEEP,UEF protected; change only with owner approval,32,2.1,0,0,0,0,23022
+tests/test_m24_6_guard_precedence_check.py,milestone_mNN,KEEP,behavior test,3,2.0,0,0,0,0,2704
+tests/test_m27_5_portfolio_guard_metrics_report.py,milestone_mNN,KEEP,behavior test,3,2.0,0,0,0,0,2304
+tests/test_scanner_universe_candidate_metadata.py,general,KEEP,behavior test,1,2.0,0,0,0,0,1542
+tests/test_strategy_sizing_exit_upgrade.py,general,KEEP,behavior test,42,2.0,0,0,0,0,31810
+tests/test_uef2a_forward_policy_contract.py,uef,KEEP,UEF protected; change only with owner approval,46,2.0,8,0,0,0,58660
+tests/test_m23_5_safe_degrade_execution_policy.py,milestone_mNN,KEEP,behavior test,4,1.9,0,0,0,0,4514
+tests/test_m26_6_closeout_check.py,milestone_mNN,KEEP,behavior test,3,1.9,1,0,0,0,2341
+tests/test_operator_ui_data_access_phase2.py,general,KEEP,behavior test,28,1.9,0,0,0,0,38694
+tests/test_uef3b_cost_metric_engine.py,uef,KEEP,UEF protected; change only with owner approval,39,1.9,0,0,0,0,24176
+tests/test_uef8_fair_comparison_validation.py,uef,KEEP,UEF protected; change only with owner approval,41,1.9,0,0,0,0,30273
+tests/test_m13_ownership_lease_bounded_wait_fix.py,milestone_mNN,KEEP,behavior test,8,1.8,0,0,0,0,9679
+tests/test_m31_2_mock_investor_exam_check.py,milestone_mNN,KEEP,behavior test,7,1.8,1,0,0,0,10406
+tests/test_q9_artifact_repair.py,general,KEEP,behavior test,4,1.8,0,0,0,0,7721
+tests/test_trade_story_pipeline_enrichment.py,general,KEEP,behavior test,35,1.8,0,0,0,0,82879
+tests/test_uef6c_historical_validation.py,uef,KEEP,UEF protected; change only with owner approval,28,1.8,2,0,0,0,27285
+tests/test_uef7_alpha_board_normalization.py,uef,KEEP,UEF protected; change only with owner approval,38,1.8,0,0,0,0,26373
+tests/test_closeout_payload_projection.py,general,KEEP,behavior test,12,1.7,0,0,0,0,10419
+tests/test_m13_strict_owner_identity_restart_fix.py,milestone_mNN,KEEP,behavior test,10,1.7,0,0,0,0,13554
+tests/test_uef2b_fix1_regressions.py,uef,KEEP,UEF protected; change only with owner approval,21,1.7,0,0,0,0,19542
+tests/test_baseline_shared_owners.py,general,KEEP,behavior test,26,1.6,0,0,0,0,6638
+tests/test_m20_1_openai_provider_smoke.py,milestone_mNN,KEEP,behavior test,22,1.6,0,0,0,0,25276
+tests/test_p0a_open_order_reconciliation_guard.py,general,KEEP,behavior test,16,1.6,0,0,0,0,11513
+tests/test_phase1_agent_artifact_quality.py,general,KEEP,behavior test,22,1.6,1,0,0,0,77870
+tests/test_scanner_quote_hydration_runtime.py,general,KEEP,behavior test,1,1.6,0,0,0,0,2174
+tests/test_step5b_fix3.py,general,KEEP,behavior test,6,1.6,0,0,0,0,14109
+tests/test_uef2a_boundary_closure_profiles.py,uef,KEEP,UEF protected; change only with owner approval,36,1.6,0,0,0,0,14351
+tests/test_baseline_btc_woori_tech.py,general,KEEP,behavior test,16,1.5,0,0,0,0,15063
+tests/test_baseline_samsung_hynix.py,general,KEEP,behavior test,17,1.5,0,0,0,0,21349
+tests/test_canonical_artifact_validation.py,general,KEEP,behavior test,12,1.5,0,0,0,0,14601
+tests/test_m28_8_registration_helpers.py,milestone_mNN,KEEP,behavior test,3,1.5,0,0,0,0,4051
+tests/test_m31_1_slo_incident_review_check.py,milestone_mNN,KEEP,behavior test,4,1.5,1,0,0,0,7697
+tests/test_opening_rank1_shadow.py,general,KEEP,behavior test,11,1.5,0,0,0,0,14669
+tests/test_p0d_cutover_rollback_simulation.py,general,KEEP,behavior test,2,1.5,0,0,0,0,7012
+tests/test_q9_day_validity.py,general,KEEP,behavior test,11,1.5,0,0,0,0,16458
+tests/test_smoke_m20_llm_script.py,general,KEEP,behavior test,2,1.5,0,0,0,0,494
+tests/test_step5b_broker_submission_safety.py,general,KEEP,behavior test,23,1.5,0,0,0,0,15230
+tests/test_trade_explain_report.py,general,KEEP,behavior test,8,1.5,0,0,0,0,21699
+tests/test_check_trade_report_runtime_regression.py,general,KEEP,behavior test,4,1.4,0,0,0,0,10407
+tests/test_controlled_mock_lanes.py,general,KEEP,behavior test,13,1.4,0,0,0,0,17894
+tests/test_m18_4_scanner_sentiment_weighting.py,milestone_mNN,KEEP,behavior test,2,1.4,0,0,0,0,1798
+tests/test_market_data_receipts.py,general,KEEP,behavior test,30,1.4,0,0,0,0,10635
+tests/test_run_phase5_validation_bundle.py,general,KEEP,behavior test,1,1.4,0,0,0,0,12332
+tests/test_generate_metrics_report.py,general,KEEP,behavior test,9,1.3,0,0,0,0,26315
+tests/test_m13_shutdown_during_lease_wait.py,milestone_mNN,KEEP,behavior test,4,1.3,0,0,0,0,6360
+tests/test_m21_runtime_once_script.py,milestone_mNN,KEEP,behavior test,4,1.3,0,0,0,0,2059
+tests/test_m24_2_approval_state_store_integration.py,milestone_mNN,KEEP,behavior test,4,1.3,0,0,0,0,4381
+tests/test_m28_3_rollout_rollback_check.py,milestone_mNN,KEEP,behavior test,3,1.3,0,0,0,0,2293
+tests/test_scanner_candidate_risk.py,general,KEEP,behavior test,5,1.3,0,0,0,0,3995
+tests/test_scanner_live_symbol_filter.py,general,KEEP,behavior test,1,1.3,0,0,0,0,943
+tests/test_uef6_lineage_sidecar.py,uef,KEEP,UEF protected; change only with owner approval,14,1.3,0,0,0,0,15674
+tests/test_windows_launcher_contracts.py,general,KEEP,behavior test,12,1.3,8,0,0,0,6824
+tests/test_m27_7_portfolio_guard_notify_context.py,milestone_mNN,KEEP,behavior test,5,1.2,0,0,0,0,3346
+tests/test_m28_7_deploy_launch_templates.py,milestone_mNN,KEEP,behavior test,3,1.2,0,0,0,0,2690
+tests/test_m29_7_log_archive_integrity_check.py,milestone_mNN,KEEP,behavior test,3,1.2,0,0,0,0,2389
+tests/test_m31_3_weekly_health_summary.py,milestone_mNN,KEEP,behavior test,3,1.2,1,0,0,0,6575
+tests/test_scanner_memory_bias.py,general,KEEP,behavior test,6,1.2,0,0,0,0,8173
+tests/test_trade_bundle_persistence.py,general,KEEP,behavior test,5,1.2,0,0,0,0,11800
+tests/test_closeout_diagnostic_hardening.py,general,KEEP,behavior test,9,1.1,0,0,0,0,10252
+tests/test_m19_6_llm_daily_report.py,milestone_mNN,KEEP,behavior test,4,1.1,0,0,0,0,6316
+tests/test_m28_1_runtime_profile_scaffold.py,milestone_mNN,KEEP,behavior test,7,1.1,0,0,0,0,4971
+tests/test_q10_lead_market_forward_validation.py,general,KEEP,behavior test,9,1.1,0,0,0,0,10241
+tests/test_q12_btc_woori_hypothesis_validation.py,general,KEEP,behavior test,5,1.1,0,0,0,0,6173
+tests/test_report_maintenance.py,general,KEEP,behavior test,5,1.1,0,0,0,0,4613
+tests/test_short_alpha_discriminator.py,general,KEEP,behavior test,7,1.1,0,0,0,0,10825
+tests/test_strategist_llm_summary.py,general,KEEP,behavior test,5,1.1,0,0,0,0,12692
+tests/test_strategist_output_schema.py,general,KEEP,behavior test,8,1.1,0,0,0,0,8945
+tests/test_symbol_read_model.py,general,KEEP,behavior test,8,1.1,0,0,0,0,12468
+tests/test_broker_closed_trade_reconciler.py,general,KEEP,behavior test,12,1.0,0,0,0,0,14850
+tests/test_controlled_mock_lane_execution_integration.py,general,KEEP,behavior test,1,1.0,0,0,0,0,5542
+tests/test_m15_smoke.py,milestone_mNN,KEEP,behavior test,6,1.0,0,0,0,0,7133
+tests/test_m23_8_resilience_closeout_check.py,milestone_mNN,KEEP,behavior test,2,1.0,0,0,0,0,1154
+tests/test_m24_7_intent_state_ops_query.py,milestone_mNN,KEEP,behavior test,4,1.0,0,0,0,0,3527
+tests/test_m27_8_portfolio_guard_notify_routing.py,milestone_mNN,KEEP,behavior test,3,1.0,0,0,0,0,1267
+tests/test_m28_2_runtime_lifecycle_hooks.py,milestone_mNN,KEEP,behavior test,5,1.0,0,0,0,0,2876
+tests/test_m29_6_audit_trail_check.py,milestone_mNN,KEEP,behavior test,3,1.0,0,0,0,0,2412
+tests/test_m29_8_incident_timeline_check.py,milestone_mNN,KEEP,behavior test,3,1.0,1,0,0,0,2266
+tests/test_profitability_recovery_day1.py,general,KEEP,behavior test,4,1.0,0,0,0,0,8379
+tests/test_q10_reaction_reader_collector_integration.py,general,KEEP,behavior test,9,1.0,0,0,0,0,11507
+tests/test_reporter_feedback.py,general,KEEP,behavior test,8,1.0,0,0,0,0,15399
+tests/test_reporter_script_wrappers.py,general,KEEP,behavior test,6,1.0,0,0,0,0,6509
+tests/test_step5b_fix4.py,general,KEEP,behavior test,12,1.0,8,0,0,0,20817
+tests/test_update_state_after_execution.py,general,KEEP,behavior test,28,1.0,0,0,0,0,28911
+tests/test_broker_outcome_fallback_truth.py,general,KEEP,behavior test,18,0.9,0,0,0,0,9766
+tests/test_m17_monitor_emits_intent_only.py,milestone_mNN,KEEP,behavior test,2,0.9,0,0,0,0,812
+tests/test_m24_1_intent_state_store.py,milestone_mNN,KEEP,behavior test,6,0.9,0,0,0,0,3162
+tests/test_m27_3_portfolio_budget_boundary.py,milestone_mNN,KEEP,behavior test,5,0.9,1,0,0,0,3989
+tests/test_m27_9_portfolio_guard_notify_query.py,milestone_mNN,KEEP,behavior test,3,0.9,0,0,0,0,1641
+tests/test_m29_2_scanner_feature_integration.py,milestone_mNN,KEEP,behavior test,1,0.9,0,0,0,0,2475
+tests/test_m9_snapshots.py,milestone_mNN,KEEP,behavior test,21,0.9,0,0,0,0,17324
+tests/test_check_reports_trades_health.py,general,KEEP,behavior test,4,0.8,0,0,0,0,6320
+tests/test_closeout_residual_positions.py,general,KEEP,behavior test,3,0.8,0,0,0,0,7248
+tests/test_commander_env_migration_phase1.py,general,KEEP,behavior test,5,0.8,0,0,0,0,10109
+tests/test_commander_env_migration_phase2.py,general,KEEP,behavior test,5,0.8,0,0,0,0,8732
+tests/test_m18_scanner_global_sentiment_contract.py,milestone_mNN,KEEP,behavior test,1,0.8,0,0,0,0,1377
+tests/test_m18_top_picks_candidates.py,milestone_mNN,KEEP,behavior test,2,0.8,0,0,0,0,1253
+tests/test_m20_3_llm_event_logging.py,milestone_mNN,KEEP,behavior test,4,0.8,0,0,0,0,8384
+tests/test_m24_3_duplicate_execution_claim_guard.py,milestone_mNN,KEEP,behavior test,2,0.8,0,0,0,0,4329
+tests/test_m24_4_intent_state_reconcile_script.py,milestone_mNN,KEEP,behavior test,2,0.8,0,0,0,0,3071
+tests/test_m26_4_ab_evaluation.py,milestone_mNN,KEEP,behavior test,2,0.8,0,0,0,0,3087
+tests/test_opportunity_engine_shadow.py,general,KEEP,behavior test,10,0.8,0,0,0,0,9918
+tests/test_q12_btc_0855_capture.py,general,KEEP,behavior test,5,0.8,0,0,0,0,5115
+tests/test_q9_decision_snapshots.py,general,KEEP,behavior test,6,0.8,0,0,0,0,10472
+tests/test_quant_shadow_candidate_evaluation.py,general,KEEP,behavior test,13,0.8,0,0,0,0,15405
+tests/test_quant_shadow_candidates.py,general,KEEP,behavior test,14,0.8,0,0,0,0,24514
+tests/test_run_m13_live_loop_lock.py,general,KEEP,behavior test,15,0.8,0,0,0,0,5450
+tests/test_trade_summary_symbol_metadata.py,general,KEEP,behavior test,15,0.8,0,0,0,0,13420
+tests/test_check_phase_5_2_5_3_runtime_health.py,general,KEEP,behavior test,4,0.7,0,0,0,0,31644
+tests/test_daily_uef_run_status.py,general,KEEP,behavior test,9,0.7,0,0,0,0,7530
+tests/test_existing_evidence_mining.py,general,KEEP,behavior test,13,0.7,0,0,0,0,12063
+tests/test_log_maintenance.py,general,KEEP,behavior test,4,0.7,0,0,0,0,3703
+tests/test_m25_2_alert_policy_threshold_gate.py,milestone_mNN,KEEP,behavior test,5,0.7,0,0,0,0,10657
+tests/test_m27_1_allocation_policy.py,milestone_mNN,KEEP,behavior test,4,0.7,1,0,0,0,2211
+tests/test_monitor_memory_bias.py,general,KEEP,behavior test,8,0.7,0,0,0,0,13936
+tests/test_post_reclaim_offline_research.py,general,KEEP,behavior test,9,0.7,0,0,0,0,9783
+tests/test_q16_proxy_rejection_review.py,general,KEEP,behavior test,6,0.7,0,0,0,0,10721
+tests/test_quant_decision.py,general,KEEP,behavior test,12,0.7,0,0,0,0,10678
+tests/test_reporter_commander_hooks.py,general,KEEP,behavior test,3,0.7,0,0,0,0,5711
+tests/test_scheduled_intelligence.py,general,KEEP,behavior test,3,0.7,0,0,0,0,3753
+tests/test_stage2_authority_review.py,general,KEEP,behavior test,5,0.7,0,0,0,0,6873
+tests/test_strategy_horizon_feedback.py,general,KEEP,behavior test,11,0.7,0,0,0,0,11754
+tests/test_uef5_2_session_policy.py,uef,KEEP,UEF protected; change only with owner approval,15,0.7,0,0,0,0,5709
+tests/test_conditional_alpha_diagnosis.py,general,KEEP,behavior test,7,0.6,0,0,0,0,5245
+tests/test_event_logger.py,general,KEEP,behavior test,9,0.6,0,0,0,0,6481
+tests/test_kiwoom_day_trade_truth.py,general,KEEP,behavior test,13,0.6,0,0,0,0,30015
+tests/test_m16_approval_api.py,milestone_mNN,KEEP,behavior test,1,0.6,0,0,0,0,2359
+tests/test_m18_3_global_sentiment_policy_adjust.py,milestone_mNN,KEEP,behavior test,2,0.6,0,0,0,0,1023
+tests/test_m20_4_llm_ops_scripts.py,milestone_mNN,KEEP,behavior test,5,0.6,0,0,0,0,5130
+tests/test_m23_4_commander_incident_cooldown_routing.py,milestone_mNN,KEEP,behavior test,3,0.6,0,0,0,0,3603
+tests/test_m26_5_promotion_gate_check.py,milestone_mNN,KEEP,behavior test,2,0.6,0,0,0,0,3405
+tests/test_m27_2_conflict_resolution.py,milestone_mNN,KEEP,behavior test,5,0.6,1,0,0,0,3334
+tests/test_q10_index_close_fallback.py,general,KEEP,behavior test,10,0.6,0,0,0,0,6393
+tests/test_strategy_universe_builder.py,general,KEEP,behavior test,4,0.6,0,0,0,0,3805
+tests/test_trade_lifecycle_builder.py,general,KEEP,behavior test,8,0.6,0,0,0,0,12540
+tests/test_broker_cost_profile.py,general,KEEP,behavior test,7,0.5,0,0,0,0,4558
+tests/test_entry_blocker_read_model.py,general,KEEP,behavior test,4,0.5,0,0,0,0,14567
+tests/test_event_log_reader.py,general,KEEP,behavior test,4,0.5,0,0,0,0,3489
+tests/test_live_loop_runner.py,general,KEEP,behavior test,3,0.5,0,0,0,0,2188
+tests/test_m11_live_pipeline.py,milestone_mNN,KEEP,behavior test,1,0.5,0,0,0,0,1364
+tests/test_m25_6_alert_notification_adapter.py,milestone_mNN,KEEP,behavior test,9,0.5,0,0,0,0,8336
+tests/test_m26_2_replay_runner.py,milestone_mNN,KEEP,behavior test,3,0.5,0,0,0,0,2229
+tests/test_m26_3_scorecard.py,milestone_mNN,KEEP,behavior test,3,0.5,0,0,0,0,3164
+tests/test_monitor_candidate_cascade.py,general,KEEP,behavior test,14,0.5,0,0,0,0,12100
+tests/test_p0c_graceful_shutdown.py,general,KEEP,behavior test,5,0.5,0,0,0,0,6574
+tests/test_position_horizon_revision.py,general,KEEP,behavior test,7,0.5,0,0,0,0,7696
+tests/test_quant_trade_diagnosis.py,general,KEEP,behavior test,3,0.5,0,0,0,0,8597
+tests/test_reporting_relocation_imports.py,general,KEEP,behavior test,10,0.5,0,0,0,0,1939
+tests/test_supervisor.py,general,KEEP,behavior test,10,0.5,0,0,0,0,4727
+tests/test_trade_read_model.py,general,KEEP,behavior test,4,0.5,0,0,0,0,11542
+tests/test_alpha_hypothesis_competition.py,general,KEEP,behavior test,6,0.4,0,0,0,0,5882
+tests/test_commander_contract.py,general,KEEP,behavior test,4,0.4,0,0,0,0,3204
+tests/test_controlled_validation_daily_submission_provenance.py,general,KEEP,behavior test,5,0.4,0,0,0,0,6018
+tests/test_decision_observability.py,general,KEEP,behavior test,7,0.4,0,0,0,0,11083
+tests/test_entry_timing_attribution.py,general,KEEP,behavior test,5,0.4,0,0,0,0,7297
+tests/test_full_chain_component_review.py,general,KEEP,behavior test,8,0.4,0,0,0,0,6815
+tests/test_integrated_trade_diagnosis.py,general,KEEP,behavior test,7,0.4,0,0,0,0,7188
+tests/test_llm_status_semantics.py,general,KEEP,behavior test,5,0.4,0,0,0,0,4457
+tests/test_m12_1_provider_routing.py,milestone_mNN,KEEP,behavior test,3,0.4,0,0,0,0,1955
+tests/test_m18_5_candidate_rerank_by_news.py,milestone_mNN,KEEP,behavior test,1,0.4,0,0,0,0,644
+tests/test_m18_5_risk_off_candidate_count.py,milestone_mNN,KEEP,behavior test,1,0.4,0,0,0,0,598
+tests/test_m20_3_legacy_llm_router_compat.py,milestone_mNN,KEEP,behavior test,7,0.4,3,0,0,0,4277
+tests/test_m23_1_runtime_resilience_state_contract.py,milestone_mNN,KEEP,behavior test,3,0.4,0,0,0,0,2413
+tests/test_m23_6_operator_intervention_resume.py,milestone_mNN,KEEP,behavior test,2,0.4,0,0,0,0,2749
+tests/test_monitor_feedback_adaptive_policy.py,general,KEEP,behavior test,10,0.4,0,0,0,0,11888
+tests/test_monitor_noop_attribution.py,general,KEEP,behavior test,4,0.4,0,0,0,0,4510
+tests/test_news_pipeline_provider_shape_compat.py,general,KEEP,behavior test,8,0.4,0,0,0,0,5592
+tests/test_openrouter_client_extract_text.py,general,KEEP,behavior test,5,0.4,0,0,0,0,1982
+tests/test_phase3_lifecycle_bundle.py,general,KEEP,behavior test,5,0.4,0,0,0,0,5421
+tests/test_q12_historical_policy_review.py,general,KEEP,behavior test,1,0.4,0,0,0,0,3543
+tests/test_quant_context.py,general,KEEP,behavior test,4,0.4,0,0,0,0,4676
+tests/test_quant_shadow_forward_outcomes.py,general,KEEP,behavior test,8,0.4,0,0,0,0,7875
+tests/test_real_executor_mock_mode_allowed.py,general,KEEP,behavior test,4,0.4,0,0,0,0,5283
+tests/test_reporter_node.py,general,KEEP,behavior test,4,0.4,0,0,0,0,2790
+tests/test_scanner_alignment_root_cause.py,general,KEEP,behavior test,5,0.4,0,0,0,0,5494
+tests/test_strategy_memory_store.py,general,KEEP,behavior test,2,0.4,0,0,0,0,5210
+tests/test_strategy_v1_multi_strategy_selection.py,general,KEEP,behavior test,5,0.4,0,0,0,0,6293
+tests/test_symbol_allowlist_guard.py,general,KEEP,behavior test,4,0.4,0,0,0,0,2093
+tests/test_agent_effectiveness_scorecard.py,general,KEEP,behavior test,4,0.3,0,0,0,0,6395
+tests/test_agent_pipeline_trace_report.py,general,KEEP,behavior test,3,0.3,0,0,0,0,31273
+tests/test_check_monitor_gate_patterns.py,general,KEEP,behavior test,3,0.3,0,0,0,0,3904
+tests/test_cleanup_pytest_artifacts_cli.py,general,KEEP,behavior test,4,0.3,0,0,0,0,2245
+tests/test_closeout_maintenance.py,general,KEEP,behavior test,2,0.3,0,0,0,0,3798
+tests/test_commander_memory_policy.py,general,KEEP,behavior test,8,0.3,0,0,0,0,13575
+tests/test_fact_narrative_separation.py,general,KEEP,behavior test,7,0.3,1,0,0,0,5643
+tests/test_kiwoom_token_client.py,general,KEEP,behavior test,3,0.3,0,0,0,0,3236
+tests/test_live_execution_bundle_report_runtime_recovery.py,general,KEEP,behavior test,5,0.3,0,0,0,0,8417
+tests/test_llm_status_semantics_phase2.py,general,KEEP,behavior test,2,0.3,0,0,0,0,3534
+tests/test_m17_risk_decision.py,milestone_mNN,KEEP,behavior test,6,0.3,0,0,0,0,4545
+tests/test_m21_graph_spine_parity.py,milestone_mNN,KEEP,behavior test,2,0.3,0,0,0,0,3935
+tests/test_m23_3_decide_trade_runtime_circuit_integration.py,milestone_mNN,KEEP,behavior test,2,0.3,0,0,0,0,4310
+tests/test_m24_5_real_execution_preflight.py,milestone_mNN,KEEP,behavior test,5,0.3,0,0,0,0,3342
+tests/test_m26_1_dataset_manifest_check.py,milestone_mNN,KEEP,behavior test,2,0.3,0,0,0,0,1304
+tests/test_m29_5_monitor_metrics_report.py,milestone_mNN,KEEP,behavior test,2,0.3,0,0,0,0,4471
+tests/test_memory_contamination_review.py,general,KEEP,behavior test,4,0.3,0,0,0,0,7888
+tests/test_model_catalog_store.py,general,KEEP,behavior test,5,0.3,0,0,0,0,5051
+tests/test_opening_macro_snapshot_collector.py,general,KEEP,behavior test,3,0.3,0,0,0,0,2322
+tests/test_opening_rank1_observation_price.py,general,KEEP,behavior test,6,0.3,0,0,0,0,1620
+tests/test_operator_summary_broker_day_reconciliation.py,general,KEEP,behavior test,2,0.3,0,0,0,0,5005
+tests/test_operator_summary_mining.py,general,KEEP,behavior test,2,0.3,0,0,0,0,3711
+tests/test_phase_6_2_consumption.py,general,KEEP,behavior test,2,0.3,0,0,0,0,1734
+tests/test_quant_tactic_evaluation.py,general,KEEP,behavior test,5,0.3,0,0,0,0,4061
+tests/test_query_trade_reason_chain.py,general,KEEP,behavior test,3,0.3,0,0,0,0,6930
+tests/test_same_symbol_sequences.py,general,KEEP,behavior test,3,0.3,0,0,0,0,3008
+tests/test_scanner_feature_hydration.py,general,KEEP,behavior test,8,0.3,0,0,0,0,8124
+tests/test_strategist_refresh_decision.py,general,KEEP,behavior test,5,0.3,0,0,0,0,4661
+tests/test_strategy_feature_engine_upgrade.py,general,KEEP,behavior test,4,0.3,0,0,0,0,2637
+tests/test_strategy_memory_window_packets.py,general,KEEP,behavior test,3,0.3,0,0,0,0,10902
+tests/test_strategy_v1_regime_momentum.py,general,KEEP,behavior test,5,0.3,0,0,0,0,6395
+tests/test_structural_alpha_batch1.py,general,KEEP,behavior test,7,0.3,0,0,0,0,6360
+tests/test_structural_alpha_batch2.py,general,KEEP,behavior test,6,0.3,0,0,0,0,4822
+tests/test_trade_bundle_assembly.py,general,KEEP,behavior test,8,0.3,0,0,0,0,20087
+tests/test_trade_bundle_state.py,general,KEEP,behavior test,7,0.3,0,0,0,0,18302
+tests/test_trade_memory_surface.py,general,KEEP,behavior test,5,0.3,0,0,0,0,22856
+tests/test_account_client.py,general,KEEP,behavior test,3,0.2,0,0,0,0,4290
+tests/test_attribution_score_range.py,general,KEEP,behavior test,2,0.2,0,0,0,0,2957
+tests/test_attribution_score_v0.py,general,KEEP,behavior test,5,0.2,0,0,0,0,4174
+tests/test_attribution_score_window.py,general,KEEP,behavior test,1,0.2,0,0,0,0,3135
+tests/test_chart_structure_decision_hint_summary.py,general,KEEP,behavior test,4,0.2,0,0,0,0,6281
+tests/test_chart_structure_features.py,general,KEEP,behavior test,3,0.2,0,0,0,0,4059
+tests/test_conditional_alpha_quant_bridge.py,general,KEEP,behavior test,5,0.2,0,0,0,0,4175
+tests/test_conditional_alpha_reactivation.py,general,KEEP,behavior test,2,0.2,0,0,0,0,2249
+tests/test_controlled_mock_lane_report.py,general,KEEP,behavior test,4,0.2,0,0,0,0,3558
+tests/test_cumulative_improvement_review.py,general,KEEP,behavior test,5,0.2,0,0,0,0,7118
+tests/test_daily_strategy_memory_packet.py,general,KEEP,behavior test,2,0.2,0,0,0,0,6523
+tests/test_generate_ops_diagnostic_report.py,general,KEEP,behavior test,2,0.2,0,0,0,0,6127
+tests/test_historical_q9_prior.py,general,KEEP,behavior test,2,0.2,0,0,0,0,2785
+tests/test_host_supervisor.py,general,KEEP,behavior test,5,0.2,0,0,0,0,2310
+tests/test_http_client.py,general,KEEP,behavior test,3,0.2,0,0,0,0,1265
+tests/test_kiwoom_market_status.py,general,KEEP,behavior test,4,0.2,0,0,0,0,3521
+tests/test_kiwoom_order_fill_reader.py,general,KEEP,behavior test,3,0.2,0,0,0,0,4188
+tests/test_kiwoom_theme_reader.py,general,KEEP,behavior test,4,0.2,0,0,0,0,4826
+tests/test_korea_market_indices_context.py,general,KEEP,behavior test,3,0.2,0,0,0,0,2783
+tests/test_latent_reactivation_forward.py,general,KEEP,behavior test,2,0.2,0,0,0,0,1451
+tests/test_live_loop_lock.py,general,KEEP,behavior test,3,0.2,0,0,0,0,1310
+tests/test_low_cost_model_routing.py,general,KEEP,behavior test,4,0.2,0,0,0,0,1680
+tests/test_m10_6_decision_context_hydration.py,milestone_mNN,KEEP,behavior test,4,0.2,0,0,0,0,5333
+tests/test_m12_3_intent_normalization.py,milestone_mNN,KEEP,behavior test,4,0.2,0,0,0,0,1190
+tests/test_m13_e2e_once.py,milestone_mNN,KEEP,behavior test,1,0.2,0,0,0,0,2132
+tests/test_m13_tick.py,milestone_mNN,KEEP,behavior test,4,0.2,0,0,0,0,2080
+tests/test_m18_8_news_scorer_plugin.py,milestone_mNN,KEEP,behavior test,3,0.2,0,0,0,0,1771
+tests/test_m22_skill_contracts.py,milestone_mNN,KEEP,behavior test,7,0.2,0,0,0,0,5716
+tests/test_m23_2_runtime_circuit_breaker_core.py,milestone_mNN,KEEP,behavior test,4,0.2,0,0,0,0,2633
+tests/test_m23_9_commander_resilience_metrics_report.py,milestone_mNN,KEEP,behavior test,2,0.2,0,0,0,0,3481
+tests/test_m25_10_notification_events_query.py,milestone_mNN,KEEP,behavior test,3,0.2,0,0,0,0,5900
+tests/test_m29_1_feature_engine.py,milestone_mNN,KEEP,behavior test,3,0.2,0,0,0,0,1925
+tests/test_m9_real_portfolio_reader.py,milestone_mNN,KEEP,behavior test,7,0.2,0,0,0,0,7016
+tests/test_monitor_directional_edge.py,general,KEEP,behavior test,8,0.2,0,0,0,0,7393
+tests/test_monitor_evidence_ast.py,general,KEEP,behavior test,8,0.2,0,0,0,0,1567
+tests/test_monitor_exit_price_freshness.py,general,KEEP,behavior test,9,0.2,0,0,0,0,7504
+tests/test_monitor_fallback_quality_gate.py,general,KEEP,behavior test,5,0.2,0,0,0,0,3309
+tests/test_offhours_validation_loop.py,general,KEEP,behavior test,2,0.2,0,0,0,0,4961
+tests/test_offhours_validation_runtime.py,general,KEEP,behavior test,5,0.2,0,0,0,0,2002
+tests/test_opening_rank1_deep_dive.py,general,KEEP,behavior test,5,0.2,0,0,0,0,6546
+tests/test_opening_rank1_longitudinal.py,general,KEEP,behavior test,7,0.2,0,0,0,0,9487
+tests/test_opening_rank1_market_snapshot.py,general,KEEP,behavior test,4,0.2,0,0,0,0,4987
+tests/test_operator_summary_memory_linkage.py,general,KEEP,behavior test,3,0.2,0,0,0,0,4735
+tests/test_policy_surface_summary.py,general,KEEP,behavior test,4,0.2,0,0,0,0,5385
+tests/test_process_tree_status.py,general,KEEP,behavior test,4,0.2,0,0,0,0,1478
+tests/test_q10_incident_price_integrity.py,general,KEEP,behavior test,3,0.2,0,0,0,0,1583
+tests/test_q10_readiness_forward_validation.py,general,KEEP,behavior test,2,0.2,0,0,0,0,1072
+tests/test_q9_scanner_quality.py,general,KEEP,behavior test,2,0.2,0,0,0,0,2857
+tests/test_quant_factors.py,general,KEEP,behavior test,3,0.2,0,0,0,0,4407
+tests/test_quant_tactic_report.py,general,KEEP,behavior test,5,0.2,0,0,0,0,9786
+tests/test_quant_tactics.py,general,KEEP,behavior test,5,0.2,0,0,0,0,2637
+tests/test_reporting_provenance_preference.py,general,KEEP,behavior test,4,0.2,0,0,0,0,6343
+tests/test_run_live_session_summary.py,general,KEEP,behavior test,2,0.2,0,0,0,0,5442
+tests/test_run_live_session_watch.py,general,KEEP,behavior test,5,0.2,0,0,0,0,2859
+tests/test_run_session.py,general,KEEP,behavior test,3,0.2,0,0,0,0,1636
+tests/test_runtime_entrypoint_common.py,general,KEEP,behavior test,5,0.2,0,0,0,0,1066
+tests/test_same_symbol_loss_reentry.py,general,KEEP,behavior test,6,0.2,0,0,0,0,4266
+tests/test_sell_cooldown_env_alias_decide_trade.py,general,KEEP,behavior test,1,0.2,0,0,0,0,1603
+tests/test_step5b_fix5.py,general,KEEP,behavior test,7,0.2,0,0,0,0,15467
+tests/test_strategist_explanation_contract.py,general,KEEP,behavior test,3,0.2,0,0,0,0,10467
+tests/test_strategist_quant_context_report.py,general,KEEP,behavior test,3,0.2,0,0,0,0,4676
+tests/test_strategy_feedback_builder.py,general,KEEP,behavior test,2,0.2,0,0,0,0,4861
+tests/test_strategy_horizon_operational_policy.py,general,KEEP,behavior test,4,0.2,0,0,0,0,4224
+tests/test_strategy_policy_contract.py,general,KEEP,behavior test,5,0.2,0,0,0,0,3327
+tests/test_strategy_read_model.py,general,KEEP,behavior test,5,0.2,0,0,0,0,10232
+tests/test_trade_execution_snapshot.py,general,KEEP,behavior test,8,0.2,0,0,0,0,6488
+tests/test_trade_memory_application_surface.py,general,KEEP,behavior test,4,0.2,0,0,0,0,15850
+tests/test_trade_regeneration_truth.py,general,KEEP,behavior test,4,0.2,0,0,0,0,8637
+tests/test_trade_symbol_context.py,general,KEEP,behavior test,4,0.2,0,0,0,0,6918
+tests/test_trade_symbol_integrity.py,general,KEEP,behavior test,1,0.2,0,0,0,0,1829
+tests/test_ai_effectiveness_provenance.py,general,KEEP,behavior test,4,0.1,0,0,0,0,3705
+tests/test_ai_strategy_v1_bridge.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1910
+tests/test_api_catalog.py,general,KEEP,behavior test,4,0.1,0,0,0,0,1293
+tests/test_api_discovery.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1059
+tests/test_api_request_builder.py,general,KEEP,behavior test,2,0.1,0,0,0,0,954
+tests/test_broker_alignment.py,general,KEEP,behavior test,1,0.1,0,0,0,0,1396
+tests/test_broker_trade_reconciliation.py,general,KEEP,behavior test,2,0.1,0,0,0,0,2063
+tests/test_build_api_catalog.py,general,KEEP,behavior test,2,0.1,0,0,0,0,708
+tests/test_build_risk_context.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1936
+tests/test_carryover_exit_reconciler.py,general,KEEP,behavior test,1,0.1,0,0,0,0,4600
+tests/test_check_reporter_upgrade_regression.py,general,KEEP,behavior test,2,0.1,0,0,0,0,3793
+tests/test_cost_basis_comparison.py,general,KEEP,behavior test,2,0.1,0,0,0,0,2726
+tests/test_decision_packet_explainability_contract.py,general,KEEP,behavior test,1,0.1,0,0,0,0,1029
+tests/test_evaluation_lens_report.py,general,KEEP,behavior test,2,0.1,0,0,0,0,6302
+tests/test_horizon_alignment.py,general,KEEP,behavior test,3,0.1,0,0,0,0,2672
+tests/test_horizon_revision_backtest.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1730
+tests/test_kiwoom_account_snapshot_collector.py,general,KEEP,behavior test,3,0.1,0,0,0,0,2277
+tests/test_kiwoom_day_pnl_reader.py,general,KEEP,behavior test,2,0.1,0,0,0,0,2829
+tests/test_kiwoom_market_index_reader.py,general,KEEP,behavior test,2,0.1,0,0,0,0,3813
+tests/test_kiwoom_orderable_cash_reader.py,general,KEEP,behavior test,2,0.1,0,0,0,0,2620
+tests/test_korea_bond_yields.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1549
+tests/test_live_execution_report_context.py,general,KEEP,behavior test,1,0.1,0,0,0,0,606
+tests/test_live_loop_config.py,general,KEEP,behavior test,4,0.1,0,0,0,0,1184
+tests/test_llm_json_parse_shared.py,general,KEEP,behavior test,3,0.1,0,0,0,0,1106
+tests/test_load_save_state_nodes.py,general,KEEP,behavior test,1,0.1,0,0,0,0,505
+tests/test_loss_decomposition.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1131
+tests/test_m11_2_scanner.py,milestone_mNN,KEEP,behavior test,3,0.1,0,0,0,0,749
+tests/test_m12_2_openai_http_provider.py,milestone_mNN,KEEP,behavior test,1,0.1,0,0,0,0,1115
+tests/test_m12_strategist_hook.py,milestone_mNN,KEEP,behavior test,1,0.1,0,0,0,0,536
+tests/test_m13_eod_report.py,milestone_mNN,KEEP,behavior test,3,0.1,0,0,0,0,2580
+tests/test_m13_live_loop.py,milestone_mNN,KEEP,behavior test,3,0.1,0,0,0,0,4933
+tests/test_m18_6_news_plugin_contract.py,milestone_mNN,KEEP,behavior test,2,0.1,0,0,0,0,1027
+tests/test_m18_9_global_sentiment_compute.py,milestone_mNN,KEEP,behavior test,2,0.1,0,0,0,0,519
+tests/test_m19_4_openrouter_news_scorer.py,milestone_mNN,KEEP,behavior test,2,0.1,0,0,0,0,1133
+tests/test_m23_7_commander_resilience_ops_script.py,milestone_mNN,KEEP,behavior test,3,0.1,0,0,0,0,4146
+tests/test_m25_1_metrics_schema_freeze_v1.py,milestone_mNN,KEEP,behavior test,2,0.1,0,0,0,0,3540
+tests/test_m31_strategy_baseline_snapshot_yaml.py,milestone_mNN,KEEP,behavior test,1,0.1,0,0,0,0,462
+tests/test_m7_demo_catalog.py,milestone_mNN,KEEP,behavior test,1,0.1,0,0,0,0,1015
+tests/test_m9_build_snapshots.py,milestone_mNN,KEEP,behavior test,1,0.1,0,0,0,0,732
+tests/test_m9_real_price_reader.py,milestone_mNN,KEEP,behavior test,3,0.1,0,0,0,0,2702
+tests/test_market_rail_translation.py,general,KEEP,behavior test,3,0.1,0,0,0,0,2794
+tests/test_market_regime_rail_review.py,general,KEEP,behavior test,3,0.1,0,0,0,0,3022
+tests/test_monitor_minute_ohlcv_resilience.py,general,KEEP,behavior test,1,0.1,0,0,0,0,834
+tests/test_no_trade_attribution.py,general,KEEP,behavior test,1,0.1,0,0,0,0,3641
+tests/test_offhours_full_trace_bundle.py,general,KEEP,behavior test,1,0.1,0,0,0,0,6531
+tests/test_order_client.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1461
+tests/test_preopen_macro_snapshot.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1444
+tests/test_q8_evaluation_contract.py,general,KEEP,behavior test,3,0.1,0,0,0,0,2037
+tests/test_q8_lane_decision_table.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1113
+tests/test_q8_shadow_blocker_review.py,general,KEEP,behavior test,1,0.1,0,0,0,0,3474
+tests/test_q9_start_gate.py,general,KEEP,behavior test,4,0.1,0,0,0,0,6113
+tests/test_quant_memory_scorecard.py,general,KEEP,behavior test,1,0.1,0,0,0,0,4812
+tests/test_quant_suitability.py,general,KEEP,behavior test,2,0.1,0,0,0,0,2103
+tests/test_real_executor_disabled.py,general,KEEP,behavior test,1,0.1,0,0,0,0,696
+tests/test_report_trades_continuity.py,general,KEEP,behavior test,1,0.1,0,0,0,0,1775
+tests/test_reporter_agent_trade_entrypoint.py,general,KEEP,behavior test,2,0.1,0,0,0,0,2540
+tests/test_restart_live_session.py,general,KEEP,behavior test,2,0.1,0,0,0,0,372
+tests/test_run_operator_brief_batch.py,general,KEEP,behavior test,1,0.1,0,0,0,0,359
+tests/test_runtime_entrypoint_import_boundaries.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1377
+tests/test_scan_candidates_universe_upgrade.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1129
+tests/test_session_entry_dispatch.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1113
+tests/test_settings.py,general,KEEP,behavior test,3,0.1,0,0,0,0,1385
+tests/test_shadow_loop_session.py,general,KEEP,behavior test,3,0.1,0,0,0,0,762
+tests/test_state_store.py,general,KEEP,behavior test,4,0.1,0,0,0,0,3054
+tests/test_strategist_input_quality_risk_off.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1014
+tests/test_token_cache.py,general,KEEP,behavior test,2,0.1,0,0,0,0,801
+tests/test_trade_report_ai_separated_adapter.py,general,KEEP,behavior test,2,0.1,0,0,0,0,2390
+tests/test_windows_subprocess.py,general,KEEP,behavior test,2,0.1,0,0,0,0,1271
+tests/test_api_planner.py,general,KEEP,behavior test,2,0.0,0,0,0,0,863
+tests/test_api_response.py,general,KEEP,behavior test,3,0.0,0,0,0,0,499
+tests/test_commander_post_scanner_context.py,general,KEEP,behavior test,1,0.0,0,0,0,0,2036
+tests/test_etf_deviation.py,general,KEEP,behavior test,2,0.0,0,0,0,0,1131
+tests/test_execution_plan_closeout_docs.py,general,KEEP,behavior test,1,0.0,0,0,0,0,1352
+tests/test_intent_packet.py,general,KEEP,behavior test,1,0.0,0,0,0,0,681
+tests/test_live_loop_process_query.py,general,KEEP,behavior test,1,0.0,0,0,0,0,1336
+tests/test_mock_executor.py,general,KEEP,behavior test,1,0.0,0,0,0,0,519
+tests/test_monitor_cash_truth.py,general,KEEP,behavior test,1,0.0,0,0,0,0,299
+tests/test_monitor_price_source_resolution.py,general,KEEP,behavior test,1,0.0,0,0,0,0,713
+tests/test_operator_summary_refresh.py,general,KEEP,behavior test,1,0.0,0,0,0,0,2308
+tests/test_reasoning_trace.py,general,KEEP,behavior test,1,0.0,0,0,0,0,1251
+tests/test_strategy_evolution_learning.py,general,KEEP,behavior test,,0.0,0,0,0,0,0
