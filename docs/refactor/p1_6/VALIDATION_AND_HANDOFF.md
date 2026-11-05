@@ -1,27 +1,17 @@
+> **현재 우선 결정:** [P1.5 중단·권한 해제·P1.6 이관](P15_STOP_AND_HANDOFF_20261105.md). 미완료 이관은 검증 PASS가 아니다.
+
 # P1.6 — Validation, Handoff and Continuity Gates
 
 **Status: DESIGN ONLY / NOT RUN (2026-10-30).** This is the single active validation plan. The prior five file/function and graph-only packets are preserved in archive, not active work orders.
 
-## 1. Do not interrupt P1.5
+## 1. P1.5 stopped; residual work transfers to P1.6
 
-Current P1.5 controls and owners (refresh the linked sources every session, not historical P1.6 snapshots):
+Owner decision 2026-11-05: P1.5 is STOPPED / CLOSEOUT_ONLY. C01–C06 continuous execution and exclusive lead authority are retired. Authorized implementers may update code, tests, documentation, RF ledgers and STATUS directly. Runtime safety gates remain in force.
 
-| Flow | Live authority/source | Evidence |
-|---|---|---|
-| Developer B / independent peer | [C01](../work_orders/C01_CODEX_CURRENT.md) | Issue #12 |
-| Developer A / independent peer | [C02](../work_orders/C02_CLAUDE_CURRENT.md) | Issue #11 |
-| Assignment | [C03](../work_orders/C03_LEAD_TRIAGE_CURRENT.md) | latest A/B/RunLab delta |
-| Integration, tests, CI | [C04](../work_orders/C04_LEAD_INTEGRATION_CURRENT.md) | Issue #36 |
-| Accept RF / DONE | [C05](../work_orders/C05_LEAD_CLOSEOUT_CURRENT.md) | canonical RF/STATUS |
-| Read-only external audit | [C06](../work_orders/C06_AUDIT_CURRENT.md) | Issue #37 |
-| Runtime/RunLab independent validation | [RunLab CURRENT](../../runtime/validation/CURRENT.md) | Issue #32 |
-
-The active D00 §2 FAST-3 gates and actual CURRENT/RF documents govern **P1.5**; old P1.6 WO-16.*, deprecated old branch assignments and historic seven-column gates do not. **Never modify C01–C06, D00, RF, existing automation, current CI, or RunLab to “prepare” P1.6.** If the scheduled P1.5 task is active, it remains active. Real A/B source SHA, integration SHA, targeted tests, hosted CI and RunLab source identity must be evaluated separately; mock/unit PASS is not runtime PASS.
-
-## 2. Entry gate — accept real P1.5 completion first
+## 2. Entry gate — accept documented P1.5 handoff
 
 Do not assume DONE counts equal P1.5 freeze. Gate A requires:
-- Formal P1.5 completion decision, exact immutable source SHA, branch and freeze/tag evidence.
+- Owner-approved P1.5 stop/handoff decision, exact immutable source SHA, branch and freeze/tag evidence.
 - Exact live entrypoints, seven role public contracts, state owners, nested consumer paths and operation mode mapping; compare against the old P1.6 source snapshots and declare PATH_DRIFT / ABI_DRIFT / SEMANTIC_DRIFT.
 - Actual baseline tests, relevant safety/UEF integrity, Docker/runtime and RunLab validation receipts, classified BLOCKED/NOT_RUN where evidence is missing. No false assertion of a clean full suite or safe production readiness.
 - Clear owner approval to start P1.6 code changes. Design permission alone does not authorize execution.
