@@ -1,7 +1,8 @@
-# D01 — Codex B 실행 진입점 (2026-10-28)
+# Agentra 작업 진입점
 
-**정본:** `integration/p1.5/docs/refactor/work_orders/C01_CODEX_CURRENT.md` → `D00_ENGINEERING_DELIVERY_POLICY.md`.
-**허용 소스 브랜치:** `work/p15-b-operator-structure-20261022`.
-**보고:** [Issue #12 댓글](https://github.com/hbombheart1230-dotcom/agentra/issues/12) **한 곳만**.
+최상위 운영 결정: [P1.5 중단·P1.6 이관](docs/refactor/p1_6/P15_STOP_AND_HANDOFF_20261105.md).
 
-A/B는 각 자기 브랜치의 **소스 코드와 테스트만** 편집·커밋·푸시한다. HANDOFF/MD/CSV/patchnotes/RF/STATUS/CURRENT/정책/이슈 본문은 일절 수정하지 않는다(지팀장 전담). 신규 SHA·요청이 없어도 미완료 RF와 안전한 READY RF를 계속 진행한다. 보호 경계·peer 정본은 D00. 실제 Git 인증·pytest 실패는 정확히 보고하며 푸시 성공을 꾸미지 않는다. `main`, 새 브랜치/PR/worktree 생성 금지.
+P1.5는 STOPPED / CLOSEOUT_ONLY. 신규 개발 및 자동 연속 수행을 중단하고 미완료는 P1.6으로 이관한다.
+지팀장 전용 쓰기·승인 권한은 폐지했다. 홍사장이 승인한 범위에서 담당 Claude/Codex는 코드·테스트·문서·원장·STATUS·RF·patchnotes를 직접 수정·커밋·푸시할 수 있다. 최신 원격과 검증 근거를 확인하고 비강제 푸시한다.
+
+P1.6 진입점: docs/refactor/p1_6/README.md. 안전·frozen·UEF·Guard·Step5C·운영 데이터 보호는 유지한다. 실제 Git 인증 실패나 NOT_RUN을 숨기지 않는다.
