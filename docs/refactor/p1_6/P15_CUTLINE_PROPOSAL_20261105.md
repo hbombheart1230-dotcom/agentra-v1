@@ -61,6 +61,7 @@ RF-010, 011, 012, 022, 026, 030, 042, 048, 049 (모두 01_PENDING). 실제 코�
 
 1. FINISH 3개 RF가 `05_DONE`이 된다 (G1 BASE parity, G2 normal·`-O` 테스트, 독립 피어 `PASS`와 실제 종료 코드).
 2. 기존 실패 2건을 해결하거나 사유와 함께 기록한다: `test_p159_current_owner_contract_gates.py::test_t3_changed_paths_contain_no_authority_surface`와 p153의 1건.
+2-1. 기존 실패 추가 기록 (2026-11-05, A 파일 가져오기 중 확인): `tests/test_decision_trace_ledger.py::test_decision_trace_ledger_collects_strategist_scanner_monitor`는 `libs/runtime/decision_observability.py:29`에서 `libs.runtime`의 `decision_observability_dedupe_non_empty`를 import하지 못해 실패한다. A 변경을 빼고 돌려도 동일하게 실패하므로 A와 무관한 기존 실패이며, Gate A 전에 해결하거나 사유를 남긴다. **범위 확대**: A 관련 테스트 131개 파일을 돌린 결과 normal·`-O` 모두 실패 257 + 오류 5(동일 집합)였고, A 변경 없는 HEAD에서도 정확히 같은 262건이 나왔다(A가 새로 만든 실패 0건). 원인은 주로 `decision_observability_dedupe_non_empty` import 실패(140건)와 `RF93 missing work orders`(77건, work_orders 증거 문서 부재)다.
 3. 전체 회귀(normal·`-O`)가 통과한다. 이번에 확인한 범위는 가드 테스트 3개 파일뿐이다.
 4. RunLab 이슈 #32(SELL 제출 불일치, OCI 출처 UNKNOWN)는 코드 DONE과 별개로 `OPEN/RUNTIME_PENDING`이다. 동결 문서에 미해결로 명시한다.
 5. 기준 SHA와 태그를 기록하고, 오너가 승인한다.
