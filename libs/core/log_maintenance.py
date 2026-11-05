@@ -187,21 +187,56 @@ def build_log_inventory(log_root: Path) -> Dict[str, Any]:
 
 def apply_log_move_candidates(log_root: Path, candidates: List[LogMoveCandidate]) -> List[Dict[str, str]]:
     log_root = Path(log_root)
-    moved: List[Dict[str, str]] = []
+    root = log_root.resolve()
+    results: List[Dict[str, str]] = []
     for candidate in candidates:
-        src = log_root / candidate.rel_path
-        dst = log_root / candidate.target_rel_path
-        if not src.exists():
+        source_rel = Path(candidate.rel_path)
+        target_rel = Path(candidate.target_rel_path)
+        src = log_root / source_rel
+        dst = log_root / target_rel
+
+        def within_root(relative: Path, *, allow_root: bool = False) -> bool:
+            if relative.is_absolute() or ".." in relative.parts or (relative == Path(".") and not allow_root):
+                return False
+            try:
+                resolved = (root / relative).resolve(strict=False)
+                resolved.relative_to(root)
+                return allow_root or resolved != root
+            except (ValueError, OSError, RuntimeError):
+                return False
+
+        if not (within_root(source_rel) and within_root(target_rel) and within_root(target_rel.parent, allow_root=True)):
+            results.append(
+                {"src": str(src), "dst": str(dst), "category": candidate.category, "status": "skipped_unsafe_path"}
+            )
             continue
-        dst.parent.mkdir(parents=True, exist_ok=True)
+        if not src.exists():
+            results.append(
+                {"src": str(src), "dst": str(dst), "category": candidate.category, "status": "skipped_missing_source"}
+            )
+            continue
         if dst.exists():
-            if dst.is_dir():
-                shutil.rmtree(dst)
-            else:
-                dst.unlink()
-        shutil.move(str(src), str(dst))
-        moved.append({"src": str(src), "dst": str(dst), "category": candidate.category})
-    return moved
+            # Maintenance must never silently discard an existing log.
+            results.append(
+                {"src": str(src), "dst": str(dst), "category": candidate.category, "status": "skipped_destination_exists"}
+            )
+            continue
+        try:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(src), str(dst))
+        except OSError as exc:
+            results.append(
+                {
+                    "src": str(src),
+                    "dst": str(dst),
+                    "category": candidate.category,
+                    "status": "failed",
+                    "error": str(exc),
+                }
+            )
+            continue
+        results.append({"src": str(src), "dst": str(dst), "category": candidate.category, "status": "moved"})
+    return results
 
 
 def write_log_inventory(log_root: Path, inventory: Dict[str, Any]) -> Tuple[Path, Path]:
