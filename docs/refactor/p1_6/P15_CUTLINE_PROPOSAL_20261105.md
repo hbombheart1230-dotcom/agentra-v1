@@ -33,7 +33,7 @@
 |---|---|---|---|---|
 | RF-032 | 03_PEER_REVIEW | 7 | Claude A | **정정(Codex B 피어 검토 2026-11-05)**: 원장 MOVE 7개는 `cumulative_improvement_review`가 아니라 `uef5/historical_recompute.py`(UEF 보호 영역) 함수이며 타겟 미생성. A의 분리 2건은 원장 밖 별도 이동 |
 | RF-021 | 02_DEVELOPING | 1 | Claude A | |
-| RF-045 | 02_DEVELOPING | 3 | Codex B | B 브랜치의 log_maintenance·http_client 수정과 관련 |
+| RF-045 | 02_DEVELOPING | 3 | Codex B | **KEEP_VERIFIED (2026-11-05)**: 3개 함수는 event_logger.py 내부 전용이고 비공개 헬퍼에 묶여 있어 분리하면 순환 import나 헬퍼 복제가 생긴다. 코드 변경 없음. B의 log_maintenance·http_client 수정은 반영 완료 |
 
 ### DEFER-A — 1.6 인벤토리로 이관 (MOVE-only 9개 RF, MOVE_BODY 44개)
 RF-010, 011, 012, 022, 026, 030, 042, 048, 049 (모두 01_PENDING). 실제 코드 이동이라 가치는 있으나 1.5 완료 조건에서 뺀다. 1.6 Gate C에서 CONSOLIDATE 후보로 재평가한다. **승인 시 FINISH로 올릴 수 있는 항목이다.**

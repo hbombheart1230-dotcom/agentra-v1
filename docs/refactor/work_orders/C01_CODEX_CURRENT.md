@@ -5,7 +5,7 @@ Canonical integration/p1.5. 컷라인 정본: docs/refactor/p1_6/P15_CUTLINE_PRO
 
 ## Current order
 ORDER_ID: B47-CUTLINE-FINISH-20261105
-ITEM 1: RF-045 — 남은 MOVE_BODY 3개를 원장(docs/refactor/plan/RF_TASK_LEDGER.jsonl)의 RF-045 행에서 찾아 처리. B 브랜치의 http_client·log_maintenance 수정은 이미 integration에 반영됨(d5450594).
+ITEM 1: RF-045 — 처리 완료(코드 변경 없음). KEEP_VERIFIED|libs/core/event_logger.py::_compact_event_payload,_compact_candidate_ranking_table,_compact_value|blob de869be7 (2026-11-05, Claude A 독립 검토): 세 함수는 event_logger.py 안에서만 호출되고(476행 단일 호출처) 외부 소비자·직접 테스트가 없다. _event_log_* 환경 설정 함수 4개, _payload_size_bytes, _copy_known_fields, _compact_rows, _symbol_list 등 모듈 비공개 헬퍼에 강하게 묶여 있어, 원장대로 함수당 1파일로 분리하면 순환 import나 헬퍼 3중 복제가 생긴다. 분리 이득이 없다. 필요하면 P1.6에서 압축 헬퍼 전체를 단일 소유 모듈로 묶는 방안으로 재평가. B 브랜치의 http_client·log_maintenance 수정은 이미 integration에 반영됨(d5450594). Codex B는 이 판정에 이견이 있을 때만 #12에 근거를 남긴다.
 ITEM 2: RF-032 — 피어 검토 완료(2026-11-05): 원장 MOVE 7개는 UEF 영역(uef5/historical_recompute.py) TARGET_GAP이며 오너 결정으로 P1.6 이관(2026-11-05). 추가 지시 없음.
 DEFERRED(하지 않는다): B의 폴더 구조(brief_parts/, read_models/, agent_output_parts/)는 채택하지 않으며 P1.6에서 가드 테스트와 함께 다룬다. commander/__init__.py, run_m30_final_golive_signoff.py, shared_role_contracts.py의 B 버전도 같은 이유로 보류. 새 RF 시작 금지.
 KNOWN_BASELINE_FAILURES: 컷라인 문서 동결 조건 2-1의 기존 실패는 책임 밖. 새 실패가 없음을 작업 전후 실패 집합 비교로 증명한다.
