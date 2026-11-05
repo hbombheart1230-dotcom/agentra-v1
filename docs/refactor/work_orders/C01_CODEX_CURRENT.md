@@ -1,16 +1,9 @@
-# C01 — Codex B | P1.5 컷라인 마무리 (RF-045, RF-032 피어)
+# C01 — P1.5 실행 종료
 
-## Authority
-Canonical integration/p1.5. 컷라인 정본: docs/refactor/p1_6/P15_CUTLINE_PROPOSAL_20261105.md (오너 결정 5건 확정, 2026-11-05). D00 보호 경계(Owner, frozen, UEF, Guard, Writer, Step5C, 실거래·브로커 금지) 유지. 이 지시서는 2026-11-05에 Claude가 오너 위임으로 직접 개정했다. RF-063은 컷라인에서 제외(P1.6 이관)되어 더 이상 활성이 아니다.
+STATUS: STOPPED / CLOSEOUT_ONLY
 
-## Current order
-ORDER_ID: B47-CUTLINE-FINISH-20261105
-ITEM 1: RF-045 — 처리 완료(코드 변경 없음). KEEP_VERIFIED|libs/core/event_logger.py::_compact_event_payload,_compact_candidate_ranking_table,_compact_value|blob de869be7 (2026-11-05, Claude A 독립 검토): 세 함수는 event_logger.py 안에서만 호출되고(476행 단일 호출처) 외부 소비자·직접 테스트가 없다. _event_log_* 환경 설정 함수 4개, _payload_size_bytes, _copy_known_fields, _compact_rows, _symbol_list 등 모듈 비공개 헬퍼에 강하게 묶여 있어, 원장대로 함수당 1파일로 분리하면 순환 import나 헬퍼 3중 복제가 생긴다. 분리 이득이 없다. 필요하면 P1.6에서 압축 헬퍼 전체를 단일 소유 모듈로 묶는 방안으로 재평가. B 브랜치의 http_client·log_maintenance 수정은 이미 integration에 반영됨(d5450594). Codex B는 이 판정에 이견이 있을 때만 #12에 근거를 남긴다.
-ITEM 2: RF-032 — 피어 검토 완료(2026-11-05): 원장 MOVE 7개는 UEF 영역(uef5/historical_recompute.py) TARGET_GAP이며 오너 결정으로 P1.6 이관(2026-11-05). 추가 지시 없음.
-DEFERRED(하지 않는다): B의 폴더 구조(brief_parts/, read_models/, agent_output_parts/)는 채택하지 않으며 P1.6에서 가드 테스트와 함께 다룬다. commander/__init__.py, run_m30_final_golive_signoff.py, shared_role_contracts.py의 B 버전도 같은 이유로 보류. 새 RF 시작 금지.
-KNOWN_BASELINE_FAILURES: 컷라인 문서 동결 조건 2-1의 기존 실패는 책임 밖. 새 실패가 없음을 작업 전후 실패 집합 비교로 증명한다.
-TEST: 변경 경계마다 normal과 `python -O` 각 1회.
-COMPLETION: Issue #12에 실제 종료 코드와 SHA 보고.
+[오너 결정: P1.5 중단·P1.6 이관](../p1_6/P15_STOP_AND_HANDOFF_20261105.md)을 따른다. 이전 연속 개발·배정·통합·종결·감사 주문은 종료되었다. 과거 지시는 Git history에 보존된다.
 
-## Execution
-문서/RF/STATUS 수정 금지. main, 새 브랜치/PR/worktree 금지. 예약 작업은 만들지 않는다.
+지팀장 전용 역할/승인 권한은 폐지되었다. 승인 범위의 담당자는 문서·RF·STATUS·원장·patchnotes도 직접 갱신·커밋·푸시할 수 있다.
+RF-021·RF-045: KEEP_VERIFIED. RF-032: A 2건 반영, UEF 7건은 1.6 이관. 나머지 미완료와 기존 실패는 P1.6 입력이다.
+P1.5 신규 작업이나 예약 반복 실행을 시작하지 않는다. 실제 검증되지 않은 항목을 PASS/DONE으로 만들지 않는다. 보호 경계와 운영 안전 제한은 유지한다.
