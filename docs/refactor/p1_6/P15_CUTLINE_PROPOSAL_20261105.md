@@ -31,7 +31,7 @@
 ### FINISH — 1.5 안에서 마무리 (3개 RF, MOVE_BODY 11개)
 | RF | 단계 | MOVE | 담당(원장) | 비고 |
 |---|---|---|---|---|
-| RF-032 | 03_PEER_REVIEW | 7 | Claude A | A 브랜치의 `cumulative_improvement_review` 작업과 일치. 피어 리뷰만 남음 |
+| RF-032 | 03_PEER_REVIEW | 7 | Claude A | **정정(Codex B 피어 검토 2026-11-05)**: 원장 MOVE 7개는 `cumulative_improvement_review`가 아니라 `uef5/historical_recompute.py`(UEF 보호 영역) 함수이며 타겟 미생성. A의 분리 2건은 원장 밖 별도 이동 |
 | RF-021 | 02_DEVELOPING | 1 | Claude A | |
 | RF-045 | 02_DEVELOPING | 3 | Codex B | B 브랜치의 log_maintenance·http_client 수정과 관련 |
 
