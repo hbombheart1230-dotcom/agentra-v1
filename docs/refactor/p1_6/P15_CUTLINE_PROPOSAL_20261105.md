@@ -99,5 +99,16 @@ RF-010, 011, 012, 022, 026, 030, 042, 048, 049 (모두 01_PENDING). 실제 코�
 ## 9. 남은 일
 
 - ~~RF-028, 029, 037 분류~~ 완료(위 2절). 지팀장은 KEEP_IF 판정만 확인하면 된다.
-- 이 제안서의 내용을 D00·CURRENT·STATUS·C01~C06에 반영(지팀장).
-- 로컬 `integration/p1.5` 커밋을 원격에 올리는 시점.
+- ~~원격 푸시~~ 완료. ~~CURRENT·C01·C02 개정~~ 완료(D00·C03~C06은 손대지 않음).
+
+**오너 결정 (2026-11-05)**: 기존 실패 122건(낡은 B 계약 테스트 93, 개별 미분석 29 중 UEF 10 포함)은 **P1.6 Gate A로 이관**한다. 1.5에서는 더 고치지 않는다.
+
+동결 전 남은 것:
+1. 전체 회귀(normal·`-O`) 1회 실행해 실패 집합을 122건 기준선으로 고정(지금까지는 부분 실행만 함).
+2. 지팀장: RF-021·RF-045를 KEEP_VERIFIED로, RF-032를 "A 2건 반영 / UEF 7건 1.6 이관"으로 원장·STATUS에 반영. 에이전트는 상태값을 바꾸지 않았다.
+3. 동결 문서에 RunLab 이슈 #32를 `OPEN/RUNTIME_PENDING`으로 명시.
+4. 기준 SHA와 태그 확정, 오너 승인.
+
+보류한 브랜치 잔여물(1.6 입력): A의 `intraday_report_*_projection.py` 5개(양쪽 수정), 번호 없는 `test_p15_*` 약 90개, B의 3개 파일(commander `__init__`, `run_m30_final_golive_signoff`, `shared_role_contracts`)과 B 폴더 구조.
+
+이 PC 밖/오너 확인: GPT·Codex 앱 쪽 예약 작업이 남아 있는지, 실패한 Codex MCP 등록 정리(`claude mcp remove codex`).
