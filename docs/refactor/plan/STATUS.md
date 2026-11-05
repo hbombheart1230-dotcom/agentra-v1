@@ -1,3 +1,19 @@
+# Agentra — P1.5 STOPPED / CLOSEOUT_ONLY
+
+[오너 결정](../p1_6/P15_STOP_AND_HANDOFF_20261105.md)에 따라 지팀장 독점 쓰기·승인 체계 및 C01~C06 연속 개발 지시를 종료한다. 승인된 담당자가 원장·RF·STATUS·문서를 직접 갱신한다.
+
+| RF | 현재 컷라인 판정 |
+|---|---|
+| RF-021 | KEEP_VERIFIED |
+| RF-045 | KEEP_VERIFIED |
+| RF-032 | A 2건 반영, UEF 7건은 1.6 이관 |
+
+나머지 미완료 RF 및 보고된 기존 실패 122건은 P1.6으로 이관. RunLab #32 OPEN/RUNTIME_PENDING. 전체 회귀·런 검증 PASS 또는 전체 RF DONE을 선언하지 않는다.
+
+## 이전 물리 큐·게이트 집계 (역사 스냅샷)
+
+아래 내용은 이전 단계/수치와 증거의 보존이며 현재 개발 주문이나 독점 권한이 아니다. JSONL/XLSX 원장 동기화는 아직 미완료다.
+
 # Agentra P1.5 — STATUS (2026-11-02 03:45 KST FAST-3 · RF 93/93 · DONE 46/93 · 신규 +2)
 
 **C05 2026-11-02 03:45 KST — 신규 개발 DONE +2: RF-024/025 `01_PENDING/UNASSIGNED→05_DONE`.** 이전 DONE44 보존 → **46/93**, PENDING38/DEV7/PEER2/LEAD0/DONE46/REWORK0, 93 unique. G1 BASE KEEP RF024 17/18, RF025 12/13; 각 SOURCE의 pure BODY MOVE 6/2와 thin wrapper, 보호 효과 HOLD. G2 B27 RF024+RF026 combined normal 8 PASS exit0, A27 RF025 normal 21 PASS exit0. G3 C04 정확 통합 `0f5e19b6` SOURCE/Owner/test RF024 8/8, RF025 4/4 blob 일치, deps 5/5·6/6 동일 G3_REUSE, HEAD `5fe637b4`에서 유지. RF026은 기존 `exit_policy→monitor_exit` 순환 import·RF021 소유 안전 경계 때문에 G1 BLOCKED_POLICY, 새 두 함수의 G2/G3 scoped MET만 수용하고 PENDING 유지. RF030 G3 `_build_run_contexts` 정확 통합 SHA normal fake smoke 필요; RF063 G1 잔여/G3 trade closure C03/B→C04; RF032 G1 validation-id 정책 C03/A+safety 승인. C05 직접 pytest/sync NOT_RUN; real/RunLab/Guard/Step5C/UEF HOLD.
@@ -82,7 +98,7 @@
 <!-- RF_LEAD_CHECKLIST_START -->
 ## 우선 14건 RF 원본 체크리스트 — 현재 실물 단계 연동
 
-FAST-3: **G1 원격 코드·Owner 범위**, **G2 변경 부분 smoke/pytest**, **G3 통합·완료**. 7항목 C1~C7은 비차단 역사 근거이며 full owner peer/모든 RF -O/전체 hosted CI는 필수가 아닙니다. [D00 §2](../work_orders/D00_ENGINEERING_DELIVERY_POLICY.md) 우선. 본 표는 C05가 관리합니다.
+FAST-3: **G1 원격 코드·Owner 범위**, **G2 변경 부분 smoke/pytest**, **G3 통합·완료**. 7항목 C1~C7은 비차단 역사 근거이며 full owner peer/모든 RF -O/전체 hosted CI는 필수가 아닙니다. [D00 §2](../work_orders/D00_ENGINEERING_DELIVERY_POLICY.md) 우선. 본 표는 과거 C05 집계이며 현재는 승인된 담당자가 관리합니다.
 
 | RF 원본 | 실물 단계·Owner→Peer | MET · N/A · 남음 | 미충족 체크 | 다음 해제 조건 · 담당 | 상태 |
 |---|---|---:|---|---|---|
@@ -103,7 +119,7 @@ FAST-3: **G1 원격 코드·Owner 범위**, **G2 변경 부분 smoke/pytest**, *
 
 **우선 14건:** **MET 30/42 · N/A 0/42 · 미완료 12/42**. 실제 DEV 2 + PEER 2 + LEAD 0, 물리 DONE 46건.
 
-**STATUS 갱신 책임: 지팀장.** RF 변경/증거 인수 및 물리 이동 시 같은 작업에서 `python docs/refactor/tools/sync_rf_checklist_status.py --write` 후 `--check` 확인. 이 도구는 93개 실물 파일의 유일성/단계 수와 우선 14개 원본 체크를 대조하며 RF 합격/안전 실행을 자동 승인하지 않습니다.
+**STATUS 갱신 책임: 승인된 작업 담당자.** RF 변경/증거 인수 및 물리 이동 시 같은 작업에서 `python docs/refactor/tools/sync_rf_checklist_status.py --write` 후 `--check` 확인. 이 도구는 93개 실물 파일의 유일성/단계 수와 우선 14개 원본 체크를 대조하며 RF 합격/안전 실행을 자동 승인하지 않습니다.
 <!-- RF_LEAD_CHECKLIST_END -->
 
 ## 새 보고와 변경 책임
